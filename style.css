@@ -1,8 +1,24 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:300,400');
+@import url("https://fonts.googleapis.com/css?family=Metal+Mania");
+
+
+*{
+  box-sizing:border-box;
+  font-family: Raleway;
+  /*color:#777;*/
+}
+
+html,body
+{
+  margin:0;
+}
+
 /* Navbar container */
 .navbar {
     overflow: hidden;
     background-color: #333;
     font-family: Arial;
+
   }
   
   /* Links inside the navbar */
@@ -35,7 +51,7 @@
   
   /* Add a red background color to navbar links on hover */
   .navbar a:hover, .dropdown:hover .dropbtn {
-    background-color: red;
+    background-color: rgb(85, 85, 85);
   }
   
   /* Dropdown content (hidden by default) */
@@ -67,3 +83,94 @@
   .dropdown:hover .dropdown-content {
     display: block;
   }
+
+ .main-header
+ {
+   background-color: #333;
+   /*background-image: url(img/espaco.jpg);*/
+   background-blend-mode: multiply;
+   background-size: cover;
+   padding-bottom: 5px;
+   font-size: 18px;
+   text-align: left;
+   margin: 0;
+ }
+ .main-header h1{
+   color: rgb(243, 243, 243);
+ }
+
+ .content-section
+ {
+   margin: 1em;
+   font-size: 20px;
+ }
+
+ .content-section p
+ {
+   line-height: 180%;
+ }
+ 
+ .content-section p::first-letter
+ {
+    font-size: 120%;
+    color: #0e008d;
+ }
+
+ .container
+ {
+   max-width: 900px;
+   margin:0 auto;
+   padding: 0 1.5em;
+   text-align: justify;
+   color:rgb(70, 70, 70)
+ }
+
+ .section-header
+ {
+   color: #333;
+   text-align: center;
+ }
+
+
+ .main-image
+ {
+   float:left;
+   height: 200px;
+   width: 200px;
+   border-radius: 50%;
+   border: 1px solid rgb(7, 7, 7);
+   margin:15px;
+ }
+
+ .main-footer
+ {
+   /*background-color: rgb(97, 97, 97);*/
+   background-color: rgb(15, 0, 56);
+   color:white;
+ }
+
+ .main-footer-container
+ {
+   display: flex;
+  
+   align-items: center;
+ }
+
+ .main-footer-container ul
+ {
+   flex-grow: 1;
+   text-align: end;
+   color: white;
+ }
+
+ .main-footer-container h3
+ {
+   color: white;
+ }
+ .nome-footer
+ {
+    
+    float: left;
+    text-align: left;
+    font-weight:lighter
+ }
