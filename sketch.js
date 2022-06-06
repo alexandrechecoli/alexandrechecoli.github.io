@@ -9,8 +9,8 @@ function nao_apagar()
 function windowResized()
 {
   //resizeCanvas(windowWidth, windowHeight + 250);
-  resizeCanvas(windowWidth, windowHeight + 250);
-  console.log(windowWidth, windowHeight + 250);
+  resizeCanvas(windowWidth, windowHeight );
+  console.log(windowWidth, windowHeight);
 }
 
 
@@ -29,7 +29,8 @@ class Particle {
   // creation of a particle.
     createParticle() {
       noStroke();
-      fill('rgba(200,169,169,0.5)');
+      fill('rgba(96,89,212,0.4)');
+      //fill('blue');
       circle(this.x,this.y,this.r);
     }
   
@@ -49,7 +50,8 @@ class Particle {
       particles.forEach(element =>{
         let dis = dist(this.x,this.y,element.x,element.y);
         if(dis<85) {
-          stroke('rgba(200,169,169,0.5)');
+          //stroke('rgba(200,169,169,0.3)');
+          stroke('rgba(96,89,212,0.2)');
           line(this.x,this.y,element.x,element.y);
         }
       });
@@ -60,7 +62,7 @@ class Particle {
   let particles = [];
   
   function setup() {
-    canvas = createCanvas(windowWidth, windowHeight + 250);
+    canvas = createCanvas(windowWidth, windowHeight );
     for(let i = 0;i<width/10;i++){
       particles.push(new Particle());
     }
@@ -69,7 +71,7 @@ class Particle {
   
   function draw() {
     //background('#0f0f0f');
-    background(800);
+    background(500);
     for(let i = 0;i<particles.length;i++) {
       particles[i].createParticle();
       particles[i].moveParticle();

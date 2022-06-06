@@ -18,13 +18,12 @@ html,body
     overflow: hidden;
     background-color: #333;
     font-family: Arial;
-
   }
   
   /* Links inside the navbar */
   .navbar a {
     float: left;
-    font-size: 16px;
+    font-size: 20px;
     color: white;
     text-align: center;
     padding: 14px 16px;
@@ -39,7 +38,7 @@ html,body
   
   /* Dropdown button */
   .dropdown .dropbtn {
-    font-size: 16px;
+    font-size: 20px;
     border: none;
     outline: none;
     color: white;
@@ -122,7 +121,7 @@ html,body
    margin:0 auto;
    padding: 0 1.5em;
    text-align: justify;
-   color:rgb(70, 70, 70)
+   color:rgb(10, 10, 10) /*COR DO TEXTO DE CONTEÚDO*/
  }
 
  .section-header
@@ -152,7 +151,6 @@ html,body
  .main-footer-container
  {
    display: flex;
-  
    align-items: center;
  }
 
@@ -174,3 +172,42 @@ html,body
     text-align: left;
     font-weight:lighter
  }
+
+ .titulo
+ {
+   padding-left: 30px;
+ }
+
+
+ .tour-row {
+  border-bottom: 1px solid black;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+}
+
+.tour-row:last-child {
+  border: none;
+}
+
+.tour-item {
+  display: inline-block;
+  padding-right: .5em;
+}
+
+.tour-date {
+  color: #555;
+  width: 11%;
+  font-weight: bold;
+}
+
+.tour-city {
+  width: 24%;
+}
+
+.tour-arena {
+  width: 42%;
+}
+
+.tour-btn {
+  max-width: 19%;
+}
