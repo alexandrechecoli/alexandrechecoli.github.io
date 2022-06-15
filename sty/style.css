@@ -16,7 +16,8 @@ html,body
 /* Navbar container */
 .navbar {
     overflow: hidden;
-    background-color: #333;
+    /*background-color: #333;*/
+    background-color:rgb(21, 21, 63);
     font-family: Arial;
   }
   
@@ -50,7 +51,8 @@ html,body
   
   /* Add a red background color to navbar links on hover */
   .navbar a:hover, .dropdown:hover .dropbtn {
-    background-color: rgb(85, 85, 85);
+    /*background-color: rgb(85, 85, 85);*/
+    background-color:#4f4b75;
   }
   
   /* Dropdown content (hidden by default) */
@@ -76,6 +78,7 @@ html,body
   /* Add a grey background color to dropdown links on hover */
   .dropdown-content a:hover {
     background-color: #ddd;
+    background-color:#a39bee7e;
   }
   
   /* Show the dropdown menu on hover */
@@ -85,8 +88,9 @@ html,body
 
  .main-header
  {
-   background-color: #333;
-   /*background-image: url(img/espaco.jpg);*/
+   /*background-color: #333;*/
+   background-color:rgb(21, 21, 63);
+   background-image: url(img/espaco.jpg);
    background-blend-mode: multiply;
    background-size: cover;
    padding-bottom: 5px;
@@ -106,12 +110,12 @@ html,body
 
  .content-section p
  {
-   line-height: 180%;
+   line-height: 160%;
  }
  
  .content-section p::first-letter
  {
-    font-size: 120%;
+    font-size: 150%;
     color: #0e008d;
  }
 
@@ -170,7 +174,7 @@ html,body
     
     float: left;
     text-align: left;
-    font-weight:lighter
+    font-weight:lighter;
  }
 
  .titulo
@@ -181,8 +185,8 @@ html,body
 
  .tour-row {
   border-bottom: 1px solid black;
-  padding-bottom: 1em;
-  margin-bottom: 1em;
+  padding-bottom: 0.2em;
+  margin-bottom: 0.2em;
 }
 
 .tour-row:last-child {
@@ -197,7 +201,7 @@ html,body
 .tour-date {
   color: #555;
   width: 11%;
-  font-weight: bold;
+  /*font-weight: bold;*/
 }
 
 .tour-city {
