@@ -21,7 +21,7 @@
     width: 100%;
     height: 100%;
     text-align: center;
-    transition: transform 0.8s;
+    transition: transform 0.7s;
     transform-style: preserve-3d;
   }
   
@@ -48,7 +48,7 @@
   
   /* Style the back side */
   .flip-card-back {
-    background-color: #3f37a069;
+    background-color: #e4e4e469;
     color: rgb(48, 45, 45);
     transform: rotateY(180deg);
     border: 1px solid #202020;
