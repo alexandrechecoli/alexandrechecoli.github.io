@@ -3,60 +3,121 @@
 <html>
 
     <head>
+        <title>Alexandre Checoli Choueiri</title>
+        <meta name = "description" content = "Mineração de dados">
         <link rel="stylesheet" href="../sty/style.css">
+        <link rel="stylesheet" href="../sty/flip_card.css">
+        <link rel="stylesheet" href="../sty/alerts.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="icon" href="../img/cedrus_logo_sem_fundo.png">
+        
+        <script src="../libs/p5.min.js"></script>
+        <script src="../sketch.js"></script>
     </head>
     <body>
-        <header>
+        
+        <header class = "main-header">
             <div class="navbar">
-                <a href="../index">Início</a>
-                <a href="#news">Pesquisa</a>
+                <a href="../index.html">Início</a>
+                <a href="#">Pesquisa</a>
                 <div class="dropdown">
                   <button class="dropbtn">Disciplinas
                     <i class="fa fa-caret-down"></i>
                   </button>
                   <div class="dropdown-content">
-                    <a href="#">Meta heurísticas</a>
-                    <a href="#">Mineração de dados</a>
+                    <a href="../1-meta/meta.html">Meta heurísticas</a>
+                    <a href="../2-mindados/mindados.html">Mineração de dados</a>
                     <a href="#">Programação</a>
                   </div>
                 </div>
               </div>
-            <hr>
-            <h1>Alexandre Checoli Choueiri</h1>
-            <h2>(paciência, em construção...)</h1>
+       
+            <!--TODO: Colocar imagem-->
+            <h1 class = "titulo">Programação (VBA)</h1>
         </header>
 
-        <section>
-            <h2>Sobre</h2>
+        <section class = "content-section container">
+            <h2 class = "section-header">SOBRE</h2>
             <p>
-                Atualmente sou professor adjunto do departamento de Engenharia
-                de Produção da Universidade Federal do Paraná, ministrando as disciplinas de 
-                Meta-heurísticas, Introdução à mineração de dados e Programação. Meus interesses de pesquisa incluem
-                métodos de resolução exatos e heurísticos para problemas de otimização. Tenho experiência com problemas de logística
-                (roteirização e carregamento) e um pouco de scheduling de produtos multi níveis.
-            </p>
-            <img src="img/elden.jpg">
-            <p>
-                Durante o doutorado fundei uma empresa (<a href="https://cedrus-opt.com.br" target="_blank">CEDRUS</a>) para fornecer algoritmos de otimização à pequenas e médias
-                organizações. Agora estou no processo de transformação da empresa em um projeto acadêmico aberto de otimização, 
-                em que diversas ferramentas serão oferecidas gratuitamente para pequenas empresas.
-            </p>
-            <p>
-                Este é um espaço criado para disponibilizar materiais aos alunos de forma mais simples. As ementas, conteúdos, programas serão todos
-                armazenados aqui (com o tempo...). Qualquer dúvida sintam-se a vontade para entrar em contato no meu email (alexandrechecoli@gmail.com), 
-                assim que possível responderei.
+                A programação de computadores...(será finalizado!)
             </p>
         </section>
 
-        <footer>
-            <h3>Alexandre Checoli</h3>
-            <ul>
-                <li>IM1</li>
-                <li>IM2</li>
-                <li>IM3</li>
-            </ul>
+
+        <section class="content-section container">
+            <h2 class="section-header">MATERIAIS</h2>
+            <div>
+                <div class="tour-row">
+                    <span class="tour-item tour-date">15.08.22</span>
+                    <span class="tour-item tour-city">Apostila</span>
+                    <span class="tour-item tour-arena">Apostila de programação (VBA)</span>
+                    <button type="button" class="tour-item tour-btn btn btn-primary"> 
+                      <a style="text-decoration: none;" href="/3-programacao/Materiais/Apostila_tecnicas_de_programacao.pdf" download>BAIXAR</a></button>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="content-section container">
+          <h2 class = "section-header">AVISOS/ATIVIDADES</h2>
+     
+           <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+            <div class="new-message-box">
+                            <div class="new-message-box-warning">
+                                <div class="info-tab tip-icon-warning" title="error"><i></i></div>
+                                <div class="tip-box-warning">
+                                    <!--<p><strong>Tip:</strong> If you want to enable the fading transition effect while closing the alert boxes, apply the classes <code>.fade</code> and <code>.in</code> to them along with the contextual class.</p>-->
+                                    <p>  Entrega: 20/06/22: Questionário elaborado em aula</p>
+                                </div>
+                            </div>
+                        </div>
+            </div>
+          </div>
+
+            <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+              <div class="new-message-box">
+                  <div class="new-message-box-success">
+                      <div class="info-tab tip-icon-success" title="success"><i></i>
+                      </div>
+                      <div class="tip-box-success">
+                          <!--<p><strong>Tip:</strong> If you want to enable the fading transition effect while closing the alert boxes, apply the classes <code>.fade</code> and <code>.in</code> to them along with the contextual class.</p>-->
+                          <p>  ENTREGA: 22/22/22: Questionário elaborado em aula</p>
+                      </div>
+                  </div>
+              </div>
+            </div>
+
+
+
+
+
+          <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+            <div class="new-message-box">
+                          <div class="new-message-box-info">
+                              <div class="info-tab tip-icon-info" title="error"><i></i></div>
+                              <div class="tip-box-info">
+                                  <!--<p><strong>Tip:</strong> If you want to enable the fading transition effect while closing the alert boxes, apply the classes <code>.fade</code> and <code>.in</code> to them along with the contextual class.</p>-->
+                                  <p>Atividade não passada em aula </p>
+                              </div>
+                          </div>
+                      </div>
+          </div>
+        </div>
+            
+
+        </section>
+        
+
+        <footer class="main-footer">
+            <div class = "container main-footer-container">
+                <h3 class="nome-footer">Alexandre Checoli</h3>
+                <ul style="list-style: none;">
+                    <li>alexandrechecoli@gmail.com</li>
+                    <li>UFPR</li>
+                    <li>Departamento de Eng. de Produção</li>
+                </ul>
+            </div>
         </footer>
+
     </body>
 </html>
