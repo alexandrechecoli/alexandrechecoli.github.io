@@ -3,51 +3,54 @@
 <html>
 
     <head>
-        <title>Alexandre Checoli Choueiri</title>
-        <meta name = "description" content = "Meta heurísticas">
-        <link rel="stylesheet" href="../sty/style.css">
+        <title>Calendário</title>
+        <meta name = "description" content = "Pesquisa Alexandre Checoli Choueiri">
+        <link rel="stylesheet" href="/sty/style.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="icon" href="img/cedrus_logo_sem_fundo.png">
         
-        <script src="../libs/p5.min.js"></script>
-        <script src="../sketch.js"></script>
-        <link rel="icon" href="../img/cedrus_logo_sem_fundo.png">
+        <script src="libs/p5.min.js"></script>
+        <script src="sketch.js"></script>
+ 
     </head>
     <body>
-        
         <header class = "main-header">
             <div class="navbar">
                 <a href="../index.html">Início</a>
-                <a href="Pesquisa/pesquisa.html">Pesquisa</a>
+                <a href="../Pesquisa/">Pesquisa</a>
                 <div class="dropdown">
                   <button class="dropbtn">Disciplinas
                     <i class="fa fa-caret-down"></i>
                   </button>
                   <div class="dropdown-content">
-                    <a href="#">Meta heurísticas</a>
+                    <a href="../1-meta/meta.html">Meta heurísticas</a>
                     <a href="../2-mindados/mindados.html">Mineração de dados</a>
                     <a href="../3-programacao/programacao.html">Programação</a>
                   </div>
                 </div>
-                <a href="../Calendario/calendario.html">Calendário</a>
+                <a href="calendario.html">Calendário</a>
               </div>
        
             <!--TODO: Colocar imagem-->
-            <h1 class = "titulo">Metaheurísticas</h1>
+            <h1 class = "titulo">Calendário</h1>
         </header>
 
         <section class = "content-section container">
-            <h2 class = "section-header">SOBRE</h2>
+            <h2 class = "section-header">Marque uma reunião</h2>
             <p>
-                Atualmente sou professor adjunto do departamento de Engenharia
-                de Produção da Universidade Federal do Paraná, ministrando as disciplinas de 
-                Meta-heurísticas, Introdução à mineração de dados e Programação. Meus interesses de pesquisa incluem
-                métodos de resolução exatos e heurísticos para problemas de otimização. Tenho experiência com problemas de logística
-                (roteirização e carregamento) e um pouco de scheduling de produtos multi níveis.
+                Para marcar uma reunião, por favor selecione os horários disponíveis na agenda abaixo (reuniões de 15 minutos, 
+                30 minutos ou 1 hora):
             </p>
-            
+
+
+        <!-- Calendly inline widget begin -->
+        <div class="calendly-inline-widget" data-url="https://calendly.com/alexandrechecoli" style="min-width:320px;height:630px;"></div>
+        <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+        <!-- Calendly inline widget end -->
+
         </section>
 
-
+        
 
         <footer class="main-footer">
             <div class = "container main-footer-container">
@@ -59,6 +62,5 @@
                 </ul>
             </div>
         </footer>
-
     </body>
 </html>
