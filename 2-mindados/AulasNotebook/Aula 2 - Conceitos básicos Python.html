@@ -14637,6 +14637,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="2.2-Objetos">2.2 Objetos<a class="anchor-link" href="#2.2-Objetos">&#182;</a></h2><p>Tudo em Python são objetos! Todo número, string, estrutura de dados, função, classe, módulo e assim por diante, existe no interpretador Python em sua própria "caixa", que é referenciada como um objeto Python. Os objetos possuem atributos e métodos internos que podem ser usadas. Para acessar, usamos o 'ponto' e o nome dos atributo ou método.</p>
+<p><strong>OBS: Comentários em Python são escritos com o sustenido(#). Tudo escrito após essa marcação será ignorado pelo interpretador Python</strong></p>
 
 </div>
 </div>
@@ -14855,13 +14856,12 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <td style="text-align:center">Eleva a a potencia de b</td>
 </tr>
 <tr>
-<td style="text-align:center">a &amp; b</td>
+<td style="text-align:center">a and b</td>
 <td style="text-align:center">True se tanto a quanto b forem True; se forem inteiros é a operação bit a bit</td>
 </tr>
 <tr>
-<td style="text-align:center">a</td>
-<td style="text-align:center">b</td>
-<td>True se ou a b for True</td>
+<td style="text-align:center">a or b</td>
+<td style="text-align:center">True se ou a ou b for True</td>
 </tr>
 <tr>
 <td style="text-align:center">a ^ b</td>
@@ -15088,7 +15088,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>As strings são sequências de caracteres, de forma que podemos trata-las como outras sequências (listas e tuplas)</p>
+<p>As strings são sequências de caracteres, de forma que podemos tratá-las como outras sequências (listas e tuplas)</p>
 
 </div>
 </div>
@@ -15820,7 +15820,7 @@ week 0.</p></td>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Podemos iterar a lista pelos indices. Usamos a função <strong>range()</strong>. Esta função cria um interador que produz uma sequência de inteiros uniformemente espaçados. Podemos passar o inicio e o fim-1 dos números gerados, ou somente o fim-1, e o range gera a partir do 0.</p>
+<p>Podemos iterar a lista pelos indices. Usamos a função <strong>range()</strong>. Esta função cria um iterador que produz uma sequência de inteiros uniformemente espaçados. Podemos passar o inicio e o fim-1 dos números gerados, ou somente o fim-1, e o range gera a partir do 0.</p>
 
 </div>
 </div>
@@ -15857,6 +15857,68 @@ week 0.</p></td>
      </div>
 </div>
 </div>
+</div>
+
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Usando indices negativos criamos um range reverso, para isso precisamos passar como argumentos o inicio,o fim e o passo (negativo). No exemplo abaixo o inicio é 10 até 0, de -1 em -1.</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[8]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+0
+</pre>
+</div>
+</div>
+
+</div>
+
 </div>
 
 </div>
@@ -15968,6 +16030,10 @@ week 0.</p></td>
                 <li> Imprima a lista em ordem crescente</li>
                 <li> Imprima a lista em ordem decrescente</li>
             </ol>
+        <li> Faça um programa que leia 2 strings e informe o conteúdo delas seguido do seu comprimento. Informe também se as duas strings possuem o mesmo comprimento e são iguais ou diferentes no conteúdo.</li>
+        <li>Faça um programa que solicite o nome do usuário e imprima-o na vertical </li>
+        <li>Modifique o programa anterior de forma a mostrar o nome em formato de escada.</li>
+        <li> Escreva um programa que receba um aniversário como entrada e exiba a idade do usuário e o número de dias, horas, minutos e segundos até o seu próximo aniversário</li>
         <li> Considerando a seguinte sentença atribuida a Sêneca: "Se vives de acordo com as leis da natureza, nunca serás pobre; se vives de acordo com as opiniões alheias, nunca serás rico." Salve a sentença em uma variável e realize as seguintes operações:</li>
               <ol style = "text-align: justify;">
                 <li> Receba uma palavra do usuário e imprima quantas vezes a palavra aparece na frase.</li>
