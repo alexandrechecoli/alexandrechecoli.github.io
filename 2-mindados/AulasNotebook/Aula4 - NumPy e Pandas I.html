@@ -15117,8 +15117,8 @@ Linha 1 =  linha 1 - linha 0 :
 <p>Percebe-se que as operações algébricas ficam muito facilitadas com os arrays. Considere o código abaixo, que encontra a inversa da seguinte matriz:</p>
 <p><code>M = [[4, 3, 3, 4],
  [4, 3, 3, 2],
- [5, 3, 5, 5],
- [5, 3, 3, 4]]</code></p>
+ [8, 3, 5, 5],
+ [5, 6, 3, 4]]</code></p>
 
 </div>
 </div>
@@ -15522,7 +15522,7 @@ float64
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Uma diferença importante entre o fatiamento de listas e de arrays, é que estes últimos são visualizações (<em>views</em>) do próprio array, ou seja, alterando a visualização também altera o array. Considere o exmplo:</p>
+<p>Uma diferença importante entre o fatiamento de listas e de arrays, é que estes últimos são visualizações (<em>views</em>) do próprio array, ou seja, alterando a visualização também altera o array. Considere o exemplo:</p>
 
 </div>
 </div>
@@ -15705,7 +15705,7 @@ Colunas até o índice 2, das linhas a partir do indice 1 :
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="4.1.6-Indexa%C3%A7%C3%A3o-booleana">4.1.6 Indexa&#231;&#227;o booleana<a class="anchor-link" href="#4.1.6-Indexa%C3%A7%C3%A3o-booleana">&#182;</a></h3><p>Também podemos realizar operações booleanas em arrays, de forma que o resultado será um novo array dew valores booleanos, de acordo com a condição. Considere o exemplo:</p>
+<h3 id="4.1.6-Indexa%C3%A7%C3%A3o-booleana">4.1.6 Indexa&#231;&#227;o booleana<a class="anchor-link" href="#4.1.6-Indexa%C3%A7%C3%A3o-booleana">&#182;</a></h3><p>Também podemos realizar operações booleanas em arrays, de forma que o resultado será um novo array de valores booleanos, de acordo com a condição. Considere o exemplo:</p>
 
 </div>
 </div>
@@ -15965,7 +15965,7 @@ Linhas pao sirio ou frances
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Note que a indexação booleana, diferentemento do fatiamento, não produz uma view do array, ma sim uma cópia! Ou seja, alterar o resultado de uma indexação booleana não altera os valores originais. Considere o exemplo abaixo:</p>
+<p>Note que a indexação booleana, diferentemento do fatiamento, não produz uma view do array, mas sim uma cópia! Ou seja, alterar o resultado de uma indexação booleana não altera os valores originais. Considere o exemplo abaixo:</p>
 
 </div>
 </div>
@@ -16245,6 +16245,20 @@ C. A soma e a média de todos os elementos.</li>
 </li>
 </ol>
 </li>
+<li><p>Considere os seguintes dados de coleta de amostras de pesos de pães (como no exemplo):</p>
+</li>
+</ol>
+<p><code>arr_paes = np.array(["frances","italiano","sirio","frances","sirio"])</code></p>
+<p><code>arr_pesos = np.array([[3.0,2.8,10,3.0,3.23,3.0,2.8,3.0],
+              [5.0,5.3,4.95,4.9,5.23,5.,5.,6.],
+              [3.0,2.8,3.1,3.0,3.23,3.,3.,3.],
+              [6.0,6.8,6.1,6.0,6.23,5.8,5.9,6.],
+              [3.0,2.8,3.1,3.0,3.23,3.,3.1,3.]])</code></p>
+<p>O controle de qualidade define que, se uma amostra têm variancia maior do que metade da média, existe algo errado com os dados
+(muita variabilidade), de forma que a amostra deve ser coletada novamente. Crie um código (usando indexação booleana) que retorne o pão (se existir algum) que precise de uma nova amostra coletada.</p>
+<ol>
+<li>Ainda considerando os dados dos pães. A qualidade precisa saber a média dos pesos de todos os pães no primeiro e no último
+dia de coletas. Use fatiamentos e no máximo duas linhas para extrair as duas informações.</li>
 </ol>
 
 </div>
