@@ -36,6 +36,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 .highlight .m { color: var(--jp-mirror-editor-number-color) } /* Literal.Number */
 .highlight .s { color: var(--jp-mirror-editor-string-color) } /* Literal.String */
 .highlight .ow { color: var(--jp-mirror-editor-operator-color); font-weight: bold } /* Operator.Word */
+.highlight .pm { color: var(--jp-mirror-editor-punctuation-color) } /* Punctuation.Marker */
 .highlight .w { color: var(--jp-mirror-editor-variable-color) } /* Text.Whitespace */
 .highlight .mb { color: var(--jp-mirror-editor-number-color) } /* Literal.Number.Bin */
 .highlight .mf { color: var(--jp-mirror-editor-number-color) } /* Literal.Number.Float */
@@ -14464,10 +14465,6 @@ a.anchor-link {
   display: none;
 }
 
-.highlight  {
-  margin: 0.4em;
-}
-
 /* Input area styling */
 .jp-InputArea {
   overflow: hidden;
@@ -14477,9 +14474,26 @@ a.anchor-link {
   overflow: hidden;
 }
 
-.CodeMirror pre {
+.CodeMirror.cm-s-jupyter .highlight pre {
+/* weird, but --jp-code-padding defined to be 5px but 4px horizontal padding is hardcoded for pre.CodeMirror-line */
+  padding: var(--jp-code-padding) 4px;
   margin: 0;
-  padding: 0;
+
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+
+}
+
+.jp-OutputArea-output pre {
+  line-height: inherit;
+  font-family: inherit;
+}
+
+.jp-RenderedText pre {
+  color: var(--jp-content-font-color1);
+  font-size: var(--jp-code-font-size);
 }
 
 /* Using table instead of flexbox so that we can use break-inside property */
@@ -14593,7 +14607,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tupla</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="s2">&quot;ok&quot;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tupla</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="s2">"ok"</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">tupla</span><span class="p">)</span>
 </pre></div>
 
@@ -14608,9 +14622,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
 <div class="jp-OutputArea-child">
-
     
     <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 
@@ -14645,13 +14657,13 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tupla_aninhada</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span><span class="s2">&quot;esta tupla tem uma tupla, uma estring e uma lista&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tupla_aninhada</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span><span class="s2">"esta tupla tem uma tupla, uma estring e uma lista"</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Número de elementos da tupla : &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tupla_aninhada</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Número de elementos da tupla dentro da tupla : &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tupla_aninhada</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Primeiro elemento da tupla : &quot;</span><span class="p">,</span> <span class="n">tupla_aninhada</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Segundo elemento da tupla : &quot;</span><span class="p">,</span> <span class="n">tupla_aninhada</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Terceiro elemento da tupla : &quot;</span><span class="p">,</span> <span class="n">tupla_aninhada</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Número de elementos da tupla : "</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tupla_aninhada</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Número de elementos da tupla dentro da tupla : "</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tupla_aninhada</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Primeiro elemento da tupla : "</span><span class="p">,</span> <span class="n">tupla_aninhada</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Segundo elemento da tupla : "</span><span class="p">,</span> <span class="n">tupla_aninhada</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Terceiro elemento da tupla : "</span><span class="p">,</span> <span class="n">tupla_aninhada</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 </pre></div>
 
      </div>
@@ -14665,9 +14677,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
 <div class="jp-OutputArea-child">
-
     
     <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 
@@ -14693,7 +14703,7 @@ Terceiro elemento da tupla :  [1, 2, 3]
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Podemos converteer qualquer elemento em uma tupla chamando o metodo <strong>tuple()</strong>.</p>
+<p>Podemos converter qualquer elemento em uma tupla chamando o metodo <strong>tuple()</strong>.</p>
 
 </div>
 </div>
@@ -14706,11 +14716,11 @@ Terceiro elemento da tupla :  [1, 2, 3]
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lista</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Serei&quot;</span><span class="p">,</span><span class="s2">&quot;Convertida&quot;</span><span class="p">,</span><span class="s2">&quot;Em&quot;</span><span class="p">,</span><span class="s2">&quot;Uma&quot;</span><span class="p">,</span><span class="s2">&quot;Tupla&quot;</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Esta é uma lista : &quot;</span><span class="p">,</span><span class="n">lista</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lista</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Serei"</span><span class="p">,</span><span class="s2">"Convertida"</span><span class="p">,</span><span class="s2">"Em"</span><span class="p">,</span><span class="s2">"Uma"</span><span class="p">,</span><span class="s2">"Tupla"</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Esta é uma lista : "</span><span class="p">,</span><span class="n">lista</span><span class="p">)</span>
 
 <span class="n">tupla_de_lista</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">lista</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Agora é uma tupla : &quot;</span><span class="p">,</span> <span class="n">tupla_de_lista</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Agora é uma tupla : "</span><span class="p">,</span> <span class="n">tupla_de_lista</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14724,9 +14734,7 @@ Terceiro elemento da tupla :  [1, 2, 3]
 
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
 <div class="jp-OutputArea-child">
-
     
     <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 
@@ -14762,8 +14770,8 @@ Agora é uma tupla :  (&#39;Serei&#39;, &#39;Convertida&#39;, &#39;Em&#39;, &#39
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tupla_aninhada</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span><span class="s2">&quot;esta tupla tem uma tupla, uma estring e uma lista&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
-<span class="n">tupla_aninhada</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Alternado o primeiro elemento&quot;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tupla_aninhada</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span><span class="s2">"esta tupla tem uma tupla, uma estring e uma lista"</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">tupla_aninhada</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Alternado o primeiro elemento"</span>
 </pre></div>
 
      </div>
@@ -14777,9 +14785,7 @@ Agora é uma tupla :  (&#39;Serei&#39;, &#39;Convertida&#39;, &#39;Em&#39;, &#39
 
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
 <div class="jp-OutputArea-child">
-
     
     <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 
@@ -14820,10 +14826,10 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tupla antes de inserir um elemento na lista&quot;</span><span class="p">,</span><span class="n">tupla_aninhada</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Tupla antes de inserir um elemento na lista"</span><span class="p">,</span><span class="n">tupla_aninhada</span><span class="p">)</span>
 
 <span class="n">tupla_aninhada</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tupla após inserir um elemento na lista&quot;</span><span class="p">,</span><span class="n">tupla_aninhada</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Tupla após inserir um elemento na lista"</span><span class="p">,</span><span class="n">tupla_aninhada</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14853,7 +14859,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">tupla_desempacotada</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
 <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">tupla_desempacotada</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Os elementos da tupla foram atribuidos às variaveis :&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Os elementos da tupla foram atribuidos às variaveis :"</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14883,7 +14889,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">tupla_desempacotada</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
 <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">*</span><span class="n">resto</span> <span class="o">=</span> <span class="n">tupla_desempacotada</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;O resto possui então : &quot;</span><span class="p">,</span> <span class="n">resto</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"O resto possui então : "</span><span class="p">,</span> <span class="n">resto</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14980,7 +14986,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">lista1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">lista1</span><span class="p">)</span>
 
-<span class="n">lista2</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;novo elemento na posição 3&quot;</span><span class="p">)</span>
+<span class="n">lista2</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"novo elemento na posição 3"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">lista2</span><span class="p">)</span>
 </pre></div>
 
@@ -14996,7 +15002,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Para remover elementos podemos uar dois métodos:</p>
+<p>Para remover elementos podemos usar dois métodos:</p>
 <ul>
 <li>remove( ): Remove um elemento pelo seu valor</li>
 <li>pop( ): remove um elemento com base em seu índice</li>
@@ -15014,13 +15020,13 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">lista1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Lista antes da remoção : &quot;</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Lista antes da remoção : "</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
 
 <span class="n">lista1</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Lista após a remoção da elemento &#39;3&#39; : &quot;</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Lista após a remoção da elemento '3' : "</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
 
 <span class="n">lista1</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Lista após a remoção do elemento de indice 0 : &quot;</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Lista após a remoção do elemento de indice 0 : "</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15049,7 +15055,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">lista1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
-<span class="n">lista1</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;elemento não existe&quot;</span><span class="p">)</span>
+<span class="n">lista1</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">"elemento não existe"</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15064,7 +15070,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Para tratar isso, podemos primeiro verificar se o elemento existe na lista, e se existit executamos a remoção do mesmo:</p>
+<p>Para tratar isso, podemos primeiro verificar se o elemento existe na lista, e se existir executamos a remoção do mesmo:</p>
 
 </div>
 </div>
@@ -15080,11 +15086,11 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">lista1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
 
 <span class="c1"># Verificamos se o elemento está na lista</span>
-<span class="k">if</span> <span class="s2">&quot;elemento não existe&quot;</span> <span class="ow">in</span> <span class="n">lista1</span><span class="p">:</span>
-    <span class="n">lista1</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;elemento não existe&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Elemento removido com sucesso!&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">"elemento não existe"</span> <span class="ow">in</span> <span class="n">lista1</span><span class="p">:</span>
+    <span class="n">lista1</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">"elemento não existe"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Elemento removido com sucesso!"</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Elemento não está contido na lista&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Elemento não está contido na lista"</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15117,7 +15123,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 
 <span class="n">lista_concatenada</span> <span class="o">=</span> <span class="n">lista1</span> <span class="o">+</span> <span class="n">lista2</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A soma das listas é :&quot;</span><span class="p">,</span> <span class="n">lista_concatenada</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"A soma das listas é :"</span><span class="p">,</span> <span class="n">lista_concatenada</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15175,10 +15181,10 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">lista1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mf">0.55</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Lista sem ordenação : &quot;</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Lista sem ordenação : "</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
 
 <span class="n">lista1</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Lista ordenada : &quot;</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Lista ordenada : "</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15207,10 +15213,10 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">lista1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mf">0.55</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Lista sem ordenação : &quot;</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Lista sem ordenação : "</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
 
 <span class="n">lista1</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">reverse</span> <span class="o">=</span>  <span class="kc">True</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Lista ordenada : &quot;</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Lista ordenada : "</span><span class="p">,</span> <span class="n">lista1</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15330,7 +15336,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chave1&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;chave2&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;chave3&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;ch4&quot;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"chave1"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">"chave2"</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"chave3"</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">"ch4"</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">dic1</span><span class="p">)</span>
 </pre></div>
 
@@ -15359,7 +15365,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span><span class="p">[</span><span class="s2">&quot;Nova chave&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Novo valor&quot;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span><span class="p">[</span><span class="s2">"Nova chave"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Novo valor"</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">dic1</span><span class="p">)</span>
 </pre></div>
 
@@ -15416,8 +15422,8 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">dic1</span><span class="p">[</span><span class="s2">&quot;chave1&quot;</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">dic1</span><span class="p">[</span><span class="s2">&quot;chave2&quot;</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">dic1</span><span class="p">[</span><span class="s2">"chave1"</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dic1</span><span class="p">[</span><span class="s2">"chave2"</span><span class="p">])</span>
 </pre></div>
 
      </div>
@@ -15432,7 +15438,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Ainda, podemos acessar as propriedades dos elementos aninhados dentro das chaves. Por exemplo, inserindo um novo elemento na lista armazenada com a chave "lista":</p>
+<p>Ainda, podemos acessar as propriedades dos elementos aninhados dentro das chaves. Por exemplo, inserindo um novo elemento na lista armazenada com a chave &quot;lista&quot;:</p>
 
 </div>
 </div>
@@ -15445,8 +15451,8 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chave1&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;chave2&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;chave3&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;lista&quot;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
-<span class="n">dic1</span><span class="p">[</span><span class="s2">&quot;lista&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"chave1"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">"chave2"</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"chave3"</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">"lista"</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
+<span class="n">dic1</span><span class="p">[</span><span class="s2">"lista"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">dic1</span><span class="p">)</span>
 </pre></div>
 
@@ -15462,7 +15468,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Se tertarmos acessar uma chave que não existe, um erro será emitido:</p>
+<p>Se tentarmos acessar uma chave que não existe, um erro será emitido:</p>
 
 </div>
 </div>
@@ -15475,7 +15481,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span><span class="p">[</span><span class="s2">&quot;chave_inexistente&quot;</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span><span class="p">[</span><span class="s2">"chave_inexistente"</span><span class="p">]</span>
 </pre></div>
 
      </div>
@@ -15503,11 +15509,11 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chave1&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;chave2&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;chave3&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;lista&quot;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
-<span class="k">if</span> <span class="s2">&quot;chave_inexistente&quot;</span> <span class="ow">in</span> <span class="n">dic1</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">dic1</span><span class="p">[</span><span class="s2">&quot;chave_inexistente&quot;</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"chave1"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">"chave2"</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"chave3"</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">"lista"</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
+<span class="k">if</span> <span class="s2">"chave_inexistente"</span> <span class="ow">in</span> <span class="n">dic1</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dic1</span><span class="p">[</span><span class="s2">"chave_inexistente"</span><span class="p">])</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Chave não existe&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Chave não existe"</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15535,10 +15541,10 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chave1&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;chave2&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;chave3&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;lista&quot;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Antes da remoção : &quot;</span><span class="p">,</span> <span class="n">dic1</span><span class="p">)</span>
-<span class="k">del</span> <span class="n">dic1</span><span class="p">[</span><span class="s2">&quot;chave1&quot;</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Após a remoção da chave1 : &quot;</span><span class="p">,</span> <span class="n">dic1</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"chave1"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">"chave2"</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"chave3"</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">"lista"</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Antes da remoção : "</span><span class="p">,</span> <span class="n">dic1</span><span class="p">)</span>
+<span class="k">del</span> <span class="n">dic1</span><span class="p">[</span><span class="s2">"chave1"</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Após a remoção da chave1 : "</span><span class="p">,</span> <span class="n">dic1</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15566,7 +15572,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chave1&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;chave2&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;chave3&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;lista&quot;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"chave1"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">"chave2"</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"chave3"</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">"lista"</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
 
 <span class="k">for</span> <span class="n">chave</span> <span class="ow">in</span> <span class="n">dic1</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">chave</span><span class="p">)</span>
@@ -15588,7 +15594,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chave1&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;chave2&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;chave3&quot;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;lista&quot;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dic1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"chave1"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s2">"chave2"</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"chave3"</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s2">"lista"</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]}</span>
 
 <span class="c1"># Podemos ainda capturar os iteradores transformando-os em listas:</span>
 <span class="n">lista_de_chaves</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dic1</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -15621,7 +15627,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lista_de_chaves</span>  <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;chave1&quot;</span><span class="p">,</span><span class="s2">&quot;chave2&quot;</span><span class="p">,</span> <span class="s2">&quot;chave3&quot;</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lista_de_chaves</span>  <span class="o">=</span> <span class="p">[</span><span class="s2">"chave1"</span><span class="p">,</span><span class="s2">"chave2"</span><span class="p">,</span> <span class="s2">"chave3"</span><span class="p">]</span>
 <span class="n">lista_de_valores</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
 
 <span class="n">novo_dicionario</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">lista_de_chaves</span><span class="p">,</span><span class="n">lista_de_valores</span><span class="p">))</span>
@@ -15660,7 +15666,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
     <span class="k">if</span> <span class="n">condition</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
 </pre></div>
-<p>Por exemplo, dad uma lista de strings, poderiamos filtrar, eliminado aquelas de tamanho 2 ou menores, e também converter as strings para letras maiúsculas assim:</p>
+<p>Por exemplo, dada uma lista de strings, poderiamos filtrar, eliminado aquelas de tamanho 2 ou menores, e também converter as strings para letras maiúsculas assim:</p>
 
 </div>
 </div>
@@ -15673,7 +15679,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">strings</span>    <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;as&#39;</span><span class="p">,</span><span class="s1">&#39;bat&#39;</span><span class="p">,</span><span class="s1">&#39;car&#39;</span><span class="p">,</span><span class="s1">&#39;dove&#39;</span><span class="p">,</span><span class="s1">&#39;python&#39;</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">strings</span>    <span class="o">=</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'as'</span><span class="p">,</span><span class="s1">'bat'</span><span class="p">,</span><span class="s1">'car'</span><span class="p">,</span><span class="s1">'dove'</span><span class="p">,</span><span class="s1">'python'</span><span class="p">]</span>
 <span class="n">nova_lista</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">strings</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">nova_lista</span><span class="p">)</span>
 </pre></div>
@@ -15838,7 +15844,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
         <span class="k">if</span><span class="p">(</span><span class="n">matriz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
             <span class="n">lista_valores_negativos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matriz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;O valores negativos da lista são: &quot;</span><span class="p">,</span> <span class="n">lista_valores_negativos</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"O valores negativos da lista são: "</span><span class="p">,</span> <span class="n">lista_valores_negativos</span><span class="p">)</span>
           
 </pre></div>
 
@@ -15874,7 +15880,7 @@ Input <span class="ansi-green-intense-fg ansi-bold">In [4]</span>, in <span clas
 <span class="n">lista_valores_negativos</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">linhas</span> <span class="ow">in</span> <span class="n">matriz</span><span class="p">:</span>
     <span class="n">v_negativos_linha</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">linhas</span> <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># esta lista é apagada no fim do laço</span>
-    <span class="n">lista_valores_negativos</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">v_negativos_linha</span><span class="p">)</span> <span class="c1"># por isto extendemos a lista &#39;lista_valores_negativos&#39;</span>
+    <span class="n">lista_valores_negativos</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">v_negativos_linha</span><span class="p">)</span> <span class="c1"># por isto extendemos a lista 'lista_valores_negativos'</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">lista_valores_negativos</span><span class="p">)</span>
 </pre></div>
@@ -15939,58 +15945,59 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <div style="background-color:gray">
     <h1 style = "text-align:center; color:white"> Exercícios I</h1>
-</div><ol>
+</div>
+<ol>
 <li><p>Crie uma lista com os elementos <code>[10,20,30,1,-1,50,800,500,-600,800,65,78,52]</code>, transforme a lista em uma tupla e imprima o número de elementos e o maior elemento da mesma.</p>
 </li>
 <li><p>Considerando a tupla criada no exemplo anterior. Você deseja armazenar os 4 primeiros valores em 4 variáveis (a,b,c,d), e o resto não te serve para nada. Crie um código que implemente este desempacotamento de variáveis.</p>
 </li>
-<li>Escreva um código que leia 5 valores digitados pelo usuário e salve-os em uma tupla chamanda T. Imprima o menor valor digitado.</li>
-<li>Crie uma lista com a tupla T gerada no exercicio anterior, porém com os elementos na ordem inversa.</li>
-<li>Crie as seguintes listas:
-<code>A = [[1,2,3],[4,5,6],[7,8,9]]</code>
-<code>B = [[-1,2,0],[8,5,6],[10,8,9]]</code><ol>
-<li>Calcule A + B.</li>
-<li>Calcule A - B.</li>
-<li>Calcule 3 * A.</li>
-<li>Calcule a soma da diagonal principal de A e de B e realize a soma das duas.</li>
-<li>Troque a linha 0 pela linha 2 da matriz A.</li>
-<li>Multiplique a linha 2 da Matriz B por 3.</li>
-</ol>
+<li><p>Escreva um código que leia 5 valores digitados pelo usuário e salve-os em uma tupla chamanda T. Imprima o menor valor digitado.</p>
 </li>
-<li>Crie uma lista com os primeiros 70 números da sequência de Fibonacci. Os primeiros número são <code>1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377</code>.</li>
-<li>Calcule a soma dos 70 primeiros números da sequência de Fibonacci.</li>
-<li>Crie uma lista (usando <strong>for</strong> e <strong>list comprehension</strong>) contendo somente os números pares da sequência de Fibonacci com 70 elementos.</li>
-<li>Considere as seguintes sequências matemáticas, e para cada uma delas escreva um algoritmo que armazene os elementos em uma lista usando um laço <strong>for</strong> e a <strong>list comprehension</strong><ol>
-<li>$\{ n\},n = 1, ..., 100$</li>
-<li>$ \bigg\{ \dfrac{n}{n+1} \bigg\}, n=1,...100 = \bigg\{ \dfrac{1}{2}, \dfrac{2}{3},\dfrac{3}{4},... \bigg\} $</li>
-<li>$ \bigg\{ \dfrac{(-1)^n (n + 1)}{3^n} \bigg\}, n=1,...100 = \bigg\{-\dfrac{2}{3}, \dfrac{3}{9},-\dfrac{4}{27},... \bigg\} $</li>
-</ol>
+<li><p>Crie uma lista com a tupla T gerada no exercicio anterior, porém com os elementos na ordem inversa.</p>
 </li>
-<li>Crie um dicionário em que as chaves são os elementos da série da letra A do ex. anterior, e os valores a série da letra B.</li>
-<li><p>Considere um banco de dados relativo as vendas de peças em uma fábrica. A Tabela abaixo mostra o tipo de peça e as vendas:</p>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAH0AAACICAYAAADK3+SPAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAhESURBVHhe7Z1NbuM8DIZzwwABepwiQJF7ZNU5RrubucMsuplFT9C1x/o1Sf20jBXLEfkCBL7Eki3yISVnMMPvMKnESaELlEIXKIUuUApdoBS6QCl0gVLoAqXQBUqhC5RCF6gNof+eLofDdCB2+vXpr/fU5/T6ZNZzmVcJ5df89DqPaCF/vxf8lK21PXTg8O8XE+jT9PrPf9FRn79ONgkvf/wXRn8ujRNToU/Tv9fpBIPqg+wMV51LEG+w8vw9wrWbAYX7gPW5RAhJ6dfvLSZH9OF1uZ7x0X1/ITHA9yzOmw0l40rtBzr877Ddergu+D4JMuNCQNbtHHSLh2vIrcc/J8DJXQvzwj1DUvsYmPWGJMU7DX6e84sePbdrN9s7Dlb4bBz1AYDJQoWq4lboJPDFhFyuwXFxfR5scg+rTOKH77wh6OY7D76lur/IOSdDAlAzAHOBCgr3zCcOWwASuhc6dhbLJsSPoS9g7Vg4z4g+syH8vts7UBkY3uqQSKBWQ4/Pms9e+MwEHtAPoC8+gxjU5iGFxC48/wbtBjoOAgaNYZYCF4KzBnp4Fg1yZT1VeKGac2c6jEcYF+aRWBUT4jbtB7pRCIo1/OKCtn9Q9fD705MDtio4oTqT5AlJ5Sw+49uKBfPI2ztMsMO8dnSfuA5vtbgxtSH0tVqqYalA1S16IOhOtjoaZr1EPQ50sPW3Otuk6uEqXbVeCl2gFLpAKXSBUugCpdAFigU9/umQ2u6MI9bor68vtZ0aRwp9EONIoQ9iHCn0QYwjhT6IcaTQBzGOFPogxpFCH8Q4ag/9/TwdDsfp+hd///ac+0MFOu5tOodrp+v0AeZ/XI9x3vkdzvH29zodD+fpjX6/hdlnB5+MwXWUfWppHDWG/jFdT8fp/HycjtcPdM1Cf35D31mQMRBm7iHOQ+NtIvlA2gCTZIlB7wTdrC8LtOJTY+OoLXQTfON8puqyDqNxpiIATADaJkeciwMZd5b39JlbGV4ftLJP6dh1xlFT6MZ5mNVwG/620mmi2M8uYGYu3Dm+T6Btza4nbu3A74pPcH4L46ghdLe1o6wGYGhgnIGA0CqIASKVPdu+oBd2HhOHok/+c0PjqB1061AZKgaVgkyggQCZuXuudGzAt4pP6bx1xlEz6DkQEFZy3QYAHgE3nunBdgbd+TX0me5+ltCfUvDMziUFOtMJTDQeBqtULd2g18BWfGpsHLWBXspgUM15h12yLFXrPtujgfwEsgnir9Hkstaz0r2fbn00Ics+tTSOGr7IqfU0jhT6IMaRQh/EOFLogxhHCn0Q40ihD2IcKfRBjCOFPohxpNAHMY5Y0FVjSKELlEIXKIUuUApdoBS6QCl0gVLoAtUeuu3smHZiLvdz9wOsQPNc0uobNs9FHSNRE+FO3SRp817UzLjsUy81hm6a9p6my8spadproZOerhZkDIRr+BvmofEWrA+kDXBIFhNQEGA4bkuZ52aBVnzqqLbQDRDjvAWTad1NHUbjDEBQ+QAgbgKMA4nlqmrrai83KS771FNNoRvnYVbD4H9b6TRRQEWbuRBysWLAnC1l1xO3duB3xaeeagjdbe0oqwEYGhhnICC0CmKA0srOQ6/tAPcUea71w8eh6JP/3EntoFuHylAxqAygSlWYuXXo7n7Z6t9cwLeKTz3VDHqu+iCs5LpPkuUIuPVMd+c4SqCucutzfg19pudfoOCZnUsKdKYTmGg8DBaqFpoAPVQDW/Gpo9pAL2UwqOa8w7RK3Wd7NJCfQDZB/DX8ouTHA6PJd3ehddDtu+xTLzV8kVM9ihS6QCl0gVLoAqXQBUqhC5RCFyiFLlAKXaBY0HP/nEZtH8aRQh/EOFLogxhHCn0Q40ihD2IcKfRBjCOFPohxpNAHMY4aQnfNb5e/wYL7tNresPFasJ/3US32hkV9WTv1hp0N+oc7VA/bG9YDhw1/SZPgXEPg9V2gzZwlcfD9tjP8XAMZrk9YF2jjZNVh1LkZBms2cE8b1DgXBxJZl07QOPGwlX1Kx64zjppA/0kG58agCqHAQEXD5DFWel6fSjdgz9PVPJtu7xWf8D3WG0fNoGcrD5gFFc62aCAgtApigNLKTqEv52a2F/xdzT87rAeCLfrkPzc0jjpVemaLrlQFTary8xyAbcGTLRz6VvEJ32O9cXTXM91stwFWAsoGAAIiwbvlTK9eu5e5Zy5+wDWUfcL3WG8ctYHuHUVQrYOLw7nqxGcwBobGw2ChaiFBvWMl1QwlJfK74lNj46gRdGMevD9b6W/wvMNuO14q032288kLmQ2sv1b+nd7jTHdm/cuuoexTS+OoIXS1nsaRQh/EOFLogxhHCn0Q40ihD2IcKfRBjCOFPohxpNAHMY4U+iDGEQu6agwpdIFS6AKl0AVKoQuUQhcohS5QCl2gmkG3vV/D3xDxBhv15q43+X+4BNn+rL06LLvGvzmf4LqtDdMQeFbS8Bd1a85cn7W+C7RXbMjbB3pxrbPMtb5dqlPdD7qHGKoyBx1XZ7mFtk2OOJe0+7bj5nl/elU6WQ9KShyDvejOlY4znkJHlU7Gw+DRavk+gbYV8gNVOjiuOu5EVHc902GG566jIJBtcYFOKmnW3qAbxbMbvouAxDWy6ybvKj109+09wMLXU5AJNBAwM3e/0GvbO1Ht2oa6I3Sf/f675LoNANwNbjzTg3pBT0AW1mfUa41EnSrdCZ2FtfFw6y9VS7eA5irdJ7NZN9jOczHoobue6dDBvMPuRWepikf9nY5f2GCVw3Xv4Tw3agZd9ThS6AKl0AVKoQuUQhcohS5QCl2gFLpAKXSBUugCpdDFaZr+A2eluVHP7As+AAAAAElFTkSuQmCC" alt="tabela.PNG"></p>
-<ol>
-<li>Coloque todas as informações em um dicionário.</li>
-<li>Crie um código que peça ao usuário o nome de uma peça e mostre uma mensagem referente ao número de vendas da peça.</li>
-<li>Se o usuário digitar um código de peça que não existe, uma mensagem deve alertar o usuário que a peça não existe.</li>
-<li>Ainda, se a peça não existir, o programa deve perguntar ao usuário se ele gostaria de criar um novo cadastro; se a resposta for "não" o programa é finalizado, caso contrário ele deve pedir ao usuário para digitar o código e a quantidade vendida, inserir os dados na estrutura, e imprimir todos os códigos com as vendas.</li>
-</ol>
+<li><p>Crie as seguintes listas:</p>
 </li>
+</ol>
+<p><code>A = [[1,2,3],[4,5,6],[7,8,9]]</code>
+<code>B = [[-1,2,0],[8,5,6],[10,8,9]]</code>
+    1. Calcule A + B.
+    2. Calcule A - B.
+    3. Calcule 3 * A.
+    4. Calcule a soma da diagonal principal de A e de B e realize a soma das duas.
+    5. Troque a linha 0 pela linha 2 da matriz A.
+    6. Multiplique a linha 2 da Matriz B por 3.
+6. Crie uma lista com os primeiros 70 números da sequência de Fibonacci. Os primeiros número são <code>1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377</code>.
+7. Calcule a soma dos 70 primeiros números da sequência de Fibonacci.
+8. Crie uma lista (usando <strong>for</strong> e <strong>list comprehension</strong>) contendo somente os números pares da sequência de Fibonacci com 70 elementos.
+9. Considere as seguintes sequências matemáticas, e para cada uma delas escreva um algoritmo que armazene os elementos em uma lista usando um laço <strong>for</strong> e a <strong>list comprehension</strong>
+    1. $\{ n\},n = 1, ..., 100$
+    2. $ \bigg\{ \dfrac{n}{n+1} \bigg\}, n=1,...100 = \bigg\{ \dfrac{1}{2}, \dfrac{2}{3},\dfrac{3}{4},... \bigg\} $
+    3. $ \bigg\{ \dfrac{(-1)^n (n + 1)}{3^n} \bigg\}, n=1,...100 = \bigg\{-\dfrac{2}{3}, \dfrac{3}{9},-\dfrac{4}{27},... \bigg\} $
+10. Crie um dicionário em que as chaves são os elementos da série da letra A do ex. anterior, e os valores a série da letra B.
+11. Considere um banco de dados relativo as vendas de peças em uma fábrica. A Tabela abaixo mostra o tipo de peça e as vendas:</p>
+<pre><code>![tabela.PNG](attachment:tabela.PNG)
+
+1. Coloque todas as informações em um dicionário.
+2. Crie um código que peça ao usuário o nome de uma peça e mostre uma mensagem referente ao número de vendas da peça.
+3. Se o usuário digitar um código de peça que não existe, uma mensagem deve alertar o usuário que a peça não existe.
+4. Ainda, se a peça não existir, o programa deve perguntar ao usuário se ele gostaria de criar um novo cadastro; se a resposta for &quot;não&quot; o programa é finalizado, caso contrário ele deve pedir ao usuário para digitar o código e a quantidade vendida, inserir os dados na estrutura, e imprimir todos os códigos com as vendas.
+</code></pre>
+<ol start="12">
 <li><p>Considere uma linha de produção que registra os problemas ocorridos em uma codificação numérica, cada número se refere a um erro. Os seguintes valores ocorreram em uma semana: <code>[1,2,1,1,4,5,3,6,5,5,8,7,4,5,2,2,2,9,6,3,5,8,7,4,7,4,4,7,4,1,4,5,2]</code>. Crie um algoritmo que calcule a frequência de ocorrência de cada erro, bem como a probabilidade de ocorrência do erro (a frequência/total de erros). Uma mensagem deve ser exibida avisando o usuário do erro que mais ocorre, e a sua probabilidade de ocorrência em uma semana.</p>
 </li>
 <li><p>Para cada uma das estruturas de dados abaixo, diga qual o seu tipo e acesse os elementos:</p>
 <ol>
-<li><code>ed1 = ["A","E","I","O","U"]</code></li>
-<li><code>ed2 = [("A","E"),("I","O","U"),("F",1,2)]</code></li>
-<li><code>ed3 = {"A":ed1, "B":ed2 , "C":ed3}</code></li>
-<li><code>ed4 = ([1,2,3],["a,b,s"], {"C1":[2,22,2], "C2":"C3"})</code></li>
+<li><code>ed1 = [&quot;A&quot;,&quot;E&quot;,&quot;I&quot;,&quot;O&quot;,&quot;U&quot;]</code></li>
+<li><code>ed2 = [(&quot;A&quot;,&quot;E&quot;),(&quot;I&quot;,&quot;O&quot;,&quot;U&quot;),(&quot;F&quot;,1,2)]</code></li>
+<li><code>ed3 = {&quot;A&quot;:ed1, &quot;B&quot;:ed2 , &quot;C&quot;:ed3}</code></li>
+<li><code>ed4 = ([1,2,3],[&quot;a,b,s&quot;], {&quot;C1&quot;:[2,22,2], &quot;C2&quot;:&quot;C3&quot;})</code></li>
 <li><code>ed5 = [ed3, ed4]</code></li>
 </ol>
 </li>
 <li><p>Ainda considerando as ED, o que será impresso com os seguintes acessos:</p>
 <ol>
-<li><code>ed5[0]["B"][1]</code></li>
-<li><code>ed4[2]["C2"]</code></li>
+<li><code>ed5[0][&quot;B&quot;][1]</code></li>
+<li><code>ed4[2][&quot;C2&quot;]</code></li>
 </ol>
 </li>
 </ol>
@@ -16005,7 +16012,7 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="3.2-Fun%C3%A7%C3%B5es">3.2 Fun&#231;&#245;es<a class="anchor-link" href="#3.2-Fun%C3%A7%C3%B5es">&#182;</a></h2><p>Funções são trechos de código reutilizáveis. Se você precisa executar uma parte do código diversas vezes, ele é um bom condidato a ser escrito como uma função. A sintaxe para a função exige a palavra reservada <code>def</code>, seguida do nome da função e parênteses. Dentro dos parênteses coloca-se os argumentos e logo após dois ppontos (lembre que em Python tudo que vem após dois pontos é um bloco, e portanto deve ser <em>indentado</em>. O código abaixo cria uma função que soma dois números.</p>
+<h2 id="3.2-Fun%C3%A7%C3%B5es">3.2 Fun&#231;&#245;es<a class="anchor-link" href="#3.2-Fun%C3%A7%C3%B5es">&#182;</a></h2><p>Funções são trechos de código reutilizáveis. Se você precisa executar uma parte do código diversas vezes, ele é um bom candidato a ser escrito como uma função. A sintaxe para a função exige a palavra reservada <code>def</code>, seguida do nome da função e parênteses. Dentro dos parênteses coloca-se os argumentos e logo após dois ppontos (lembre que em Python tudo que vem após dois pontos é um bloco, e portanto deve ser <em>indentado</em>. O código abaixo cria uma função que soma dois números.</p>
 
 </div>
 </div>
@@ -16020,7 +16027,7 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">soma</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="n">resultado</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A soma é : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resultado</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"A soma é : </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resultado</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -16081,8 +16088,8 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
     <span class="k">return</span> <span class="n">resultado</span>
 
 <span class="c1"># usando a função</span>
-<span class="n">resul</span> <span class="o">=</span> <span class="n">soma2</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Digite o primeiro valor : &quot;</span><span class="p">)),</span><span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Digite o segundo valor : &quot;</span><span class="p">)))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A soma é </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resul</span><span class="p">))</span>
+<span class="n">resul</span> <span class="o">=</span> <span class="n">soma2</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">"Digite o primeiro valor : "</span><span class="p">)),</span><span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">"Digite o segundo valor : "</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"A soma é </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resul</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -16133,7 +16140,7 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="3.2.2-Escopo-de-fun%C3%A7%C3%B5es">3.2.2 Escopo de fun&#231;&#245;es<a class="anchor-link" href="#3.2.2-Escopo-de-fun%C3%A7%C3%B5es">&#182;</a></h3><p>As variáveis declaradas nas funções "morrem" assim que a função termina. Ou seja, uma variável declarada em uma função não pode ser usada fora dela, e vice versa. O exemplo abaixo declara uma variável fora da função e tenta alterar o seu valor dentro dela.</p>
+<h3 id="3.2.2-Escopo-de-fun%C3%A7%C3%B5es">3.2.2 Escopo de fun&#231;&#245;es<a class="anchor-link" href="#3.2.2-Escopo-de-fun%C3%A7%C3%B5es">&#182;</a></h3><p>As variáveis declaradas nas funções &quot;morrem&quot; assim que a função termina. Ou seja, uma variável declarada em uma função não pode ser usada fora dela, e vice versa. O exemplo abaixo declara uma variável fora da função e tenta alterar o seu valor dentro dela.</p>
 
 </div>
 </div>
@@ -16202,7 +16209,7 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="3.2.3-Fun%C3%A7%C3%B5es-como-objetos">3.2.3 Fun&#231;&#245;es como objetos<a class="anchor-link" href="#3.2.3-Fun%C3%A7%C3%B5es-como-objetos">&#182;</a></h3><p>As funções (como tudo em Python) são objetos, o que quer  dizer que podemos atribuir funções à variáveis. Considere o código abaixo, que atribui a sunção <code>calculadora(a, b)</code> a uma variável chamada cálculo:</p>
+<h3 id="3.2.3-Fun%C3%A7%C3%B5es-como-objetos">3.2.3 Fun&#231;&#245;es como objetos<a class="anchor-link" href="#3.2.3-Fun%C3%A7%C3%B5es-como-objetos">&#182;</a></h3><p>As funções (como tudo em Python) são objetos, o que quer  dizer que podemos atribuir funções à variáveis. Considere o código abaixo, que atribui a função <code>calculadora(a, b)</code> a uma variável chamada cálculo:</p>
 
 </div>
 </div>
@@ -16250,10 +16257,10 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
 
 <span class="c1"># Usamos a função em uma determinada posição, passando os argumentos</span>
 
-<span class="c1">#Na posicao 0 está a &#39;soma&#39;</span>
+<span class="c1">#Na posicao 0 está a 'soma'</span>
 <span class="n">lista_de_funcoes</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span>
 
-<span class="c1">#Na posicao 0 está a &#39;soma&#39;</span>
+<span class="c1">#Na posicao 0 está a 'soma'</span>
 <span class="n">lista_de_funcoes</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span>
 </pre></div>
 
@@ -16283,7 +16290,7 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">calcula_integral_x2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
-    <span class="c1"># Calcula a integral da função x^2, de &#39;a&#39; a &#39;b&#39; com n intervalos</span>
+    <span class="c1"># Calcula a integral da função x^2, de 'a' a 'b' com n intervalos</span>
     <span class="n">passo</span> <span class="o">=</span>  <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">n</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">a</span>
     <span class="n">v_y</span> <span class="o">=</span> <span class="p">[]</span>
@@ -16300,12 +16307,12 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
 <span class="n">b</span> <span class="o">=</span> <span class="mf">3.0</span>
 <span class="n">integral</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span>  <span class="p">(</span><span class="mi">1</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A integral real é : &quot;</span><span class="p">,</span> <span class="n">integral</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A integral aproximada com 10 retangulos é : &quot;</span><span class="p">,</span> <span class="n">calcula_integral_x2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A integral aproximada com 10 retangulos é : &quot;</span><span class="p">,</span> <span class="n">calcula_integral_x2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A integral aproximada com 10 retangulos é : &quot;</span><span class="p">,</span> <span class="n">calcula_integral_x2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">1000</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A integral aproximada com 10 retangulos é : &quot;</span><span class="p">,</span> <span class="n">calcula_integral_x2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">10000</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A integral aproximada com 10 retangulos é : &quot;</span><span class="p">,</span> <span class="n">calcula_integral_x2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">100000</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"A integral real é : "</span><span class="p">,</span> <span class="n">integral</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"A integral aproximada com 10 retangulos é : "</span><span class="p">,</span> <span class="n">calcula_integral_x2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"A integral aproximada com 10 retangulos é : "</span><span class="p">,</span> <span class="n">calcula_integral_x2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"A integral aproximada com 10 retangulos é : "</span><span class="p">,</span> <span class="n">calcula_integral_x2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">1000</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"A integral aproximada com 10 retangulos é : "</span><span class="p">,</span> <span class="n">calcula_integral_x2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">10000</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"A integral aproximada com 10 retangulos é : "</span><span class="p">,</span> <span class="n">calcula_integral_x2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="mi">100000</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -16346,7 +16353,7 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">calcula_integral_generica</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
-    <span class="c1"># Calcula a integral da função x^2, de &#39;a&#39; a &#39;b&#39; com n intervalos</span>
+    <span class="c1"># Calcula a integral da função x^2, de 'a' a 'b' com n intervalos</span>
     <span class="n">passo</span> <span class="o">=</span>  <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">n</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">a</span>
     <span class="n">v_y</span> <span class="o">=</span> <span class="p">[]</span>
@@ -16367,8 +16374,8 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
 <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">x</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A integral aproximada de x2 com 10000 retangulos é : &quot;</span><span class="p">,</span> <span class="n">calcula_integral_generica</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="mi">10000</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A integral aproximada de f com 10000 retangulos é : &quot;</span><span class="p">,</span> <span class="n">calcula_integral_generica</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="mi">10000</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"A integral aproximada de x2 com 10000 retangulos é : "</span><span class="p">,</span> <span class="n">calcula_integral_generica</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="mi">10000</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"A integral aproximada de f com 10000 retangulos é : "</span><span class="p">,</span> <span class="n">calcula_integral_generica</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="mi">10000</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -16385,46 +16392,41 @@ primeiro colocar o valor que queremos avaliar, em seguida colocamos todos os la�
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <div style="background-color:gray">
     <h1 style = "text-align:center; color:white"> Exercícios II</h1>
-</div><ol>
-<li>Crie uma lista com os elementos <code>[10,20,30,1,-1,50,800,500,-600,800,65,78,52]</code>. Para cada uma das tarefas abaixo, crie uma função que receba uma lista e imprima o resultado (e aplique as funções à lista):
-<pre><code> 1.1. Realizar a soma dos elementos
- 1.2. Encontrar o maior elemento
- 1.3. Encontrar o menor elemento
- 1.4. Calcular a média</code></pre>
-</li>
-</ol>
+</div>
 <ol>
+<li><p>Crie uma lista com os elementos <code>[10,20,30,1,-1,50,800,500,-600,800,65,78,52]</code>. Para cada uma das tarefas abaixo, crie uma função que receba uma lista e imprima o resultado (e aplique as funções à lista):
+     1.1. Realizar a soma dos elementos
+     1.2. Encontrar o maior elemento
+     1.3. Encontrar o menor elemento
+     1.4. Calcular a média</p>
+</li>
 <li><p>Considerando as funções criadas acima, salve todas em uma lista chamada <code>lista_func</code>, e usando um laço <code>for</code> aplique todas as funções na lista de elementos acima.</p>
 </li>
-<li><p>Crie as seguintes tarefas como funções, que recebem uma lista de listas (matriz) numérica como argumento, e retornam a matriz com os valores alterados:</p>
-
-<pre><code> 3.1 multiplica_linha(l, p): multiplica a linha *l* pelo número *p*.
- 3.2 troca_linhas(l1,l2): troca as linhas *l1* por *l2*.
- 3.3 soma_linha_com_linha(l1,l2): altera os valores da linha 2, somando l1 (l2 = l2 + l1).
-</code></pre>
-<p>Use a matriz abaixo para realizar os testes nas funções criadas:
-<code>A = [[1,2,3],[4,5,6],[7,8,9]]</code></p>
+<li><p>Crie as seguintes tarefas como funções, que recebem uma lista de listas (matriz) numérica como argumento, e retornam a matriz com os valores alterados:
+     3.1 multiplica_linha(l, p): multiplica a linha <em>l</em> pelo número <em>p</em>.
+     3.2 troca_linhas(l1,l2): troca as linhas <em>l1</em> por <em>l2</em>.
+     3.3 soma_linha_com_linha(l1,l2): altera os valores da linha 2, somando l1 (l2 = l2 + l1).</p>
 </li>
-<li>Escreva uma função que calcule o fatorial de n (<code>fat(n)</code>).</li>
-<li>Crie funções (uma separada da outra) para as seguintes operações (as funções devem retornar o resultado) da operação:
-<pre><code> 5.1 soma(a,b): soma a e b.
- 5.2 subtracao(a,b): subtrai b de a.
- 5.3 multiplicacao(a, b): multiplica a por b.
- 5.4 divisao(a,b): divide a por b.
- 5.5 potenciacao(a,b): eleva a a potência de b
- 5.6 fat(n): calcule o fatorial de n.</code></pre>
-</li>
-<li>Crie um aplicativo que funcione como uma calculadora para o usuário: o programa mostra um 'menu' com as seguintes alternativas:
-<pre><code> a. soma(a,b): soma a e b.
- b. subtracao(a,b): subtrai b de a.
- c. multiplicacao(a, b): multiplica a por b.
- d. divisao(a,b): divide a por b.
- e. potenciacao(a,b): eleva a a potência de b
- f. fat(n): calcule o fatorial de n.
-</code></pre>
- E o usuário deve digitar uma letra. Dependendo da letra que o usuário digitar, uma das funções criadas é chamada (note que para cada função os argumentos devem também ser coletados pelo programa)</li>
-<li>Incremente a calculadora criada no exercício anterior, oferecendo ao usuário a possibilidade de refazer as contas ou sair do programa ao final de um cálculo. DICA: Use um laço <code>while</code> para controlar se o programa deve parar ou não, e mais um input do usuário ao final das cálculos que defina se ele vai sair ou não.     </li>
 </ol>
+<p>Use a matriz abaixo para realizar os testes nas funções criadas:
+<code>A = [[1,2,3],[4,5,6],[7,8,9]]</code>
+4. Escreva uma função que calcule o fatorial de n (<code>fat(n)</code>).
+5. Crie funções (uma separada da outra) para as seguintes operações (as funções devem retornar o resultado) da operação:
+        5.1 soma(a,b): soma a e b.
+        5.2 subtracao(a,b): subtrai b de a.
+        5.3 multiplicacao(a, b): multiplica a por b.
+        5.4 divisao(a,b): divide a por b.
+        5.5 potenciacao(a,b): eleva a a potência de b
+        5.6 fat(n): calcule o fatorial de n.
+6. Crie um aplicativo que funcione como uma calculadora para o usuário: o programa mostra um 'menu' com as seguintes alternativas:
+        a. soma(a,b): soma a e b.
+        b. subtracao(a,b): subtrai b de a.
+        c. multiplicacao(a, b): multiplica a por b.
+        d. divisao(a,b): divide a por b.
+        e. potenciacao(a,b): eleva a a potência de b
+        f. fat(n): calcule o fatorial de n.
+    E o usuário deve digitar uma letra. Dependendo da letra que o usuário digitar, uma das funções criadas é chamada (note que para cada função os argumentos devem também ser coletados pelo programa)
+7. Incremente a calculadora criada no exercício anterior, oferecendo ao usuário a possibilidade de refazer as contas ou sair do programa ao final de um cálculo. DICA: Use um laço <code>while</code> para controlar se o programa deve parar ou não, e mais um input do usuário ao final das cálculos que defina se ele vai sair ou não.</p>
 
 </div>
 </div>
