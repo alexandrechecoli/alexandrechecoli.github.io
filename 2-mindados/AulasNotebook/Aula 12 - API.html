@@ -14595,7 +14595,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span> <span class="k">as</span> <span class="nn">rq</span>
@@ -14622,7 +14622,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-OutputArea-child">
 
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[2]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[1]:</div>
 
 
 
@@ -14631,14 +14631,14 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <pre>{&#39;code&#39;: &#39;USD&#39;,
  &#39;codein&#39;: &#39;BRL&#39;,
  &#39;name&#39;: &#39;Dólar Americano/Real Brasileiro&#39;,
- &#39;high&#39;: &#39;5.3096&#39;,
- &#39;low&#39;: &#39;5.2459&#39;,
- &#39;varBid&#39;: &#39;0.0077&#39;,
- &#39;pctChange&#39;: &#39;0.15&#39;,
- &#39;bid&#39;: &#39;5.2541&#39;,
- &#39;ask&#39;: &#39;5.2553&#39;,
- &#39;timestamp&#39;: &#39;1663361997&#39;,
- &#39;create_date&#39;: &#39;2022-09-16 17:59:57&#39;}</pre>
+ &#39;high&#39;: &#39;5.1167&#39;,
+ &#39;low&#39;: &#39;5.1166&#39;,
+ &#39;varBid&#39;: &#39;0.0004&#39;,
+ &#39;pctChange&#39;: &#39;0.01&#39;,
+ &#39;bid&#39;: &#39;5.1162&#39;,
+ &#39;ask&#39;: &#39;5.1171&#39;,
+ &#39;timestamp&#39;: &#39;1675119247&#39;,
+ &#39;create_date&#39;: &#39;2023-01-30 19:54:07&#39;}</pre>
 </div>
 
 </div>
@@ -15075,6 +15075,65 @@ Date
 [85 rows x 6 columns]
 </pre>
 </div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Dados-do-banco-central">Dados do banco central<a class="anchor-link" href="#Dados-do-banco-central">&#182;</a></h2><p>Podemos acessar series temporais do banco central (<a href="https://www3.bcb.gov.br/sgspub/localizarseries/localizarSeries.do?method=prepararTelaLocalizarSeries">https://www3.bcb.gov.br/sgspub/localizarseries/localizarSeries.do?method=prepararTelaLocalizarSeries</a>). Para acessarmos a API referente a esses dados: (<a href="https://dadosabertos.bcb.gov.br/dataset/20542-saldo-da-carteira-de-credito-com-recursos-livres---total/resource/6e2b0c97-afab-4790-b8aa-b9542923cf88">https://dadosabertos.bcb.gov.br/dataset/20542-saldo-da-carteira-de-credito-com-recursos-livres---total/resource/6e2b0c97-afab-4790-b8aa-b9542923cf88</a>)</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[18]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span> 
+
+<span class="c1"># https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo_serie}/dados/ultimos/{N}?formato=json</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/500?formato=json&quot;</span> <span class="c1">#SELIC META</span>
+<span class="n">df</span>  <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;valor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;valor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[18]:</div>
+
+
+
+
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
+<pre>5.25</pre>
+</div>
+
 </div>
 
 </div>
