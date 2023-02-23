@@ -134,6 +134,11 @@ html,body
    text-align: center;
  }
 
+ .subsection-header
+ {
+   color: #333;
+   text-align: left;
+ }
 
  .main-image
  {
@@ -214,4 +219,12 @@ html,body
 
 .tour-btn {
   max-width: 19%;
+}
+
+.center-img
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+ margin-bottom: 50px;
 }
