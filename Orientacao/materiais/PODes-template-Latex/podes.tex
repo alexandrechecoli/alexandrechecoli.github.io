@@ -1,0 +1,204 @@
+\documentclass[a4paper,11pt,fleqn]{article}
+\usepackage{podes-template}
+
+%pacotes adicionais
+\usepackage[linesnumbered, algoruled, vlined, portuguese]{algorithm2e}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%título do artigo
+\title{TÍTULO DO ARTIGO1$^1$} 
+
+%define os autores
+\author{
+ \name{Primeiro Autor\authortag{a}\corresponding{autor@email.com}}, 
+ \name{Segundo Autor\authortag{b}} \\
+ \authortag{a}
+ \institute{Instituto, Departamento, Outro \\ Universidade, Cidade-UF, País}
+ \authortag{b}
+ \institute{Instituto, Departamento, Outro \\ Universidade, Cidade-UF, País}
+}
+
+\authorrunning{Cherri}
+
+
+\begin{document}
+
+
+\maketitle
+
+
+\begin{resumo}
+Este modelo resume as normas de formatação para os artigos a serem publicados na revista Pesquisa Operacional para o Desenvolvimento. O Resumo deve ter no máximo 150 palavras.
+\end{resumo}
+
+\begin{palavras}
+Primeira, Segunda, Terceira, Quarta.
+\end{palavras}
+
+\begin{abstract}
+This document presents the format for full papers to be published in the journal Pesquisa Operacional para o Desenvolvimento. The Abstract must not exceed 150 words.
+\end{abstract}
+
+\begin{keywords}
+First keyword, Second keyword, Third keyword, Last keyword. 
+\end{keywords}
+
+
+\newpage
+\thispagestyle{defaultPage}
+
+%começa na segunda página sempre
+\section{Introdução}
+
+A revista Pesquisa Operacional para o Desenvolvimento (ISSN: 1984-3534) publica artigos com foco em aplicações que sejam de qualquer subárea da Pesquisa Operacional. Isso também inclui tutoriais, revisões bibliográficas sobre tópicos de interesse e artigos sobre a história ou metodologia da Pesquisa Operacional. Os autores são convidados a ler a Política Editorial da revista antes da submissão.
+
+A primeira página do artigo deve ser constituída com as informações fornecidas durante o cadastro da submissão na plataforma online. Por isto, o nome e demais informações do autor que submete o artigo devem estar cadastradas na plataforma da revista, bem como dos outros autores.
+
+
+O nome/afiliação/e-mail dos autores devem ser informados conforme o local onde a pesquisa foi realizada. A avaliação é do tipo ``cega'', em que os revisores não são identificados, mas os autores precisam se identificar.
+
+O campo Resumo deve ser preenchido com o resumo, \textbf{de no máximo 150 palavras}, seguido por até 4 palavras-chave. A seguir, deve vir o Abstract em inglês e as keywords, traduzindo fielmente o Resumo e as palavras-chave. 
+
+O artigo deve utilizar páginas de tamanho \textbf{A4} (29,7 x 21,0 cm) com \textbf{margem superior de 3 cm, inferior de 2,5 cm e laterais de 3 cm}. Devem ser escritos em coluna única, com fonte Times New Roman 11. Os parágrafos devem ter recuo de 1 cm. O espaçamento entre linhas é simples. \underline{Artigos fora da formatação serão devolvidos aos autores}.
+
+A especificação para o tamanho das letras é: Título: 13, negrito, maiúscula. Autor(es): 11, maiúscula e minúscula. Afiliação: 10, itálico, maiúscula e minúscula. Títulos de resumos: 11, negrito, maiúscula. Textos de resumos: 11, normal. Palavras-chave: 11, negrito, maiúscula e minúscula. Títulos do artigo: 11, negrito, maiúscula e minúscula. Texto do artigo: 11, normal (texto) espaçamento simples. Título de Figuras, Algoritmos e Tabelas: 11, maiúscula e minúscula.
+    
+\section{Submissão do Texto Completo}
+
+Após cadastrar os dados iniciais do artigo, o autor é convidado a carregar para o sistema o arquivo do artigo com terminação \textbf{.docx} ou um arquivo \textbf{.zip} contendo todos os fontes no caso de se utilizar o \textit{template} em Latex. Deve acompanhá-lo no sistema o arquivo em formato \textbf{.pdf}. A primeira página do artigo deve conter o título coincidindo exatamente com o informado quando do cadastramento. Deve, também, incluir os resumos e palavras-chave, além das informações dos autores quando do cadastramento.
+
+
+Os autores também devem encaminhar uma Carta de Apresentação (com não mais do que uma página) destacando a relevância e as contribuições do presente artigo. A carta deve conter as informações do autor para correspondência, que inclui sua instituição, endereço, telefone e e-mail. 
+
+O artigo será disponibilizado para a avaliação por revisores. As páginas do texto não devem vir numeradas, tanto no caso de arquivo enviado quando da submissão, quanto no caso do arquivo com a versão final do artigo aceito. A numeração será feita posteriormente para o conjunto de todos os artigos. \textbf{Cabeçalhos e rodapés não devem ser alterados, a não ser para colocar as informações do autor para correspondência na primeira página.}
+
+\subsection{Instruções para o Artigo}
+
+O artigo deve ter \textbf{no máximo 25 páginas}, incluídos neste limite: a primeira página com o resumo, o texto, as tabelas, os gráficos, os algoritmos, as equações, os agradecimentos, as referências e os anexos/apêndices. Todos esses elementos devem estar contidos no arquivo do artigo, não devendo ser enviados separadamente no sistema de submissão. 
+
+Uma figura que for citada no texto \textbf{deve conter a fonte quando não é de autoria própria ou quando adaptada}. O mesmo se aplica para tabelas e algoritmos. As figuras devem ter qualidade superior a 150 DPI. Veja um exemplo na Figura \ref{fig1}. 
+
+\begin{figure}[h!]
+\centering
+\caption{Gráficos, figuras, fotos. \label{fig1}}
+\fbox{
+\includegraphics[scale=0.8]{figs/fig1}
+}{\\ Fonte: \url{http://www.podesenvolvimento.org.br.}}
+\end{figure}
+
+A Tabela \ref{tab1} é um exemplo de tabela. As tabelas (algoritmos e figuras também) não podem ser quebradas, isto é, devem ser organizadas integralmente em uma página. Tabelas que ocupem mais de uma página devem ser organizadas em mais tabelas ou repetir o cabeçalho nas partes da tabela que ocupem as páginas seguintes.
+
+\begin{table}[h!]
+\centering
+\caption{Uso da ciência para o ensino. \label{tab1}}
+\begin{tabular}{|c|c|c|} \hline
+\textbf{Biologia} & \textbf{Artes} & \textbf{História} \\ \hline
+2014 & 2015 & 2016 \\ \hline
+2014 & 2015 & 2016 \\ \hline
+2014 & 2015 & 2016 \\ \hline
+\end{tabular}
+{\\ Fonte: \citet{Doe2012}.}
+\end{table}
+
+As equações devem vir numeradas em ordem sequencial no texto. Por exemplo, uma integral dupla é exemplificada em \ref{eq1}.
+
+\begin{equation}
+\label{eq1}
+\iint_R \cos(x) dR
+\end{equation}
+
+Um algoritmo está descrito no Algoritmo \ref{alg1}. As linhas devem vir numeradas e as palavras reservadas devem vir em negrito. O algoritmo deve ficar dentro de um quadro.
+
+\begin{algorithm}[h!]
+\caption{Calcula a soma de dois inteiros. \label{alg1}}
+\Entrada{números $a$ e $b$}
+\Saida{soma dos números ou zero}
+$soma \gets 0$\;
+$soma \gets a+b$\;
+\Se{$soma < 0$}
+{
+\Retorna{$soma$}\;
+}
+\Retorna{$soma$}\;
+\end{algorithm}
+
+Exemplo de como escrever um modelo de programação inteira é dado logo em seguida. No caso do problema da mochila 0-1, deseja-se selecionar um subconjunto de itens de máximo valor respeitando o limite de capacidade da mochila. Para tanto, definem-se os conjuntos, parâmetros e variáveis do problema, bem como o modelo adiante.
+
+O conjunto é:
+\begin{itemize}
+\item $I$: conjunto de itens disponíveis.
+\end{itemize}
+
+Os parâmetros de entrada:
+\begin{itemize}
+\item $W$: capacidade da mochila;
+\item $n$: quantidade de itens no conjunto $I$;
+\item $v_i$: valor associado ao item $i \in I$;
+\item $w_i$: peso associado ao item $i \in I$.
+\end{itemize}
+
+As variáveis de decisão são definidas como:
+\begin{align*}
+x_{i} = \left\{
+\begin{tabular}{ll}
+1, & se o item $i$ é carregado \\
+0, & caso contrário.
+\end{tabular}
+\right.
+\end{align*}
+
+O modelo de programação linear inteira para o problema da mochila 0-1 está descrito em \eqref{fo}-\eqref{r2}, a saber:
+
+
+\begin{equation}
+\label{fo}
+\textnormal{Maximizar} ~\sum_{i \in I} v_i x_i
+\end{equation}
+
+Sujeito a:
+
+
+\begin{equation}
+\label{r1}
+\sum_{i \in I} w_i x_i \leq W
+\end{equation}
+%
+\begin{equation}
+\label{r2}
+x_i \in \{0, 1\}
+\end{equation}
+
+A função objetivo \eqref{fo} busca pelo subconjunto de itens de máximo valor. A restrição \eqref{r1} impõe que os itens carregados respeitem a capacidade da mochila, ao passo que o domínio das variáveis de decisão está definido em \eqref{r2}.
+
+
+\section{Estilo das Citações}
+
+As citações no texto devem estar entre parênteses quando for citação indireta e conter os últimos sobrenomes dos autores, no caso de um ou dois autores, e o último sobrenome seguido de ``et al.'' no caso de mais de dois autores, seguidos do ano da publicação, como por exemplo, \citep{ana12}, \citep{Gates2003,Feroz2007}, \citep{Pele2004} e \citep{Silva1999}.
+
+Na citação direta, tem-se: \citet{Doe2012}, \citet{Fantucci2001}, \citet{Silva1999} e \citet{Smith2002}.
+As referências no final do texto devem estar em ordem alfabética do último sobrenome do primeiro autor. 
+
+
+\begin{agradecimentos}
+Os autores agradecem o apoio da Sociedade Brasileira de Pesquisa Operacional (SOBRAPO). Os agradecimentos não devem ultrapassar 05 linhas de texto. 
+\end{agradecimentos}
+
+
+\bibliographystyle{podes-bibstyle} 
+\bibliography{referencia}
+
+
+\section*{Anexos e Apêndices (opcionais)}
+
+Anexos e apêndices são materiais complementares ao texto que só devem ser incluídos quando forem imprescindíveis à compreensão deste.
+
+APÊNDICES são textos elaborados pelo autor a fim de complementar sua argumentação.
+
+ANEXOS são os documentos não elaborados pelo autor, que servem de fundamentação, comprovação ou ilustração, como mapas, leis, estatutos, etc.
+
+Os anexos devem aparecer após as referências, e os apêndices, após os anexos.
+
+
+\end{document}

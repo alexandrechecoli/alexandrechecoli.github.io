@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99d (TeX Live 2016/MacPorts 2016_4)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: podes.aux
+The style file: podes-bibstyle.bst
+Database file #1: referencia.bib
+You've used 8 entries,
+            2614 wiz_defined-function locations,
+            638 strings with 5810 characters,
+and the built_in function-call counts, 3299 in all, are:
+= -- 343
+> -- 126
+< -- 11
++ -- 47
+- -- 38
+* -- 229
+:= -- 561
+add.period$ -- 27
+call.type$ -- 8
+change.case$ -- 41
+chr.to.int$ -- 8
+cite$ -- 8
+duplicate$ -- 156
+empty$ -- 250
+format.name$ -- 50
+if$ -- 698
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 5
+newline$ -- 45
+num.names$ -- 34
+pop$ -- 64
+preamble$ -- 1
+purify$ -- 36
+quote$ -- 0
+skip$ -- 123
+stack$ -- 0
+substring$ -- 120
+swap$ -- 28
+text.length$ -- 4
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 83
+warning$ -- 0
+while$ -- 30
+width$ -- 0
+write$ -- 123

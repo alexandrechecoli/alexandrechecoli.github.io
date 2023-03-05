@@ -1,0 +1,54 @@
+\vspace{5mm}\begin{thebibliography}{8}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{{\tt #1}}\fi
+
+\bibitem[Anna(2012)]{ana12}
+Anna, A.
+\newblock Artigo em conferência.
+\newblock In: {\em Anais do XXVIII Simpósio Brasileiro de Pesquisa
+  Operacional}. Rio de Janeiro. SOBRAPO, 2012. p. 123--134.
+
+\bibitem[Doe(2012)]{Doe2012}
+Doe, A.
+\newblock {\em Informação da web page}, 2012. Disponível em:
+  \url{http://aiweb.techfak.uni-bielefeld.de/}.
+\newblock Acesso em: 02/01/2016.
+
+\bibitem[Fantucci(2001)]{Fantucci2001}
+Fantucci, I.
+\newblock {\em Contribuição do alerta, da atenção, da intenção e da
+  expectativa temporal para o desempenho de humanos em tarefas de tempo de
+  reação}.
+\newblock 130p. Tese de Doutorado. Instituto de Psicologia, Universidade de
+  São Paulo, São Paulo-SP, 2001.
+
+\bibitem[Feroz(2007)]{Feroz2007}
+Feroz, A.
+\newblock {\em Contribuição do tempo de reação}.
+\newblock 100p. Dissertação de Mestrado. Instituto de Ciências e Tecnologia,
+  Universidade da Vida, Brasília-DF, 2007.
+
+\bibitem[Gates(2003)]{Gates2003}
+Gates, B.
+\newblock {\em Um Livro Muito Bom}. Rio de Janeiro: Editora Local, 2003.
+
+\bibitem[Pelé e Romário(2004)]{Pele2004}
+Pelé, E.~N. e Romário, R.~R.
+\newblock Exemplo de artigo em livro.
+\newblock In: Souza, C.~D. e Santos, E.~F. (ee.), {\em Coletânea de Artigos},
+  cap. ~10, p. 266--290. Nova Iorque: Editora Local, 2004.
+
+\bibitem[Silva et~al.(1999)Silva, Souza, e Santos]{Silva1999}
+Silva, A.~B., Souza, C.~D., e Santos, E.~F.
+\newblock {\em Título de um relatório técnico}.
+\newblock  Relatórios de Pesquisa em Engenharia de Produção 4, Universidade
+  Z, 1999.
+
+\bibitem[Smith e Jones(2002)]{Smith2002}
+Smith, S. e Jones, J.
+\newblock A paper on operations research.
+\newblock {\em Pesquisa Operacional para o Desenvolvimento}, v. 32, n. 5, p.
+  12--25, 2002.
+
+\end{thebibliography}
