@@ -11,6 +11,7 @@
         
         <script src="libs/p5.min.js"></script>
         <script src="sketch.js"></script>
+        <link rel="stylesheet" href="/sty/tabela.css">
  
     </head>
     <body>
@@ -38,8 +39,75 @@
 
         <section class = "content-section container">
             <h2 class = "section-header">PESQUISA</h2>
-
-            <a>Com o tempo atualizarei...</a>
+            <p>
+                Meus interesses de pesquisa incluem métodos de resolução exatos e heurísticos para problemas de otimização, mineração de dados e de processos.
+                Tenho experiência com problemas de logística (roteirização e carregamento) e um pouco de scheduling de produtos multi níveis.
+            </p>
+            <p>
+                Abaixo segue uma lista com as minhas produções (incluindo tese e dissertação).
+            </p>
+            <table id="artigos">
+                <thead>
+                    <tr>
+                        <th>Tipo de documento</th>
+                        <th>Nome</th>
+                        <th>Data de publicação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Artigo</td>
+                        <td style = "color:rgb(80, 80, 214)">Avaliação da produção científica do problema de programação em sistemas flowshop permutacional</td>
+                        <td>2017</td>
+                    </tr>
+                    <tr>
+                        <td>Artigo</td>
+                        <td style = "color:rgb(80, 80, 214)">Maximização do valor associado à carga no empacotamento tridimensional</td>
+                        <td>2017</td>
+                    </tr>
+                    <tr>
+                        <td>Artigo</td>
+                        <td style = "color:rgb(80, 80, 214)">Modelo Matemático para Problemas Multiníveis de Produção em Máquinas Paralelas</td>
+                        <td>2017</td>
+                    </tr>
+                    <tr>
+                        <td>Artigo</td>
+                        <td style = "color:rgb(80, 80, 214)">Minimização do espaço ocioso no interior de contêineres: Uma abordagem exata</td>
+                        <td>2017</td>
+                    </tr>
+                    <tr>
+                        <td>Artigo</td>
+                        <td style = "color:rgb(80, 80, 214)">An extended model for remaining time prediction in manufacturing systems using process mining</td>
+                        <td>2020</td>
+                    </tr>
+                    <tr>
+                        <td>Artigo</td>
+                        <td style = "color:rgb(80, 80, 214)">Multi-product scheduling through process mining: bridging optimization and machine process intelligence</td>
+                        <td>2021</td>
+                    </tr>
+                    <tr>
+                        <td>Artigo</td>
+                        <td style = "color:rgb(80, 80, 214)">Discovery of path-attribute dependency in manufacturing environments: A process mining approach</td>
+                        <td>2021</td>
+                    </tr>
+                    <tr>
+                        <td>Artigo</td>
+                        <td style = "color:rgb(80, 80, 214)">Systematic Review of the Latest Scientific Publications on the Vehicle Routing Problem</td>
+                        <td>2023</td>
+                    </tr>
+                </tbody>
+            </table>
+        
+            <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+            <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
+        
+            <script>
+                $(document).ready(function(){
+                    $("#artigos").DataTable({
+                        "order": [[2, "desc"]]
+                    });
+                });
+            </script>
         </section>
 
         
