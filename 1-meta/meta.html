@@ -10,6 +10,7 @@
         
         <script src="../libs/p5.min.js"></script>
         <script src="../sketch.js"></script>
+        <link rel="stylesheet" href="/sty/tabela.css">
         <link rel="icon" href="../img/cedrus_logo_sem_fundo.png">
     </head>
     <body>
@@ -40,7 +41,7 @@
         <section class = "content-section container">
             <h2 class = "section-header">SOBRE</h2>
             <p>
-                Probelmas de otimização combinatória estão presentes no nosso dia a dia: como determinar a menor rota dentre um conjunto de pontos, 
+                Problemas de otimização combinatória estão presentes no nosso dia a dia: como determinar a menor rota dentre um conjunto de pontos, 
                 como alocar o maior número de caixas dentro de um caminhão, como alocar ordens de produção a máquinas de forma que o tempo total seja minimizado, 
                 etc...
             </p>
@@ -114,14 +115,130 @@
             </div> 
         </section>
 
-        <section class="content-section container">
-            <h2 class="section-header">COMPETIÇÃO</h2>
-            Quando desenvolvemos uma metaheurística...
+        <section class = "content-section container">
+          <h2 class = "section-header">REFERÊNCIAS</h2>
+          <p>
+              A tabela abaixo mostra alguns artigos científicos que podem ser usados como referência para 
+              o desenvolvimento dos métodos. Para obter o acesso aos mesmos, basta inserir a senha da disciplina, ou realizar
+              a busca nas bases de dados.
+            </p>
+          <div style = "margin: 3em 0em 3em 0em;font-size: 17px;">
+              <table id = "artigos">
+                  <thead>
+                      <tr>
+                          <th>Problema</th>
+                          <th>Nome</th>
+                          <th>Tema/Métodos</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td>NRP</td>
+                          <td style = "color:rgb(80, 80, 214)">
+                            <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/2004 -  A greedy-based neighborhood search approach to a nurse rostering problem - Bellanti, Carello, Tadei.pdf">2004-A greedy-based neighborhood search approach to a nurse rostering problem-Bellanti</a></td>
+                          <td>tabu search-iterated local search-greedy</td>
+                      </tr>
+                      <tr>
+                        <td>NRP</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/2004 - The State of the Art of Nurse Rostering - Burke, Causmaecker.pdf">
+                            2004-The State of the Art of Nurse Rostering-Burke</a></td>
+                        <td>review</td>
+                      </tr>
+                      <tr>
+                        <td>NRP</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/2017 - A hybrid Integer Programming and Variable Neighbourhood Search to solve nurse rostering problems - Rahimian, Akartunalı.pdf">
+                            2017-A hybrid Integer Programming and Variable Neighbourhood Search to solve nurse rostering problems-Rahimian</a></td>
+                        <td>VNS-integer programming</td>
+                      </tr>
+
+                      <tr>
+                        <td>TSP</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/2000 - An effective implementation of the Lin-Kernighan traveling salesman heuristic - Helsgaun LK.pdf">
+                            2000-An effective implementation of the Lin-Kernighan traveling salesman heuristic-Helsgaun LK</a></td>
+                        <td>local search-2OPT</td>
+                      </tr>
+
+                      <tr>
+                        <td>TSP</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/1992 - The traveling salesman problem an overview of exact and approximate algorithms - Laporte.pdf">
+                            1992-The traveling salesman problem an overview of exact and approximate algorithms-Laporte</a></td>
+                        <td>review</td>
+                      </tr>
+
+                      <tr>
+                        <td>TSP</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/2007- Implementation af an Effective Hybrid GA for Large-Scale Traveling salesman problems - nguyen.pdf">
+                            2007-Implementation af an Effective Hybrid GA for Large-Scale Traveling salesman problems-nguyen</a></td>
+                        <td>GA</td>
+                      </tr>
+
+                      <tr>
+                        <td>Resource Constrained Project Schduling</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/1999 - Resource-constrained project scheduling - Notation classification models and methods - Bruckner.pdf">
+                            1999-Resource-constrained project scheduling - Notation classification models and methods-Bruckner</a></td>
+                        <td>review</td>
+                      </tr>
+
+                      <tr>
+                        <td>Resource Constrained Project Schduling</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/2004 - LSSPER Solving the Resource-Constrained Project Scheduling Problem with Large Neighbourhood Search - Palpant.pdf">
+                            2004-LSSPER Solving the Resource-Constrained Project Scheduling Problem with Large Neighbourhood Search-Palpant</a></td>
+                        <td>local search-large neighborhood</td>
+                      </tr>
+
+                      <tr>
+                        <td>Resource Constrained Project Schduling</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/2016 - A filter-and-fan approach with adaptive neighborhood switching for resource-constrained project scheduling - He, Chen, Chen.pdf">
+                            2016-A filter-and-fan approach with adaptive neighborhood switching for resource-constrained project scheduling-Chen</a></td>
+                        <td>local search-multiple neighborhood</td>
+                      </tr>
+
+                      <tr>
+                        <td>Resource Constrained Project Schduling</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/2017 - Modelagem e Solução de Problemas de Sequenciamento em Projetos com Restrição de Recursos - Silva.pdf">
+                            2017 - Modelagem e Solução de Problemas de Sequenciamento em Projetos com Restrição de Recursos - Silva</a></td>
+                        <td>integer programming-glpk</td>
+                      </tr>
+
+                      <tr>
+                        <td>Bin Packing</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/2020 - Metaheuristic algorithms for one-dimensional bin-packing problems - A survey of recent advances and applications - Munien.pdf">
+                            2020-Metaheuristic algorithms for one-dimensional bin-packing problems:A survey of recent advances and applications-Munien</a></td>
+                        <td>review</td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
           
+      
+          <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+          <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
+      
+          <script>
+              $(document).ready(function(){
+                  $("#artigos").DataTable({
+                      "order": [[2, "desc"]]
+                  });
+              });
               
-        </section>
-
-
+              function ValidatePassword() 
+              {
+                var password = prompt("Por favor, insira a senha da disciplina para pesquisa os artigos:", "SENHA");
+                if (password == "meta123") {return true;}
+                return false;
+              }
+          </script>
+      </section>
 
         <footer class="main-footer">
             <div class = "container main-footer-container">
