@@ -1,0 +1,69 @@
+Considerando os artigos científicos da nossa área (engenharias), uma estrutura muito 
+comum deve conter as seguintes seções (claro que isso é sempre adaptado ao tema/preferências do auto). 
+
+ 
+0 Abstract/resumo 
+
+Esse é de fato o resumo de tudo que foi feito no trabalho, sempre está logo abaixo do título. 
+Como o abstract vai ter tudo, por óbvio ele só é escrito quando tudo estiver completo, ou seja, 
+é a última coisa a ser escrita. O objetivo do abstract é dar um contexto para o leitor, para que 
+ele possa ter uma noção de tudo que foi feito bem como dos resultados, deixando o leitor com 
+vontade de saber como os resultados foram atingidos. Seria a "clickbait" do trabalho. 
+
+ 
+
+1 Introdução 
+
+   A introdução vai localizar o leitor sobre a problemática do trabalho.  Nesta seção devemos 
+convencer o leitor de que realmente existe um problema que vale a pena ser pesquisado, e por esse
+ motivo o trabalho é de certa forma justificado.  Nesta seção não entramos nos detalhes da descrição 
+do problema em si, mas sim contextualizamos o mesmo em um escopo maior. Por exemplo, se vamos tratar 
+de um problema de alocação de enfermeiras, podemos começar a introdução citando dificuldades de 
+gerenciamento em um hospital. Em seguida passamos por gastos que podem ocorrer, chegando em decisões 
+concretas que o staff deve tomar, para só depois mencionarmos o problema. Da mesma forma um problema 
+de roteirização/carregamento: primeiro analisamos um contexto de logística, custos logísticos, ...até chegar no problema. 
+No fim da introdução mencionamos por cima como resolveremos o problema, e em seguida a estrutura do artigo, por exemplo: 
+"na próxima seção faremos a revisão de literatura,..." 
+  Para uma boa introdução, é imperativo que não existam cortes bruscos entre parágrafos, ou seja, tudo deve se conectar, 
+sempre partindo de um escopo mais amplo (o gerenciamento em hospitais, por exemplo) até chegar no problema de estuda. 
+Uma forma de se estruturar o "esqueleto" da introdução é pensar no argumento que você quer fazer, e em seguida em todos 
+os parágrafos que são necessários para desenvolver o argumento. O fim de cada parágrafo deve de alguma forma se conectar 
+com o começo do próximo. 
+
+ 
+
+2 Revisão de literatura 
+
+  Nesta seção escrevemos o estado atual da pesquisa no assunto que vamos tratar. 
+Contamos uma breve história do que outros pesquisadores já fizeram até o momento. 
+Não é necessário criar tudo do zero! A melhor forma de começarmos a escrever essa seção, 
+ainda mais quando não conhecemos muito do assunto, é selecionar um bom artigo 
+(de revista com alto fator de impacto) sobre o tema que estamos pesquisando, e criar com base 
+na revisão que o próprio artigo fez, pois com certeza todas as referências importantes estarão 
+lá presentes. O que precisamos fazer é só colocar artigos mais novos, por exemplo, se você usa 
+como referência um artigo de 2014, seria legal fazer uma pequena busca nas bases de dados
+ sobre novas pesquisa a partir de 2014 até a data atual, para que a revisão fique bem completa. 
+
+Também podemos colocar nesta seção a descrição do problema (o modelo matemático, se esse não for uma nova proposta). 
+
+ 
+
+3 Método proposto/ Solução/ ... 
+
+ 
+Aqui descrevemos o método que usaremos para resolver o problema. 
+Exemplo: Algoritmos para otimização, tratamentos de dados para mineração, etc... 
+
+4 Resultados 
+
+Após descrevermos o método, teremos que aplicá-lo em algum lugar 
+para validar a solução. Nesta seção mostramos resultados computacionais, 
+tabelas, gráficos, tempos de processamento, calibração de parâmetros, etc... 
+ 
+5 Conclusões 
+
+Na conclusão precisamos retomar tudo o que fizemos e 
+fechar com uma análise nossa. Reescrevemos brevemente a problemática 
+e o que fizemos para resolver. No fim damos o nosso parecer "critico",
+ podemos escrever dificuldades e possíveis caminhos para propostas futuras
+ de continuações de trabalhos. 
