@@ -10,7 +10,6 @@ function windowResized()
 {
   //resizeCanvas(windowWidth, windowHeight + 250);
   resizeCanvas(windowWidth, windowHeight );
-  console.log(windowWidth, windowHeight);
 }
 
 
