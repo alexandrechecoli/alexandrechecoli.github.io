@@ -438,8 +438,16 @@
         function ValidatePassword2() 
         {
           var password = prompt("Não tão rápido...insira a senha para continuar", "SENHA");
-          if (password == "mddm543131") {return true;}
-          return false;
+          if (password == "mddm543131")
+          {
+            return true;
+          }
+          else
+          {
+            window.alert("Senha incorreta, tente novamente.");
+            return false;
+          }
+          
         }
     </script>
 
