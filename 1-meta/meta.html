@@ -385,6 +385,31 @@
                         <td>genetic algorithm</td>
                       </tr>
 
+                      <tr>
+                        <td>Bin Packing</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/2010 - Application of Genetic Algorithm for the Bin Packing Problem with a new representation scheme - Mohamadi.pdf">
+                            2010-Application of Genetic Algorithm for the Bin Packing Problem with a new representation scheme-Mohamadi</a></td>
+                        <td>genetic algorithm-solution representation</td>
+                      </tr>
+
+                      <tr>
+                        <td>TSP-Scheduling</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/1994 - Genetic Algorithms and Random Keys for Sequencing and Optimization - Beam.pdf">
+                            1994-Genetic Algorithms and Random Keys for Sequencing and Optimization-Beam</a></td>
+                        <td>random keys-genetic algorithm</td>
+                      </tr>
+
+                      <tr>
+                        <td>Container Loading</td>
+                        <td style = "color:rgb(80, 80, 214)">
+                          <a onclick="return ValidatePassword();" style = "text-decoration: none;color:rgb(80, 80, 214)" target="_blank" href="/1-meta/Materiais/Artigos/2012 - A parallel multi-population biased random-key genetic algorithm for a container loading problem.pdf">
+                            2012-A parallel multi-population biased random-key genetic algorithm for a container loading problem</a></td>
+                        <td>random keys-genetic algorithm</td>
+                      </tr>
+
+
                   </tbody>
               </table>
           </div>
@@ -403,8 +428,15 @@
               function ValidatePassword() 
               {
                 var password = prompt("Por favor, insira a senha da disciplina para pesquisa os artigos:", "SENHA");
-                if (password == "meta123") {return true;}
-                return false;
+                if (password == "meta123")
+                {
+                  return true;
+                }else
+                {
+                  window.alert("Senha incorreta");
+                  return false;
+                }
+                
               }
           </script>
       </section>
