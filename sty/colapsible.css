@@ -7,7 +7,8 @@
     border: none;
     text-align: left;
     outline: none;
-    font-size: 15px;
+    font-size: 17px;
+    border-radius: 3px;
   }
   
   .active, .collapsible:hover {
@@ -32,5 +33,5 @@
     overflow: hidden;
     transition: max-height 0.2s ease-out;
     background-color: #f1f1f1;
-    margin-bottom: px;
+    margin-bottom: 5px;
   }
