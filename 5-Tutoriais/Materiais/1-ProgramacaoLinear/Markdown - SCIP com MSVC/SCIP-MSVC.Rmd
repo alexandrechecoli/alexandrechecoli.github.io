@@ -43,6 +43,8 @@ acesso ao processo de resolução dos problemas, bem como a informações detalh
 Para realizar o download do SCIP, acessar https://scipopt.org/index.php#download e baixar o arquivo **SCIPOptSuite-9.0.0-win64-VS15.exe** (pode mudar a versão com o tempo -  mostrado na imagem abaixo).
 
 
+
+
 <div class="bordered">
 ![Download SCIP](img/SCIP-download.png)
 </div>
