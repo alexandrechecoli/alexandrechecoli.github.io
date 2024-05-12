@@ -12,3 +12,8 @@ pre {
 pre code {
   white-space: inherit;
 }
+
+p,ul,ol,deails,summary
+{
+  font-size: 16px;
+}
