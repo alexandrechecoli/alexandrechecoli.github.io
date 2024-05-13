@@ -23,3 +23,11 @@ url-your-book-url-like-httpsbookdown.orgyihuibookdown
 simplex-fase-i
 exercicios
 sobre-este-material
+r-markdown
+including-plots
+tabela-de-transformação-primal-dual
+eooooo
+simplex-fase-i-1
+exercicios-1
+dualidade
+tabela-de-conversão-primal-dual

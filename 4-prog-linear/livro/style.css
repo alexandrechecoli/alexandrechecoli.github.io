@@ -17,3 +17,14 @@ p,ul,ol,deails,summary
 {
   font-size: 16px;
 }
+
+body
+{
+  text-align: justify
+}
+
+img{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

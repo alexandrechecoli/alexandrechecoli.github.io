@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Dualidade | Notas de aula Pesquisa Operacional</title>
+  <meta name="description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Dualidade | Notas de aula Pesquisa Operacional" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Dualidade | Notas de aula Pesquisa Operacional" />
+  
+  <meta name="twitter:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  
+
+<meta name="author" content="Alexandre Checoli Choueiri" />
+
+
+<meta name="date" content="2024-05-13" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Notas Pesquisa Operacional</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Simplex Fase I</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#exercicios"><i class="fa fa-check"></i><b>1.1</b> Exercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>2</b> Dualidade</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="dualidade.html"><a href="dualidade.html#tabela-de-conversão-primal-dual"><i class="fa fa-check"></i><b>2.1</b> Tabela de conversão primal-dual</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notas de aula Pesquisa Operacional</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="dualidade" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Dualidade<a href="dualidade.html#dualidade" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="tabela-de-conversão-primal-dual" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Tabela de conversão primal-dual<a href="dualidade.html#tabela-de-conversão-primal-dual" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Podemos usar a seguinte tabela para conversão de problemas primal-dual.</p>
+<p><img src="img/TabelaConversa.png" class="img" width="400" /></p>
+<p>Considerando o modelo primal escrito na seguinte forma:</p>
+<p><img src="img/Dual1.png" width="210" /></p>
+<p>Em que:</p>
+<span class="math display">\[\begin{cases}
+\text{1: max ou min} \\
+\text{2: $\geq$, $=$ ou $\leq$} \\
+\text{3: $\geq 0$,$\leq 0$ ou irrestrito}
+\end{cases}\]</span>
+<p>Mesmo sem usar a tabela já sabemos como ficam alguns termos do dual (sempre):</p>
+<p><img src="img/Dual2.png" width="210" /></p>
+<p>Para usar a tabela, usamos os valores do primal (1,2 e 3) que são conhecidos, para preencher os valores do dual desconhecidos (4,5,6). Usamos os seguintes passos:</p>
+<ol style="list-style-type: decimal">
+<li>Determine qual é a coluna do primal considerando se o problema é de min (primeira coluna) ou de max (segunda coluna).</li>
+<li>Para cada valor do primal na coluna selecionada, encontre os equivalentes duais na mesma linha da outra coluna.</li>
+</ol>
+<p><span style="color:blue">EXEMPLO 1</span>: Escreva o dual do seguinte PL:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min z = }            &amp; 6x_1 &amp; + 8x_2 \\
+                &amp; \text{Sujeito à}           &amp; 3x_1   &amp; + x_2 &amp;\geq 4\\
+                &amp;                            &amp; 5x_1   &amp; +  2x_2 &amp; \geq 7\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Temos que:</p>
+<span class="math display">\[\begin{alignat*}{4}
+               &amp; \text{max v = }            &amp; 4\pi_1 &amp; + 7\pi_2 \\
+               &amp; \text{Sujeito à}           &amp; 3\pi_1   &amp; + 5\pi_2 &amp;\leq 6\\
+               &amp;                            &amp; \pi_1   &amp; +  2\pi_2 &amp; \leq 8\\
+               &amp;                            &amp;  \pi_1 \geq 0  &amp; \quad \pi_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p><span style="color:blue">EXEMPLO 2</span>: Escreva o dual do seguinte PL (sapateiro):</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max z = }            &amp; 5x_1 &amp; + 2x_2 \\
+                &amp; \text{Sujeito à}           &amp; 10x_1   &amp; + 12x_2 &amp;\leq 60\\
+                &amp;                            &amp; 2x_1   &amp; +  x_2 &amp; \leq 6\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Temos que:</p>
+<span class="math display">\[\begin{alignat*}{4}
+               &amp; \text{min v = }            &amp; 60\pi_1 &amp; + 6\pi_2 \\
+               &amp; \text{Sujeito à}           &amp; 10\pi_1   &amp; + 2\pi_2 &amp;\geq 5\\
+               &amp;                            &amp; 12\pi_1   &amp; + \pi_2 &amp; \geq 2\\
+               &amp;                            &amp;  \pi_1 \geq 0  &amp; \quad \pi_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Você consegue pensar em alguma interpretação para o dual do problema do sapateiro? Crie uma situação que justifique o modelo dual (como o da nutricionista/vendedos de píluas).</p>
+<p>reposta:</p>
+<p>Podemos pensar na situação que alguém deseja contratar o sapateiro por uma hora. Como o sapateiro já tem um estoque de couro, esse estoque deve ser comprado também, ou seja, a pessoa que contrata o sapateiro precisa definir quanto pagar para ele por unidade de tempo, bem como por unidade de couro.</p>
+<p><span style="color:blue">EXEMPLO 3</span>: Escreva o dual do seguinte PL:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max z = }            &amp; 8x_1 &amp; + 3x_2 &amp; -2x_3 \\
+                &amp; \text{Sujeito à}           &amp; x_1  &amp; - 6x_2 &amp; +x_3 &amp;\geq 2\\
+                &amp;                            &amp; 5x_1   &amp; +  7x_2 &amp; &amp; = 4\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0 &amp; x_3 \geq 0
+\end{alignat*}\]</span>
+<p>Temos que:</p>
+<span class="math display">\[\begin{alignat*}{4}
+               &amp; \text{min v = }            &amp; 2\pi_1 &amp; + 4\pi_2 \\
+               &amp; \text{Sujeito à}           &amp; \pi_1   &amp; + 5 \pi_2 &amp;\geq 8\\
+               &amp;                            &amp; -6\pi_1   &amp; +  7\pi_2 &amp; \geq 3\\
+               &amp;                            &amp; \pi_1   &amp;       &amp;\geq -2\\
+               &amp;                            &amp;  \pi_1 \leq 0  &amp; \quad \pi_2 \quad \text{irrestrito}&amp;
+\end{alignat*}\]</span>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/index.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

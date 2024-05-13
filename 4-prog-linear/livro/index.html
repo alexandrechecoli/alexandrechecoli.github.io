@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-05-12" />
+<meta name="date" content="2024-05-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 
-<link rel="next" href="simplex-fase-i.html"/>
+<link rel="next" href="dualidade.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -73,17 +73,17 @@
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">A Minimal Book Example</a></li>
+<li><a href="./">Notas Pesquisa Operacional</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Sobre este material</a></li>
-<li class="chapter" data-level="2" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>2</b> Simplex Fase I</a>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Simplex Fase I</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios"><i class="fa fa-check"></i><b>2.1</b> Exercicios</a></li>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#exercicios"><i class="fa fa-check"></i><b>1.1</b> Exercicios</a></li>
 </ul></li>
-<li class="divider"></li>
-<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
-
+<li class="chapter" data-level="2" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>2</b> Dualidade</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="dualidade.html"><a href="dualidade.html#tabela-de-conversão-primal-dual"><i class="fa fa-check"></i><b>2.1</b> Tabela de conversão primal-dual</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -104,12 +104,479 @@
 <div id="header">
 <h1 class="title">Notas de aula Pesquisa Operacional</h1>
 <p class="author"><em>Alexandre Checoli Choueiri</em></p>
-<p class="date"><em>2024-05-12</em></p>
+<p class="date"><em>2024-05-13</em></p>
 </div>
-<div id="sobre-este-material" class="section level1 hasAnchor" number="1">
-<h1><span class="header-section-number">Chapter 1</span> Sobre este material<a href="index.html#sobre-este-material" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>This is a <em>sample</em> book written in <strong>Markdown</strong>. You can use anything that Pandoc’s Markdown supports; for example, a math equation <span class="math inline">\(a^2 + b^2 = c^2\)</span>.</p>
-
+<div id="simplex-fase-i" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Chapter 1</span> Simplex Fase I<a href="index.html#simplex-fase-i" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Notas sobre o algoritmo Simplex Fase I</p>
+<div id="exercicios" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> Exercicios<a href="index.html#exercicios" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Resolva os seguintes modelos de PL:</p>
+<p><span style="color:blue">EXERCICIO 1</span>:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max}                 &amp; x_1 &amp; + x_2 \\
+                &amp; \text{Sujeito à}           &amp; x_1   &amp; + x_2 &amp;\leq 10\\
+                &amp;                            &amp;       &amp;  \quad  x_2 &amp;   \geq 11\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Colocando na forma padrão:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min}           &amp; -x_1 &amp; -x_2  \\
+                &amp; \text{Sujeito à}           &amp; x_1   &amp; + x_2 &amp; + x_3 &amp;      &amp; = 10\\
+                &amp;                            &amp;       &amp; \quad x_2   &amp;       &amp; -x_4 &amp;  = 11\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Adicionando variáveis artificiais e trocando a função objetivo:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min}                 &amp;       &amp;             &amp;        &amp;      &amp; \bar{x}_5     &amp; + \bar{x}_6   &amp;  \\
+                &amp; \text{Sujeito à}           &amp; x_1   &amp; + x_2       &amp; + x_3  &amp;      &amp; \bar{x}_5     &amp;               &amp;\leq 10\\
+                &amp;                            &amp;       &amp; \quad x_2   &amp;        &amp; -x_4 &amp;               &amp;   \quad \bar{x}_6   &amp;\geq 11\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Colocando na forma tabular:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="right">X1</th>
+<th align="right">X2</th>
+<th align="right">X3</th>
+<th align="right">X4</th>
+<th align="right">X5</th>
+<th align="right">X6</th>
+<th align="right">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">??</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">??</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">11</td>
+</tr>
+</tbody>
+</table>
+<p>Atualizando a tabela, para colocar as variáveis artificiais na base:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(L_1 \leftarrow L_1 - L_2 - L_3\)</span></li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="right">X1</th>
+<th align="right">X2</th>
+<th align="right">X3</th>
+<th align="right">X4</th>
+<th align="right">X5</th>
+<th align="right">X6</th>
+<th align="right">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="right">-1</td>
+<td align="right">-2</td>
+<td align="right">-1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">-21</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_6\)</span></td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">11</td>
+</tr>
+</tbody>
+</table>
+<p>Selecionando <span class="math inline">\(x_2\)</span> para entrar na base e <span class="math inline">\(\bar{x}_5\)</span> para sair, atualizando a tabela com as operações:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(L_1 \leftarrow L_1 + 2L_2\)</span></li>
+<li><span class="math inline">\(L_3 \leftarrow L_3 - L_2\)</span></li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="right">X1</th>
+<th align="right">X2</th>
+<th align="right">X3</th>
+<th align="right">X4</th>
+<th align="right">X5</th>
+<th align="right">X6</th>
+<th align="right">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">-1</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_6\)</span></td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>Chegamos ao fim da Fase I e o valor de <span class="math inline">\(w &gt; 0\)</span>, portanto o problema original é infactível.</p>
+</summary>
+</details>
+<p><span style="color:blue">EXERCICIO 2</span>: O modelo do agricultor (fim da parte 2):</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max}                 &amp; 2x_1 &amp; + 3x_2 \\
+                &amp; \text{Sujeito à}           &amp; x_1   &amp; + x_2 &amp; = 3\\
+                &amp;                            &amp; x_1   &amp; +2x_2 &amp;   \leq 4\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Colocando na forma padrão:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min}           &amp; -2x_1 &amp; -3x_2  \\
+                &amp; \text{Sujeito à}           &amp; x_1   &amp; + x_2    &amp;        &amp; = 3\\
+                &amp;                            &amp; x_1   &amp; + 2x_2   &amp; + x_3  &amp; = 4\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Adicionando variáveis artificiais e trocando a função objetivo:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min}                 &amp;       &amp;          &amp;       &amp;                 \bar{x}_4  &amp; + \bar{x}_5  &amp; \\
+                &amp; \text{Sujeito à}           &amp; x_1   &amp; + x_2    &amp;        &amp; + \bar{x}_4 &amp;              &amp; = 3\\
+                &amp;                            &amp; x_1   &amp; + 2x_2   &amp; + x_3  &amp;             &amp;  + \bar{x}_5 &amp; = 4\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Colocando na forma tabular:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="right">X1</th>
+<th align="right">X2</th>
+<th align="right">X3</th>
+<th align="right">X4</th>
+<th align="right">X5</th>
+<th align="right">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">??</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">??</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+</tr>
+</tbody>
+</table>
+<p>Atualizando a tabela, para colocar as variáveis artificiais na base:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(L_1 \leftarrow L_1 - L_2 - L_3\)</span></li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="right">X1</th>
+<th align="right">X2</th>
+<th align="right">X3</th>
+<th align="right">X4</th>
+<th align="right">X5</th>
+<th align="right">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="right">-2</td>
+<td align="right">-3</td>
+<td align="right">-1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">-7</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+</tr>
+</tbody>
+</table>
+<p>Selecionando <span class="math inline">\(x_2\)</span> para entrar na base e removendo <span class="math inline">\(\bar{x}_5\)</span>, com as operações:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(L_3 \leftarrow L_3/2\)</span></li>
+<li><span class="math inline">\(L_1 \leftarrow L_1 + 3L_3\)</span></li>
+<li><span class="math inline">\(L_2 \leftarrow L_2 - L_3\)</span></li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">3/2</td>
+<td align="left">-1</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">-1/2</td>
+<td align="left">1</td>
+<td align="left">-1/2</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">1/2</td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">2</td>
+</tr>
+</tbody>
+</table>
+<p>Selecionando <span class="math inline">\(x_1\)</span> para entrar na base e removendo <span class="math inline">\(\bar{x}_4\)</span>, com as operações:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(L_1 \leftarrow L_1 + L_2\)</span></li>
+<li><span class="math inline">\(L_3 \leftarrow L_3 - L_2\)</span></li>
+<li><span class="math inline">\(L_2 \leftarrow L_2/(1/2)\)</span></li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="right">X1</th>
+<th align="right">X2</th>
+<th align="right">X3</th>
+<th align="right">X4</th>
+<th align="right">X5</th>
+<th align="right">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">-1</td>
+<td align="right">2</td>
+<td align="right">-1</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">-1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>chegamos ao fim da Fase com <span class="math inline">\(w = 0\)</span>, portanto o problema original é factível, e podemos continuar com o Simplex Fase II. Removendo as colunas das variáveis artificiais e reinserindo a função objetivo original:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="right">X1</th>
+<th align="right">X2</th>
+<th align="right">X3</th>
+<th align="right">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="right">-2</td>
+<td align="right">-3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(??\)</span></td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">-1</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(??\)</span></td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>Realizando as operações para atualizar a tabela (manter <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> na base):</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(L_1 \leftarrow L_1 + 2L_2\)</span></li>
+<li><span class="math inline">\(L_1 \leftarrow L_1 + 3L_3\)</span></li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="right">X1</th>
+<th align="right">X2</th>
+<th align="right">X3</th>
+<th align="right">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">-1</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+</summary>
+<p>Temos então a solução ótima com <span class="math inline">\(x_B^T = (x_1,x_2) = (2,1)\)</span> e Z = -7. Retomando o custo original temos Z = 7. A solução inicial encontrada (que é a ótima) está no ponto A na Figura abaixo.</p>
+<p><img src="img/RF1.png" /></p>
+</details>
+</div>
 </div>
             </section>
 
@@ -117,7 +584,7 @@
         </div>
       </div>
 
-<a href="simplex-fase-i.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="dualidade.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
