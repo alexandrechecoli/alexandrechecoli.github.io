@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-05-13" />
+<meta name="date" content="2024-05-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -83,6 +83,10 @@
 <li class="chapter" data-level="2" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>2</b> Dualidade</a>
 <ul>
 <li class="chapter" data-level="2.1" data-path="dualidade.html"><a href="dualidade.html#tabela-de-conversão-primal-dual"><i class="fa fa-check"></i><b>2.1</b> Tabela de conversão primal-dual</a></li>
+<li class="chapter" data-level="2.2" data-path="dualidade.html"><a href="dualidade.html#teoremas-da-dualidade"><i class="fa fa-check"></i><b>2.2</b> Teoremas da dualidade</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-1."><i class="fa fa-check"></i><b>2.2.1</b> Teorema fraco da dualidade parte 1.</a></li>
+</ul></li>
 </ul></li>
 </ul>
 
@@ -158,7 +162,7 @@
                 &amp; \text{max z = }            &amp; 8x_1 &amp; + 3x_2 &amp; -2x_3 \\
                 &amp; \text{Sujeito à}           &amp; x_1  &amp; - 6x_2 &amp; +x_3 &amp;\geq 2\\
                 &amp;                            &amp; 5x_1   &amp; +  7x_2 &amp; &amp; = 4\\
-                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0 &amp; x_3 \geq 0
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0 &amp;\quad  x_3 \geq 0
 \end{alignat*}\]</span>
 <p>Temos que:</p>
 <span class="math display">\[\begin{alignat*}{4}
@@ -166,9 +170,79 @@
                &amp; \text{Sujeito à}           &amp; \pi_1   &amp; + 5 \pi_2 &amp;\geq 8\\
                &amp;                            &amp; -6\pi_1   &amp; +  7\pi_2 &amp; \geq 3\\
                &amp;                            &amp; \pi_1   &amp;       &amp;\geq -2\\
-               &amp;                            &amp;  \pi_1 \leq 0  &amp; \quad \pi_2 \quad \text{irrestrito}&amp;
+               &amp;                            &amp;  \pi_1 \leq 0  &amp; \quad \pi_2 \quad \text{irr.}&amp;
 \end{alignat*}\]</span>
+<p><span style="color:blue">EXEMPLO 4</span>: Escreva o dual do seguinte PL:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min z = }            &amp; 5x_1 &amp; - 6x_2  &amp; + 7x_3 &amp; + x_4           \\
+                &amp; \text{Sujeito à}           &amp; x_1  &amp; + 2x_2  &amp; -x_3   &amp; - x_4  &amp; = -7   \\
+                &amp;                            &amp; 6x_1 &amp; -  3x_2 &amp; + x_3  &amp; - 7x_4 &amp; \geq 14\\
+                &amp;                            &amp; -2.8x_1 &amp; -  17x_2 &amp; + 4x_3  &amp; + 2x_4 &amp; \leq -3\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0 &amp; x_3&amp;  \quad x_4 &amp; \text{irr.}
+\end{alignat*}\]</span>
+<p>Temos que:</p>
+<span class="math display">\[\begin{alignat*}{4}
+               &amp; \text{max v = }            &amp; -7\pi_1 &amp; + 14\pi_2 &amp; -3\pi_3 \\
+               &amp; \text{Sujeito à}           &amp; \pi_1   &amp; + 6 \pi_2 &amp;  -2.8\pi_3    &amp;\leq 5\\
+               &amp;                            &amp;  2\pi_1   &amp; -3 \pi_2 &amp;  -17\pi_3    &amp;\leq -6\\
+               &amp;                            &amp; -\pi_1   &amp; + \pi_2 &amp;  +4\pi_3       &amp; = 7\\
+               &amp;                            &amp; -\pi_1   &amp; - 7\pi_2 &amp;  +2\pi_3      &amp; = 1\\
+               &amp;                            &amp;  \pi_1 \quad \text{irr.}  &amp;\quad  \pi_2 \geq 0 &amp; \pi_3 \leq 0
+\end{alignat*}\]</span>
+</div>
+<div id="teoremas-da-dualidade" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Teoremas da dualidade<a href="dualidade.html#teoremas-da-dualidade" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Existem diversas relações entre os modelos primal-dual. Essas relações são expressas por meio de teoremas, 3 dos quais muito importantes: teorema fraco (partes 1 e 2) e forte da dualidade, relacionando as funções objetivo, e o teorema das folgas complementares, relacionando os valores das soluções.</p>
+<div id="teorema-fraco-da-dualidade-parte-1." class="section level3 hasAnchor" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Teorema fraco da dualidade parte 1.<a href="dualidade.html#teorema-fraco-da-dualidade-parte-1." class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Seja <span class="math inline">\(x_0\)</span> e <span class="math inline">\(\pi_0\)</span> soluções factíveis quaisquer para o para primal(min)-dual(max), e <span class="math inline">\(Z_0\)</span> e <span class="math inline">\(V_0\)</span> seus valores objetivo, então temos que:</p>
+<div class="tcolorbox">
+<p><span class="math inline">\(V_0 \leq Z_0\)</span></p>
+</div>
+<summary>
+<span style="color:blue">PROVA</span>
+</summary>
+<p>Seja o par primal-dual escritos na seguinte forma:</p>
+<div id="wrapper">
+<div id="left">
+<p>Primal(P):</p>
+<p><span class="math inline">\(min \quad z = c^Tx\)</span></p>
+<p>s.a: <span class="math inline">\(\quad \quad Ax \geq b\)</span></p>
+<span class="math inline">\(\quad \quad x \geq 0\)</span>
+</div>
+<div id="right">
+<p>Dual(D):</p>
+<p><span class="math inline">\(max \quad v = b^T\pi\)</span></p>
+<p>s.a: <span class="math inline">\(\quad \quad A^T\pi \leq c\)</span></p>
+<span class="math inline">\(\quad \quad \pi \geq 0\)</span>
+</div>
+</div>
+<p>Como <span class="math inline">\(x_0\)</span> e <span class="math inline">\(\pi_0\)</span> são factíveis, temos que:</p>
+<div id="wrapper">
+<div id="left">
+<span class="math inline">\(\quad \quad Ax_0 \geq b\)</span>
+</div>
+<div id="right">
+<span class="math inline">\(\quad \quad A^T\pi_0 \leq c\)</span>
+</div>
+</div>
+<p>Também o são.</p>
+<p>Multiplicando <span class="math inline">\(\quad \quad Ax_0 \geq b\)</span> de P por <span class="math inline">\(\pi_0^T\)</span> temos:</p>
+<p><span class="math inline">\(\pi_0^TAx_0 \geq \pi_0^Tb\)</span> (I)</p>
+<p>Agora, usamos a propriedade da tranposta da multiplicação de duas matrizes em <span class="math inline">\(\quad \quad A^T\pi_0 \leq c_0\)</span> de D, que diz que:</p>
+<p><span class="math inline">\((AB)^T = B^TA^T\)</span></p>
+<p>Portanto, temos que:</p>
+<p><span class="math inline">\(\pi_0^TA \leq c_0^T\)</span></p>
+<p>Multiplicando ambos os lados por <span class="math inline">\(x_0\)</span>:</p>
+<p><span class="math inline">\(\pi_0^TAx_0 \leq c^Tx_0\)</span> (II)</p>
+<p>Temos um termo em comum em (I) e (II), juntando os termos em uma expressão:</p>
+<p><span class="math inline">\(\pi_0^Tb \leq \pi_0^TAx_0 \leq c^Tx_0\)</span></p>
+<p>Os termos dos extremos são justamente os valores das funções objetivo primal-dual, portanto podemos escrever:</p>
+<p><span class="math inline">\(V_0 \leq \pi_0^TAx_0 \leq Z_0\)</span></p>
+<p>Ainda:</p>
+<p><span class="math inline">\(V_0 \leq Z_0\)</span>, como queriamos demonstrar.</p>
 
+</div>
 </div>
 </div>
             </section>

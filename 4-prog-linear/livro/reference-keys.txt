@@ -31,3 +31,5 @@ simplex-fase-i-1
 exercicios-1
 dualidade
 tabela-de-conversão-primal-dual
+teoremas-da-dualidade
+teorema-fraco-da-dualidade-parte-1.

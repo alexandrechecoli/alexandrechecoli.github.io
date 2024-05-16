@@ -28,3 +28,24 @@ img{
   margin-left: auto;
   margin-right: auto;
 }
+
+.tcolorbox
+{
+  border-style: groove;
+  text-align: center;
+}
+
+#wrapper {
+  display: flex;
+  text-align: center;
+}
+
+#left {
+  flex: 0 0 1;
+}
+
+#right {
+  flex: 0 0 50%;
+}
+
+
