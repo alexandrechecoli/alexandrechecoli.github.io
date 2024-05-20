@@ -31,8 +31,14 @@ img{
 
 .tcolorbox
 {
-  border-style: groove;
   text-align: center;
+}
+
+.tcolorbox2
+{
+  border-style: groove;
+  text-align: justify;
+  padding: 15px;
 }
 
 #wrapper {
