@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-05-20" />
+<meta name="date" content="2024-05-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -85,7 +85,7 @@
 <li class="chapter" data-level="2.1" data-path="dualidade.html"><a href="dualidade.html#tabela-de-conversão-primal-dual"><i class="fa fa-check"></i><b>2.1</b> Tabela de conversão primal-dual</a></li>
 <li class="chapter" data-level="2.2" data-path="dualidade.html"><a href="dualidade.html#teoremas-da-dualidade"><i class="fa fa-check"></i><b>2.2</b> Teoremas da dualidade</a>
 <ul>
-<li class="chapter" data-level="2.2.1" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-1."><i class="fa fa-check"></i><b>2.2.1</b> Teorema fraco da dualidade parte 1.</a></li>
+<li class="chapter" data-level="2.2.1" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-1"><i class="fa fa-check"></i><b>2.2.1</b> Teorema fraco da dualidade parte 1</a></li>
 <li class="chapter" data-level="2.2.2" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-2"><i class="fa fa-check"></i><b>2.2.2</b> Teorema fraco da dualidade parte 2</a></li>
 <li class="chapter" data-level="2.2.3" data-path="dualidade.html"><a href="dualidade.html#teorema-das-folgas-complementares-tfc"><i class="fa fa-check"></i><b>2.2.3</b> Teorema das folgas complementares (TFC)</a></li>
 </ul></li>
@@ -195,8 +195,8 @@
 <div id="teoremas-da-dualidade" class="section level2 hasAnchor" number="2.2">
 <h2><span class="header-section-number">2.2</span> Teoremas da dualidade<a href="dualidade.html#teoremas-da-dualidade" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Existem diversas relações entre os modelos primal-dual. Essas relações são expressas por meio de teoremas, 3 dos quais muito importantes: teorema fraco (partes 1 e 2) e forte da dualidade, relacionando as funções objetivo, e o teorema das folgas complementares, relacionando os valores das soluções.</p>
-<div id="teorema-fraco-da-dualidade-parte-1." class="section level3 hasAnchor" number="2.2.1">
-<h3><span class="header-section-number">2.2.1</span> Teorema fraco da dualidade parte 1.<a href="dualidade.html#teorema-fraco-da-dualidade-parte-1." class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="teorema-fraco-da-dualidade-parte-1" class="section level3 hasAnchor" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Teorema fraco da dualidade parte 1<a href="dualidade.html#teorema-fraco-da-dualidade-parte-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="tcolorbox2">
 <p><strong>TEOREMA</strong>: Seja <span class="math inline">\(x_0\)</span> e <span class="math inline">\(\pi_0\)</span> soluções factíveis quaisquer para o para primal(min)-dual(max), e <span class="math inline">\(Z_0\)</span> e <span class="math inline">\(V_0\)</span> seus valores objetivo, então temos que:</p>
 <div class="tcolorbox">
@@ -265,13 +265,18 @@
 <div id="teorema-das-folgas-complementares-tfc" class="section level3 hasAnchor" number="2.2.3">
 <h3><span class="header-section-number">2.2.3</span> Teorema das folgas complementares (TFC)<a href="dualidade.html#teorema-das-folgas-complementares-tfc" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="tcolorbox2">
-<p><strong>TEOREMA</strong>: Sabe-se que para cada restrição primal existe uma variável equivalente dual. Seja <span class="math inline">\(x\)</span> as variáveis do modelo primal, <span class="math inline">\(x_f\)</span> as folgas/excessos relativos às restrições, <span class="math inline">\(\pi\)</span> as variáveis do modelo dual e <span class="math inline">\(\pi_f\)</span> as suas folgas/excessos. Temos que, na <em>otimizalidade</em>:</p>
+<p><strong>TEOREMA</strong>: Sabe-se que para cada restrição primal existe uma variável equivalente dual. Seja <span class="math inline">\(x\)</span> as variáveis do modelo primal, <span class="math inline">\(x_f\)</span> as folgas/excessos relativos às restrições, <span class="math inline">\(\pi\)</span> as variáveis do modelo dual e <span class="math inline">\(\pi_f\)</span> as suas folgas/excessos. Temos que, na <em>otimalidade</em>:</p>
 <div class="tcolorbox">
 <p><span class="math inline">\(x_f^T\pi = 0\)</span></p>
 <span class="math inline">\(\pi_f^Tx = 0\)</span>
 </div>
 </div>
-<p>Ou seja, na otimalidade, o produto das variáveis de folga de um modelo pelas suas respectivas variáveis no outro modelo deve ser zero. O produto de 2 elementos só pode ser zero se pelo menos um dos dois for zero. Com isso podemos inferir valores das variáveis de um modelo com base nas respostas do outro. Por exemplo, sabendo que uma variável de um modelo tem valor <span class="math inline">\(&gt;0\)</span>, sabemos que a sua equivalente do outro modelo deve obrigatoriamente ser 0. A melhro forma de enxergar o TFC é montando as relações entre as variáveis.</p>
+<details>
+<summary>
+<span style="color:blue">PROVA</span>
+</summary>
+</details>
+<p>Ou seja, na otimalidade, o produto das variáveis de folga de um modelo pelas suas respectivas variáveis no outro modelo deve ser zero. O produto de 2 elementos só pode ser zero se pelo menos um dos dois for zero. Com isso podemos inferir valores das variáveis de um modelo com base nas respostas do outro. Por exemplo, sabendo que uma variável de um modelo tem valor <span class="math inline">\(&gt;0\)</span>, sabemos que a sua equivalente do outro modelo deve obrigatoriamente ser 0. A melhor forma de enxergar o TFC é montando as relações entre as variáveis.</p>
 <p><span style="color:blue">EXEMPLO 1</span>: Contrua todas as relações de folgas complementares para o modelo abaixo:</p>
 <span class="math display">\[\begin{alignat*}{4}
                 &amp; \text{min z = }            &amp; x_1 &amp; + 2x_2                 \\
@@ -296,14 +301,14 @@
 </div>
 <p>Para ter as relações completas precisamos também do modelo dual:</p>
 <span class="math display">\[\begin{alignat*}{4}
-                &amp; \text{max z = }            &amp; 3\pi_1 &amp; + 5\pi_2 &amp; + 2\pi_3                    \\
+                &amp; \text{max v = }            &amp; 3\pi_1 &amp; + 5\pi_2 &amp; + 2\pi_3                    \\
                 &amp; \text{Sujeito à}           &amp; -2\pi_1  &amp; + 3\pi_2 &amp; + \pi_3 &amp;   \leq 1   \\
                 &amp;                            &amp; \pi_1 &amp; +  4\pi_2 &amp;  -\pi_3  &amp;     \leq 2    \\
                 &amp;                            &amp;  \pi_1 \geq 0  &amp;  \pi_2 \geq 0 &amp; \pi_3 \geq 0
 \end{alignat*}\]</span>
 <p>Escrevendo na forma padrão com as variáveis de folga/excessos e as equivalentes do modelo primal:</p>
 <span class="math display">\[\begin{alignat*}{4}
-                &amp; \text{max z = }            &amp; 3\pi_1 &amp; + 5\pi_2 &amp; + 2\pi_3                    \\
+                &amp; \text{max v = }            &amp; 3\pi_1 &amp; + 5\pi_2 &amp; + 2\pi_3                    \\
                 &amp; \text{Sujeito à}           &amp; -2\pi_1  &amp; + 3\pi_2 &amp; + \pi_3 &amp; + \pi_4&amp;           &amp;     = 1  &amp;\quad \color{red}{(x_1)}   \\
                 &amp;                            &amp; \pi_1 &amp; +  4\pi_2 &amp;  -\pi_3  &amp;         &amp; + \pi_5   &amp;     = 2  &amp;\quad \color{red}{(x_2)}   \\
                 &amp;                            &amp;  \pi_1 \geq 0  &amp;  \pi_2 \geq 0 &amp; \pi_3 \geq 0
@@ -358,7 +363,7 @@ SOLUÇÃO
 </div>
 <p>Criando o dual do modelo original:</p>
 <span class="math display">\[\begin{alignat*}{4}
-                &amp; \text{min z = }            &amp; 6\pi_1 &amp; + 3\pi_2 &amp; + 3\pi_3                    \\
+                &amp; \text{min v = }            &amp; 6\pi_1 &amp; + 3\pi_2 &amp; + 3\pi_3                    \\
                 &amp; \text{Sujeito à}           &amp; \pi_1  &amp; + 2\pi_2 &amp; + 3\pi_3 &amp;   \geq 3   \\
                 &amp;                            &amp; \pi_1  &amp; - \pi_2 &amp;  +\pi_3  &amp;    \geq 0    \\
                 &amp;                            &amp; \pi_1  &amp; + \pi_2  &amp;  -\pi_3  &amp;    \geq 2    \\
@@ -366,7 +371,7 @@ SOLUÇÃO
 \end{alignat*}\]</span>
 <p>Na forma padrão com as variáveis de excesso e folgas, e as equivalentes do primal::</p>
 <span class="math display">\[\begin{alignat*}{4}
-                &amp; \text{min z = }            &amp; 6\pi_1 &amp; + 3\pi_2 &amp; + 3\pi_3                    \\
+                &amp; \text{min v = }            &amp; 6\pi_1 &amp; + 3\pi_2 &amp; + 3\pi_3                    \\
                 &amp; \text{Sujeito à}           &amp; \pi_1  &amp; + 2\pi_2 &amp;  +3\pi_3 &amp; - \pi_4&amp;&amp;&amp;  = 3 &amp; \quad \color{red}{(x_1)}   \\
                 &amp;                            &amp; \pi_1  &amp; - \pi_2 &amp;  +\pi_3  &amp;  &amp;-\pi_5&amp;&amp;   = 0 &amp; \quad \color{red}{(x_2)}   \\
                 &amp;                            &amp; \pi_1  &amp; + \pi_2 &amp;  -\pi_3  &amp;  &amp;&amp;-\pi_6&amp;   = 2 &amp; \quad \color{red}{(x_3)}   \\
@@ -394,7 +399,7 @@ SOLUÇÃO
 <p><span class="math inline">\(\pi_6x_3 = 0 \rightarrow \pi_6 = 0\)</span></p>
 <p><span class="math inline">\(x_6\pi_3 = 0 \rightarrow \pi_3 = 0\)</span></p>
 </div>
-<p>Agora reescrevemos o sistema de equações do dua removendo as variáveis nulas:</p>
+<p>Agora reescrevemos o sistema de equações do dual removendo as variáveis nulas:</p>
 <span class="math display">\[\begin{alignat*}{4}
                 &amp; \text{Sujeito à}           &amp; \pi_1  &amp; + 2\pi_2 &amp;   &amp; - \pi_4&amp;&amp;&amp;  = 3   \\
                 &amp;                            &amp; \pi_1  &amp; - \pi_2 &amp;    &amp;  &amp;&amp;&amp;   = 0    \\
@@ -404,6 +409,50 @@ SOLUÇÃO
 <p>O que gera um sistema 3x3. Podemos resolvê-lo facilmente por simples inspeção:</p>
 <p><span class="math inline">\(\pi_1 = 1\)</span>, <span class="math inline">\(\pi_2 = 1\)</span> e <span class="math inline">\(\pi_4 = 0\)</span>. Assim, temos que a solução dual fica: <span class="math inline">\(\pi^T = (\pi_1,\pi_2, \pi_3) = (1,1,0)\)</span></p>
 </details>
+<p><span style="color:blue">EXERCICIO 2</span>: Encontre a solução do modelo de PL:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min z = }            &amp; 2x_1 &amp; +3x_2         &amp; + 5x_3 &amp; + 2x_4 &amp; + 3x_5                 \\
+                &amp; \text{Sujeito à}           &amp; x_1 &amp;  +  x_2        &amp; + 2x_3  &amp; + x_4 &amp; + 3x_5 &amp;  \geq 4 &amp;\quad \color{red}{(\pi_1)}      \\
+                &amp;                            &amp; 2x_1 &amp; -2x_2        &amp; + 3x_3     &amp; +x_4 &amp; + x_5 &amp; \geq 3  &amp;\quad \color{red}{(\pi_2)}        \\
+                &amp;                            &amp;  x_1 \geq 0 \quad &amp;  x_2 \geq 0\quad &amp;  x_3 \geq 0\quad &amp; x_4 \geq 0 \quad&amp; x_5 \geq 0
+\end{alignat*}\]</span>
+<p>Como existem duas restrições, sabemos que o modelo dual terá somente 2 variáveis. Podemos então resolver o dual gráficamente e usar sua solução pelo TFC para encontrar a solução do primal. O dual é mostrado abaixo, com suas variáveis primais correspondentes:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max v = }            &amp; 4\pi_1 &amp; + 3\pi_2                \\
+                &amp; \text{Sujeito à}           &amp; \pi_1  &amp; + 2\pi_2   &amp;  \leq 2 &amp; \quad \color{red}{(x_1)}    \\
+                &amp;                            &amp; \pi_1  &amp; - 2\pi_2   &amp;  \leq 3 &amp; \quad \color{red}{(x_2)}    \\
+                &amp;                            &amp; 2\pi_1  &amp; + 3\pi_2  &amp;  \leq 5 &amp; \quad \color{red}{(x_3)}   \\
+                &amp;                            &amp; \pi_1  &amp; + \pi_2    &amp;  \leq 2 &amp; \quad \color{red}{(x_4)}   \\
+                &amp;                            &amp; 3\pi_1  &amp; + \pi_2    &amp;  \leq 3 &amp; \quad \color{red}{(x_5)}   \\
+                &amp;                            &amp;  \pi_i \geq 0  &amp;  \quad\pi_2 \geq 0
+\end{alignat*}\]</span>
+<p>Para usar o TFC não precisamos necessáriamente saber o valor das variáveis, simplesmente determinar se são <span class="math inline">\(&gt;0\)</span> (o que permite inferir que a variável correspondente deve ser 0). Assim, podemos pela simples análise do gráfico da região factível com o vetor gradiente verificar quais variáveis tem valor e quais não tem.</p>
+<p>Para isso faremos a inferência dos valores das variáveis de folga, levando em consideração o local do ponto ótimo e das restrições:</p>
+<p><img src="img/TFC_grafico.png" /></p>
+<p>Vemos pela região factível e pelo vetor gradiente que o ponto ótimo está na intersecção das restrições R1 e R5. Com isso já inferimos que <span class="math inline">\(\pi_1 &gt; 0\)</span> e <span class="math inline">\(\pi_2 &gt; 0\)</span>. Ainda, como o ponto ótimo não chega a nenhuma das outras restrições, as respectivas variáveis de folga obrigatoriamente devem ser <span class="math inline">\(&gt;0\)</span>. Assim, temos que as folgas das restrições R2(<span class="math inline">\(\pi_4\)</span>), R3(<span class="math inline">\(\pi_5\)</span>) e R4(<span class="math inline">\(\pi_6\)</span>) são <span class="math inline">\(&gt;0\)</span>. As relações do TFC são dadas por:</p>
+<div class="tcolorbox">
+<p><span class="math inline">\(x_6\pi_1 = 0\)</span></p>
+<p><span class="math inline">\(x_7\pi_2 = 0\)</span></p>
+<p><span class="math inline">\(\pi_3x_1 = 0\)</span></p>
+<p><span class="math inline">\(\pi_4x_2 = 0\)</span></p>
+<p><span class="math inline">\(\pi_5x_3 = 0\)</span></p>
+<p><span class="math inline">\(\pi_6x_4 = 0\)</span></p>
+<p><span class="math inline">\(\pi_7x_5 = 0\)</span></p>
+</div>
+<p>Como <span class="math inline">\(\pi_1 &gt; 0, \pi_2 &gt; 0, \pi_4 &gt; 0, \pi_5 &gt; 0, \pi_6 &gt; 0\)</span>, temos que:</p>
+<div class="tcolorbox">
+<p><span class="math inline">\(x_6\pi_1 = 0 \rightarrow x_6 = 0\)</span></p>
+<p><span class="math inline">\(x_7\pi_2 = 0 \rightarrow x_7 = 0\)</span></p>
+<p><span class="math inline">\(\pi_4x_2 = 0 \rightarrow x_2 = 0\)</span></p>
+<p><span class="math inline">\(\pi_5x_3 = 0 \rightarrow x_3 = 0\)</span></p>
+<p><span class="math inline">\(\pi_6x_4 = 0 \rightarrow x_4 = 0\)</span></p>
+</div>
+<p>Agora podemos substituir esses valores no modelo primal (na forma padrão), ficamos com o sistema:</p>
+<span class="math display">\[\begin{alignat*}{4}
+              &amp;                            &amp; x_1 &amp;      &amp;  &amp; &amp; + 3x_5 &amp;  = 4          \\
+              &amp;                            &amp; 2x_1 &amp;        &amp;      &amp;  &amp; + x_5 &amp; = 3    \\
+\end{alignat*}\]</span>
+<p>Resolvendo por pivoteamento, temos que <span class="math inline">\(x_1 = 1\)</span> e <span class="math inline">\(x_5 = 1\)</span>. Assim, a solução do modelo primal é <span class="math inline">\(x^T = (x_1,x_2,x_3,x_4,x_5) = (1,0,0,0,1)\)</span>, com custo <span class="math inline">\(z = 5\)</span>.</p>
 
 </div>
 </div>
