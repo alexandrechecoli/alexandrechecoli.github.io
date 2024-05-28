@@ -37,3 +37,5 @@ teorema-fraco-da-dualidade-parte-2.
 teorema-fraco-da-dualidade-parte-2
 teorema-das-folgas-complementares-tfc
 teorema-fraco-da-dualidade-parte-1
+a-inversa-simplex-e-dualidade
+encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas

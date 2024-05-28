@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-05-21" />
+<meta name="date" content="2024-05-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="index.html"/>
-
+<link rel="next" href="a-inversa-simplex-e-dualidade.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -89,6 +89,10 @@
 <li class="chapter" data-level="2.2.2" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-2"><i class="fa fa-check"></i><b>2.2.2</b> Teorema fraco da dualidade parte 2</a></li>
 <li class="chapter" data-level="2.2.3" data-path="dualidade.html"><a href="dualidade.html#teorema-das-folgas-complementares-tfc"><i class="fa fa-check"></i><b>2.2.3</b> Teorema das folgas complementares (TFC)</a></li>
 </ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html"><i class="fa fa-check"></i><b>3</b> A inversa, simplex e dualidade</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas"><i class="fa fa-check"></i><b>3.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
 </ul></li>
 </ul>
 
@@ -200,7 +204,7 @@
 <div class="tcolorbox2">
 <p><strong>TEOREMA</strong>: Seja <span class="math inline">\(x_0\)</span> e <span class="math inline">\(\pi_0\)</span> soluções factíveis quaisquer para o para primal(min)-dual(max), e <span class="math inline">\(Z_0\)</span> e <span class="math inline">\(V_0\)</span> seus valores objetivo, então temos que:</p>
 <div class="tcolorbox">
-<span class="math inline">\(V_0 \leq Z_0\)</span>
+<p><span class="math inline">\(V_0 \leq Z_0\)</span></p>
 </div>
 </div>
 <details>
@@ -213,31 +217,31 @@
 <p>Primal(P):</p>
 <p><span class="math inline">\(min \quad z = c^Tx\)</span></p>
 <p>s.a: <span class="math inline">\(\quad \quad Ax \geq b\)</span></p>
-<span class="math inline">\(\quad \quad x \geq 0\)</span>
+<p><span class="math inline">\(\quad \quad x \geq 0\)</span></p>
 </div>
 <div id="right">
 <p>Dual(D):</p>
 <p><span class="math inline">\(max \quad v = b^T\pi\)</span></p>
 <p>s.a: <span class="math inline">\(\quad \quad A^T\pi \leq c\)</span></p>
-<span class="math inline">\(\quad \quad \pi \geq 0\)</span>
+<p><span class="math inline">\(\quad \quad \pi \geq 0\)</span></p>
 </div>
 </div>
 <p>Como <span class="math inline">\(x_0\)</span> e <span class="math inline">\(\pi_0\)</span> são factíveis, temos que:</p>
-<div id="wrapper">
-<div id="left">
-<span class="math inline">\(\quad \quad Ax_0 \geq b\)</span>
+<div>
+<div>
+<p><span class="math inline">\(\quad \quad Ax_0 \geq b\)</span></p>
 </div>
-<div id="right">
-<span class="math inline">\(\quad \quad A^T\pi_0 \leq c\)</span>
+<div>
+<p><span class="math inline">\(\quad \quad A^T\pi_0 \leq c\)</span></p>
 </div>
 </div>
 <p>Também o são.</p>
 <p>Multiplicando <span class="math inline">\(\quad \quad Ax_0 \geq b\)</span> de P por <span class="math inline">\(\pi_0^T\)</span> temos:</p>
 <p><span class="math inline">\(\pi_0^TAx_0 \geq \pi_0^Tb\)</span> (I)</p>
-<p>Agora, usamos a propriedade da tranposta da multiplicação de duas matrizes em <span class="math inline">\(\quad \quad A^T\pi_0 \leq c_0\)</span> de D, que diz que:</p>
+<p>Agora, usamos a propriedade da tranposta da multiplicação de duas matrizes em <span class="math inline">\(\quad \quad A^T\pi_0 \leq c\)</span> de D, que diz que:</p>
 <p><span class="math inline">\((AB)^T = B^TA^T\)</span></p>
 <p>Portanto, temos que:</p>
-<p><span class="math inline">\(\pi_0^TA \leq c_0^T\)</span></p>
+<p><span class="math inline">\(\pi_0^TA \leq c^T\)</span></p>
 <p>Multiplicando ambos os lados por <span class="math inline">\(x_0\)</span>:</p>
 <p><span class="math inline">\(\pi_0^TAx_0 \leq c^Tx_0\)</span> (II)</p>
 <p>Temos um termo em comum em (I) e (II), juntando os termos em uma expressão:</p>
@@ -253,7 +257,7 @@
 <div class="tcolorbox2">
 <p><strong>TEOREMA</strong>: Seja <span class="math inline">\(x_0^*\)</span> e <span class="math inline">\(\pi_0^*\)</span> soluções ótimas para os respectivos problemas primal e dual, e <span class="math inline">\(Z^*\)</span> e <span class="math inline">\(V^*\)</span> suas funções objetivo, então:</p>
 <div class="tcolorbox">
-<span class="math inline">\(V^* = Z^*\)</span>
+<p><span class="math inline">\(V^* = Z^*\)</span></p>
 </div>
 </div>
 <details>
@@ -268,7 +272,7 @@
 <p><strong>TEOREMA</strong>: Sabe-se que para cada restrição primal existe uma variável equivalente dual. Seja <span class="math inline">\(x\)</span> as variáveis do modelo primal, <span class="math inline">\(x_f\)</span> as folgas/excessos relativos às restrições, <span class="math inline">\(\pi\)</span> as variáveis do modelo dual e <span class="math inline">\(\pi_f\)</span> as suas folgas/excessos. Temos que, na <em>otimalidade</em>:</p>
 <div class="tcolorbox">
 <p><span class="math inline">\(x_f^T\pi = 0\)</span></p>
-<span class="math inline">\(\pi_f^Tx = 0\)</span>
+<p><span class="math inline">\(\pi_f^Tx = 0\)</span></p>
 </div>
 </div>
 <details>
@@ -328,25 +332,22 @@
 </div>
 <p><span style="color:blue">EXERCICIO 1</span>: Sabe-se que <span class="math inline">\(x^T = (x_1,x_2,x_3) = (0,1.5,4.5)\)</span> é a solução ótima do modelo:</p>
 <span class="math display">\[\begin{alignat*}{4}
-                &amp; \text{max z = }            &amp; 3x_1 &amp;          + 2x_3                 \\
+                &amp; \text{max z = }            &amp; 3x_1 &amp;          &amp; + 2x_3                 \\
                 &amp; \text{Sujeito à}           &amp; x_1 &amp;  +  x_2        &amp; + x_3  &amp;  \leq 6    \\
                 &amp;                            &amp; 2x_1 &amp; -x_2        &amp; + x_3     &amp;  \leq 3   \\
                 &amp;                            &amp; 3x_1 &amp;  + x_2        &amp; - x_3   &amp;   \leq 3   \\
                 &amp;                            &amp;  x_1 \geq 0  &amp;  x_2 \geq 0 &amp;  x_3 \geq 0
 \end{alignat*}\]</span>
 <p><span style="color:blue">A</span>: Qual o valor da função objetivo dual?</p>
-<details>
-<summary>
-SOLUÇÃO
-</summary>
-<p>Pelo teorema fraco da dualidade parte 2 sabemos que na otimalidade, <span class="math inline">\(Z^* = V^*\)</span>, portanto o valor objetivo dual é o mesmo do primal, basta calcularmos:</p>
-<p><span class="math inline">\(Z^* = 3\cdot0 + 0 \cdot 1.5 + 2\cdot 4.5 = 9\)</span>, portanto o valor dual ótimo <span class="math inline">\(V^* = Z^* = 9\)</span>.</p>
-</details>
 <p><span style="color:blue">B</span>: Qual a solução dual?</p>
 <details>
 <summary>
 SOLUÇÃO
 </summary>
+<p><span style="color:blue">A</span>: Qual o valor da função objetivo dual?</p>
+<p>Pelo teorema fraco da dualidade parte 2 sabemos que na otimalidade, <span class="math inline">\(Z^* = V^*\)</span>, portanto o valor objetivo dual é o mesmo do primal, basta calcularmos:</p>
+<p><span class="math inline">\(Z^* = 3\cdot0 + 0 \cdot 1.5 + 2\cdot 4.5 = 9\)</span>, portanto o valor dual ótimo <span class="math inline">\(V^* = Z^* = 9\)</span>.</p>
+<p><span style="color:blue">B</span>: Qual a solução dual?</p>
 <p>Sabemos que o TFC relaciona as soluções ótimas do primal e do dual. Construindo o modelo na forma padrão, com as variáveis de folga/excessos e as duais relativas:</p>
 <span class="math display">\[\begin{alignat*}{4}
                 &amp; \text{max z = }            &amp; 3x_1 &amp;          &amp; + 2x_3                 \\
@@ -369,7 +370,7 @@ SOLUÇÃO
                 &amp;                            &amp; \pi_1  &amp; + \pi_2  &amp;  -\pi_3  &amp;    \geq 2    \\
                 &amp;                            &amp;  \pi_1 \geq 0  &amp;  \pi_2 \geq 0 &amp; \pi_3 \geq 0
 \end{alignat*}\]</span>
-<p>Na forma padrão com as variáveis de excesso e folgas, e as equivalentes do primal::</p>
+<p>Com as variáveis de excesso e folgas, e as equivalentes do primal:</p>
 <span class="math display">\[\begin{alignat*}{4}
                 &amp; \text{min v = }            &amp; 6\pi_1 &amp; + 3\pi_2 &amp; + 3\pi_3                    \\
                 &amp; \text{Sujeito à}           &amp; \pi_1  &amp; + 2\pi_2 &amp;  +3\pi_3 &amp; - \pi_4&amp;&amp;&amp;  = 3 &amp; \quad \color{red}{(x_1)}   \\
@@ -416,14 +417,14 @@ SOLUÇÃO
                 &amp;                            &amp; 2x_1 &amp; -2x_2        &amp; + 3x_3     &amp; +x_4 &amp; + x_5 &amp; \geq 3  &amp;\quad \color{red}{(\pi_2)}        \\
                 &amp;                            &amp;  x_1 \geq 0 \quad &amp;  x_2 \geq 0\quad &amp;  x_3 \geq 0\quad &amp; x_4 \geq 0 \quad&amp; x_5 \geq 0
 \end{alignat*}\]</span>
-<p>Como existem duas restrições, sabemos que o modelo dual terá somente 2 variáveis. Podemos então resolver o dual gráficamente e usar sua solução pelo TFC para encontrar a solução do primal. O dual é mostrado abaixo, com suas variáveis primais correspondentes:</p>
+<p>Como existem duas restrições, sabemos que o modelo dual terá somente 2 variáveis. Podemos então resolver o dual gráficamente e usar sua solução pelo TFC para encontrar a solução do primal. O dual é mostrado abaixo, com suas variáveis primais correspondentes e os pontos para geração do gráfico:</p>
 <span class="math display">\[\begin{alignat*}{4}
                 &amp; \text{max v = }            &amp; 4\pi_1 &amp; + 3\pi_2                \\
-                &amp; \text{Sujeito à}           &amp; \pi_1  &amp; + 2\pi_2   &amp;  \leq 2 &amp; \quad \color{red}{(x_1)}    \\
-                &amp;                            &amp; \pi_1  &amp; - 2\pi_2   &amp;  \leq 3 &amp; \quad \color{red}{(x_2)}    \\
-                &amp;                            &amp; 2\pi_1  &amp; + 3\pi_2  &amp;  \leq 5 &amp; \quad \color{red}{(x_3)}   \\
-                &amp;                            &amp; \pi_1  &amp; + \pi_2    &amp;  \leq 2 &amp; \quad \color{red}{(x_4)}   \\
-                &amp;                            &amp; 3\pi_1  &amp; + \pi_2    &amp;  \leq 3 &amp; \quad \color{red}{(x_5)}   \\
+                &amp; \text{Sujeito à}           &amp; \pi_1  &amp; + 2\pi_2   &amp;  \leq 2 &amp; \quad \color{red}{(x_1)}    \quad (0,1) (2,0)    \\
+                &amp;                            &amp; \pi_1  &amp; - 2\pi_2   &amp;  \leq 3 &amp; \quad \color{red}{(x_2)}    \quad (0,-1.5)(3,0) \\
+                &amp;                            &amp; 2\pi_1  &amp; + 3\pi_2  &amp;  \leq 5 &amp; \quad \color{red}{(x_3)}    \quad (0,1.66)(2.5,0)\\
+                &amp;                            &amp; \pi_1  &amp; + \pi_2    &amp;  \leq 2 &amp; \quad \color{red}{(x_4)}    \quad (0,2)(2,0)\\
+                &amp;                            &amp; 3\pi_1  &amp; + \pi_2    &amp;  \leq 3 &amp; \quad \color{red}{(x_5)}   \quad (0,3)(1,0)\\
                 &amp;                            &amp;  \pi_i \geq 0  &amp;  \quad\pi_2 \geq 0
 \end{alignat*}\]</span>
 <p>Para usar o TFC não precisamos necessáriamente saber o valor das variáveis, simplesmente determinar se são <span class="math inline">\(&gt;0\)</span> (o que permite inferir que a variável correspondente deve ser 0). Assim, podemos pela simples análise do gráfico da região factível com o vetor gradiente verificar quais variáveis tem valor e quais não tem.</p>
@@ -453,7 +454,6 @@ SOLUÇÃO
               &amp;                            &amp; 2x_1 &amp;        &amp;      &amp;  &amp; + x_5 &amp; = 3    \\
 \end{alignat*}\]</span>
 <p>Resolvendo por pivoteamento, temos que <span class="math inline">\(x_1 = 1\)</span> e <span class="math inline">\(x_5 = 1\)</span>. Assim, a solução do modelo primal é <span class="math inline">\(x^T = (x_1,x_2,x_3,x_4,x_5) = (1,0,0,0,1)\)</span>, com custo <span class="math inline">\(z = 5\)</span>.</p>
-
 </div>
 </div>
 </div>
@@ -462,8 +462,8 @@ SOLUÇÃO
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="a-inversa-simplex-e-dualidade.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
