@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-05-28" />
+<meta name="date" content="2024-05-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -139,7 +139,7 @@
 </center>
 <div id="encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> Encontrando os elementos da tabela pelas fórmulas genéricas<a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p><span style="color:blue">EXEMPLO 1</span>: Considere o modelo do sapateiro:</p>
+<p><span style="color:blue">EXERCICIO 1</span>: Considere o modelo do sapateiro:</p>
 <span class="math display">\[\begin{alignat*}{4}
                 &amp; \text{max z = }            &amp; 5x_1 &amp; + 2x_2 \\
                 &amp; \text{Sujeito à}           &amp; 10x_1   &amp; + 12x_2 &amp;\leq 60\\
@@ -195,7 +195,7 @@
 \end{equation*}\]</span></p>
 <p>Encontrando a inversa <span class="math inline">\(B^{-1}\)</span>:</p>
 <p><span class="math display">\[\begin{equation*}
-            A|I =
+            B|I =
             \left[
             \begin{array}{cccc}
                 1 &amp; 10 &amp; 1&amp; 0\\
@@ -266,6 +266,257 @@
             \end{array}
             \right]
 \end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+            =
+            \left[
+            \begin{array}{cc}
+             -2 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{cc}
+                0 &amp; -5 \\
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{cc}
+                7 &amp; -5 \\
+                1/2 &amp; 1/2
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+            =
+            \left[
+            \begin{array}{cc}
+             -2 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{cc}
+                -5/2 &amp; -5/2 \\
+            \end{array}
+            \right]
+            =
+            \left[
+            \begin{array}{cc}
+                1/2 &amp; 5/2 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Calculando <span class="math inline">\(b\)</span> atualizado:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1}b
+            =
+            \left[
+            \begin{array}{cc}
+                1 &amp; -1\\
+                0 &amp; 1/2
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{c}
+                60 \\
+                6
+            \end{array}
+            \right]
+            =
+            \left[
+            \begin{array}{c}
+                30 \\
+                3
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Calculando <span class="math inline">\(-z\)</span> atualizado:</p>
+<p><span class="math display">\[\begin{equation*}
+            -c_BB^{-1}b
+            =
+            -
+            \left[
+            \begin{array}{cc}
+                0 &amp; -5\\
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{c}
+                30 \\
+                3
+            \end{array}
+            \right]
+            =
+            15
+\end{equation*}\]</span></p>
+<p>Portanto o quadro Simplex considerando as variáveis básica <span class="math inline">\(x_B^T = (x_3,x_1)\)</span> fica:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">5/2</td>
+<td align="left">15</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">0</td>
+<td align="left">7</td>
+<td align="left">1</td>
+<td align="left">-5</td>
+<td align="left">30</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">3</td>
+</tr>
+</tbody>
+</table>
+<p><span style="color:blue">EXERCICIO 2</span>: Considerando o seguinte modelo de PL:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max z = }            &amp; 100x_1 &amp; + 150x_2 \\
+                &amp; \text{Sujeito à}           &amp; 2x_1   &amp; + 3x_2    &amp;        \leq 120\\
+                &amp;                            &amp;  x_1   &amp;           &amp;         \leq 40\\
+                &amp;                            &amp;        &amp;  \quad  x_2     &amp;  \leq 30\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>A solução básica com variáveis <span class="math inline">\(x_B^T = (x_3,x_4,x_2)\)</span> é ótima?</p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Sabemos que o critério de parada do algoritmo Simplex é quando todos os <span class="math inline">\(c_i\)</span> na função objetivo são <span class="math inline">\(\geq 0\)</span>. Portanto podemos determinar quais são os <span class="math inline">\(c_B\)</span> atualizados na tabela, considerando as variávieis básicas <span class="math inline">\(x_B^T = (x_3,x_4,x_2)\)</span>.</p>
+<p>O valores atualizados são dados por:</p>
+<p><span class="math display">\[\begin{equation*}
+            c_N^T - c_B^TB^{-1}N
+\end{equation*}\]</span></p>
+<p>Temos que:</p>
+<p><span class="math display">\[\begin{equation*}
+            B =
+            \left[
+            \begin{array}{ccc}
+                1 &amp; 0 &amp; 3 \\
+                0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1
+            \end{array}
+            \right],
+            N =
+            \left[
+            \begin{array}{ccc}
+                2 &amp; 0 \\
+                1 &amp; 0  \\
+                0 &amp; 1
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+            c_B^T =
+            \left[
+            \begin{array}{ccc}
+                0 &amp; 0 &amp; -150
+            \end{array}
+            \right],
+            c_N^T =
+            \left[
+            \begin{array}{ccc}
+                -100 &amp; 0 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Para encontrar a inversa <span class="math inline">\(B^{-1}\)</span></p>
+<p><span class="math display">\[\begin{equation*}
+            B|I =
+            \left[
+            \begin{array}{cccccc}
+                1 &amp; 0 &amp; 3 &amp; 1 &amp; 0 &amp; 0 \\
+                0 &amp; 1 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 1
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Com a operação:
+<span class="math inline">\(L_1 \leftarrow L_1 - 3L_3\)</span></p>
+<p>Temos a inversa:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1} =
+            \left[
+            \begin{array}{ccc}
+                1 &amp; 0 &amp; -3 \\
+                0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Portanto os valores atualizados ficam:</p>
+<p><span class="math display">\[\begin{equation*}
+            c_N^T - c_B^TB^{-1}N =
+            \left[
+            \begin{array}{ccc}
+                -100 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{ccc}
+                0 &amp; 0 &amp; -150
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{ccc}
+                1 &amp; 0 &amp; -3 \\
+                0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{ccc}
+                2 &amp; 0 \\
+                1 &amp; 0  \\
+                0 &amp; 1
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+            =
+            \left[
+            \begin{array}{ccc}
+                -100 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{ccc}
+                0 &amp; -150 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+    c_N^T
+            =
+            \left[
+            \begin{array}{ccc}
+                -100 &amp; 150 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Temos que o custo atualizado de <span class="math inline">\(x_1\)</span> é -100, portanto a solução <strong>não é ótima</strong>.</p>
+</details>
 
 </div>
 </div>
