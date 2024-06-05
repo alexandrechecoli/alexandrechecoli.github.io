@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-05-30" />
+<meta name="date" content="2024-06-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -211,7 +211,7 @@
             B^{-1} =
             \left[
             \begin{array}{cc}
-                1 &amp; -1\\
+                1 &amp; -5\\
                 0 &amp; 1/2
             \end{array}
             \right]
@@ -221,7 +221,7 @@
             B^{-1}N =
             \left[
             \begin{array}{cc}
-                1 &amp; -1\\
+                1 &amp; -5\\
                 0 &amp; 1/2
             \end{array}
             \right]
@@ -255,7 +255,7 @@
             \right]
             \left[
             \begin{array}{cc}
-                1 &amp; -1\\
+                1 &amp; -5\\
                 0 &amp; 1/2
             \end{array}
             \right]
@@ -312,7 +312,7 @@
             =
             \left[
             \begin{array}{cc}
-                1 &amp; -1\\
+                1 &amp; -5\\
                 0 &amp; 1/2
             \end{array}
             \right]
@@ -396,12 +396,14 @@
                 &amp;                            &amp;        &amp;  \quad  x_2     &amp;  \leq 30\\
                 &amp;                            &amp;  x_1 \geq 0  &amp; \quad \quad x_2 \geq 0&amp;
 \end{alignat*}\]</span>
-<p>A solução básica com variáveis <span class="math inline">\(x_B^T = (x_3,x_4,x_2)\)</span> é ótima?</p>
+<p><span style="color:blue">A</span>: A solução básica com variáveis <span class="math inline">\(x_B^T = (x_3,x_4,x_2)\)</span> é ótima?</p>
+<p><span style="color:blue">B</span>: Se a solução não for ótima, calcule qual deve ser a variável que sai da base.</p>
+<p><span style="color:blue">C</span>: Com a definição da variável que sai e da que entra na base, qual seria o próximo passo considerando o algoritmo Simplex e a tabela genérica?</p>
 <details>
 <summary>
-SOLUÇÃO
+SOLUÇÃO <span style="color:blue">A</span>
 </summary>
-<p>Sabemos que o critério de parada do algoritmo Simplex é quando todos os <span class="math inline">\(c_i\)</span> na função objetivo são <span class="math inline">\(\geq 0\)</span>. Portanto podemos determinar quais são os <span class="math inline">\(c_B\)</span> atualizados na tabela, considerando as variávieis básicas <span class="math inline">\(x_B^T = (x_3,x_4,x_2)\)</span>.</p>
+<p>Sabemos que o critério de parada do algoritmo Simplex é quando todos os <span class="math inline">\(c_i\)</span> na função objetivo são <span class="math inline">\(\geq 0\)</span>. Portanto, podemos determinar quais são os <span class="math inline">\(c_N\)</span> atualizados na tabela (dado que os <span class="math inline">\(c_B são sempre 0\)</span>), considerando as variávieis básicas <span class="math inline">\(x_B^T = (x_3,x_4,x_2)\)</span>, e então verificar se algum é negativo.</p>
 <p>O valores atualizados são dados por:</p>
 <p><span class="math display">\[\begin{equation*}
             c_N^T - c_B^TB^{-1}N
@@ -516,6 +518,82 @@ SOLUÇÃO
             \right]
 \end{equation*}\]</span></p>
 <p>Temos que o custo atualizado de <span class="math inline">\(x_1\)</span> é -100, portanto a solução <strong>não é ótima</strong>.</p>
+</details>
+<details>
+<summary>
+SOLUÇÃO <span style="color:blue">B</span>
+</summary>
+<p>Sabemos que para determinar a variável que deixa a base, é necessário encontrar:</p>
+<p><span class="math display">\[\begin{equation*}
+        \underset{\{ \forall a_{is} &gt; 0, i=1,...,m \} }{min} \dfrac{b_i}{a_{is}}  
+\end{equation*}\]</span></p>
+<p>Ou seja, precisamos dos valores de <span class="math inline">\(b\)</span> e da coluna <span class="math inline">\(A_i\)</span> atualizados.</p>
+<p>Calculando <span class="math inline">\(b\)</span> atualizado:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1}b
+            =
+            \left[
+            \begin{array}{ccc}
+                1 &amp; 0 &amp; -3 \\
+                0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{ccc}
+                120 \\
+                40 \\
+                30
+            \end{array}
+            \right]
+            =
+            \left[
+            \begin{array}{ccc}
+                30 \\
+                40 \\
+                30
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Para calcular <span class="math inline">\(A_1\)</span> atualizado (pois <span class="math inline">\(x_1\)</span> é a variável que entra na base), podemos usar a fórmula
+<span class="math inline">\(B^{-1}N\)</span>, porém usamos a <span class="math inline">\(A_1\)</span> antiga no lugar de toda a matriz <span class="math inline">\(N\)</span>:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1}A_1
+            =
+            \left[
+            \begin{array}{ccc}
+                1 &amp; 0 &amp; -3 \\
+                0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{ccc}
+                2 \\
+                1 \\
+                0
+            \end{array}
+            \right]
+            =
+            \left[
+            \begin{array}{ccc}
+                2 \\
+                1 \\
+                0
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Portanto, temos que o mínimo entre</p>
+<p><span class="math display">\[\begin{equation*}
+         \dfrac{30}{2}, \dfrac{40}{1} = 15  
+\end{equation*}\]</span></p>
+Com <span class="math inline">\(x_3\)</span> deixando a base e <span class="math inline">\(x_1\)</span> entrando em seu lugar.
+</details>
+<details>
+<summary>
+SOLUÇÃO <span style="color:blue">C</span>
+</summary>
+<p>Sabemos então que na próxima iteração a solução terá as variáveis <span class="math inline">\(x_B^T = (x_1,x_4,x_2)\)</span>. O próximo passo seria calcular a matriz inversa dessa nova base e verificar os valores atualizados de <span class="math inline">\(c_i\)</span> (como na letra A). Note que fizemos toda uma iteração do algoritmo Simplex sem usar o quadro-Simplex, somente com as fórmulas genéricas. Em modelos maiores, isso evita que muitos cálculos. Essa é a base do algoritmo <em>Simplex-revisado</em> (ver apresentação no site).</p>
 </details>
 
 </div>
