@@ -41,6 +41,12 @@ img{
   padding: 15px;
 }
 
+.color_blue
+{
+  color:white;
+  background-color: blue;
+}
+
 #wrapper {
   display: flex;
   text-align: center;

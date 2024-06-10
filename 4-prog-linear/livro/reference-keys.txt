@@ -8,3 +8,6 @@ teorema-fraco-da-dualidade-parte-2
 teorema-das-folgas-complementares-tfc
 a-inversa-simplex-e-dualidade
 encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas
+encontrando-a-solução-dual-na-tabela-primal
+algoritmo-dual-simplex
+notas-pesquisa-operacional

@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-06-05" />
+<meta name="date" content="2024-06-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="dualidade.html"/>
-
+<link rel="next" href="algoritmo-dual-simplex.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -76,9 +76,9 @@
 <li><a href="./">Notas Pesquisa Operacional</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Simplex Fase I</a>
+<li class="chapter" data-level="1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>1</b> Simplex Fase I</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#exercicios"><i class="fa fa-check"></i><b>1.1</b> Exercicios</a></li>
+<li class="chapter" data-level="1.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios"><i class="fa fa-check"></i><b>1.1</b> Exercicios</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>2</b> Dualidade</a>
 <ul>
@@ -93,7 +93,9 @@
 <li class="chapter" data-level="3" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html"><i class="fa fa-check"></i><b>3</b> A inversa, simplex e dualidade</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas"><i class="fa fa-check"></i><b>3.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
+<li class="chapter" data-level="3.2" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal"><i class="fa fa-check"></i><b>3.2</b> Encontrando a solução dual na tabela primal</a></li>
 </ul></li>
+<li class="chapter" data-level="4" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>4</b> Algoritmo Dual Simplex</a></li>
 </ul>
 
       </nav>
@@ -403,7 +405,7 @@
 <summary>
 SOLUÇÃO <span style="color:blue">A</span>
 </summary>
-<p>Sabemos que o critério de parada do algoritmo Simplex é quando todos os <span class="math inline">\(c_i\)</span> na função objetivo são <span class="math inline">\(\geq 0\)</span>. Portanto, podemos determinar quais são os <span class="math inline">\(c_N\)</span> atualizados na tabela (dado que os <span class="math inline">\(c_B são sempre 0\)</span>), considerando as variávieis básicas <span class="math inline">\(x_B^T = (x_3,x_4,x_2)\)</span>, e então verificar se algum é negativo.</p>
+<p>Sabemos que o critério de parada do algoritmo Simplex é quando todos os <span class="math inline">\(c_i\)</span> na função objetivo são <span class="math inline">\(\geq 0\)</span>. Portanto, podemos determinar quais são os <span class="math inline">\(c_N\)</span> atualizados na tabela (dado que os <span class="math inline">\(c_B\)</span> são sempre 0), considerando as variávieis básicas <span class="math inline">\(x_B^T = (x_3,x_4,x_2)\)</span>, e então verificar se algum é negativo.</p>
 <p>O valores atualizados são dados por:</p>
 <p><span class="math display">\[\begin{equation*}
             c_N^T - c_B^TB^{-1}N
@@ -595,6 +597,183 @@ SOLUÇÃO <span style="color:blue">C</span>
 </summary>
 <p>Sabemos então que na próxima iteração a solução terá as variáveis <span class="math inline">\(x_B^T = (x_1,x_4,x_2)\)</span>. O próximo passo seria calcular a matriz inversa dessa nova base e verificar os valores atualizados de <span class="math inline">\(c_i\)</span> (como na letra A). Note que fizemos toda uma iteração do algoritmo Simplex sem usar o quadro-Simplex, somente com as fórmulas genéricas. Em modelos maiores, isso evita que muitos cálculos. Essa é a base do algoritmo <em>Simplex-revisado</em> (ver apresentação no site).</p>
 </details>
+</div>
+<div id="encontrando-a-solução-dual-na-tabela-primal" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Encontrando a solução dual na tabela primal<a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Sabemos que o negativo dos valores duais estão presentes na própria tabela primal. São os <span class="math inline">\(c_i\)</span> atualizados acima da matriz identidade inicial.</p>
+<p><span style="color:blue">EXEMPLO 1</span>: Considere o modelo do sapateiro:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max z = }            &amp; 5x_1 &amp; + 2x_2 \\
+                &amp; \text{Sujeito à}           &amp; 10x_1   &amp; + 12x_2 &amp;\leq 60\\
+                &amp;                            &amp; 2x_1   &amp; +  x_2 &amp; \leq 6\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Com quadro ótimo:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">??</td>
+<td align="left">??</td>
+<td align="left">??</td>
+<td align="left">??</td>
+<td align="left">??</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">??</td>
+<td align="left">??</td>
+<td align="left">1</td>
+<td align="left">-5</td>
+<td align="left">30</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">??</td>
+<td align="left">??</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">3</td>
+</tr>
+</tbody>
+</table>
+<p>Determine a solução ótima do modelo dual e verique se a solução é ótima.</p>
+<p>Para determinar a solução ótima, basta encontrarmos os valores de <span class="math inline">\(c_i\)</span> atualizados. Pela tabela ótima, sabemos que <span class="math inline">\(x_B^T = (x_3,x_1)\)</span>, com matriz inversa:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1}
+            =
+            \left[
+            \begin{array}{c}
+               1 &amp; -5 \\
+               0 &amp; 1/2
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Para encontrar os valores de <span class="math inline">\(c_N\)</span> atualizados:</p>
+<p><span class="math display">\[\begin{equation*}
+            c_N^T - c_B^TB^{-1}N = \\
+            \left[
+            \begin{array}{c}
+               -2 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{c}
+               0 &amp; -5 \\
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{c}
+               1 &amp; -5 \\
+               0 &amp; 1/2
+            \end{array}
+            \right]
+                \left[
+            \begin{array}{c}
+               12 &amp; 1 \\
+               1 &amp; 1
+            \end{array}
+            \right] = \\
+            \left[
+            \begin{array}{c}
+               -2 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{c}
+               0 &amp; -5 \\
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{c}
+               7 &amp; -4 \\
+               1/2 &amp; 1/2
+            \end{array}
+            \right] = \\
+            \left[
+            \begin{array}{c}
+               -2 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{c}
+               -5/2 &amp; -5/2 \\
+            \end{array}
+            \right]
+            = \\
+            \left[
+            \begin{array}{c}
+               1/2 &amp; 5/2 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Portanto, os valores de <span class="math inline">\(c_i\)</span> atualizados ficam:</p>
+<p><span class="math display">\[\begin{equation*}
+            c^T =
+            \left[
+            \begin{array}{ccc}
+               c_1 &amp; c_2 &amp; c_3 &amp; c_4 \\
+            \end{array}
+            \right]
+            = \\
+            \left[
+            \begin{array}{ccc}
+               0 &amp; 1/2 &amp; 0 &amp; 5/2 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Temos então que:</p>
+<p><span class="math display">\[\begin{equation*}
+            -\pi^T =
+            \left[
+            \begin{array}{ccc}
+                0 &amp; 5/2 \\
+            \end{array}
+            \right] \\
+            \pi^T =
+            \left[
+            \begin{array}{ccc}
+               0 &amp; -5/2 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Como, para transformar o problema na forma padrão fizemos max z = - min z, temos que:</p>
+<p><span class="math display">\[\begin{equation*}
+            \pi^T =
+            \left[
+            \begin{array}{ccc}
+                0 &amp; 5/2 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>O modelo dual do problema do sapapeiro fica:</p>
+<span class="math display">\[\begin{alignat*}{4}
+               &amp; \text{min v = }            &amp; 60\pi_1 &amp; + 6\pi_2 \\
+               &amp; \text{Sujeito à}           &amp; 10\pi_1   &amp; + 2\pi_2 &amp;\geq 5\\
+               &amp;                            &amp; 12\pi_1   &amp; + \pi_2 &amp; \geq 2\\
+               &amp;                            &amp;  \pi_1 \geq 0  &amp; \quad \pi_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Substituindo os valores de <span class="math inline">\(\pi\)</span> no modelo, temos:</p>
+<span class="math display">\[\begin{alignat*}{4}
+               &amp; \text{min v = }            &amp; 60(0) &amp; + 6(5/2) \\
+               &amp; \text{Sujeito à}           &amp; 10(0)   &amp; + 2(5/2) &amp;\geq 5\\
+               &amp;                            &amp; 12(0)   &amp; + 5/2 &amp; \geq 2\\
+               &amp;                            &amp;  \pi_1 \geq 0  &amp; \quad \pi_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Portanto a solução é dual-factível. Seu custo fica <span class="math inline">\(v = 15\)</span>. Substituindo a solução primal em <span class="math inline">\(z\)</span> temos que <span class="math inline">\(z = 15\)</span>. Como <span class="math inline">\(v = z\)</span> temos que a solução é ótima.</p>
 
 </div>
 </div>
@@ -603,8 +782,8 @@ SOLUÇÃO <span style="color:blue">C</span>
           </div>
         </div>
       </div>
-<a href="dualidade.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="dualidade.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="algoritmo-dual-simplex.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -635,7 +814,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/index.Rmd",
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/03-.Rmd",
 "text": "Edit"
 },
 "history": {

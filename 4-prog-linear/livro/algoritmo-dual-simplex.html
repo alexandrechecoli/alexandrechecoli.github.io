@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 5 Algoritmo Dual Simplex | Notas de aula Pesquisa Operacional</title>
+  <meta name="description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 5 Algoritmo Dual Simplex | Notas de aula Pesquisa Operacional" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 5 Algoritmo Dual Simplex | Notas de aula Pesquisa Operacional" />
+  
+  <meta name="twitter:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  
+
+<meta name="author" content="Alexandre Checoli Choueiri" />
+
+
+<meta name="date" content="2024-06-10" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="a-inversa-simplex-e-dualidade.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Notas Pesquisa Operacional</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Notas Pesquisa Operacional</a></li>
+<li class="chapter" data-level="2" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>2</b> Simplex Fase I</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios"><i class="fa fa-check"></i><b>2.1</b> Exercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>3</b> Dualidade</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="dualidade.html"><a href="dualidade.html#tabela-de-conversão-primal-dual"><i class="fa fa-check"></i><b>3.1</b> Tabela de conversão primal-dual</a></li>
+<li class="chapter" data-level="3.2" data-path="dualidade.html"><a href="dualidade.html#teoremas-da-dualidade"><i class="fa fa-check"></i><b>3.2</b> Teoremas da dualidade</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-1"><i class="fa fa-check"></i><b>3.2.1</b> Teorema fraco da dualidade parte 1</a></li>
+<li class="chapter" data-level="3.2.2" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-2"><i class="fa fa-check"></i><b>3.2.2</b> Teorema fraco da dualidade parte 2</a></li>
+<li class="chapter" data-level="3.2.3" data-path="dualidade.html"><a href="dualidade.html#teorema-das-folgas-complementares-tfc"><i class="fa fa-check"></i><b>3.2.3</b> Teorema das folgas complementares (TFC)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html"><i class="fa fa-check"></i><b>4</b> A inversa, simplex e dualidade</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas"><i class="fa fa-check"></i><b>4.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
+<li class="chapter" data-level="4.2" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal"><i class="fa fa-check"></i><b>4.2</b> Encontrando a solução dual na tabela primal</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>5</b> Algoritmo Dual Simplex</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notas de aula Pesquisa Operacional</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="algoritmo-dual-simplex" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Chapter 5</span> Algoritmo Dual Simplex<a href="algoritmo-dual-simplex.html#algoritmo-dual-simplex" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>O método Dual-simplex é uma variação do método Simplex, aplicado quando temos infactibilidade primal (<span class="math inline">\(b &lt; 0\)</span>) e factibilidade dual (<span class="math inline">\(c_N^T - c_B^TB^{-1}N \geq 0\)</span>). Se as seguintes condições forem satisfeitas, o método poderá ser aplicado:</p>
+<div class="tcolorbox2">
+<ol style="list-style-type: decimal">
+<li>Existe uma solução <strong>básica</strong> (<span class="math inline">\(x_B\)</span>)</li>
+<li>Todos os coeficientes da função objetivo são <span class="math inline">\(\geq 0\)</span> <span class="math inline">\((c \geq 0) \rightarrow\)</span> <strong>factibilidade dual</strong></li>
+<li>Pelo menos um coeficiente de <span class="math inline">\(b &lt; 0 \rightarrow\)</span> <strong>infactibilidade primal</strong> (a solução básica <span class="math inline">\(x_B\)</span> é infactivel)</li>
+</ol>
+</div>
+<p>O algoritmo fica então:</p>
+<div class="tcolorbox2">
+<ol style="list-style-type: decimal">
+<li><span style="color:blue">(critério de otimalidade)</span>: se nenhum <span class="math inline">\(b &lt; 0\)</span>, pare, a solução atual é ótima.</li>
+<li><span style="color:blue">(seleção da variável que sai da base)</span>: selecione a variável que sai da base na linha <span class="math inline">\(r\)</span>, de acordo com:</li>
+</ol>
+<div class="tcolorbox">
+<p><span class="math inline">\(\bar{b}_r = \underset{\{ \forall i \in 1,...,m,\bar{b}_i &lt; 0\}}{min} \bar{b}_i\)</span></p>
+</div>
+<ol start="3" style="list-style-type: decimal">
+<li><span style="color:blue">(seleção da variável que entra da base)</span>: selecione a variável da coluna <span class="math inline">\(s\)</span> de forma que:</li>
+</ol>
+<div class="tcolorbox">
+<p><span class="math inline">\(\dfrac{c_s}{a_{r,s}} = \underset{\{j|j \in N, a_{r,j} &lt; 0\}}{max} \left\{ \dfrac{c_j}{a_{r,j}} \right\}\)</span></p>
+</div>
+<p>Se todo <span class="math inline">\(a_{r,j} &gt; 0\)</span>, pare, o problema é infactível.</p>
+<ol start="3" style="list-style-type: decimal">
+<li><span style="color:blue">(pivoteamento)</span>: Realize as operações de pivoteamento no elemento <span class="math inline">\(a_{r,s}\)</span> e volte para 1.</li>
+</ol>
+</div>
+<p><span style="color:blue">EXEMPLO 1</span>: Resolva o seguinte modelo de PL:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min z = }            &amp; 3x_1 &amp; + 4x_2 &amp; + 9x_3  &amp; \\
+                &amp; \text{Sujeito à}           &amp; x_1  &amp;        &amp; + x_3   &amp; \geq 5\\
+                &amp;                            &amp;      &amp; + x_2 &amp;  + 2x_3  &amp; \geq 2\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0 &amp; \quad x_3  \geq 0&amp;
+\end{alignat*}\]</span>
+<details>
+<summary>
+<span style="color:blue">SOLUÇÃO</span>
+</summary>
+<p>Adicionando as variáveis de folga:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min z = }            &amp; 3x_1 &amp; + 4x_2 &amp; + 9x_3  &amp; \\
+                &amp; \text{Sujeito à}           &amp; x_1  &amp;        &amp; + x_3   &amp; -x_4 &amp;      &amp; =  5\\
+                &amp;                            &amp;      &amp; + x_2 &amp;  + 2x_3  &amp;      &amp; -x_5 &amp; = 2\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0 &amp; \quad x_3  \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Note que nesta etapa teriamos que aplicar o Simplex Fase I (adicionar variáveis artificiais). Porém, se escrevermos o sistema com solução básica <span class="math inline">\(x_B^T = (x_4,x_5)\)</span> (multiplicando a linha 2 e 3 por -1):</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min z = }            &amp; 3x_1 &amp; + 4x_2 &amp; + 9x_3  &amp; \\
+                &amp; \text{Sujeito à}           &amp; -x_1  &amp;        &amp; - x_3   &amp; + x_4 &amp;      &amp; = -5\\
+                &amp;                            &amp;      &amp; - x_2 &amp;  - 2x_3  &amp;      &amp; + x_5 &amp; = -2\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0 &amp; x_3  \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Dessa forma todas as condições para aplicação do algoritmo Dual simplex são satisfeitas, colocando na forma tabular:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">3</td>
+<td align="left">4</td>
+<td align="left">9</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-5</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">-2</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">-2</td>
+</tr>
+</tbody>
+</table>
+<p>Selecionamos então o <span class="math inline">\(x_4\)</span> para deixar a base (min <span class="math inline">\(\{-5,-2\}\)</span>) e <span class="math inline">\(x_1\)</span> para entrar na base (máx <span class="math inline">\(\{\frac{3}{-1},\frac{9}{-1}\}\)</span>).</p>
+<p>Atualizando a tabela com as operações:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(L_2 \leftarrow L_2/-1\)</span></li>
+<li><span class="math inline">\(L_1 \leftarrow L_1 - 3L_2\)</span></li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">4</td>
+<td align="left">6</td>
+<td align="left">3</td>
+<td align="left">0</td>
+<td align="left">-15</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">5</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">-2</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">-2</td>
+</tr>
+</tbody>
+</table>
+<p>Selecionamos agora <span class="math inline">\(x_5\)</span> para deixar a base (min <span class="math inline">\(\{-2\}\)</span>) e <span class="math inline">\(x_3\)</span> para entrar na base (máx <span class="math inline">\(\{\frac{4}{-1},\frac{6}{-2}\}\)</span>).</p>
+<p>Atualizando a tabela com as operações:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(L_3 \leftarrow L_3/-2\)</span></li>
+<li><span class="math inline">\(L_1 \leftarrow L_1 - 6L_3\)</span></li>
+<li><span class="math inline">\(L_2 \leftarrow L_2 - L_3\)</span></li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">3</td>
+<td align="left">3</td>
+<td align="left">-21</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">-1/2</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">1/2</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1/2</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p>Como <span class="math inline">\(b &gt; 0\)</span> a solução é ótima, com <span class="math inline">\(x_B^T = (x_1,x_3) = (4,1)\)</span>, com <span class="math inline">\(z = 21\)</span>.</p>
+</details>
+<p><span style="color:blue">EXEMPLO 2</span>: Considere o modelo do sapateiro:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max z = }            &amp; 5x_1 &amp; + 2x_2 \\
+                &amp; \text{Sujeito à}           &amp; 10x_1   &amp; + 12x_2 &amp;\leq 60\\
+                &amp;                            &amp; 2x_1   &amp; +  x_2 &amp; \leq 6\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>com quadro ótimo:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">5/2</td>
+<td align="left">15</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">0</td>
+<td align="left">7</td>
+<td align="left">1</td>
+<td align="left">-5</td>
+<td align="left">30</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">3</td>
+</tr>
+</tbody>
+</table>
+<p>O sapateiro conseguiu um cliente que exige que o número de sapatos produzidos não exceda o número de cintos em mais de 1 unidade (<span class="math inline">\(x_1 - x_2 \leq 1\)</span>). A solução atual continua ótima? Represente a solução ótima antiga e a nova restrição graficamente e encontre a nova solução ótima usando o método dual simplex.</p>
+<details>
+<summary>
+<span style="color:blue">SOLUÇÃO</span>
+</summary>
+<p>Inserindo a variável de folga da nova restrição (<span class="math inline">\(x_5\)</span>) na base:</p>
+<p><span class="math inline">\(x_1 - x_2 + x_5 = 1\)</span></p>
+<p>O gráfico com a nova restrição fica:</p>
+<p><img src="img/sapateiro_cliente.png" /></p>
+<p>Vemos que a solução ótima antiga não satisfaz a nova restrição (isso é mostrado no quadro quando mantemos as variáveis <span class="math inline">\(x_3\)</span> e <span class="math inline">\(x_1\)</span> na base, e colocamos a variável de folga da nova restrição também na base:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">5/2</td>
+<td align="left">0</td>
+<td align="left">15</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">0</td>
+<td align="left">7</td>
+<td align="left">1</td>
+<td align="left">-5</td>
+<td align="left">0</td>
+<td align="left">30</td>
+</tr>
+<tr class="odd">
+<td align="left">??</td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p>Temos que atualizar a tabela (pois <span class="math inline">\(x_1\)</span> deixou de estar na base):</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(L_4 \leftarrow L_4 - L3\)</span></li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">5/2</td>
+<td align="left">0</td>
+<td align="left">15</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">0</td>
+<td align="left">7</td>
+<td align="left">1</td>
+<td align="left">-5</td>
+<td align="left">0</td>
+<td align="left">30</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">0</td>
+<td align="left">-3/2</td>
+<td align="left">0</td>
+<td align="left">-1/2</td>
+<td align="left">1</td>
+<td align="left">-2</td>
+</tr>
+</tbody>
+</table>
+<p>Temos agora que os critérios para aplicação do método dual são satisfeitos:</p>
+<p>Selecionamos agora <span class="math inline">\(x_5\)</span> para deixar a base (min <span class="math inline">\(\{-2\}\)</span>) e <span class="math inline">\(x_2\)</span> para entrar na base (máx <span class="math inline">\(\{\frac{1/2}{-3/2},\frac{5/2}{-1/2}\}\)</span>:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(L_4 \leftarrow L_4/(3/2)\)</span></li>
+<li><span class="math inline">\(L_1 \leftarrow L_1 - 1/2L_4\)</span></li>
+<li><span class="math inline">\(L_2 \leftarrow L_2 - 7L_4\)</span></li>
+<li><span class="math inline">\(L_3 \leftarrow L_3 - 1/2L4\)</span></li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">7/3</td>
+<td align="left">1/3</td>
+<td align="left">43/3</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">-22/3</td>
+<td align="left">14/3</td>
+<td align="left">62/3</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1/3</td>
+<td align="left">1/3</td>
+<td align="left">7/3</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1/3</td>
+<td align="left">-2/3</td>
+<td align="left">4/3</td>
+</tr>
+</tbody>
+</table>
+<p>Nova solução ótima com <span class="math inline">\(x_B^T = (x_3,x_1,x_2) = (62/3,7/3,4/3)\)</span></p>
+</details>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="a-inversa-simplex-e-dualidade.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/04-.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
