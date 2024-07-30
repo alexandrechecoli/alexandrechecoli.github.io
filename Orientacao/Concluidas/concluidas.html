@@ -11,6 +11,8 @@
         
         <script src="/libs/p5.min.js"></script>
         <script src="/sketch.js"></script>
+        <link rel="stylesheet" href="/sty/tabela.css">
+        <link rel="icon" href="../../img/cedrus_logo_sem_fundo.png">
     </head>
     <body>
         
@@ -49,48 +51,68 @@
 
         <section class = "content-section container">
             <h2 class = "section-header">Orientações concluídas</h2>
-            <p>
-                Abaixo segue os trabalhos de algumas orientações concluídas. Os textos finais e apresentações ficam disponíveis para consulta.
-            </p>
-            <div style = "margin: 3em 0em 3em 0em;font-size: 17px;">
-                <table id = "artigos">
-                    <thead>
-                        <tr>
-                            <th>Aluno</th>
-                            <th>Nome do trabalho</th>
-                            <th>Pdf</th>
-                            <th>ppt</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Gustavo Veigel</td>
-                            <td style = "color:rgb(80, 80, 214)">Metaheuristica VNS para o problema de carregamento de paletes</td>
-                            <td><a style="text-decoration: none;" href="/Orientacao/Concluidas/Arquivos/METAHEURÍSTICA VNS PARA O PROBLEMA DE CARREGAMENTO - GUSTAVO PDF.pdf" download>PDF</a></td>
-                            <td><a style="text-decoration: none;" href="/Orientacao/Concluidas/Arquivos/METAHEURÍSTICA VNS PARA O PROBLEMA DE CARREGAMENTO - GUSTAVO PDF.pdf" download>PPT</a></td>
-                        </tr>
-                        <tr>
-                            <td>Ingrid Vieira</td>
-                            <td style = "color:rgb(80, 80, 214)">A greedy algorithm for the nurse rostering problem</td>
-                            <td><a style="text-decoration: none;" href="/Orientacao/Concluidas/Arquivos/A GREEDY ALGORITHM FOR THE NURSE ROSTERING PROBLEM - INGRID PDF.pdf" download>PDF</a></td>
-                            <td><a style="text-decoration: none;" href="/Orientacao/Concluidas/Arquivos/A GREEDY ALGORITHM FOR THE NURSE ROSTERING PROBLEM - INGRID PDF.pdf" download>PPT</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-        
-            <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-            <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
-        
-            <script>
-                $(document).ready(function(){
-                    $("#artigos").DataTable({
-                        "order": [[2, "desc"]]
-                    });
-                });
-            </script>
-        </section>
+
+
+
+<div style = "margin: 3em 0em 3em 0em;font-size: 17px;">
+    <table id = "artigos">
+        <thead>
+            <tr>
+                <th>Aluno</th>
+                <th>Trabalho</th>
+                <th>Ano</th>
+                <th>Tema</th>
+            </tr>
+        </thead>
+        <tbody>
+
+
+            <tr>
+                <td>Gustavo Veigel</td>
+                <td style = "color:rgb(80, 80, 214)"> <a target="_blank" href="/Orientacao/Concluidas/Arquivos/METAHEURÍSTICA VNS PARA O PROBLEMA DE CARREGAMENTO - GUSTAVO PDF.pdf">Metaheuristica VNS para o problema de carregamento de paletes</a></td>
+                <td>2023</td>
+                <td>Metaheuristica-BPP</td>
+            </tr> 
+            <tr>
+                <td>Ingrid Vieira</td>
+                <td style = "color:rgb(80, 80, 214)"> <a target="_blank" style="text-decoration: none;" href="/Orientacao/Concluidas/Arquivos/A GREEDY ALGORITHM FOR THE NURSE ROSTERING PROBLEM - INGRID PDF.pdf">A greedy algorithm for the nurse rostering problem</a></td>
+                <td>2023    </td>
+                <td>Metaheuristica-NRP   </td>
+            </tr>
+            <tr>
+                <td>Gabriela Monteiro Xavier</td>
+                <td style = "color:rgb(80, 80, 214)"> <a target="_blank" style="text-decoration: none;" href="/Orientacao/Concluidas/Arquivos/A new hyperparameter optimization approach for classification models applied to bank account churn data.pdf">A new hyperparameter optimization approach for classification models applied to bank account churn data</a></td>
+                <td>2024    </td>
+                <td>Data mining-classificação </td>
+            </tr>
+            <tr>
+                <td>Bruno Renner</td>
+                <td style = "color:rgb(80, 80, 214)"> <a target="_blank" style="text-decoration: none;" href="/Orientacao/Concluidas/Arquivos/Ferramenta em VBA com interface em excel para solucionar o VRPTW.pdf">Ferramenta em VBA com interface em excel para solucionar o VRPTW</a></td>
+                <td>2024    </td>
+                <td>Aplicativo-VRPTW    </td>
+            </tr>
+
+
+
+        </tbody>
+    </table>
+</div>
+</section>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        $("#artigos").DataTable({
+            "order": [[2, "desc"]]
+        });
+    });
+</script>
+
+
+      
 
 
 
