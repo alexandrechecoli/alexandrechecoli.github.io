@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-06-10" />
+<meta name="date" content="2024-09-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -76,10 +76,22 @@
 <li><a href="./">Notas Pesquisa Operacional</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Notas Pesquisa Operacional</a></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Modelagem</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#definições"><i class="fa fa-check"></i><b>1.1</b> Definições</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#modelagem-matemática"><i class="fa fa-check"></i><b>1.2</b> Modelagem matemática</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#premissas-da-pl"><i class="fa fa-check"></i><b>1.3</b> Premissas da PL</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#exercicios"><i class="fa fa-check"></i><b>1.4</b> Exercicios</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#exercicio-1"><i class="fa fa-check"></i><b>1.4.1</b> Exercicio 1</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#exercicio-2"><i class="fa fa-check"></i><b>1.4.2</b> Exercicio 2</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#exercicio-3"><i class="fa fa-check"></i><b>1.4.3</b> Exercicio 3</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#exercicio-4"><i class="fa fa-check"></i><b>1.4.4</b> Exercicio 4</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="2" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>2</b> Simplex Fase I</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios"><i class="fa fa-check"></i><b>2.1</b> Exercicios</a></li>
+<li class="chapter" data-level="2.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios-1"><i class="fa fa-check"></i><b>2.1</b> Exercicios</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>3</b> Dualidade</a>
 <ul>
@@ -117,11 +129,82 @@
 <div id="header">
 <h1 class="title">Notas de aula Pesquisa Operacional</h1>
 <p class="author"><em>Alexandre Checoli Choueiri</em></p>
-<p class="date"><em>2024-06-10</em></p>
+<p class="date"><em>2024-09-01</em></p>
 </div>
-<div id="notas-pesquisa-operacional" class="section level1 hasAnchor" number="1">
-<h1><span class="header-section-number">Chapter 1</span> Notas Pesquisa Operacional<a href="index.html#notas-pesquisa-operacional" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="modelagem" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Chapter 1</span> Modelagem<a href="index.html#modelagem" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="definições" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> Definições<a href="index.html#definições" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="tcolorbox2">
+<p><strong>Programação matemática</strong>: Programação matemática (ou teoria da otimização) é o ramo da matemática que lida com técnicas para maximizar ou minimizar uma função objetivo, sujeito a restrições lineares, não lineares e inteiras nas variáveis.</p>
+</div>
+<div class="tcolorbox2">
+<p><strong>Programação linear</strong>: A programação linear (PL) lida com a <strong>maximização</strong> ou a <strong>minimização</strong> de uma função objetivo linear nas variáveis, sujeito a equações e/ou inequações também lineares.</p>
+</div>
+<div class="tcolorbox2">
+<p><strong>Modelo matemático</strong>: O modelo matemático de um sistema é um conjunto de relacionamentos matemáticos que caracterizam o conjunto de soluções factíveis do sistema.</p>
+</div>
+<p>Percebemos então que a <strong>programação linear</strong> é uma forma de programação matemática, em que a função a ser otimizada e restrições são todas lineares nas variáveis. O objeto principal de estudo da programação matemática são os <strong>modelos matemáticos</strong>. Um modelo matemático (no nosso caso, linear) representa uma situação/problema/sistema do mundo, por meio de relações matemáticas. O processo de observar o problema e transcrevê-lo em um modelo matemático é chamado de <strong>modelagem</strong>, como mostrado na figura abaixo:</p>
+<p><img src="img/modelagem.png" /></p>
+<p>O objetivo da modelagem {não é encontrar uma solução para o problema}, mas simplesmente representa-lo de uma forma rigorosa por meio da matemática.</p>
+</div>
+<div id="modelagem-matemática" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> Modelagem matemática<a href="index.html#modelagem-matemática" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Existem diversas formas e metodologias para a modelagem de uma situação como um programa linear (PL), porém, em última instância, a prática é a nossa melhor aliada, e com o tempo começamos a nos acostumar com a “sintaxe” da modelagem.</p>
+<p>O modelo de PL deve ser composto de duas grandes partes: <strong>função objetivo</strong> (fo), que deve ser maximizada ou minimizada, e o <strong>conjunto de restrições</strong>. Lembre-se que tanto a fo quanto as restrições devem ser lineares. Independente da forma e da ordem da modelagem, os seguintes passos sempre devem existir:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Definição das variáveis de decisão</strong>: como o nome já diz, uma variável é {algo que muda}. Em um modelo matemático as variáveis são as quantidades que queremos encontrar e otimizar (por exemplo, quantidade a ser produzida, % de tempo que cada máquina deve ficar produzindo, quantidade de dinheiro investido, etc…). Representamos as variáveis com letras e índices (por exemplo, <span class="math inline">\(x_1\)</span>, <span class="math inline">\(x_2\)</span>, <span class="math inline">\(b\)</span>, etc…).</p></li>
+<li><p><strong>Definição dos parâmetros</strong>: ao contrário das variáveis, os parâmetros de um modelo não mudam, são constantes ao longo de todo o processo. Podemos pensar nos parâmetros como as quantidades dadas do problema (por exemplo, preço pela produção de uma peça, quantidade disponível de matéria prima, custo por hora/máquina produzindo, etc…).</p></li>
+<li><p><strong>Definição das restrições e função objetivo</strong>: a função objetivo deve relacionar as variáveis de tal forma que ela quantifique a qualidade de uma solução, por exemplo, em um problema de produção de ração, podemos quantificar uma solução pelo custo da receita criada. Sempre devemos indicar o que queremos fazer com a fo, maximizar ou minimizar (no caso da ração, obviamente o objetivo deve ser minimizado). As restrições vão determinar quando uma solução é factível (respeita todas as restrições do sistema) ou não. Por exemplo, podemos ter uma quantidade limitada de matéria prima para a produção da ração, de forma que uma solução não pode ultrapassar essa quantidade.</p></li>
+</ol>
+<p>Para um exemplo completo de modelagem matemática (o problema da dieta), veja o material em <a href="https://alexandrechecoli.github.io/4-prog-linear/Materiais/Apresentacoes/1.0%20-%20IntroPL.pdf" class="uri">https://alexandrechecoli.github.io/4-prog-linear/Materiais/Apresentacoes/1.0%20-%20IntroPL.pdf</a>, no tópico <strong>Modelando um problema</strong> (pg. 78 do arquivo pdf).</p>
+</div>
+<div id="premissas-da-pl" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Premissas da PL<a href="index.html#premissas-da-pl" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>De maneira um pouco mais formal, ao criarmos um modelo de PL precisamos garantir que algumas premissas sejam satisfeitas. Quando isso ocorre, podemos dizer que o modelo é de fato um PL. As premissas são as seguintes:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Premissa da proporcionalidade</strong>: Considerando o modelo da dieta, vista na introdução da disciplina. Se 1kg de banana fornece 7g de proteínas, a <strong>proporcionalidade</strong> afirma que 2kg de banana devem fornecer <span class="math inline">\(2 \cdot 7 = 14\)</span>g de proteína.</p></li>
+<li><p><strong>Premissa da aditividade</strong>: Ainda considerando o modelo da dieta. 1kg de banana fornece 7g de proteínas, já 1kg de frango fornece 14. A premissa da <strong>aditividade</strong> afirma que, se usarmos 1kg de banana e 1kg de frango, a quantidade de proteína ingerida será de <span class="math inline">\(1\cdot7 + 1\cdot14 = 21\)</span>.</p></li>
+<li><p><strong>Premissa da continuidade e não negatividade das variáveis</strong>: A premissa da <strong>continuidade</strong> implica que as variáveis podem assumir quaisquer valores reais. No problema da dieta por exemplo, podemos comprar 1kg, 0.5kg, 2.85kg, etc…dos alimentos. Já a <strong>não-negatividade</strong> implica que as variáveis só podem assumir valores positivos (não seria possível comprar -0.5kg de banana, por exemplo).</p></li>
+</ol>
+<ul>
+<li><p>Quando as variáveis precisam ser inteiras, temos um modelo de (e não um PL), que é muito mais difícil de se resolver.</p></li>
+<li><p>OBS2: Em alguns modelos pode ser necessário assumir variáveis com valores negativos. É muito fácil transformar esse modelo em um PL equivalente.</p></li>
+<li><p>OBS3: As premissas de proporcionalidade e aditividade automaticamente garantem que as restrições são equações ou inequações . Elas também implicam que a função objetivo é <strong>linear</strong>.</p></li>
+</ul>
+</div>
+<div id="exercicios" class="section level2 hasAnchor" number="1.4">
+<h2><span class="header-section-number">1.4</span> Exercicios<a href="index.html#exercicios" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Para cada um dos problemas abaixo, faça o que se pede:</p>
+<ol style="list-style-type: decimal">
+<li>Encontre o modelo de PL que descreve o problema.</li>
+<li>Identifique os parâmetros do modelo.</li>
+<li>Encontre a solução ótima dos modelos, usando o software GUSEK <a href="https://gusek.sourceforge.net/gusek.html" class="uri">https://gusek.sourceforge.net/gusek.html</a>. Para um tutorial de como baixar e usar o software clique no link <a href="https://alexandrechecoli.github.io/5-Tutoriais/tutoriais.html" class="uri">https://alexandrechecoli.github.io/5-Tutoriais/tutoriais.html</a>.</li>
+</ol>
+<div id="exercicio-1" class="section level3 hasAnchor" number="1.4.1">
+<h3><span class="header-section-number">1.4.1</span> Exercicio 1<a href="index.html#exercicio-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Uma indústria de móveis produz 4 tipos de mesas. Cada mesa passa por dois processos, <strong>carpintaria</strong> e <strong>finalização</strong>. Os número de horas/homem necessários em cada etapa é mostrado na Tabela abaixo; bem como a disponibilidade. A Tabela também aponta o lucro pela venda de cada unidade de mesa.</p>
+<p><img src="img/TabelaMesas.png" /></p>
+</div>
+<div id="exercicio-2" class="section level3 hasAnchor" number="1.4.2">
+<h3><span class="header-section-number">1.4.2</span> Exercicio 2<a href="index.html#exercicio-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>(O problema do transporte)</strong> Uma empresa possui 2 fábricas (I e II) e 3 depósitos (A,B e C). Cada fábrica possui uma capacidade de produção e cada depósito uma demanda de consumo. Existe uma distância entre cada fábrica e cada depósito, de forma que há um custo associado a cada unidade de produto transportado de uma fábrica a um depósito. A empresa precisa atender às demandas dos depósitos, sem exceder as capacidades produtivas das fábricas. Os dados de demandas, capacidades e custos de transporte são mostrados na Tabela abaixo:</p>
+<p><img src="img/TabelaTransporte.png" /></p>
+<p>Por exemplo, a capacidade da fábrica 1 é de 350, o custo para se transportar uma unidade da fábrica I ao depósito B é de 1.7.</p>
+</div>
+<div id="exercicio-3" class="section level3 hasAnchor" number="1.4.3">
+<h3><span class="header-section-number">1.4.3</span> Exercicio 3<a href="index.html#exercicio-3" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>(Problema de mistura)</strong> Uma agroindústria deve produzir um tipo de ração para determinado animal. Essa ração é produzida pela mistura de farinhas de 3 ingredientes básicos: osso, soja e resto de peixe. Cada um desses 3 ingredientes contém quantidades de dois nutrientes necessários a uma dieta nutricional balanceada: proteína e cálcio. O nutricionista especifica as necessidades mínimas destes nutrientes em 1kg de ração. Cada ingrediente é adquirido a um certo custo unitário (R$/kg). Os dados são apresentados na Tabela abaixo:</p>
+<p><img src="img/TabelaMistura.png" width="405" /></p>
+<p>Por exemplo, em 1kg de osso existe 20% de proteína e 60% de cálcio, a um custo de 0.56. 1kg de ração demanda <strong>pelo menos</strong> 30% de proteína e 50% de cálcio.</p>
+</div>
+<div id="exercicio-4" class="section level3 hasAnchor" number="1.4.4">
+<h3><span class="header-section-number">1.4.4</span> Exercicio 4<a href="index.html#exercicio-4" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>(Problema multi-período)</strong> Um depósito compra e armazena um item para vender depois. O depósito consegue armazenar somente 100 unidades do item, a um custo de R$1.00/unidade por trimestre. Em cada trimestre o preço de compra é igual ao de venda. Esses preços variam de trimestre para trimestre como mostrado na Tabela abaixo:</p>
+<p><img src="img/TabelaMultiperiodo.png" width="235" /></p>
 
+</div>
+</div>
 </div>
             </section>
 
@@ -183,6 +266,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>
