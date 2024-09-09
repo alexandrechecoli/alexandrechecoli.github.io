@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 3 A inversa, simplex e dualidade | Notas de aula Pesquisa Operacional</title>
+  <title>Chapter 5 A inversa, simplex e dualidade | Notas de aula Pesquisa Operacional</title>
   <meta name="description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
   <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 3 A inversa, simplex e dualidade | Notas de aula Pesquisa Operacional" />
+  <meta property="og:title" content="Chapter 5 A inversa, simplex e dualidade | Notas de aula Pesquisa Operacional" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 3 A inversa, simplex e dualidade | Notas de aula Pesquisa Operacional" />
+  <meta name="twitter:title" content="Chapter 5 A inversa, simplex e dualidade | Notas de aula Pesquisa Operacional" />
   
   <meta name="twitter:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
   
@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-06-10" />
+<meta name="date" content="2024-09-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -76,26 +76,44 @@
 <li><a href="./">Notas Pesquisa Operacional</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>1</b> Simplex Fase I</a>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Modelagem</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios"><i class="fa fa-check"></i><b>1.1</b> Exercicios</a></li>
-</ul></li>
-<li class="chapter" data-level="2" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>2</b> Dualidade</a>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#definições"><i class="fa fa-check"></i><b>1.1</b> Definições</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#modelagem-matemática"><i class="fa fa-check"></i><b>1.2</b> Modelagem matemática</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#premissas-da-pl"><i class="fa fa-check"></i><b>1.3</b> Premissas da PL</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#exercicios"><i class="fa fa-check"></i><b>1.4</b> Exercicios</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="dualidade.html"><a href="dualidade.html#tabela-de-conversão-primal-dual"><i class="fa fa-check"></i><b>2.1</b> Tabela de conversão primal-dual</a></li>
-<li class="chapter" data-level="2.2" data-path="dualidade.html"><a href="dualidade.html#teoremas-da-dualidade"><i class="fa fa-check"></i><b>2.2</b> Teoremas da dualidade</a>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#exercicio-1"><i class="fa fa-check"></i><b>1.4.1</b> Exercicio 1</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#exercicio-2"><i class="fa fa-check"></i><b>1.4.2</b> Exercicio 2</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#exercicio-3"><i class="fa fa-check"></i><b>1.4.3</b> Exercicio 3</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#exercicio-4"><i class="fa fa-check"></i><b>1.4.4</b> Exercicio 4</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="revisão-algebra.html"><a href="revisão-algebra.html"><i class="fa fa-check"></i><b>2</b> Revisão Algebra</a>
 <ul>
-<li class="chapter" data-level="2.2.1" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-1"><i class="fa fa-check"></i><b>2.2.1</b> Teorema fraco da dualidade parte 1</a></li>
-<li class="chapter" data-level="2.2.2" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-2"><i class="fa fa-check"></i><b>2.2.2</b> Teorema fraco da dualidade parte 2</a></li>
-<li class="chapter" data-level="2.2.3" data-path="dualidade.html"><a href="dualidade.html#teorema-das-folgas-complementares-tfc"><i class="fa fa-check"></i><b>2.2.3</b> Teorema das folgas complementares (TFC)</a></li>
+<li class="chapter" data-level="2.1" data-path="revisão-algebra.html"><a href="revisão-algebra.html#sistemas-lineares"><i class="fa fa-check"></i><b>2.1</b> Sistemas lineares</a></li>
+<li class="chapter" data-level="2.2" data-path="revisão-algebra.html"><a href="revisão-algebra.html#resolução-de-sistemas-lineares"><i class="fa fa-check"></i><b>2.2</b> Resolução de sistemas lineares</a></li>
 </ul></li>
-</ul></li>
-<li class="chapter" data-level="3" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html"><i class="fa fa-check"></i><b>3</b> A inversa, simplex e dualidade</a>
+<li class="chapter" data-level="3" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>3</b> Simplex Fase I</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas"><i class="fa fa-check"></i><b>3.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
-<li class="chapter" data-level="3.2" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal"><i class="fa fa-check"></i><b>3.2</b> Encontrando a solução dual na tabela primal</a></li>
+<li class="chapter" data-level="3.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios-1"><i class="fa fa-check"></i><b>3.1</b> Exercicios</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>4</b> Algoritmo Dual Simplex</a></li>
+<li class="chapter" data-level="4" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>4</b> Dualidade</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="dualidade.html"><a href="dualidade.html#tabela-de-conversão-primal-dual"><i class="fa fa-check"></i><b>4.1</b> Tabela de conversão primal-dual</a></li>
+<li class="chapter" data-level="4.2" data-path="dualidade.html"><a href="dualidade.html#teoremas-da-dualidade"><i class="fa fa-check"></i><b>4.2</b> Teoremas da dualidade</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-1"><i class="fa fa-check"></i><b>4.2.1</b> Teorema fraco da dualidade parte 1</a></li>
+<li class="chapter" data-level="4.2.2" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-2"><i class="fa fa-check"></i><b>4.2.2</b> Teorema fraco da dualidade parte 2</a></li>
+<li class="chapter" data-level="4.2.3" data-path="dualidade.html"><a href="dualidade.html#teorema-das-folgas-complementares-tfc"><i class="fa fa-check"></i><b>4.2.3</b> Teorema das folgas complementares (TFC)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html"><i class="fa fa-check"></i><b>5</b> A inversa, simplex e dualidade</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas"><i class="fa fa-check"></i><b>5.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
+<li class="chapter" data-level="5.2" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal"><i class="fa fa-check"></i><b>5.2</b> Encontrando a solução dual na tabela primal</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>6</b> Algoritmo Dual Simplex</a></li>
 </ul>
 
       </nav>
@@ -113,8 +131,8 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="a-inversa-simplex-e-dualidade" class="section level1 hasAnchor" number="3">
-<h1><span class="header-section-number">Chapter 3</span> A inversa, simplex e dualidade<a href="a-inversa-simplex-e-dualidade.html#a-inversa-simplex-e-dualidade" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="a-inversa-simplex-e-dualidade" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Chapter 5</span> A inversa, simplex e dualidade<a href="a-inversa-simplex-e-dualidade.html#a-inversa-simplex-e-dualidade" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>A partir da inversa da base (<strong>B</strong>) de um PL podemos escrever todos os dados da tabela simplex na iteração referente a esta base. Ainda, podemos determinar como calcular a solução dual (<span class="math inline">\(\pi\)</span>). O quadro genérico fica:</p>
 <center>
 <table>
@@ -139,8 +157,8 @@
 </tbody>
 </table>
 </center>
-<div id="encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas" class="section level2 hasAnchor" number="3.1">
-<h2><span class="header-section-number">3.1</span> Encontrando os elementos da tabela pelas fórmulas genéricas<a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Encontrando os elementos da tabela pelas fórmulas genéricas<a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><span style="color:blue">EXERCICIO 1</span>: Considere o modelo do sapateiro:</p>
 <span class="math display">\[\begin{alignat*}{4}
                 &amp; \text{max z = }            &amp; 5x_1 &amp; + 2x_2 \\
@@ -598,8 +616,8 @@ SOLUÇÃO <span style="color:blue">C</span>
 <p>Sabemos então que na próxima iteração a solução terá as variáveis <span class="math inline">\(x_B^T = (x_1,x_4,x_2)\)</span>. O próximo passo seria calcular a matriz inversa dessa nova base e verificar os valores atualizados de <span class="math inline">\(c_i\)</span> (como na letra A). Note que fizemos toda uma iteração do algoritmo Simplex sem usar o quadro-Simplex, somente com as fórmulas genéricas. Em modelos maiores, isso evita que muitos cálculos. Essa é a base do algoritmo <em>Simplex-revisado</em> (ver apresentação no site).</p>
 </details>
 </div>
-<div id="encontrando-a-solução-dual-na-tabela-primal" class="section level2 hasAnchor" number="3.2">
-<h2><span class="header-section-number">3.2</span> Encontrando a solução dual na tabela primal<a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="encontrando-a-solução-dual-na-tabela-primal" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> Encontrando a solução dual na tabela primal<a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Sabemos que o negativo dos valores duais estão presentes na própria tabela primal. São os <span class="math inline">\(c_i\)</span> atualizados acima da matriz identidade inicial.</p>
 <p><span style="color:blue">EXEMPLO 1</span>: Considere o modelo do sapateiro:</p>
 <span class="math display">\[\begin{alignat*}{4}
@@ -814,7 +832,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/03-.Rmd",
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/04-.Rmd",
 "text": "Edit"
 },
 "history": {
