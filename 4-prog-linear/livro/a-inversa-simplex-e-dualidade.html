@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 5 A inversa, simplex e dualidade | Notas de aula Pesquisa Operacional</title>
+  <meta name="description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 5 A inversa, simplex e dualidade | Notas de aula Pesquisa Operacional" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 5 A inversa, simplex e dualidade | Notas de aula Pesquisa Operacional" />
+  
+  <meta name="twitter:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  
+
+<meta name="author" content="Alexandre Checoli Choueiri" />
+
+
+<meta name="date" content="2024-09-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="dualidade.html"/>
+<link rel="next" href="algoritmo-dual-simplex.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Notas Pesquisa Operacional</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Modelagem</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#definições"><i class="fa fa-check"></i><b>1.1</b> Definições</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#modelagem-matemática"><i class="fa fa-check"></i><b>1.2</b> Modelagem matemática</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#premissas-da-pl"><i class="fa fa-check"></i><b>1.3</b> Premissas da PL</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#exercicios"><i class="fa fa-check"></i><b>1.4</b> Exercicios</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#exercicio-1"><i class="fa fa-check"></i><b>1.4.1</b> Exercicio 1</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#exercicio-2"><i class="fa fa-check"></i><b>1.4.2</b> Exercicio 2</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#exercicio-3"><i class="fa fa-check"></i><b>1.4.3</b> Exercicio 3</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#exercicio-4"><i class="fa fa-check"></i><b>1.4.4</b> Exercicio 4</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="revisão-algebra.html"><a href="revisão-algebra.html"><i class="fa fa-check"></i><b>2</b> Revisão Algebra</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="revisão-algebra.html"><a href="revisão-algebra.html#sistemas-lineares"><i class="fa fa-check"></i><b>2.1</b> Sistemas lineares</a></li>
+<li class="chapter" data-level="2.2" data-path="revisão-algebra.html"><a href="revisão-algebra.html#resolução-de-sistemas-lineares"><i class="fa fa-check"></i><b>2.2</b> Resolução de sistemas lineares</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>3</b> Simplex Fase I</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios-1"><i class="fa fa-check"></i><b>3.1</b> Exercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>4</b> Dualidade</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="dualidade.html"><a href="dualidade.html#tabela-de-conversão-primal-dual"><i class="fa fa-check"></i><b>4.1</b> Tabela de conversão primal-dual</a></li>
+<li class="chapter" data-level="4.2" data-path="dualidade.html"><a href="dualidade.html#teoremas-da-dualidade"><i class="fa fa-check"></i><b>4.2</b> Teoremas da dualidade</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-1"><i class="fa fa-check"></i><b>4.2.1</b> Teorema fraco da dualidade parte 1</a></li>
+<li class="chapter" data-level="4.2.2" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-2"><i class="fa fa-check"></i><b>4.2.2</b> Teorema fraco da dualidade parte 2</a></li>
+<li class="chapter" data-level="4.2.3" data-path="dualidade.html"><a href="dualidade.html#teorema-das-folgas-complementares-tfc"><i class="fa fa-check"></i><b>4.2.3</b> Teorema das folgas complementares (TFC)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html"><i class="fa fa-check"></i><b>5</b> A inversa, simplex e dualidade</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas"><i class="fa fa-check"></i><b>5.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
+<li class="chapter" data-level="5.2" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal"><i class="fa fa-check"></i><b>5.2</b> Encontrando a solução dual na tabela primal</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>6</b> Algoritmo Dual Simplex</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notas de aula Pesquisa Operacional</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="a-inversa-simplex-e-dualidade" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Chapter 5</span> A inversa, simplex e dualidade<a href="a-inversa-simplex-e-dualidade.html#a-inversa-simplex-e-dualidade" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>A partir da inversa da base (<strong>B</strong>) de um PL podemos escrever todos os dados da tabela simplex na iteração referente a esta base. Ainda, podemos determinar como calcular a solução dual (<span class="math inline">\(\pi\)</span>). O quadro genérico fica:</p>
+<center>
+<table>
+<thead>
+<tr class="header">
+<th align="center"><span class="math inline">\(x_B\)</span></th>
+<th align="center"><span class="math inline">\(x_N\)</span></th>
+<th align="center"><span class="math display">\[-z\]</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><span class="math inline">\(0\)</span></td>
+<td align="center"><span class="math inline">\(c_N^T - c_B^TB^{-1}N\)</span></td>
+<td align="center"><span class="math inline">\(-c_B^TB^{-1}b\)</span></td>
+</tr>
+<tr class="even">
+<td align="center"><span class="math inline">\(I\)</span></td>
+<td align="center"><span class="math inline">\(B^{-1}N\)</span></td>
+<td align="center"><span class="math inline">\(B^{-1}b\)</span></td>
+</tr>
+</tbody>
+</table>
+</center>
+<div id="encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Encontrando os elementos da tabela pelas fórmulas genéricas<a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><span style="color:blue">EXERCICIO 1</span>: Considere o modelo do sapateiro:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max z = }            &amp; 5x_1 &amp; + 2x_2 \\
+                &amp; \text{Sujeito à}           &amp; 10x_1   &amp; + 12x_2 &amp;\leq 60\\
+                &amp;                            &amp; 2x_1   &amp; +  x_2 &amp; \leq 6\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Sabendo que a solução ótima tem as variáveis básicas <span class="math inline">\(x_B^T = (x_3,x_1)\)</span>, encontre o quadro Simplex ótimo:</p>
+<p>Na forma padrão, temos que:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min z = }            &amp; -5x_1 &amp; - 2x_2 \\
+                &amp; \text{Sujeito à}           &amp; 10x_1   &amp; + 12x_2 &amp; + x_3 &amp; &amp; = 60\\
+                &amp;                            &amp; 2x_1   &amp; +  x_2 &amp; &amp; &amp; + x_4&amp; = 6\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Portanto, com <span class="math inline">\(x_B^T = (x_3,x_1)\)</span>:</p>
+<p><span class="math display">\[\begin{equation*}
+            B =
+            \left[
+            \begin{array}{cc}
+                1 &amp; 10 \\
+                0 &amp; 2
+            \end{array}
+            \right],
+            c_B^T =
+            \left[
+            \begin{array}{cc}
+                0 &amp; -5 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+            N =
+            \left[
+            \begin{array}{cc}
+                12 &amp; 0 \\
+                1 &amp; 1
+            \end{array}
+            \right],
+            c_N^T =
+            \left[
+            \begin{array}{cc}
+             -2 &amp; 0 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+            b^T =
+            \left[
+            \begin{array}{cc}
+                60 &amp; 6 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Encontrando a inversa <span class="math inline">\(B^{-1}\)</span>:</p>
+<p><span class="math display">\[\begin{equation*}
+            B|I =
+            \left[
+            \begin{array}{cccc}
+                1 &amp; 10 &amp; 1&amp; 0\\
+                0 &amp; 2 &amp; 0 &amp; 1
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Realizando as operações:</p>
+<p><span class="math inline">\(L_2 \leftarrow L_2/2\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 - 10 L_2\)</span></p>
+<p>Temos:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1} =
+            \left[
+            \begin{array}{cc}
+                1 &amp; -5\\
+                0 &amp; 1/2
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Calculando <span class="math inline">\(N\)</span> atualizado:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1}N =
+            \left[
+            \begin{array}{cc}
+                1 &amp; -5\\
+                0 &amp; 1/2
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{cc}
+                12 &amp; 0 \\
+                1 &amp; 1
+            \end{array}
+            \right]
+            =
+            \left[
+            \begin{array}{cc}
+                7 &amp; -5 \\
+                1/2 &amp; 1/2
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Calculando <span class="math inline">\(c_N^T\)</span> atualizado:</p>
+<p><span class="math display">\[\begin{equation*}
+            c_N^T - c_B^TB^{-1}N =
+            \left[
+            \begin{array}{cc}
+             -2 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{cc}
+                0 &amp; -5 \\
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{cc}
+                1 &amp; -5\\
+                0 &amp; 1/2
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{cc}
+                12 &amp; 0 \\
+                1 &amp; 1
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+            =
+            \left[
+            \begin{array}{cc}
+             -2 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{cc}
+                0 &amp; -5 \\
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{cc}
+                7 &amp; -5 \\
+                1/2 &amp; 1/2
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+            =
+            \left[
+            \begin{array}{cc}
+             -2 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{cc}
+                -5/2 &amp; -5/2 \\
+            \end{array}
+            \right]
+            =
+            \left[
+            \begin{array}{cc}
+                1/2 &amp; 5/2 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Calculando <span class="math inline">\(b\)</span> atualizado:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1}b
+            =
+            \left[
+            \begin{array}{cc}
+                1 &amp; -5\\
+                0 &amp; 1/2
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{c}
+                60 \\
+                6
+            \end{array}
+            \right]
+            =
+            \left[
+            \begin{array}{c}
+                30 \\
+                3
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Calculando <span class="math inline">\(-z\)</span> atualizado:</p>
+<p><span class="math display">\[\begin{equation*}
+            -c_BB^{-1}b
+            =
+            -
+            \left[
+            \begin{array}{cc}
+                0 &amp; -5\\
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{c}
+                30 \\
+                3
+            \end{array}
+            \right]
+            =
+            15
+\end{equation*}\]</span></p>
+<p>Portanto o quadro Simplex considerando as variáveis básica <span class="math inline">\(x_B^T = (x_3,x_1)\)</span> fica:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">5/2</td>
+<td align="left">15</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">0</td>
+<td align="left">7</td>
+<td align="left">1</td>
+<td align="left">-5</td>
+<td align="left">30</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">3</td>
+</tr>
+</tbody>
+</table>
+<p><span style="color:blue">EXERCICIO 2</span>: Considerando o seguinte modelo de PL:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max z = }            &amp; 100x_1 &amp; + 150x_2 \\
+                &amp; \text{Sujeito à}           &amp; 2x_1   &amp; + 3x_2    &amp;        \leq 120\\
+                &amp;                            &amp;  x_1   &amp;           &amp;         \leq 40\\
+                &amp;                            &amp;        &amp;  \quad  x_2     &amp;  \leq 30\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p><span style="color:blue">A</span>: A solução básica com variáveis <span class="math inline">\(x_B^T = (x_3,x_4,x_2)\)</span> é ótima?</p>
+<p><span style="color:blue">B</span>: Se a solução não for ótima, calcule qual deve ser a variável que sai da base.</p>
+<p><span style="color:blue">C</span>: Com a definição da variável que sai e da que entra na base, qual seria o próximo passo considerando o algoritmo Simplex e a tabela genérica?</p>
+<details>
+<summary>
+SOLUÇÃO <span style="color:blue">A</span>
+</summary>
+<p>Sabemos que o critério de parada do algoritmo Simplex é quando todos os <span class="math inline">\(c_i\)</span> na função objetivo são <span class="math inline">\(\geq 0\)</span>. Portanto, podemos determinar quais são os <span class="math inline">\(c_N\)</span> atualizados na tabela (dado que os <span class="math inline">\(c_B\)</span> são sempre 0), considerando as variávieis básicas <span class="math inline">\(x_B^T = (x_3,x_4,x_2)\)</span>, e então verificar se algum é negativo.</p>
+<p>O valores atualizados são dados por:</p>
+<p><span class="math display">\[\begin{equation*}
+            c_N^T - c_B^TB^{-1}N
+\end{equation*}\]</span></p>
+<p>Temos que:</p>
+<p><span class="math display">\[\begin{equation*}
+            B =
+            \left[
+            \begin{array}{ccc}
+                1 &amp; 0 &amp; 3 \\
+                0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1
+            \end{array}
+            \right],
+            N =
+            \left[
+            \begin{array}{ccc}
+                2 &amp; 0 \\
+                1 &amp; 0  \\
+                0 &amp; 1
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+            c_B^T =
+            \left[
+            \begin{array}{ccc}
+                0 &amp; 0 &amp; -150
+            \end{array}
+            \right],
+            c_N^T =
+            \left[
+            \begin{array}{ccc}
+                -100 &amp; 0 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Para encontrar a inversa <span class="math inline">\(B^{-1}\)</span></p>
+<p><span class="math display">\[\begin{equation*}
+            B|I =
+            \left[
+            \begin{array}{cccccc}
+                1 &amp; 0 &amp; 3 &amp; 1 &amp; 0 &amp; 0 \\
+                0 &amp; 1 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 1
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Com a operação:
+<span class="math inline">\(L_1 \leftarrow L_1 - 3L_3\)</span></p>
+<p>Temos a inversa:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1} =
+            \left[
+            \begin{array}{ccc}
+                1 &amp; 0 &amp; -3 \\
+                0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Portanto os valores atualizados ficam:</p>
+<p><span class="math display">\[\begin{equation*}
+            c_N^T - c_B^TB^{-1}N =
+            \left[
+            \begin{array}{ccc}
+                -100 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{ccc}
+                0 &amp; 0 &amp; -150
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{ccc}
+                1 &amp; 0 &amp; -3 \\
+                0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{ccc}
+                2 &amp; 0 \\
+                1 &amp; 0  \\
+                0 &amp; 1
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+            =
+            \left[
+            \begin{array}{ccc}
+                -100 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{ccc}
+                0 &amp; -150 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[\begin{equation*}
+    c_N^T
+            =
+            \left[
+            \begin{array}{ccc}
+                -100 &amp; 150 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Temos que o custo atualizado de <span class="math inline">\(x_1\)</span> é -100, portanto a solução <strong>não é ótima</strong>.</p>
+</details>
+<details>
+<summary>
+SOLUÇÃO <span style="color:blue">B</span>
+</summary>
+<p>Sabemos que para determinar a variável que deixa a base, é necessário encontrar:</p>
+<p><span class="math display">\[\begin{equation*}
+        \underset{\{ \forall a_{is} &gt; 0, i=1,...,m \} }{min} \dfrac{b_i}{a_{is}}  
+\end{equation*}\]</span></p>
+<p>Ou seja, precisamos dos valores de <span class="math inline">\(b\)</span> e da coluna <span class="math inline">\(A_i\)</span> atualizados.</p>
+<p>Calculando <span class="math inline">\(b\)</span> atualizado:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1}b
+            =
+            \left[
+            \begin{array}{ccc}
+                1 &amp; 0 &amp; -3 \\
+                0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{ccc}
+                120 \\
+                40 \\
+                30
+            \end{array}
+            \right]
+            =
+            \left[
+            \begin{array}{ccc}
+                30 \\
+                40 \\
+                30
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Para calcular <span class="math inline">\(A_1\)</span> atualizado (pois <span class="math inline">\(x_1\)</span> é a variável que entra na base), podemos usar a fórmula
+<span class="math inline">\(B^{-1}N\)</span>, porém usamos a <span class="math inline">\(A_1\)</span> antiga no lugar de toda a matriz <span class="math inline">\(N\)</span>:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1}A_1
+            =
+            \left[
+            \begin{array}{ccc}
+                1 &amp; 0 &amp; -3 \\
+                0 &amp; 1 &amp; 0 \\
+                0 &amp; 0 &amp; 1
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{ccc}
+                2 \\
+                1 \\
+                0
+            \end{array}
+            \right]
+            =
+            \left[
+            \begin{array}{ccc}
+                2 \\
+                1 \\
+                0
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Portanto, temos que o mínimo entre</p>
+<p><span class="math display">\[\begin{equation*}
+         \dfrac{30}{2}, \dfrac{40}{1} = 15  
+\end{equation*}\]</span></p>
+Com <span class="math inline">\(x_3\)</span> deixando a base e <span class="math inline">\(x_1\)</span> entrando em seu lugar.
+</details>
+<details>
+<summary>
+SOLUÇÃO <span style="color:blue">C</span>
+</summary>
+<p>Sabemos então que na próxima iteração a solução terá as variáveis <span class="math inline">\(x_B^T = (x_1,x_4,x_2)\)</span>. O próximo passo seria calcular a matriz inversa dessa nova base e verificar os valores atualizados de <span class="math inline">\(c_i\)</span> (como na letra A). Note que fizemos toda uma iteração do algoritmo Simplex sem usar o quadro-Simplex, somente com as fórmulas genéricas. Em modelos maiores, isso evita que muitos cálculos. Essa é a base do algoritmo <em>Simplex-revisado</em> (ver apresentação no site).</p>
+</details>
+</div>
+<div id="encontrando-a-solução-dual-na-tabela-primal" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> Encontrando a solução dual na tabela primal<a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Sabemos que o negativo dos valores duais estão presentes na própria tabela primal. São os <span class="math inline">\(c_i\)</span> atualizados acima da matriz identidade inicial.</p>
+<p><span style="color:blue">EXEMPLO 1</span>: Considere o modelo do sapateiro:</p>
+<span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max z = }            &amp; 5x_1 &amp; + 2x_2 \\
+                &amp; \text{Sujeito à}           &amp; 10x_1   &amp; + 12x_2 &amp;\leq 60\\
+                &amp;                            &amp; 2x_1   &amp; +  x_2 &amp; \leq 6\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Com quadro ótimo:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">??</td>
+<td align="left">??</td>
+<td align="left">??</td>
+<td align="left">??</td>
+<td align="left">??</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">??</td>
+<td align="left">??</td>
+<td align="left">1</td>
+<td align="left">-5</td>
+<td align="left">30</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">??</td>
+<td align="left">??</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">3</td>
+</tr>
+</tbody>
+</table>
+<p>Determine a solução ótima do modelo dual e verique se a solução é ótima.</p>
+<p>Para determinar a solução ótima, basta encontrarmos os valores de <span class="math inline">\(c_i\)</span> atualizados. Pela tabela ótima, sabemos que <span class="math inline">\(x_B^T = (x_3,x_1)\)</span>, com matriz inversa:</p>
+<p><span class="math display">\[\begin{equation*}
+            B^{-1}
+            =
+            \left[
+            \begin{array}{c}
+               1 &amp; -5 \\
+               0 &amp; 1/2
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Para encontrar os valores de <span class="math inline">\(c_N\)</span> atualizados:</p>
+<p><span class="math display">\[\begin{equation*}
+            c_N^T - c_B^TB^{-1}N = \\
+            \left[
+            \begin{array}{c}
+               -2 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{c}
+               0 &amp; -5 \\
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{c}
+               1 &amp; -5 \\
+               0 &amp; 1/2
+            \end{array}
+            \right]
+                \left[
+            \begin{array}{c}
+               12 &amp; 1 \\
+               1 &amp; 1
+            \end{array}
+            \right] = \\
+            \left[
+            \begin{array}{c}
+               -2 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{c}
+               0 &amp; -5 \\
+            \end{array}
+            \right]
+            \left[
+            \begin{array}{c}
+               7 &amp; -4 \\
+               1/2 &amp; 1/2
+            \end{array}
+            \right] = \\
+            \left[
+            \begin{array}{c}
+               -2 &amp; 0 \\
+            \end{array}
+            \right]
+            -
+            \left[
+            \begin{array}{c}
+               -5/2 &amp; -5/2 \\
+            \end{array}
+            \right]
+            = \\
+            \left[
+            \begin{array}{c}
+               1/2 &amp; 5/2 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Portanto, os valores de <span class="math inline">\(c_i\)</span> atualizados ficam:</p>
+<p><span class="math display">\[\begin{equation*}
+            c^T =
+            \left[
+            \begin{array}{ccc}
+               c_1 &amp; c_2 &amp; c_3 &amp; c_4 \\
+            \end{array}
+            \right]
+            = \\
+            \left[
+            \begin{array}{ccc}
+               0 &amp; 1/2 &amp; 0 &amp; 5/2 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Temos então que:</p>
+<p><span class="math display">\[\begin{equation*}
+            -\pi^T =
+            \left[
+            \begin{array}{ccc}
+                0 &amp; 5/2 \\
+            \end{array}
+            \right] \\
+            \pi^T =
+            \left[
+            \begin{array}{ccc}
+               0 &amp; -5/2 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Como, para transformar o problema na forma padrão fizemos max z = - min z, temos que:</p>
+<p><span class="math display">\[\begin{equation*}
+            \pi^T =
+            \left[
+            \begin{array}{ccc}
+                0 &amp; 5/2 \\
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>O modelo dual do problema do sapapeiro fica:</p>
+<span class="math display">\[\begin{alignat*}{4}
+               &amp; \text{min v = }            &amp; 60\pi_1 &amp; + 6\pi_2 \\
+               &amp; \text{Sujeito à}           &amp; 10\pi_1   &amp; + 2\pi_2 &amp;\geq 5\\
+               &amp;                            &amp; 12\pi_1   &amp; + \pi_2 &amp; \geq 2\\
+               &amp;                            &amp;  \pi_1 \geq 0  &amp; \quad \pi_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Substituindo os valores de <span class="math inline">\(\pi\)</span> no modelo, temos:</p>
+<span class="math display">\[\begin{alignat*}{4}
+               &amp; \text{min v = }            &amp; 60(0) &amp; + 6(5/2) \\
+               &amp; \text{Sujeito à}           &amp; 10(0)   &amp; + 2(5/2) &amp;\geq 5\\
+               &amp;                            &amp; 12(0)   &amp; + 5/2 &amp; \geq 2\\
+               &amp;                            &amp;  \pi_1 \geq 0  &amp; \quad \pi_2 \geq 0&amp;
+\end{alignat*}\]</span>
+<p>Portanto a solução é dual-factível. Seu custo fica <span class="math inline">\(v = 15\)</span>. Substituindo a solução primal em <span class="math inline">\(z\)</span> temos que <span class="math inline">\(z = 15\)</span>. Como <span class="math inline">\(v = z\)</span> temos que a solução é ótima.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="dualidade.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="algoritmo-dual-simplex.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/04-.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
