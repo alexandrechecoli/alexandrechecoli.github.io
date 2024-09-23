@@ -31,3 +31,6 @@ representação-de-inequações-lineares
 vetor-gradiente-e-curvas-de-nível
 gradiente
 curvas-de-nível
+método-gráfico
+método-gráfico-para-pl
+método-de-resolução

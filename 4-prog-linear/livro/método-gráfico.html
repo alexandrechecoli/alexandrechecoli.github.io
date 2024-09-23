@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | Notas de aula Pesquisa Operacional</title>
+  <title>Chapter 3 Método gráfico | Notas de aula Pesquisa Operacional</title>
   <meta name="description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
   <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | Notas de aula Pesquisa Operacional" />
+  <meta property="og:title" content="Chapter 3 Método gráfico | Notas de aula Pesquisa Operacional" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | Notas de aula Pesquisa Operacional" />
+  <meta name="twitter:title" content="Chapter 3 Método gráfico | Notas de aula Pesquisa Operacional" />
   
   <meta name="twitter:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
   
@@ -23,15 +23,15 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-09-23" />
+<meta name="date" content="2024-09-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="revisão-algebra.html"/>
+<link rel="next" href="simplex-fase-i.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -104,10 +104,7 @@
 <li class="chapter" data-level="2.4.2" data-path="revisão-algebra.html"><a href="revisão-algebra.html#curvas-de-nível"><i class="fa fa-check"></i><b>2.4.2</b> Curvas de nível</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html"><i class="fa fa-check"></i><b>3</b> Método gráfico para PL</a>
-<ul>
-<li class="chapter" data-level="3.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#método-de-resolução"><i class="fa fa-check"></i><b>3.1</b> Método de resolução</a></li>
-</ul></li>
+<li class="chapter" data-level="3" data-path="método-gráfico.html"><a href="método-gráfico.html"><i class="fa fa-check"></i><b>3</b> Método gráfico</a></li>
 <li class="chapter" data-level="4" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>4</b> Simplex Fase I</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios-1"><i class="fa fa-check"></i><b>4.1</b> Exercicios</a></li>
@@ -145,19 +142,26 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="método-gráfico" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Método gráfico<a href="método-gráfico.html#método-gráfico" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>“Resolver” um PL quer dizer encontrar valores para o conjunto de variáveis, de tal forma que todas as <strong>restrições (equações/inequações)
+sejam satisfeitas e a função objetivo seja otimizada (maximizada ou minimizada)</strong>. Para problemas com 2 variáveis esse processo pode ser feito gráficamente.</p>
+<p>Por convenção, podemos representar uma solução como um vetor <span class="math inline">\(x^T = [x_1,x_2,...,x_n]\)</span>, em que cada <span class="math inline">\(x_i, i = 1,...,n\)</span> é o valor de uma variável. Note que <span class="math inline">\(x\)</span> é um vetor <strong>coluna</strong>,
+por isso a notação do transposto ao escrevê-lo como uma linha.</p>
+<div class="tcolorbox2">
+<p><strong>Definição (solução factível e região factível)</strong>: Uma solução <span class="math inline">\(x^T = [x_1,x_2,...,x_n]\)</span> é dita <span style="color:Brown"><strong>factível</strong></span> se
+satisfizer todas as restrições e as condições de não negatividade. O conjunto de <strong>todas</strong> as soluções factíveis de um PL é chamado
+de <span style="color:Brown"><strong>região factível</strong></span>.</p>
+</div>
+
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="revisão-algebra.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="simplex-fase-i.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -188,7 +192,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/%s",
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/02-MetodoGrafico.Rmd",
 "text": "Edit"
 },
 "history": {
