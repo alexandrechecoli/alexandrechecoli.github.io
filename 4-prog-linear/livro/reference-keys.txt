@@ -34,3 +34,11 @@ curvas-de-nível
 método-gráfico
 método-gráfico-para-pl
 método-de-resolução
+eooo
+casos-especiais
+a.-s-ilimitado-solução-ótima-única
+b.-infinitas-soluções-ótimas
+c.-problema-infactível
+d.-problema-ilimitado
+d.-problema-degenerado
+exercicio-1-1

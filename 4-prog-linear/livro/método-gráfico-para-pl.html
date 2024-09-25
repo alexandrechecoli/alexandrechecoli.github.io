@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-09-23" />
+<meta name="date" content="2024-09-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -107,10 +107,22 @@
 <li class="chapter" data-level="3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html"><i class="fa fa-check"></i><b>3</b> Método gráfico para PL</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#método-de-resolução"><i class="fa fa-check"></i><b>3.1</b> Método de resolução</a></li>
+<li class="chapter" data-level="3.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#casos-especiais"><i class="fa fa-check"></i><b>3.2</b> Casos especiais</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#a.-s-ilimitado-solução-ótima-única"><i class="fa fa-check"></i><b>3.2.1</b> A. <span class="math inline">\(S\)</span> ilimitado, solução ótima única</a></li>
+<li class="chapter" data-level="3.2.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#b.-infinitas-soluções-ótimas"><i class="fa fa-check"></i><b>3.2.2</b> B. Infinitas soluções ótimas</a></li>
+<li class="chapter" data-level="3.2.3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#c.-problema-infactível"><i class="fa fa-check"></i><b>3.2.3</b> C. Problema infactível</a></li>
+<li class="chapter" data-level="3.2.4" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#d.-problema-ilimitado"><i class="fa fa-check"></i><b>3.2.4</b> D. Problema ilimitado</a></li>
+<li class="chapter" data-level="3.2.5" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#d.-problema-degenerado"><i class="fa fa-check"></i><b>3.2.5</b> D. Problema degenerado</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicios-1"><i class="fa fa-check"></i><b>3.3</b> Exercicios</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicio-1-1"><i class="fa fa-check"></i><b>3.3.1</b> Exercicio 1</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>4</b> Simplex Fase I</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios-1"><i class="fa fa-check"></i><b>4.1</b> Exercicios</a></li>
+<li class="chapter" data-level="4.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios-2"><i class="fa fa-check"></i><b>4.1</b> Exercicios</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>5</b> Dualidade</a>
 <ul>
@@ -206,61 +218,8 @@ x_1 \quad \quad  = 1 \\
 <summary>
 <span style="color:Brown"><strong>VER NO GEOGEBRA</strong></span>
 </summary>
-<html>
-<head>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta charset="utf-8"/>
-<script src="https://cdn.geogebra.org/apps/deployggb.js"></script>
-</head>
-<body>
-<div id="ggbApplet">
-
-</div>
-<script>
-var parameters = {
-"id": "ggbApplet",
-"width":1920,
-"height":911,
-"showMenuBar":true,
-"showAlgebraInput":true,
-"showToolBar":true,
-"customToolBar":"0 73 62 | 1 501 67 , 5 19 , 72 75 76 | 2 15 45 , 18 65 , 7 37 | 4 3 8 9 , 13 44 , 58 , 47 | 16 51 64 , 70 | 10 34 53 11 , 24  20 22 , 21 23 | 55 56 57 , 12 | 36 46 , 38 49  50 , 71  14  68 | 30 29 54 32 31 33 | 25 17 26 60 52 61 | 40 41 42 , 27 28 35 , 6",
-"showToolBarHelp":true,
-"showResetIcon":false,
-"enableLabelDrags":false,
-"enableShiftDragZoom":true,
-"enableRightClick":false,
-"errorDialogsActive":false,
-"useBrowserForJS":false,
-"allowStyleBar":false,
-"preventFocus":false,
-"showZoomButtons":true,
-"capturingThreshold":3,
-// add code here to run when the applet starts
-"appletOnLoad":function(api){ /* api.evalCommand('Segment((1,2),(3,4))');*/ },
-"showFullscreenButton":true,
-"scale":1,
-"disableAutoScale":false,
-"allowUpscale":false,
-"clickToLoad":false,
-"appName":"classic",
-"buttonRounding":0.7,
-"buttonShadows":false,
-"language":"pt-PT",
-// use this instead of ggbBase64 to load a material from geogebra.org
-// "material_id":"RHYH3UQ8",
-// use this instead of ggbBase64 to load a .ggb file
-// "filename":"myfile.ggb",
-"ggbBase64":"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",
-};
-// is3D=is 3D applet using 3D view, AV=Algebra View, SV=Spreadsheet View, CV=CAS View, EV2=Graphics View 2, CP=Construction Protocol, PC=Probability Calculator DA=Data Analysis, FI=Function Inspector, macro=Macros
-var views = {'is3D': 0,'AV': 1,'SV': 0,'CV': 0,'EV2': 0,'CP': 0,'PC': 0,'DA': 0,'FI': 0,'macro': 0};
-var applet = new GGBApplet(parameters, '5.0', views);
-window.onload = function() {applet.inject('ggbApplet')};
-applet.setPreviewImage('data:image/gif;base64,R0lGODlhAQABAAAAADs=','https://www.geogebra.org/images/GeoGebra_loading.png','https://www.geogebra.org/images/applet_play.png');
-</script>
-</body>
-</html>
+<iframe src="Geogebra/MetodoGrafico1.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
 </details>
 </details>
 <p><span style="color:blue">EXEMPLO 2</span> Encontre a solução do modelo de PL pelo método gráfico:</p>
@@ -284,63 +243,115 @@ SOLUÇÃO
 \quad \quad x_2 = 0
 \end{cases}\]</span>
 <p>Portanto a <strong>solução ótima</strong> do PL é <span class="math inline">\(x^T = [x_1,x_2] = [5,0]\)</span>, com função objetivo de valor 5.</p>
-<html>
-<head>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta charset="utf-8"/>
-<script src="https://cdn.geogebra.org/apps/deployggb.js"></script>
-</head>
-<body>
-<div id="ggbApplet">
+<details>
+<summary>
+<span style="color:Brown"><strong>VER NO GEOGEBRA</strong></span>
+</summary>
+<iframe src="Geogebra/MetodoGrafico2.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+</details>
+</details>
+</div>
+<div id="casos-especiais" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Casos especiais<a href="método-gráfico-para-pl.html#casos-especiais" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Diversos cenários podem ocorrer durante a resolução de um modelo de PL. Analisando gráficamente fica mais fácil compreender os casos
+genéricos. Veremos as possibilidades considerando dois aspectos:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Região factível <span class="math inline">\(S\)</span></strong>: limitada/ilimitada/inexistente</li>
+<li><strong>Solução ótima</strong>: única/múltiplas/inexistente (sol. ilimitada)</li>
+</ol>
+<p>Juntamente com o vetor gradiente.</p>
+<div id="a.-s-ilimitado-solução-ótima-única" class="section level3 hasAnchor" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> A. <span class="math inline">\(S\)</span> ilimitado, solução ótima única<a href="método-gráfico-para-pl.html#a.-s-ilimitado-solução-ótima-única" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Considere o modelo:</p>
+<span class="math display">\[\begin{align}
+\text{max $f$ = } &amp; -2x_1 + x_2  \\
+s.a &amp;\\
+&amp; -x_1 + x_2 \leq 2\\
+&amp; x_1, x_2 \in \mathbb{R}^2
+\end{align}\]</span>
+<iframe src="GeoGebra/Caso1.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+<p>Neste caso, embora a região factível seja ilimitada, o PL têm solução ótima única.</p>
+</div>
+<div id="b.-infinitas-soluções-ótimas" class="section level3 hasAnchor" number="3.2.2">
+<h3><span class="header-section-number">3.2.2</span> B. Infinitas soluções ótimas<a href="método-gráfico-para-pl.html#b.-infinitas-soluções-ótimas" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Considere o modelo abaixo:</p>
+<span class="math display">\[\begin{align}
+\text{max $f$ = } &amp; -x_1 + x_2  \\
+s.a &amp;\\
+&amp; -x_1 + x_2 \leq 2\\
+&amp; x_1, x_2 \in \mathbb{R}^2
+\end{align}\]</span>
+<iframe src="GeoGebra/Caso2.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+<p>Neste caso, todos os pontos na reta da restrição são soluções ótimas (inclusive a intersecção com <span class="math inline">\(x_2\)</span>). As curvas de nível são paralelas à restrição.</p>
+</div>
+<div id="c.-problema-infactível" class="section level3 hasAnchor" number="3.2.3">
+<h3><span class="header-section-number">3.2.3</span> C. Problema infactível<a href="método-gráfico-para-pl.html#c.-problema-infactível" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Quando não existe região factível, o problema é dito <strong>infactível</strong>. Considere o modelo:</p>
+<span class="math display">\[\begin{align}
+\text{max $f$ = } &amp; x_1 + x_2  \\
+s.a &amp;\\
+&amp; x_1 \leq 2\\
+&amp; x_1 \geq 3\\
+&amp; x_1, x_2 \in \mathbb{R}^2
+\end{align}\]</span>
+<p>Obviamente não existe região factível (<span class="math inline">\(S = \emptyset\)</span>), portanto o modelo é <strong>infactível</strong>.</p>
+</div>
+<div id="d.-problema-ilimitado" class="section level3 hasAnchor" number="3.2.4">
+<h3><span class="header-section-number">3.2.4</span> D. Problema ilimitado<a href="método-gráfico-para-pl.html#d.-problema-ilimitado" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Quando a direção da solução ótima (considerando o vetor gradiente) aponta para uma região ilimitada, dizemos
+que o problema é <strong>ilimitado</strong>. Note, isso não quer dizer que o problema não tem solução, na verdade existe
+soluções factíveis que podem maximizar (ou minimizar) a função objetivo de forma ilimitada, nenhuma restrição
+trava a solução. Considere o modelo:</p>
+<span class="math display">\[\begin{align}
+\text{max $f$ = } &amp; x_1 + x_2  \\
+s.a &amp;\\
+&amp; -x_1 + x_2 \leq 2\\
+&amp; x_1, x_2 \in \mathbb{R}^2
+\end{align}\]</span>
+<iframe src="GeoGebra/Caso4.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+</div>
+<div id="d.-problema-degenerado" class="section level3 hasAnchor" number="3.2.5">
+<h3><span class="header-section-number">3.2.5</span> D. Problema degenerado<a href="método-gráfico-para-pl.html#d.-problema-degenerado" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Um problema é dito <strong>degenerado</strong> quando algum ponto extremo da região factível pode ser definido por mais do que um
+conjunto de restrições. Considere o PL:</p>
+<span class="math display">\[\begin{align}
+\text{max $f$ = } &amp; x_1 + x_2  \\
+s.a &amp;\\
+&amp; x_1 + x_2 \leq 10  \\
+&amp; x_1 + 2x_2 \leq 15 \\
+&amp; \quad \quad \quad x_2 \leq 5 \\
+&amp; x_1, x_2 \in \mathbb{R}^2
+\end{align}\]</span>
+<iframe src="GeoGebra/Caso5.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+<p>Note que neste caso o ponto A pode ser definido por 3 conjuntos distintos de restrições:</p>
+<span class="math display">\[\begin{cases}
+&amp; x_1 + x_2 = 10  \\
+&amp; x_1 + 2x_2 = 15 \\
+\end{cases}\]</span>
+<span class="math display">\[\begin{cases}
+&amp; x_1 + x_2 = 10  \\
+&amp; \quad \quad \quad x_2 \leq 5 \\
+\end{cases}\]</span>
+<p>E</p>
+<span class="math display">\[\begin{cases}
+&amp; x_1 + 2x_2 \leq 15 \\
+&amp; \quad \quad \quad x_2 \leq 5 \\
+\end{cases}\]</span>
+<p>Portanto o problema é <strong>degenerado</strong>. Esse tipo de problema afeta o desempenho do algoritmo Simplex (usado para resolver PLs de forma genérica).</p>
+</div>
+</div>
+<div id="exercicios-1" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Exercicios<a href="método-gráfico-para-pl.html#exercicios-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="exercicio-1-1" class="section level3 hasAnchor" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Exercicio 1<a href="método-gráfico-para-pl.html#exercicio-1-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Um fazendeiro precisa decidir quanto plantar de café e soja na sua região (em toneladas). Para plantar 1 ton. de café, o fazendeiro usa 1 hora de uma máquina alugada , e para plantar 1 ton. de soja, 2 horas da máquina. A máquina foi alugada por 4 horas (porém não precisa ser utilizada durante todo o período) e o fazendeiro precisa plantar 3 toneladas exatas no dia (considerando café e soja). Sabe-se que cada ton. de café plantada gera um lucro de 2 mil reais, e cada ton. de soja 3 mil. Encontre o PL e a solução ótima para o problema do plantio de soja do fazendeiro.</p>
 
 </div>
-<script>
-var parameters = {
-"id": "ggbApplet",
-"width":1920,
-"height":911,
-"showMenuBar":true,
-"showAlgebraInput":true,
-"showToolBar":true,
-"customToolBar":"0 73 62 | 1 501 67 , 5 19 , 72 75 76 | 2 15 45 , 18 65 , 7 37 | 4 3 8 9 , 13 44 , 58 , 47 | 16 51 64 , 70 | 10 34 53 11 , 24  20 22 , 21 23 | 55 56 57 , 12 | 36 46 , 38 49  50 , 71  14  68 | 30 29 54 32 31 33 | 25 17 26 60 52 61 | 40 41 42 , 27 28 35 , 6",
-"showToolBarHelp":true,
-"showResetIcon":false,
-"enableLabelDrags":false,
-"enableShiftDragZoom":true,
-"enableRightClick":false,
-"errorDialogsActive":false,
-"useBrowserForJS":false,
-"allowStyleBar":false,
-"preventFocus":false,
-"showZoomButtons":true,
-"capturingThreshold":3,
-// add code here to run when the applet starts
-"appletOnLoad":function(api){ /* api.evalCommand('Segment((1,2),(3,4))');*/ },
-"showFullscreenButton":true,
-"scale":1,
-"disableAutoScale":false,
-"allowUpscale":false,
-"clickToLoad":false,
-"appName":"classic",
-"buttonRounding":0.7,
-"buttonShadows":false,
-"language":"pt-PT",
-// use this instead of ggbBase64 to load a material from geogebra.org
-// "material_id":"RHYH3UQ8",
-// use this instead of ggbBase64 to load a .ggb file
-// "filename":"myfile.ggb",
-"ggbBase64":"UEsDBBQAAAAIAFJSN1n08nhpJQUAAC4mAAAXAAAAZ2VvZ2VicmFfZGVmYXVsdHMyZC54bWztWl9v4jgQf779FJaf7h4KSSBAV01X3ZVOV6nbXV2r072aYIKvxs7FToF++h3bIQkFul3+FJDah5px7Inn9xuPx3YuPk3HHD3STDEpIuw3PIyoiOWAiSTCuR6e9fCnyw8XCZUJ7WcEDWU2JjrCoWlZ9gsbQaMXdk0dSdMIx5woxWKMUk606RLhCUZoqthHIW/JmKqUxPQuHtExuZEx0VbLSOv0Y7M5mUwa8/c1ZJY0QaVqTtWgmSS6ASVGMGihIlz8+Ah6F3pPWrZf4Hl+89+vN+49Z0woTURMMQKDBnRIcq4V/KScjqnQSM9SGuFUMqEx4qRPeYS/Gwn9Pswo/QOjohPg5OHLD79dqJGcINn/j8ZQp7McVBf9rNA0beDxF8llhrIId7sYAaym6Ec4CEOAi6cjEmHPNeZkRjP0SEBDUUNyLWPb39YOCVeFYvumr3JA3ZN20V4w4AfgREpTYMJr+BiplNIBjBoXNsIPIGZmOa5ptKbfsadCY1iv1TNeVBcDi6XMBgpNI3xLbjGaFeWTK6HJRbMA9nUQD2hKxQAaLeDsb4Rzp2dxNgXgbIojhrnQeFCYOycC865Bhnm8B5S/iTq2wUbY+gEEBzDJlu/BYgHfa/E3TWDUdZRbp4PySWC86MPtjdCFbADsgf/Hh6wFy2GozH9IWeQ45XT6tsBzJioQb6xQgh5slmPUQTfp2CFCBrx3FejGWgefHrH4QVAFORy4RdnJ/PiLDWB5ssokJIlMA55+t+c00P/FAmkMOGPQZmsihrmIjVUluF/y7LHORqvtHYKPSufGM2BPZKzHUtHESCUud3O5cu3N0ro3du23dGyZa27UXgsNeyoABIahlsb9QGl6D6q+ifuMCGU2Vs/dBLY4WT1GFZgX00cUMW/50RZzJyOzl7gO37neE9c7iHfikWQlE3XWNsun1q74DXCDg69AvxD+61Bsn/ycsgNv5UadzSZ/4LVXo9foHrUbPYKBsgLin0Kskoj3lG4pGq7IxGEFo4oRsYN9DZ8ltVn9fS6XjHQdI9ubsZ7TGloLW8+wZWkNQd0zJ/c99+e3zz3f78AJwoGDxssIL2xiDMSuosLYZXv7xPjE5s16PGMpzLH5fBPipBLJ9knEj+PZEFKWUOGCMgQQz+qYQQGan4xk7iumvpVnUMDTJ1NAte0OVmVsiq5cjyvX8CpwRcsVbVeEBXo/YTaF0FbLlZ8tD+3NtkWnFEn2z/nOsutjch6Rj2lWCwy3c7n0ndCFBrAhXzydUpwNgOwxAzjPAOcxgZXUZOZ9JXmu4RIO7rZEdQnnHG7CBnpkEjEY35BNDbEOPTSSGXuSQpdgIeOvV9xe1y0cWKwiOngpz3xV1Frn0+s9uOar2wVnIhJeTcYrJ1UMuIN+22j5kPBlYmAglpdOI+i1/F7Y8rp+9zzsdV7Jk9+reHIPtqNp3XwE+pbnI8ni6qgUUtw1TAJvO+WyWHM9v9sOW8F5EPrn5234AWPf9W7wz7Ki2tkc42mg9YClpns76OMyzlV1fO2kEiFwyY0S46PNVkg+ZZyRbLb8pr1BrOm0ShjurVD7COEI08H1pgDsSTW0ayfVbvqdMUMGKAr4QgTOEexLmPhM4ockk7koXLs2gt2YXiw+x7i/6kvJKeyE52Z9nsu1++WllX8dQMUK/vLRi7vTNwVg1IJx73oCwsc48UNfThfWq5/ckqlqEtxYoXbxu2ISvMbQdYvS2cG9YZMjul+8slyZpNQJaNa+j2rOP8a6/AFQSwMEFAAAAAgAUlI3WaHJwkNzAwAASBEAABcAAABnZW9nZWJyYV9kZWZhdWx0czNkLnhtbO1Y23LTMBB9hq/Q6B1fEjuXTl0mAw8wAwwML7yq9iYROJKRlDjur/EPfBOrS1sHeksnLVOGPOTo4t21zh6vJR+/3K5qsgGluRQFTaOEEhClrLhYFHRt5i8m9OXJ8+MFyAWcKkbmUq2YKWhur7ywy6NBNMnHdow1TUHLmmnNS0qamhlrUtCWErLV/EjID2wFumElfC6XsGLvZMmM87I0pjmK47Zto/N4kVSLGF3qeKureLEwESIleNNCFzQ0jtDvjnU7dHaDJEnjL+/f+TgvuNCGiRIowQVVMGfr2mhsQg0rEIaYrgG8dSl4OcQYNTuFuqBvhcFVQmlvkZRrtUH7YFzQYZon9OT5s+NSSlVpIrcFRQ5k5+HMQ4vEIll+buPnNn6u9YOtH2zdYGwd6qVsiTz9ioELatQao4Ybch13DU6/krVURBV0gBEwY2mCeIo4HWAq6mbJ0GOUJv6XZtMkTUfpwNvXrANFNgydhqhsbWTpXLrROat1iOWCv5cV+JksXC84qsEyow1g3jG4bgAq1/J84rJQBJ3TU98fF/DZdDUQs+TlNwEa85n3jGzjDa8qsLL0NvBdeBNt/wvaMIVSMgqF5uf5AsQGGZNKk23ibqJDQG9ntmfluU1dv0PA2TMLOOzMcSWKb8nMW8z8hbOBh6GHzEMeGDuOg3j+kBHbcj18fZG0Wej2lJMMnXL2TTSGRybxH7NsH7eQ44fKKIrnb+WUhDbgqn/+uJlu92CWTBnQnIne4/vKTvzO/OgpMP+QvF9PJPoX0OPvo+vv8Idl9V78TaeOwEGKiBQ6vChR+aFonDP77gourq18VzEWiLpOqaHE+4Lt63Wo4bcWg0bW3RIqJcUlr72hS2qHgdr7PEn7piPNhy4fuX9j9BQdZYG1fDpKslF2sNzcV+J7MTtT5ZKvoAK2Sy3m/rGoHaT+bZyNHbUW/g1uP3ZYkTlWhz6vjyjZUEImfxThJ06r4nq1S2r6iGId+brsxTrF3hNkVYC5WOcH2+4X1fx/Ud2Hy+9rVrkNWFjqp/N+n1Mv0ENWxlE2tb/xKM0naYYHmgMRdIhtKV81NS+5udNB48pjhh30Z4nOwxlCiLbvyYPMRh7GHiYeprduRPRazfHgfdVGOUztJjm7X5LR7sqtcjS+q+ovHT/SMaVvdON2Oe59OYjPP1Oc/AJQSwMEFAAAAAgAUlI3WdY3vbkZAAAAFwAAABYAAABnZW9nZWJyYV9qYXZhc2NyaXB0LmpzSyvNSy7JzM9TSE9P8s/zzMss0dBUqK4FAFBLAwQUAAAACABSUjdZqBDrLK0IAACoHQAADAAAAGdlb2dlYnJhLnhtbO1ZXW7jyBF+nj1FgU/eZCzxn+JAmoVnEGwCzG4G6yQI8tYk2xJjitSQlCwP9gDJPbLIU55yhL3JniRfVZOUZHts2R4MEGBh093srq7u+uqX7ek322VBG103eVXOLGdkW6TLtMrycj6z1u3F6cT65vVX07mu5jqpFV1U9VK1MytgymFdMHJHkyDiMbVazay0UE2TpxatCtXykpl1ZVGeYWYSuIkzCU+zOFKnfpzo04kX4dVPvETHqYqTyCLaNvmrsvpeLXWzUqk+Txd6qd5VqWplv0Xbrl6Nx1dXV6P+ZKOqno+xeTPeNtl4Pk9GaC2CeGUzs7rOK/A9WH3lyTrXtp3xX797Z/Y5zcumVWWqLWLR1/nrr15Mr/Iyq67oKs/aBYCKXci60Pl8ATBix7FozFQrILLSaZtvdIO1e68ifbtcWUKmSp5/YXpUDIJZlOWbPNP1zAL/qs512XZT/RbjfvF0k+srw4V7skHguBa1VVUkilnQj+RQYOMhJ6aXFEYYcckJyMfIBCMReTwWOD55xCSOR76P1udhJ8QMT+NvENjkOJgh1ybXJdch18NrEFAAsojXuqANY+Fn42FqnAiPx2Oeh0fGPB+Pyz0wCgwbnCPwQukF8nfCa7BLgP1+JJnCmB9jOx4IIoc8nATvkU3gC/Y4sUjj28S/Dvm8iRuROyHhKvxtYLTJmzwp9My6UEUDReflRQ1rG96b9rrQAmI3sNOR8xI/oMg/gjywoSdjG5ix7Zf8hHh8nmCF7WnHP9QNVGFDNhzQhpjSAEAehcb41WZg0IgQts1qQRMYGgjIrxBSGkMjqkPjPVfCXj7vMfJN9uQDHVsOGjYKNB7xudHB+bnxu9fQvIq52TAbM8rKRwNbgkU9UxiA8QRhfDtGJDp+47ZefwrEcAJkbu4b4YFP3doXq4ZNDc/HCNtv6cQcCY6Vdd8hHr3nAC/4tiqZWWfvvv3dmx/Ojt/eeaaG79RvAHj5V55bW3qPigG3dPuEHcMD7/88AvuTo7d3XNjgF94zYou4HfBMi+gg7edRRPyAIqbjPltOuxNRs2DaztxbvUSZYFPkUSgBS9Im8iXyhcmdkUtRQBGHqz6DIuNNKOS2S6OcRCcHaTTgJLuXS0MeRL7i6EaSBk1Sdf0+r6IvmZWz7mFmRQr0d1kQB2RWDhFyN4UcMLt0iFO4Q0J0cXzkv5CQNAOXQg7Kn8iNKNeqJh+AXegCpVynAsEwL1fr9gC3dMlVjXTbCtSqkGKso8+q9PLNgHTHSasGJdOOLQqaXZVkCpyDIurFtFCJLlCQnrMZEG1UwQ4kO1xUZUu9L7o8Nh1LwTbV67TIs1yVf4He+2rp+/Uy0TXsDd2KhRQmvJx2lR0Hzr6ymwQTQ5NWVZ2dXzewE9r+TddYHcaTkec5kRv5nh2HbmzRtZmJQm8UBfYkdl3HifwggJWmig08DEf2xHfd0PdCF3Uvltw9A7eQffXmXLcthG9IbTVM1IA9r6WcHPp/aN5UBUY6WFdVXrZv1apd11LII0TXLNBZOS+0wCgaRrWbXibV9lzwc3Ea5vWn65UEc9k/mb+tiqom+J7LcoCZtAjz3AoNH2yg8pA0eUc0oEEjJMx3IEHxLDTSgohboYKSzek6WXFEI2h3GLXNGwkscOp9KxQD4eJ5Xebtu/6lzdPLnaxMb9Tfg3jIsiN5Nsvp+IblTTuf6O1wWWXa2LBn6A/mp5e6LnVhTK6E4tfVujHkRrdy6nWj36t2cVZmP+g5/PW94njZ4iCGdCdfptN8iYVmvMNZsRn8GYKZ0UzPa93jYQ5jtNCdkppVrVXWLLSGS3S6MA6xI5Ph6bg//hSVQKElEyxzxBNobKm2RnOtRqQw9E1a5ys2b0oQ1C/1zoSzvGEOwwBTA5EGoiEyVCV00bIe8MW5bhcVzAprVMsj7P1bHBmfoKDrNKk/QGMYlt7J9iVdf00zOvHpN7T9mn5LJy56GPvlnz8hEEPV4gUwyA9rVeTttRxAF3qJL7Ju8mJdylHKjaoHi+F9JKjAOKhK/o44tsumhmSnHcwPXoE94RP4C4/g7+hitVDojdzOywp1zaFrL/gJu+8Gc+pDYr7V2U0z2HlWu4AN4wMSJgs3NoJ04v4+zzItsd/YsRH2E2jCdTs03RMAOKMtoPsXIQg+Ark91Nz/f9Sowl0FBEY/krRxP4bIkoKgOhFTvBb8+CbhKQCq58Mncf3JAKoScUYcs/PvEUfIlWYPHmTCRrgRupactBfOPrd1Jh2yyeDnbJw/kU2//OPfAjT6T3fx5Fesd1jjkk+wTgesd/GV0e7iA3fF0LnT6cWUf0cAnt4G/CBL74l3G/AAiDDiNr6/BsT7su5BxCVHI9uhlmKhZez8HiT34X8kkpsOyRMH9T7AMXw2ELeq7zDNbmK3+n6MHhU+7wXnjxcXjW4JyRxmg2C3s967kHuOrR6g/m2tMr4O/Uyx+aCCkQ9M2JmqW92gctsjaFhQrOeVFn0cCp09TR6opVwvdc1X3x3ul6IXSLDucOnQalAjAl0pjk5xbqmOuPBQSVMV6xZ33ijKyt2dt9Fm95WCa0CLJGcNsQc1UP4RJeOQwqQ+PTP13INZzRni4V2Ge2S0e9CbOmZ7NnGMITxUiqBCFcfZooy7RgC67LmxpHcFGTO+t/7Lu06E+gkm5YX3+c6dRcmBU7wdEdaUP/9no4t7tIuPMSO503nIvY6hP5QHboGvDQlAn/IImO8RWkL4NeHtVsk92yu4RTUPasx/TkJ4nMq+TKV4HOiAkOOtAR2Y3UA9rZZLVWZUyt3Ze74DEJzMtY2yDXIGlXXbj/383zZfVoZXx+EW/HKfMKDbrXiK0zhIFvLpz+3NOuhI1zkN+KYFrTMk8ScXSejclXhEXr4VMRzj/dEbn7wH+hnFcex4bjzxgkj+KYhj2iP8JyTyfNtzJ74TRXEQ8L0HVHirJgD+uw9cucrq/rn5+n9QSwECFAAUAAAACABSUjdZ9PJ4aSUFAAAuJgAAFwAAAAAAAAAAAAAAAAAAAAAAZ2VvZ2VicmFfZGVmYXVsdHMyZC54bWxQSwECFAAUAAAACABSUjdZocnCQ3MDAABIEQAAFwAAAAAAAAAAAAAAAABaBQAAZ2VvZ2VicmFfZGVmYXVsdHMzZC54bWxQSwECFAAUAAAACABSUjdZ1je9uRkAAAAXAAAAFgAAAAAAAAAAAAAAAAACCQAAZ2VvZ2VicmFfamF2YXNjcmlwdC5qc1BLAQIUABQAAAAIAFJSN1moEOssrQgAAKgdAAAMAAAAAAAAAAAAAAAAAE8JAABnZW9nZWJyYS54bWxQSwUGAAAAAAQABAAIAQAAJhIAAAAA",
-};
-// is3D=is 3D applet using 3D view, AV=Algebra View, SV=Spreadsheet View, CV=CAS View, EV2=Graphics View 2, CP=Construction Protocol, PC=Probability Calculator DA=Data Analysis, FI=Function Inspector, macro=Macros
-var views = {'is3D': 0,'AV': 1,'SV': 0,'CV': 0,'EV2': 0,'CP': 0,'PC': 0,'DA': 0,'FI': 0,'macro': 0};
-var applet = new GGBApplet(parameters, '5.0', views);
-window.onload = function() {applet.inject('ggbApplet')};
-applet.setPreviewImage('data:image/gif;base64,R0lGODlhAQABAAAAADs=','https://www.geogebra.org/images/GeoGebra_loading.png','https://www.geogebra.org/images/applet_play.png');
-</script>
-</body>
-</html>
-</details>
-
 </div>
 </div>
             </section>

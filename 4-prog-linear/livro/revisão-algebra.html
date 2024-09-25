@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-09-23" />
+<meta name="date" content="2024-09-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -107,10 +107,22 @@
 <li class="chapter" data-level="3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html"><i class="fa fa-check"></i><b>3</b> Método gráfico para PL</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#método-de-resolução"><i class="fa fa-check"></i><b>3.1</b> Método de resolução</a></li>
+<li class="chapter" data-level="3.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#casos-especiais"><i class="fa fa-check"></i><b>3.2</b> Casos especiais</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#a.-s-ilimitado-solução-ótima-única"><i class="fa fa-check"></i><b>3.2.1</b> A. <span class="math inline">\(S\)</span> ilimitado, solução ótima única</a></li>
+<li class="chapter" data-level="3.2.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#b.-infinitas-soluções-ótimas"><i class="fa fa-check"></i><b>3.2.2</b> B. Infinitas soluções ótimas</a></li>
+<li class="chapter" data-level="3.2.3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#c.-problema-infactível"><i class="fa fa-check"></i><b>3.2.3</b> C. Problema infactível</a></li>
+<li class="chapter" data-level="3.2.4" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#d.-problema-ilimitado"><i class="fa fa-check"></i><b>3.2.4</b> D. Problema ilimitado</a></li>
+<li class="chapter" data-level="3.2.5" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#d.-problema-degenerado"><i class="fa fa-check"></i><b>3.2.5</b> D. Problema degenerado</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicios-1"><i class="fa fa-check"></i><b>3.3</b> Exercicios</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicio-1-1"><i class="fa fa-check"></i><b>3.3.1</b> Exercicio 1</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>4</b> Simplex Fase I</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios-1"><i class="fa fa-check"></i><b>4.1</b> Exercicios</a></li>
+<li class="chapter" data-level="4.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercicios-2"><i class="fa fa-check"></i><b>4.1</b> Exercicios</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>5</b> Dualidade</a>
 <ul>
@@ -257,6 +269,7 @@ x_1  + 2x_2 + 3x_3 = 9 \\
   \quad \quad \quad x_2  \quad \quad  \quad  \quad + x_5  = 30
 \end{cases}\]</span>
 <p>Temos <span class="math inline">\(n-m\)</span> = 5-3 = 2 variáveis livres, podemos assumir (arbitrariamente) <span class="math inline">\(x_1 = 0\)</span>, <span class="math inline">\(x_2 = 0\)</span>. Uma solução para o sistema é então <span class="math inline">\(x_0^T = [0,0,120,40,30]\)</span>.</p>
+<hr />
 </div>
 <div id="resolução-de-sistemas-lineares" class="section level2 hasAnchor" number="2.2">
 <h2><span class="header-section-number">2.2</span> Resolução de sistemas lineares<a href="revisão-algebra.html#resolução-de-sistemas-lineares" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -831,7 +844,8 @@ SOLUÇÃO
 <h3><span class="header-section-number">2.4.1</span> Gradiente<a href="revisão-algebra.html#gradiente" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>O <strong>vetor gradiente</strong> de uma função <span class="math inline">\(z\)</span> ($ z$) linear, é dado pelos coeficientes das variáveis da função, e indica (no plano das variáveis) a direção de crescimento da função. Para representar <strong>uma componente do vetor</strong>, parta da origem (0,0) e desenhe o final em $ z$ (coeficientes que acompanham as variáveis na função).</p>
 <p><span style="color:blue">EXEMPLO</span>: Seja a função <span class="math inline">\(z(x_1,x_2) = 10 - x_1\)</span>. O plano dessa função é:</p>
-<p><img src="img/Plano1.png" /></p>
+<iframe src="Geogebra/Func3D.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
 <p>Temos que o vetor gradiente (<span class="math inline">\(\nabla z\)</span>) é dado por (-1,0), e representado pela seta em azul no plano 3D acima. A representação no plano 2D fica:</p>
 <p><img src="img/Gradiente.png" /></p>
 <p><span style="color:blue">EXEMPLOS</span>: Determine o vetor gradiente para as seguintes funções, e represente o vetor no plano (<span class="math inline">\(x_1,x_2\)</span>). {#ex_gradiente}</p>
@@ -846,15 +860,29 @@ SOLUÇÃO
 <h3><span class="header-section-number">2.4.2</span> Curvas de nível<a href="revisão-algebra.html#curvas-de-nível" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>As curvas de nível são conjuntos de pontos em que uma função tem valor constante. Exemplos de curvas de nível em aplicações físicas são as Isotermícas (curvas com mesmA temperatura), Isobáricas (curvas com mesma pressão). As imagens abaixo mostram curvas de nível para a altura de objetos.</p>
 <p><img src="img/CurvaDeNivel.png" /></p>
-<p>No caso acima, se alguém percorrer qualquer uma das linhas, isso implica que a pessoa se mantém a uma altura constante nas montanhas. Para encontrarmos as curvas de nível de qualquer função, basta igualar a mesma a uma constante qualquer <span class="math inline">\(k\)</span>. No exemplo acima poderímos encontrar a segunda curva de nível mais externa da figura à direita igualando a função que descreve o objeto a 20 (que é a sua altura).</p>
+<p>No caso acima, se alguém percorrer qualquer uma das linhas, isso implica que a pessoa se mantém a uma altura constante nas montanhas. Para encontrarmos as curvas de nível de qualquer função, basta igualar a mesma a uma constante qualquer <span class="math inline">\(k\)</span>. No exemplo acima poderímos encontrar a segunda curva de nível mais externa da figura à direita igualando a função que descreve o objeto a 20 (que é a sua altura). Abaixo segue um exemplo dinâmico para visualização das curvas de nível em 3 dimensões, usando o software Geogebra (autora: Ana Lúcia Fantin <a href="https://www.geogebra.org/u/avfantin" class="uri">https://www.geogebra.org/u/avfantin</a>)</p>
+<details>
+<summary>
+<span style="color:Brown"><strong>VER NO GEOGEBRA</strong></span>
+</summary>
+<iframe src="Geogebra/CurvaDeNivel1.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+</details>
 <p><span style="color:blue">EXEMPLO</span>: Seja a função <span class="math inline">\(z(x_1,x_2) = 10 - x_1\)</span>, encontre uma curva de nível.</p>
 <p>Note que essa função é a mesma do primeiro exemplo de <a href="revisão-algebra.html#gradiente">gradiente</a>. Para encontrarmos a <strong>família</strong> de curvas de nível, basta igualarmos a função a uma constante <span class="math inline">\(K\)</span>:</p>
 <p><span class="math inline">\(10 - x_1 = k\)</span></p>
-<p>Agora para ecnontrar curvas específicas basta substituirmos valores para <span class="math inline">\(k\)</span>. Sejam duas curvas, com <span class="math inline">\(k = 0\)</span> e <span class="math inline">\(k = 10\)</span>:</p>
+<p>Agora, para econontrar curvas específicas basta substituirmos valores para <span class="math inline">\(k\)</span>. Sejam duas curvas, com <span class="math inline">\(k = 0\)</span> e <span class="math inline">\(k = 10\)</span>:</p>
 <p>Curva 1: <span class="math inline">\(10 - x_1 + 0x_2 = 0\)</span></p>
 <p>Curva 2: <span class="math inline">\(10 - x_1 + 0x_2 = 10\)</span></p>
 <p>Representando as duas curvas o plano temos então:</p>
 <p><img src="img/CurvaNivel.png" /></p>
+<details>
+<summary>
+<span style="color:Brown"><strong>VER NO GEOGEBRA</strong></span>
+</summary>
+<iframe src="Geogebra/CurvaDeNivel2.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 3;">
+</iframe>
+</details>
 <p>Compare as curvas de nível com a <a href="revisão-algebra.html#gradiente">função</a>. Como a função é linear e com duas variáveis, todas as curvas de nível serão retas paralelas entre si (que acompanham o crescimento do plano).</p>
 <p><span style="color:red">OBS</span>: Note que as curvas de nível <strong>sempre são perpendiculares</strong> ao vetor gradiente <span class="math inline">\(\nabla\)</span>.</p>
 <p><span style="color:blue">EXEMPLOS</span>: Para as 2 funções do <a href="revisão-algebra.html#gradiente">exercício de vetor gradiente</a>, determine pelo menos uma curva de nível e plote em gráfico, junto com o vetor gradiente.</p>
