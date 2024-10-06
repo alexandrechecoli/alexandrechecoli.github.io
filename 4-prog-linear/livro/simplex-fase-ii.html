@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 4 Simplex Fase II | Notas de aula Pesquisa Operacional</title>
+  <meta name="description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 4 Simplex Fase II | Notas de aula Pesquisa Operacional" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 Simplex Fase II | Notas de aula Pesquisa Operacional" />
+  
+  <meta name="twitter:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  
+
+<meta name="author" content="Alexandre Checoli Choueiri" />
+
+
+<meta name="date" content="2024-10-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="método-gráfico-para-pl.html"/>
+<link rel="next" href="simplex-fase-i.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Notas Pesquisa Operacional</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Modelagem</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#definições"><i class="fa fa-check"></i><b>1.1</b> Definições</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#modelagem-matemática"><i class="fa fa-check"></i><b>1.2</b> Modelagem matemática</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#premissas-da-pl"><i class="fa fa-check"></i><b>1.3</b> Premissas da PL</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#exercicios"><i class="fa fa-check"></i><b>1.4</b> Exercicios</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#exercicio-1"><i class="fa fa-check"></i><b>1.4.1</b> Exercicio 1</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#exercicio-2"><i class="fa fa-check"></i><b>1.4.2</b> Exercicio 2</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#exercicio-3"><i class="fa fa-check"></i><b>1.4.3</b> Exercicio 3</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#exercicio-4"><i class="fa fa-check"></i><b>1.4.4</b> Exercicio 4</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="revisão-algebra.html"><a href="revisão-algebra.html"><i class="fa fa-check"></i><b>2</b> Revisão Algebra</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="revisão-algebra.html"><a href="revisão-algebra.html#sistemas-lineares"><i class="fa fa-check"></i><b>2.1</b> Sistemas lineares</a></li>
+<li class="chapter" data-level="2.2" data-path="revisão-algebra.html"><a href="revisão-algebra.html#resolução-de-sistemas-lineares"><i class="fa fa-check"></i><b>2.2</b> Resolução de sistemas lineares</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="revisão-algebra.html"><a href="revisão-algebra.html#sistemas-canônicos"><i class="fa fa-check"></i><b>2.2.1</b> Sistemas canônicos</a></li>
+<li class="chapter" data-level="2.2.2" data-path="revisão-algebra.html"><a href="revisão-algebra.html#pivoteamento"><i class="fa fa-check"></i><b>2.2.2</b> Pivoteamento</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="revisão-algebra.html"><a href="revisão-algebra.html#representação-de-inequações-lineares"><i class="fa fa-check"></i><b>2.3</b> Representação de inequações lineares</a></li>
+<li class="chapter" data-level="2.4" data-path="revisão-algebra.html"><a href="revisão-algebra.html#vetor-gradiente-e-curvas-de-nível"><i class="fa fa-check"></i><b>2.4</b> Vetor gradiente e curvas de nível</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="revisão-algebra.html"><a href="revisão-algebra.html#gradiente"><i class="fa fa-check"></i><b>2.4.1</b> Gradiente</a></li>
+<li class="chapter" data-level="2.4.2" data-path="revisão-algebra.html"><a href="revisão-algebra.html#curvas-de-nível"><i class="fa fa-check"></i><b>2.4.2</b> Curvas de nível</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html"><i class="fa fa-check"></i><b>3</b> Método gráfico para PL</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#método-de-resolução"><i class="fa fa-check"></i><b>3.1</b> Método de resolução</a></li>
+<li class="chapter" data-level="3.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#casos-especiais"><i class="fa fa-check"></i><b>3.2</b> Casos especiais</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#a.-s-ilimitado-solução-ótima-única"><i class="fa fa-check"></i><b>3.2.1</b> A. <span class="math inline">\(S\)</span> ilimitado, solução ótima única</a></li>
+<li class="chapter" data-level="3.2.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#b.-infinitas-soluções-ótimas"><i class="fa fa-check"></i><b>3.2.2</b> B. Infinitas soluções ótimas</a></li>
+<li class="chapter" data-level="3.2.3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#c.-problema-infactível"><i class="fa fa-check"></i><b>3.2.3</b> C. Problema infactível</a></li>
+<li class="chapter" data-level="3.2.4" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#d.-problema-ilimitado"><i class="fa fa-check"></i><b>3.2.4</b> D. Problema ilimitado</a></li>
+<li class="chapter" data-level="3.2.5" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#d.-problema-degenerado"><i class="fa fa-check"></i><b>3.2.5</b> D. Problema degenerado</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicios-1"><i class="fa fa-check"></i><b>3.3</b> Exercicios</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicio-1-1"><i class="fa fa-check"></i><b>3.3.1</b> Exercicio 1</a></li>
+<li class="chapter" data-level="3.3.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicio-2-1"><i class="fa fa-check"></i><b>3.3.2</b> Exercicio 2</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html"><i class="fa fa-check"></i><b>4</b> Simplex Fase II</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#a-forma-padrão"><i class="fa fa-check"></i><b>4.1</b> A forma padrão</a></li>
+<li class="chapter" data-level="4.2" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#o-algoritmo-simplex"><i class="fa fa-check"></i><b>4.2</b> O Algoritmo Simplex</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>5</b> Simplex Fase I</a></li>
+<li class="chapter" data-level="6" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>6</b> Dualidade</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="dualidade.html"><a href="dualidade.html#tabela-de-conversão-primal-dual"><i class="fa fa-check"></i><b>6.1</b> Tabela de conversão primal-dual</a></li>
+<li class="chapter" data-level="6.2" data-path="dualidade.html"><a href="dualidade.html#teoremas-da-dualidade"><i class="fa fa-check"></i><b>6.2</b> Teoremas da dualidade</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-1"><i class="fa fa-check"></i><b>6.2.1</b> Teorema fraco da dualidade parte 1</a></li>
+<li class="chapter" data-level="6.2.2" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-2"><i class="fa fa-check"></i><b>6.2.2</b> Teorema fraco da dualidade parte 2</a></li>
+<li class="chapter" data-level="6.2.3" data-path="dualidade.html"><a href="dualidade.html#teorema-das-folgas-complementares-tfc"><i class="fa fa-check"></i><b>6.2.3</b> Teorema das folgas complementares (TFC)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html"><i class="fa fa-check"></i><b>7</b> A inversa, simplex e dualidade</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas"><i class="fa fa-check"></i><b>7.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
+<li class="chapter" data-level="7.2" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal"><i class="fa fa-check"></i><b>7.2</b> Encontrando a solução dual na tabela primal</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>8</b> Algoritmo Dual Simplex</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notas de aula Pesquisa Operacional</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="simplex-fase-ii" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Simplex Fase II<a href="simplex-fase-ii.html#simplex-fase-ii" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="a-forma-padrão" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> A forma padrão<a href="simplex-fase-ii.html#a-forma-padrão" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>O algoritmo Simplex (criado por <strong>George B. Dantzig</strong>) é o método padrão utilizado para resolver modelos de PL de forma genérica. O método opera os modelos na chamada <span style="color:Brown">forma padrão</span>. Um modelo está na <strong>forma padrão</strong> se puder ser escrito como:</p>
+<div class="tcolorbox2">
+<div class="tcolorbox">
+<span class="math display">\[\begin{align}
+\text{min $z$ = } &amp; c_1x_1 + c_2x_2 + ... + c_nx_n  \\
+s.a &amp;\\
+&amp; a_{11}x_1 + a_{12}x_2 + ... + a_{1n}x_n = b_1 \\
+&amp; a_{21}x_1 + a_{22}x_2 + ... + a_{2n}x_n = b_2 \\
+&amp; ... \quad + \quad ... \quad  + \quad ... \quad  = \quad ... \\
+&amp; a_{m1}x_1 + a_{m2}x_2 + ... + a_{mn}x_n = b_m \\
+&amp; x_1, x_2, ..., x_n \geq 0 \\
+&amp; b_1, b_2, ..., b_m \geq 0 \\
+\end{align}\]</span>
+</div>
+</div>
+<p>Podemos escrever na forma matricial:</p>
+<div class="tcolorbox2">
+<div class="tcolorbox">
+<span class="math display">\[\begin{align}
+\text{min $z$ = } &amp; c^Tx \\
+                  &amp;Ax = b \\
+                  &amp;x \geq 0, b \geq 0
+\end{align}\]</span>
+</div>
+</div>
+<p>Com:</p>
+<p><span class="math display">\[\begin{equation*}
+            A =
+            \left[
+            \begin{array}{ccc&amp;}
+                a_{11} &amp; a_{12} &amp; ... &amp; a_{1n} \\
+                a_{21} &amp; a_{22} &amp; ... &amp; a_{2n} \\
+                ... &amp; ... &amp; ... &amp; ... \\
+                a_{m1} &amp; a_{m2} &amp; ... &amp; a_{mn} \\
+            \end{array}
+            \right]
+\end{equation*}\]</span>
+<span class="math display">\[\begin{equation*}
+            c^T =
+            \left[
+            \begin{array}{cccc}
+                c_1 &amp; c_2 &amp; ... &amp; c_n
+            \end{array}
+            \right]
+\end{equation*}\]</span>
+<span class="math display">\[\begin{equation*}
+            x^T =
+            \left[
+            \begin{array}{cccc}
+                x_1 &amp; x_2 &amp; ... &amp; x_n
+            \end{array}
+            \right]
+\end{equation*}\]</span>
+<span class="math display">\[\begin{equation*}
+            b^T =
+            \left[
+            \begin{array}{cccc}
+                b_1 &amp; b_2 &amp; ... &amp; b_m
+            \end{array}
+            \right]
+\end{equation*}\]</span></p>
+<p>Em que <span class="math inline">\(A\)</span> é a matriz tecnologica (ou dos coeficientes), <span class="math inline">\(c\)</span> é o vetor de custos, <span class="math inline">\(x\)</span> o vetor das variáveis e <span class="math inline">\(b\)</span> o vetor das constantes.</p>
+<p><span style="color:blue">EXEMPLO</span> Escreva o seguinte modelo de PL na forma matricial e identifique cada termo (o modelo <strong>não está na forma padrão</strong>, o exempo é simplesmente para identificar os termos matriciais):</p>
+<span class="math display">\[\begin{align}
+\text{max $f$ = } &amp; 2x_1 + 3x_2  \\
+s.a &amp;\\
+&amp; x_1 + x_2   = 3\\
+&amp; x_1 + 2x_2  = 4\\
+&amp; x_1, x_2 \in \mathbb{R}^+
+\end{align}\]</span>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Nesse caso temos:</p>
+<span class="math display">\[\begin{equation*}
+\text{max z = }
+     \underbrace{
+            \left[
+            \begin{array}{c}
+                2 &amp; 3 \\
+            \end{array}
+            \right]
+      }_{c^t}
+      \underbrace{
+            \left[
+            \begin{array}{cc}
+                x_1  \\
+                x_2
+            \end{array}
+            \right]
+      }_{x}
+      \\ \text{s.a}
+\end{equation*}\]</span>
+<span class="math display">\[\begin{equation*}
+     \underbrace{
+            \left[
+            \begin{array}{cc}
+                1 &amp; 1 \\
+                1 &amp; 2
+            \end{array}
+            \right]
+      }_{A}
+      \underbrace{
+            \left[
+            \begin{array}{cc}
+                x_1  \\
+                x_2
+            \end{array}
+            \right]
+      }_{x}
+        =
+        \underbrace{
+        \left[
+        \begin{array}{cc}
+            3  \\
+            4
+        \end{array}
+        \right]
+        }_{b}
+\end{equation*}\]</span>
+</summary>
+</details>
+<p>Ou seja, para que um modelo de PL esteja na forma padrão, ele deve possuir as seguintes caracteristicas:</p>
+<p><span style="color:Brown">A.</span> A função objetivo deve ser minimizada</p>
+<p><span style="color:Brown">B.</span> As restrições do problema são definidas por um sistema de equações lineares</p>
+<p><span style="color:Brown">C.</span> Todos os valores independentes <span class="math inline">\(b\)</span> são positivos (<span class="math inline">\(b \geq 0\)</span>)</p>
+<p><span style="color:Brown">D.</span> Todas as variáveis <span class="math inline">\(x\)</span> são positivas <span class="math inline">\(x \geq 0\)</span></p>
+<p>Se o modelo não se econtra na forma padrão, podemos trasnformá-lo em um modelo equivalente, aplicando algumas operações. Vejamos cada caso:</p>
+<p><span style="color:Brown"><strong>A. A função objetivo deve ser minimizada</strong></span></p>
+<p>Os valores de <span class="math inline">\(x\)</span> que maximizam uma função <span class="math inline">\(f(x)\)</span> são os mesmos que minimizam <span class="math inline">\(-f(x)\)</span>. Temos então que:</p>
+<p><span class="math inline">\(\text{max } f(x) = \text{min } -f(x)\)</span></p>
+<p>Considere a função <span class="math inline">\(f(x) = -(x-2)^2-3\)</span> plotada em <span style="color:blue">azul</span> abaixo:</p>
+<iframe src="Geogebra/FormaPadrao.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+<p>A função em em <span style="color:red">vermelho</span> representa <span class="math inline">\(-f(x)\)</span>. Perceba que o ponto <span class="math inline">\(x\)</span> que <strong>maximiza</strong> <span class="math inline">\(f(x)\)</span> (<span class="math inline">\(x = 2\)</span>) é exatamente o mesmo que <strong>minimiza</strong> <span class="math inline">\(-f(x)\)</span>. No entanto, os valores das funções ficaram invertidos: o máximo de <span class="math inline">\(f(x)\)</span> é -3 na medida em que o mínimo de <span class="math inline">\(-f(x)\)</span> é 3.</p>
+<p>Ou seja, para modelos de PL, podemos simplesmente transformar uma função de max em min alterando os coeficientes da fo. Lembrando que ao final da otimização, o valor da função deve ser alterado novamente.</p>
+<p><span style="color:blue">EXEMPLO</span> <span class="math inline">\(\text{max z}  = 3x_1 + 2x_2\)</span> é o mesmo que <span class="math inline">\(\text{min z}  = -3x_1 + -2x_2\)</span>.</p>
+<p><span style="color:Brown"><strong>B. Restrições na forma de inequações</strong></span></p>
+<p>Uma inequação pode facilmente ser convertida em uma equação criando uma nova variável <span class="math inline">\(\geq 0\)</span> com valor coeficiente positiva, para compensar a folga de uma restrição do tipo <span class="math inline">\(\leq\)</span>, ou uma variável negativa para absorver o excesso em uma restrição do tipo <span class="math inline">\(\geq\)</span>.</p>
+<p>Considere a inequação:</p>
+<span class="math display">\[\begin{cases}
+x_1 \leq 10
+\end{cases}\]</span>
+<p>Existe uma folga de <span class="math inline">\(x_1\)</span> em relação a 10, podemos representar essa folga por <span class="math inline">\(x_2\)</span> e somar na inequação, ficando então:</p>
+<span class="math display">\[\begin{cases}
+x_1 + x_2 = 10 \\
+x_1 \geq0, x_2 \geq 0
+\end{cases}\]</span>
+<p>As duas formas são equivalentes. De maneira semelhante, podemos ter inequações da forma <span class="math inline">\(\geq\)</span>:</p>
+<span class="math display">\[\begin{cases}
+x_1 \geq 10
+\end{cases}\]</span>
+<p>Neste caso, existe um excesso de <span class="math inline">\(x_1\)</span> em relação a 10, portanto removemos o valor de uma variável:</p>
+<span class="math display">\[\begin{cases}
+x_1 - x_2 = 10 \\
+x_1 \geq0, x_2 \geq 0
+\end{cases}\]</span>
+<p>De forma geral, para tranformar uma desigualdade em uma igualdade temos:</p>
+<ol style="list-style-type: decimal">
+<li>Se for do tipo <span class="math inline">\(\leq\)</span>: crie uma variável positiva e adicione na desigualdade</li>
+<li>Se for do tipo <span class="math inline">\(\geq\)</span>: crie uma variável positiva e remova da desigualdade</li>
+</ol>
+<p><span style="color:Brown"><strong>C. RHS &lt; 0</strong></span></p>
+<p>O vetor <span class="math inline">\(b\)</span> (também chamado de <strong>R</strong>ight <strong>H</strong>and <strong>S</strong>ide - RHS) deve ser positivo. Para equações, basta multiplicar todos os termos por -1:</p>
+<span class="math display">\[\begin{cases}
+x_1 -3x_2 + x_3 =  -10
+\end{cases}\]</span>
+<p>É equivalente a:</p>
+<span class="math display">\[\begin{cases}
+-x_1 +3x_2 - x_3 =  10
+\end{cases}\]</span>
+<p><span style="color:Brown">ATENÇÃO</span> Podemos usar a mesma técnica para as inequações, mas lembre-se de alterar o sinal de desigualdade!</p>
+<span class="math display">\[\begin{cases}
+x_1 -3x_2 + x_3 \geq  -10
+\end{cases}\]</span>
+<p>É equivalente a:</p>
+<span class="math display">\[\begin{cases}
+-x_1 +3x_2 - x_3 \leq 10
+\end{cases}\]</span>
+<p><span style="color:Brown"><strong>D. x irrestrito ( &lt; 0)</strong></span></p>
+<p>As variáveis <span class="math inline">\(x\)</span> devem ser positivas, porém, em alguns casos pode acontecer de o problema a ser modelado demandar a possibilidade de variáveis negativas. A PL <strong>pode</strong> lidar com esses casos, sendo necessário somente realizar uma troca de variáveis.</p>
+<p>Qualquer número real (positivo ou negativo) pode ser representado pela diferença de dois números positivos. Ou seja, se uma variável <span class="math inline">\(x_i\)</span> em um PL pode assumir valores reais positivos e negativos, basta realizar a substituição:</p>
+<span class="math display">\[\begin{cases}
+x_i = x_i^+ - x_i^- \\
+x_i^+ \geq 0 \\
+x_i^- \geq 0
+\end{cases}\]</span>
+<p>Em todos os lugares do modelo em que aparecer <span class="math inline">\(x_i\)</span>, aplicar a substituição. Em seguida resolver o modelo (encontrando valores para <span class="math inline">\(x_i^+\)</span> e <span class="math inline">\(x_i^-\)</span>) e recoletar o valor de <span class="math inline">\(x_i\)</span> pela substituição.</p>
+<p><span style="color:blue">EXEMPLOS</span> Encontre a forma padrão para cada um dos modelos abaixo. Resolva o último modelo (variáveis irrestritas) no GUSEK e colete o resultado após a otimização.</p>
+<p><span style="color:blue">A</span></p>
+<span class="math display">\[\begin{align}
+\text{max $z$ = } &amp; x_1 + 2x_2  \\
+s.a &amp;\\
+&amp; x_1 + x_2 \leq 6\\
+&amp; x_1 - x_2 \leq 4\\
+&amp; -x_1 + x_2 \leq 4\\
+&amp; x_1, x_2 \in \mathbb{R}^+
+\end{align}\]</span>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Na forma padrão:</p>
+<span class="math display">\[\begin{align}
+\text{min $z$ = } &amp; -x_1 + -2x_2  \\
+s.a &amp;\\
+&amp; \quad x_1 + x_2 + x_3 \quad \quad \quad  = 6\\
+&amp; \quad x_1 - x_2 \quad \quad + x_4 \quad  = 4\\
+&amp; -x_1 + x_2 \quad \quad \quad + x_5 = 4\\
+&amp; x_1, x_2,  x_3, x_4, x_5 \in \mathbb{R}^+
+\end{align}\]</span>
+</summary>
+</details>
+<p><span style="color:blue">B</span></p>
+<span class="math display">\[\begin{align}
+\text{min $z$ = } &amp; x_1 + x_2  \\
+s.a &amp;\\
+&amp; x_1 + x_2 \leq -6\\
+&amp; x_1 + 3x_2 \geq 10\\
+&amp; x_1, x_2 \in \mathbb{R}^+
+\end{align}\]</span>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Na forma padrão:</p>
+<span class="math display">\[\begin{align}
+\text{min $z$ = } &amp; x_1 + x_2  \\
+s.a &amp;\\
+&amp;  -x_1 - x_2 -x_3 \quad \quad  = 6\\
+&amp; \quad x_1 + 3x_2 \quad \quad - x_4 = 10\\
+&amp; x_1, x_2, x_3, x_4 \in \mathbb{R}^+
+\end{align}\]</span>
+</summary>
+</details>
+<p><span style="color:blue">C</span></p>
+<span class="math display">\[\begin{align}
+\text{max $z$ = } &amp; 3x_1 + 11x_2 + 9x_3 -x_4 - 29x_5  \\
+s.a &amp;\\
+&amp; \quad \quad x_2 + x_3 + x_4 - 2x_5 \leq 4\\
+&amp; x_1 - x_2 + x_3 + 2x_4 + x_5 \geq 0 \\
+&amp; x_1 + x_2 + x_3 \quad \quad - 3x_5 \leq 1 \\
+&amp; x_1 \text{ irrestrito}, x_2, x_3, x_4, x_5 \in \mathbb{R}^+ \\
+\end{align}\]</span>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Como <span class="math inline">\(x_1\)</span> é <span style="color:Brown">irrestrito</span>, precisamos fazer a transformação de variáveis:</p>
+<span class="math display">\[\begin{cases}
+x_1 = x_1^+ - x_1^- \\
+x_1^+ \geq 0 \\
+x_1^- \geq 0
+\end{cases}\]</span>
+<p>Agora substituimos todos os lugares que aparecem <span class="math inline">\(x_1\)</span> pela diferença <span class="math inline">\(x_1^+ - x_1^-\)</span></p>
+<span class="math display">\[\begin{align}
+\text{max $z$ = } &amp; 3(x_1^+ - x_1^-) + 11x_2 + 9x_3 -x_4 - 29x_5  \\
+s.a &amp;\\
+&amp; \quad \quad \quad \quad x_2 + x_3 + x_4 - 2x_5 \leq 4\\
+&amp; (x_1^+ - x_1^-) - x_2 + x_3 + 2x_4 + x_5 \geq 0 \\
+&amp; (x_1^+ - x_1^-) + x_2 + x_3 \quad \quad - 3x_5 \leq 1 \\
+&amp; (x_1^+,x_1^-, x_2, x_3, x_4, x_5 \in \mathbb{R}^+ \\
+\end{align}\]</span>
+<p>Transformando a fo em minimização, adicionando variáveis de folga temos então:</p>
+<span class="math display">\[\begin{align}
+\text{min $z$ = } &amp; -3(x_1^+ - x_1^-) - 11x_2 - 9x_3 + x_4 + 29x_5  \\
+s.a &amp;\\
+&amp; \quad \quad \quad \quad \quad x_2 + x_3 + x_4 - 2x_5 + x_6 \quad  \quad     = 4\\
+&amp; (x_1^+ - x_1^-) - x_2 + x_3 + 2x_4 + x_5 \quad  - x_7 \quad     = 0 \\
+&amp; (x_1^+ - x_1^-) + x_2 + x_3 \quad \quad - 3x_5 \quad \quad +x_8 =  1 \\
+&amp; x_1^+,x_1^-, x_2, x_3, x_4, x_5 \in \mathbb{R}^+ \\
+\end{align}\]</span>
+<p>Passando esse modelo para o formato .lp, temos o seguinte (<span style="color:Brown">OBS</span>: os <em>solvers</em> já passam o modelo para a forma padrão, a única coisa que eles não fazer é o tratamento das variáveis irrestritas, portanto precisamos fazer essa conversão antes de otimizar o problema):</p>
+<iframe src="LPs/Irrestrito.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 4;">
+</iframe>
+<p>Ao otimizarmos o problema temos a solução:</p>
+<ol style="list-style-type: decimal">
+<li>x1p = 0<br />
+</li>
+<li>x1n = 3<br />
+</li>
+<li>x2 = 0.5<br />
+</li>
+<li>x3 = 3.5<br />
+</li>
+<li>x4 = 0<br />
+</li>
+<li>x5 = 0</li>
+</ol>
+<p>De forma que, ao coletarmos o valor original de x1, temos que <strong>x1 = -3</strong>.</p>
+</summary>
+</details>
+</div>
+<div id="o-algoritmo-simplex" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> O Algoritmo Simplex<a href="simplex-fase-ii.html#o-algoritmo-simplex" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="método-gráfico-para-pl.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="simplex-fase-i.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/03-SimplexFaseII.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -42,3 +42,7 @@ c.-problema-infactível
 d.-problema-ilimitado
 d.-problema-degenerado
 exercicio-1-1
+exercicio-2-1
+simplex-fase-ii
+a-forma-padrão
+o-algoritmo-simplex
