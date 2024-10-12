@@ -7707,7 +7707,7 @@ Wall time: 0 ns
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h4 id="np.zeros()--e-np.ones()">np.zeros()  e np.ones()<a class="anchor-link" href="#np.zeros()--e-np.ones()">¶</a></h4><p>Podemos ainda inicizlizar arrays com valores nulos ou com valores unitários usando as funções <code>np.zeros()</code> e <code>np.ones()</code>:</p>
+<h4 id="np.zeros()--e-np.ones()">np.zeros()  e np.ones()<a class="anchor-link" href="#np.zeros()--e-np.ones()">¶</a></h4><p>Podemos ainda inicializar arrays com valores nulos ou com valores unitários usando as funções <code>np.zeros()</code> e <code>np.ones()</code>:</p>
 </div>
 </div>
 </div>
@@ -7868,7 +7868,7 @@ Wall time: 0 ns
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Podemos verificar o tamanho dos arrays usando o método <code>.shape()</code>. Este método retorna uma tupla com o número de elementos referente ao número de dimensões do array, e para cada dimensão, o número representa a quantidade de elementos que existe nela. Considere o exemplo:</p>
+<p>Podemos verificar o tamanho dos arrays usando o <code>.shape</code>. Este método retorna uma tupla com o número de elementos referente ao número de dimensões do array, e para cada dimensão, o número representa a quantidade de elementos que existe nela. Considere o exemplo:</p>
 </div>
 </div>
 </div>
@@ -8592,9 +8592,9 @@ Colunas até o índice 2, das linhas a partir do indice 1 :
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Combinando as duas indexações nos fornece uma poderosa ferramenta para a análise de dados. Considere o seguinte cenário: temos os dados de produção de uma indústria de pães, em que a cada vez que um lote é produzido, uma amostra de 5 pães é verificada pela qualidade, aferindo o peso total. Os tipos de pães são armazenados em um array chamado <code>arr_paes</code> e as coletas dos pesos em uma ndarray chamado <code>arr_pesos</code>. Os valores são os seguintes:
-<code>arr_paes = np.array(["frances","italiano","sirio","frances","sirio"])</code></p>
-<p><code>arr_pesos = np.array([[3.0,2.8,3.1,3.0,3.23],               [5.0,5.3,4.95,4.9,5.23],               [3.0,2.8,3.1,3.0,3.23],               [6.0,6.8,6.1,6.0,6.23],               [3.0,2.8,3.1,3.0,3.23]])</code>
+<p>Combinando as duas indexações nos fornece uma poderosa ferramenta para a análise de dados. Considere o seguinte cenário: temos os dados de produção de uma indústria de pães, em que a cada vez que um lote é produzido, uma amostra de 5 pães é verificada pela qualidade, aferindo o peso total. Os tipos de pães são armazenados em um array chamado <code>arr_paes</code> e as coletas dos pesos em uma ndarray chamado <code>arr_pesos</code>. Os valores são os seguintes:</p>
+<p><code>arr_paes = np.array(["frances","italiano","sirio","frances","sirio"])</code></p>
+<p><code>arr_pesos = np.array([[3.0,2.8,3.1,3.0,3.23], [5.0,5.3,4.95,4.9,5.23], [3.0,2.8,3.1,3.0,3.23], [6.0,6.8,6.1,6.0,6.23], [3.0,2.8,3.1,3.0,3.23]])</code>
 Podemos realizar filtros na matriz de pesos com base nos pães que desejamos verificar. Considere os exemplos:</p>
 </div>
 </div>
@@ -8721,7 +8721,7 @@ Não altera arr_pesos
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="4.1.7-M%C3%A9todos-matem%C3%A1ticos-e-estat%C3%ADsticos">4.1.7 Métodos matemáticos e estatísticos<a class="anchor-link" href="#4.1.7-M%C3%A9todos-matem%C3%A1ticos-e-estat%C3%ADsticos">¶</a></h3><p>Os arrays do NumPy possuem muitos métodos que matemáticos que facilitam o processamento. Alguns deles são:
+<h3 id="4.1.7-M%C3%A9todos-matem%C3%A1ticos-e-estat%C3%ADsticos">4.1.7 Métodos matemáticos e estatísticos<a class="anchor-link" href="#4.1.7-M%C3%A9todos-matem%C3%A1ticos-e-estat%C3%ADsticos">¶</a></h3><p>Os arrays do NumPy possuem muitos métodos matemáticos que facilitam o processamento. Alguns deles são:
 <code>sum()</code>
 <code>mean()</code>
 <code>std(),var()</code>
@@ -10066,7 +10066,7 @@ Name: 3, dtype: int64</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h4 id="Carregando-dados-em-um-DataFrame">Carregando dados em um DataFrame<a class="anchor-link" href="#Carregando-dados-em-um-DataFrame">¶</a></h4><p>A maior utilidade dos DataFrames é a manipulação de dados. Dessa forma, o Pandas contém inúmeras maneiras para se carregar dados externos, e a estrutura de dados padrão gerada é um Dataframe. Inicialmente, faremos a leitura de dados no formato .csv do próprio computador. Para isso usamos o método <code>pd.read_csv()</code>. Esse método possui diversos parametros (mais de 50!), porém os dois principais são: o caminho do arquivo a ser lido e o delimitador dos dados. Considere o exemplo abaixo que carrega os dados "e-shop clothing 2008.csv", contido na pasta Data.</p>
+<h4 id="Carregando-dados-em-um-DataFrame">Carregando dados em um DataFrame<a class="anchor-link" href="#Carregando-dados-em-um-DataFrame">¶</a></h4><p>A maior utilidade dos DataFrames é a manipulação de dados. Dessa forma, o Pandas contém inúmeras maneiras para se carregar dados externos, e a estrutura de dados padrão gerada é um Dataframe. Inicialmente, faremos a leitura de dados no formato .csv do próprio computador. Para isso usamos o método <code>pd.read_csv()</code>. Esse método possui diversos parametros (mais de 50!), porém os dois principais são: o caminho do arquivo a ser lido e o delimitador dos dados. Considere o exemplo abaixo que carrega os dados "dados_filas_SICOOB.csv", contido na pasta Data (pode ser baixada no site (<a href="https://alexandrechecoli.github.io/2-mindados/mindados.html">https://alexandrechecoli.github.io/2-mindados/mindados.html</a>) da disciplina.</p>
 </div>
 </div>
 </div>
