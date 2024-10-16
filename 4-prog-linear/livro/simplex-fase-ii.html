@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-10-06" />
+<meta name="date" content="2024-10-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -124,7 +124,10 @@
 <li class="chapter" data-level="4" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html"><i class="fa fa-check"></i><b>4</b> Simplex Fase II</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#a-forma-padrão"><i class="fa fa-check"></i><b>4.1</b> A forma padrão</a></li>
-<li class="chapter" data-level="4.2" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#o-algoritmo-simplex"><i class="fa fa-check"></i><b>4.2</b> O Algoritmo Simplex</a></li>
+<li class="chapter" data-level="4.2" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#o-algoritmo-simplex"><i class="fa fa-check"></i><b>4.2</b> O Algoritmo Simplex</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#exemplos"><i class="fa fa-check"></i><b>4.2.1</b> Exemplos</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>5</b> Simplex Fase I</a></li>
 <li class="chapter" data-level="6" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>6</b> Dualidade</a>
@@ -167,7 +170,7 @@
 <p>O algoritmo Simplex (criado por <strong>George B. Dantzig</strong>) é o método padrão utilizado para resolver modelos de PL de forma genérica. O método opera os modelos na chamada <span style="color:Brown">forma padrão</span>. Um modelo está na <strong>forma padrão</strong> se puder ser escrito como:</p>
 <div class="tcolorbox2">
 <div class="tcolorbox">
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[\begin{align}
 \text{min $z$ = } &amp; c_1x_1 + c_2x_2 + ... + c_nx_n  \\
 s.a &amp;\\
 &amp; a_{11}x_1 + a_{12}x_2 + ... + a_{1n}x_n = b_1 \\
@@ -176,17 +179,17 @@ s.a &amp;\\
 &amp; a_{m1}x_1 + a_{m2}x_2 + ... + a_{mn}x_n = b_m \\
 &amp; x_1, x_2, ..., x_n \geq 0 \\
 &amp; b_1, b_2, ..., b_m \geq 0 \\
-\end{align}\]</span>
+\end{align}\]</span></p>
 </div>
 </div>
 <p>Podemos escrever na forma matricial:</p>
 <div class="tcolorbox2">
 <div class="tcolorbox">
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[\begin{align}
 \text{min $z$ = } &amp; c^Tx \\
                   &amp;Ax = b \\
                   &amp;x \geq 0, b \geq 0
-\end{align}\]</span>
+\end{align}\]</span></p>
 </div>
 </div>
 <p>Com:</p>
@@ -200,24 +203,21 @@ s.a &amp;\\
                 a_{m1} &amp; a_{m2} &amp; ... &amp; a_{mn} \\
             \end{array}
             \right]
-\end{equation*}\]</span>
-<span class="math display">\[\begin{equation*}
+\end{equation*}\]</span> <span class="math display">\[\begin{equation*}
             c^T =
             \left[
             \begin{array}{cccc}
                 c_1 &amp; c_2 &amp; ... &amp; c_n
             \end{array}
             \right]
-\end{equation*}\]</span>
-<span class="math display">\[\begin{equation*}
+\end{equation*}\]</span> <span class="math display">\[\begin{equation*}
             x^T =
             \left[
             \begin{array}{cccc}
                 x_1 &amp; x_2 &amp; ... &amp; x_n
             \end{array}
             \right]
-\end{equation*}\]</span>
-<span class="math display">\[\begin{equation*}
+\end{equation*}\]</span> <span class="math display">\[\begin{equation*}
             b^T =
             \left[
             \begin{array}{cccc}
@@ -227,19 +227,19 @@ s.a &amp;\\
 \end{equation*}\]</span></p>
 <p>Em que <span class="math inline">\(A\)</span> é a matriz tecnologica (ou dos coeficientes), <span class="math inline">\(c\)</span> é o vetor de custos, <span class="math inline">\(x\)</span> o vetor das variáveis e <span class="math inline">\(b\)</span> o vetor das constantes.</p>
 <p><span style="color:blue">EXEMPLO</span> Escreva o seguinte modelo de PL na forma matricial e identifique cada termo (o modelo <strong>não está na forma padrão</strong>, o exempo é simplesmente para identificar os termos matriciais):</p>
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[\begin{align}
 \text{max $f$ = } &amp; 2x_1 + 3x_2  \\
 s.a &amp;\\
 &amp; x_1 + x_2   = 3\\
 &amp; x_1 + 2x_2  = 4\\
 &amp; x_1, x_2 \in \mathbb{R}^+
-\end{align}\]</span>
+\end{align}\]</span></p>
 <details>
 <summary>
 SOLUÇÃO
 </summary>
 <p>Nesse caso temos:</p>
-<span class="math display">\[\begin{equation*}
+<p><span class="math display">\[\begin{equation*}
 \text{max z = }
      \underbrace{
             \left[
@@ -284,7 +284,7 @@ SOLUÇÃO
         \end{array}
         \right]
         }_{b}
-\end{equation*}\]</span>
+\end{equation*}\]</span></p>
 </summary>
 </details>
 <p>Ou seja, para que um modelo de PL esteja na forma padrão, ele deve possuir as seguintes caracteristicas:</p>
@@ -355,60 +355,60 @@ x_i^- \geq 0
 <p>Em todos os lugares do modelo em que aparecer <span class="math inline">\(x_i\)</span>, aplicar a substituição. Em seguida resolver o modelo (encontrando valores para <span class="math inline">\(x_i^+\)</span> e <span class="math inline">\(x_i^-\)</span>) e recoletar o valor de <span class="math inline">\(x_i\)</span> pela substituição.</p>
 <p><span style="color:blue">EXEMPLOS</span> Encontre a forma padrão para cada um dos modelos abaixo. Resolva o último modelo (variáveis irrestritas) no GUSEK e colete o resultado após a otimização.</p>
 <p><span style="color:blue">A</span></p>
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[\begin{align}
 \text{max $z$ = } &amp; x_1 + 2x_2  \\
 s.a &amp;\\
 &amp; x_1 + x_2 \leq 6\\
 &amp; x_1 - x_2 \leq 4\\
 &amp; -x_1 + x_2 \leq 4\\
 &amp; x_1, x_2 \in \mathbb{R}^+
-\end{align}\]</span>
+\end{align}\]</span></p>
 <details>
 <summary>
 SOLUÇÃO
 </summary>
 <p>Na forma padrão:</p>
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[\begin{align}
 \text{min $z$ = } &amp; -x_1 + -2x_2  \\
 s.a &amp;\\
 &amp; \quad x_1 + x_2 + x_3 \quad \quad \quad  = 6\\
 &amp; \quad x_1 - x_2 \quad \quad + x_4 \quad  = 4\\
 &amp; -x_1 + x_2 \quad \quad \quad + x_5 = 4\\
 &amp; x_1, x_2,  x_3, x_4, x_5 \in \mathbb{R}^+
-\end{align}\]</span>
+\end{align}\]</span></p>
 </summary>
 </details>
 <p><span style="color:blue">B</span></p>
-<span class="math display">\[\begin{align}
-\text{min $z$ = } &amp; x_1 + x_2  \\
-s.a &amp;\\
-&amp; x_1 + x_2 \leq -6\\
-&amp; x_1 + 3x_2 \geq 10\\
-&amp; x_1, x_2 \in \mathbb{R}^+
-\end{align}\]</span>
+<p><span class="math display">\[\begin{align}
+  \text{min $z$ = } &amp; x_1 + x_2  \\
+  s.a &amp;\\
+  &amp; x_1 + x_2 \leq -6\\
+  &amp; x_1 + 3x_2 \geq 10\\
+  &amp; x_1, x_2 \in \mathbb{R}^+
+  \end{align}\]</span></p>
 <details>
 <summary>
 SOLUÇÃO
 </summary>
 <p>Na forma padrão:</p>
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[\begin{align}
 \text{min $z$ = } &amp; x_1 + x_2  \\
 s.a &amp;\\
 &amp;  -x_1 - x_2 -x_3 \quad \quad  = 6\\
 &amp; \quad x_1 + 3x_2 \quad \quad - x_4 = 10\\
 &amp; x_1, x_2, x_3, x_4 \in \mathbb{R}^+
-\end{align}\]</span>
+\end{align}\]</span></p>
 </summary>
 </details>
 <p><span style="color:blue">C</span></p>
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[\begin{align}
 \text{max $z$ = } &amp; 3x_1 + 11x_2 + 9x_3 -x_4 - 29x_5  \\
 s.a &amp;\\
 &amp; \quad \quad x_2 + x_3 + x_4 - 2x_5 \leq 4\\
 &amp; x_1 - x_2 + x_3 + 2x_4 + x_5 \geq 0 \\
 &amp; x_1 + x_2 + x_3 \quad \quad - 3x_5 \leq 1 \\
 &amp; x_1 \text{ irrestrito}, x_2, x_3, x_4, x_5 \in \mathbb{R}^+ \\
-\end{align}\]</span>
+\end{align}\]</span></p>
 <details>
 <summary>
 SOLUÇÃO
@@ -420,23 +420,23 @@ x_1^+ \geq 0 \\
 x_1^- \geq 0
 \end{cases}\]</span>
 <p>Agora substituimos todos os lugares que aparecem <span class="math inline">\(x_1\)</span> pela diferença <span class="math inline">\(x_1^+ - x_1^-\)</span></p>
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[\begin{align}
 \text{max $z$ = } &amp; 3(x_1^+ - x_1^-) + 11x_2 + 9x_3 -x_4 - 29x_5  \\
 s.a &amp;\\
 &amp; \quad \quad \quad \quad x_2 + x_3 + x_4 - 2x_5 \leq 4\\
 &amp; (x_1^+ - x_1^-) - x_2 + x_3 + 2x_4 + x_5 \geq 0 \\
 &amp; (x_1^+ - x_1^-) + x_2 + x_3 \quad \quad - 3x_5 \leq 1 \\
 &amp; (x_1^+,x_1^-, x_2, x_3, x_4, x_5 \in \mathbb{R}^+ \\
-\end{align}\]</span>
+\end{align}\]</span></p>
 <p>Transformando a fo em minimização, adicionando variáveis de folga temos então:</p>
-<span class="math display">\[\begin{align}
+<p><span class="math display">\[\begin{align}
 \text{min $z$ = } &amp; -3(x_1^+ - x_1^-) - 11x_2 - 9x_3 + x_4 + 29x_5  \\
 s.a &amp;\\
 &amp; \quad \quad \quad \quad \quad x_2 + x_3 + x_4 - 2x_5 + x_6 \quad  \quad     = 4\\
 &amp; (x_1^+ - x_1^-) - x_2 + x_3 + 2x_4 + x_5 \quad  - x_7 \quad     = 0 \\
 &amp; (x_1^+ - x_1^-) + x_2 + x_3 \quad \quad - 3x_5 \quad \quad +x_8 =  1 \\
 &amp; x_1^+,x_1^-, x_2, x_3, x_4, x_5 \in \mathbb{R}^+ \\
-\end{align}\]</span>
+\end{align}\]</span></p>
 <p>Passando esse modelo para o formato .lp, temos o seguinte (<span style="color:Brown">OBS</span>: os <em>solvers</em> já passam o modelo para a forma padrão, a única coisa que eles não fazer é o tratamento das variáveis irrestritas, portanto precisamos fazer essa conversão antes de otimizar o problema):</p>
 <iframe src="LPs/Irrestrito.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 4;">
 </iframe>
@@ -455,12 +455,759 @@ s.a &amp;\\
 <li>x5 = 0</li>
 </ol>
 <p>De forma que, ao coletarmos o valor original de x1, temos que <strong>x1 = -3</strong>.</p>
-</summary>
 </details>
 </div>
 <div id="o-algoritmo-simplex" class="section level2 hasAnchor" number="4.2">
 <h2><span class="header-section-number">4.2</span> O Algoritmo Simplex<a href="simplex-fase-ii.html#o-algoritmo-simplex" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Para a explicação completa do algoritmo, veja a <a href="https://alexandrechecoli.github.io/4-prog-linear/Materiais/Apresentacoes/1.3%20-%20SimplexFaseII.pdf">apresentação</a>.</p>
+<p>O Algoritmo fica então:</p>
+<div class="tcolorbox2">
+<ol style="list-style-type: decimal">
+<li><span style="color:blue">(menor custo reduzido)</span>: encontre</li>
+</ol>
+<div class="tcolorbox">
+<p><span class="math inline">\(s = \underset{\{ \forall j \in 1,...,n \} }{argmin} c_{j}\)</span></p>
+</div>
+<p>em que <span class="math inline">\(s\)</span> é o índice da coluna em que <span class="math inline">\(c_{j}\)</span> é mínimo:</p>
+<div class="tcolorbox">
+<p><span class="math inline">\(c_s = \underset{\{ \forall j \in 1,...,n \} }{min} c_{j}\)</span></p>
+</div>
+<ol start="2" style="list-style-type: decimal">
+<li><p><span style="color:blue">(teste de otimalidade)</span>: se <span class="math inline">\(c_s\geq 0\)</span> <span style="color:BrickRed">PARE</span>. Solução atual é ótima.</p></li>
+<li><p><span style="color:blue">(variável que entra da base)</span>: se <span class="math inline">\(c_s &lt; 0\)</span>, <span class="math inline">\(s\)</span> é o índice da variável que entra na base.</p></li>
+<li><p><span style="color:blue">(teste da solução ilimitada)</span>: se <span class="math inline">\(A_{\bullet s} \leq 0\)</span> <span style="color:BrickRed">PARE</span>; o problema é ilimitado.</p></li>
+<li><p><span style="color:blue">(variável que sai da base)</span>: a variável básica atual da linha <span class="math inline">\(r\)</span> que sai da base (linha do mínimo), e o valor da variável <span class="math inline">\(x_s\)</span> que entra na base é dado por:</p></li>
+</ol>
+<div class="tcolorbox">
+<p><span class="math inline">\(x_s = \underset{\{ \forall a_{is} &gt; 0, i=1,...,m \} }{min} \dfrac{b_i}{a_{is}}\)</span></p>
+</div>
+<ol start="6" style="list-style-type: decimal">
+<li><span style="color:blue">(atualização da tabela)</span>: faça o pivoteamento da tabela com o elemento <span class="math inline">\(a_{rs}\)</span> como pivô. Atualize as variáveis básicas na primeira coluna e volte para o passo 1.</li>
+</ol>
+</div>
+<div id="exemplos" class="section level3 hasAnchor" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Exemplos<a href="simplex-fase-ii.html#exemplos" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><span style="color:blue">EXEMPLO 1 (SAPATEIRO)</span></p>
+<p>Resolva o modelo do sapateiro pelo método Simplex. Mostre o caminho Simplex graficamente.</p>
+<p>O modelo do sapateiro é:</p>
+<p><span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{max z = }            &amp; 5x_1 &amp; + 2x_2 \\
+                &amp; \text{Sujeito à}           &amp; 10x_1   &amp; + 12x_2 &amp;\leq 60\\
+                &amp;                            &amp; 2x_1   &amp; +  x_2 &amp; \leq 6\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span></p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>O modelo na forma padrão fica:</p>
+<p><span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min z = }            &amp; -5x_1 &amp; + -2x_2 \\
+                &amp; \text{Sujeito à}           &amp; 10x_1   &amp; + 12x_2 &amp; + x_3 \quad = 60\\
+                &amp;                            &amp; 2x_1   &amp; +  x_2 &amp; \quad + x_4  =  6\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span></p>
+<p>Na tabela Simplex:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-5</td>
+<td align="left">-2</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">10</td>
+<td align="left">12</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">60</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">6</td>
+</tr>
+</tbody>
+</table>
+<p>Selecionando <span class="math inline">\(x_1\)</span> para entrar na base e <span class="math inline">\(x_4\)</span> para sair, temos o pivô <span class="math inline">\(a_{31} = 2\)</span>, realizando as operações:</p>
+<p><span class="math inline">\(L_3 \leftarrow L_3/2\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 5L_3\)</span></p>
+<p><span class="math inline">\(L_2 \leftarrow L_2 - 10 L_3\)</span></p>
+<p>Temos a tabela:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">5/2</td>
+<td align="left">15</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">0</td>
+<td align="left">7</td>
+<td align="left">1</td>
+<td align="left">-5</td>
+<td align="left">30</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">3</td>
+</tr>
+</tbody>
+</table>
+<p>Com solução ótima: <span class="math inline">\(x_B^T = [x_3,x_1] = [30,3]\)</span> e <span class="math inline">\(x_N^T = [x_2,x_4] = [0,0]\)</span>.</p>
+<p>O caminho Simplex é descrito pelos pontos A e B no gráfico abaixo:</p>
+<iframe src="Geogebra/SimplexIISapateiro.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+</details>
+<p><span style="color:blue">EXEMPLO 2 (ILIMITADO)</span></p>
+<p>Resolva o modelo de PL e mostre o caminho Simplex:</p>
+<p><span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min z = }            &amp; -x_1 &amp; + -x_2 \\
+                &amp; \text{Sujeito à}           &amp; x_1   &amp; - x_2 &amp;\leq 4  \\
+                &amp;                            &amp; -x_1   &amp; +  x_2 &amp; \leq 4\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span></p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Na forma padrão:</p>
+<p><span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min z = }            &amp; -x_1 &amp; + -x_2 \\
+                &amp; \text{Sujeito à}           &amp; x_1   &amp; - x_2 &amp;\leq 4  \\
+                &amp;                            &amp; -x_1   &amp; +  x_2 &amp; \leq 4\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span></p>
+<p>Na forma padrão:</p>
+<p><span class="math display">\[\begin{alignat*}{4}
+                &amp; \text{min z = }            &amp; -x_1 &amp; + -x_2 \\
+                &amp; \text{Sujeito à}           &amp; x_1   &amp; - x_2 &amp; + x_3 \quad = 4  \\
+                &amp;                            &amp; -x_1   &amp; +  x_2 &amp; \quad + x_4 =  4\\
+                &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span></p>
+<p>Na tabela Simplex:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-1</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">4</td>
+</tr>
+</tbody>
+</table>
+<p>Selecionando <span class="math inline">\(x_2\)</span> para entrar na base e <span class="math inline">\(x_4\)</span> para sair:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + L_3\)</span></p>
+<p><span class="math inline">\(L_2 \leftarrow L_2 + L_3\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-2</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">8</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">4</td>
+</tr>
+</tbody>
+</table>
+<p>Note que ainda existe uma variável que pode melhorar a solução (<span class="math inline">\(x_1\)</span>), no entanto <span class="math inline">\(A_{\bullet s} \leq 0\)</span>, ou seja, o problema é ilimitado. Graficamente, a primeira solução básica está no ponto A da Figura abaixo, e a segunda no ponto B.</p>
+<iframe src="Geogebra/SimplexIIIlimitado.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+</details>
+<p><span style="color:blue">EXEMPLO 3 (MULTIPLAS SOLUÇÕES)</span></p>
+<p>Toda vez que um PL tiver múltiplas soluções ótimas, pelo menos uma das variáveis <strong>não básicas</strong> terá custo 0 (<span class="math inline">\(c_j\)</span>) na função objetivo. Ou seja, existe uma
+variável que pode entrar na base, mas não altera a função objetivo em nada.</p>
+<p>Considere o PL:</p>
+<p><span class="math display">\[\begin{align}
+\text{min $z$ = } &amp; -2x_1 - x_2  \\
+s.a &amp;\\
+&amp; 2x_1 + x_2 \leq 2\\
+&amp; x_1, x_2 \in \mathbb{R}^+
+\end{align}\]</span></p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Colocando na tabela Simplex:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-2</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2</td>
+</tr>
+</tbody>
+</table>
+<p>Executando as operações (<span class="math inline">\(x_1\)</span> entra na base e <span class="math inline">\(x_3\)</span> sai):</p>
+<p><span class="math inline">\(L_2 \leftarrow L_2/2\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 2L_2\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">1/2</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p>Embora esta seja uma solução ótima, com <span class="math inline">\(x_B^T = [x_1] = [1]\)</span> e <span class="math inline">\(x_N^T = [x_2,x_3] = [0,0]\)</span>, temos uma variável <strong>não básica</strong> com custo 0 na função objetivo (<span class="math inline">\(x_2\)</span>), isso indica que existem multiplas soluções ótimas, e uma delas é com <span class="math inline">\(x_2\)</span> na base. Para encontrar os valores, basta realizar o pivoteamento necessário para inserir <span class="math inline">\(x_2\)</span> na base:</p>
+<p><span class="math inline">\(L_2 \leftarrow 2L_2\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">2</td>
+<td align="left">2</td>
+<td align="left">2</td>
+<td align="left">2</td>
+</tr>
+</tbody>
+</table>
+<p>Uma nova solução ótima, de mesmo custo da anterior é então:</p>
+<p><span class="math inline">\(x_B^T = [x_2] = [2]\)</span> e <span class="math inline">\(x_N^T = [x_1,x_3] = [0,0]\)</span>. Veja graficamente as duas soluções encontradas (pontos A e B):</p>
+<iframe src="Geogebra/SimplexFaseII-MultiplasSolucoes.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+<p>Note que os dois pontos estão na curva de nível, indicando o mesmo valor da função objetivo (<span class="math inline">\(z = -2\)</span>).</p>
+</details>
+<p><span style="color:blue">EXEMPLO 4</span></p>
+<p>Resolva o PL e mostre o caminho Simplex.</p>
+<p><span class="math display">\[\begin{align}
+\text{max $z$ = } &amp; x_1 + 2x_2  \\
+s.a &amp;\\
+&amp; x_1 + x_2 \leq 6\\
+&amp; x_1 - x_2 \leq 4\\
+&amp; -x_1 + x_2 \leq 4\\
+&amp; x_1, x_2 \in \mathbb{R}^+
+\end{align}\]</span></p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Na forma padrão:</p>
+<p><span class="math display">\[\begin{align}
+\text{min $z$ = } &amp; -x_1 -2x_2  \\
+s.a &amp;\\
+&amp; x_1 + x_2 + x_3 \quad\quad \quad    = 6\\
+&amp; x_1 - x_2  \quad\quad + x_4\quad     = 4\\
+&amp; -x_1 + x_2 \quad \quad  + x_5   = 4\\
+&amp; x_1,...,x_5 \in \mathbb{R}^+
+\end{align}\]</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-1</td>
+<td align="left">-2</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">6</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">4</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_2\)</span> entra na base e <span class="math inline">\(x_5\)</span> sai, com as operações:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 2L_4\)</span></p>
+<p><span class="math inline">\(L_2 \leftarrow L_2 - L_4\)</span></p>
+<p><span class="math inline">\(L_3 \leftarrow L_3 + L_4\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-3</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">2</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">2</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">4</td>
+</tr>
+</tbody>
+</table>
+<p>Selecionando <span class="math inline">\(x_1\)</span> para sair da base e <span class="math inline">\(x_3\)</span> para entrar:</p>
+<p><span class="math inline">\(L_2 \leftarrow L_2/2\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 3L_2\)</span></p>
+<p><span class="math inline">\(L_4 \leftarrow L_4 + L_2\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">3/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">11</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">-1/2</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">5</td>
+</tr>
+</tbody>
+</table>
+<p>Temos a solução ótima com:
+<span class="math inline">\(x_B^T = [x_1,x_4,x_2] = [1,8,5]\)</span> e
+<span class="math inline">\(x_N^T = [x_3,x_5] = [0,0]\)</span></p>
+<p>E valor da função objetivo <span class="math inline">\(z = 10\)</span>.</p>
+<p>O caminho Simplex é representado abaixo, pelos pontos A, B e C:</p>
+<iframe src="Geogebra/SimplexFaseII-Exemplo1.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+</details>
+<p><span style="color:blue">EXEMPLO 5</span></p>
+<p>Resolva o PL e mostre o caminho Simplex.</p>
+<p><span class="math display">\[\begin{align}
+\text{max $z$ = } &amp; x_1 + 2x_2 + x_3  \\
+s.a &amp;\\
+&amp; 2x_1 + x_2 - x_3  \leq 2\\
+&amp; 4x_1 + x_2 + x_3  \leq 6\\
+&amp; -x_1 - 2x_2 - x_3 \leq 6\\
+&amp; x_1,x_2,x_3 \in \mathbb{R}^+
+\end{align}\]</span></p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Na forma padrão:</p>
+<p><span class="math display">\[\begin{align}
+\text{min $z$ = } &amp; -x_1 - 2x_2 - x_3  \\
+s.a &amp;\\
+&amp;  2x_1 + x_2 - x_3  + x_4  \quad \quad = 2\\
+&amp; 4x_1 + x_2 + x_3   \quad + x_5 \quad  = 6\\
+&amp; -x_1 - 2x_2 - x_3  \quad \quad + x_6  = 6\\
+&amp; x_1,...,x_5 \in \mathbb{R}^+
+\end{align}\]</span></p>
+<p>Colocando na tabela Simplex:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">X6</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-1</td>
+<td align="left">-2</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">4</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">6</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_6\)</span></td>
+<td align="left">-1</td>
+<td align="left">-2</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">6</td>
+</tr>
+</tbody>
+</table>
+<p>Selecionando <span class="math inline">\(x_2\)</span> para entrar na base e <span class="math inline">\(x_4\)</span> para sair:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 2L_2\)</span></p>
+<p><span class="math inline">\(L_3 \leftarrow L_3 - L_2\)</span></p>
+<p><span class="math inline">\(L_4 \leftarrow L_4 + 2L_2\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">X6</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">3</td>
+<td align="left">0</td>
+<td align="left">-3</td>
+<td align="left">2</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">2</td>
+<td align="left">0</td>
+<td align="left">2</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_6\)</span></td>
+<td align="left">3</td>
+<td align="left">0</td>
+<td align="left">-3</td>
+<td align="left">2</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">10</td>
+</tr>
+</tbody>
+</table>
+<p>Selecionando <span class="math inline">\(x_3\)</span> para entrar na base e <span class="math inline">\(x_5\)</span> para sair:</p>
+<p><span class="math inline">\(L_3 \leftarrow L_3/2\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 3L_3\)</span></p>
+<p><span class="math inline">\(L_2 \leftarrow L_2 + L_3\)</span></p>
+<p><span class="math inline">\(L_4 \leftarrow L_4 + 3L_3\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">X6</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">6</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">3/2</td>
+<td align="left">0</td>
+<td align="left">10</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">3</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">-1/2</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_6\)</span></td>
+<td align="left">6</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">3/2</td>
+<td align="left">1</td>
+<td align="left">16</td>
+</tr>
+</tbody>
+</table>
+<p>Temos a solução ótima com <span class="math inline">\(x_B^T = [x_2,x_3,x_6] = [4,2,16]\)</span> e <span class="math inline">\(x_N^T = [x_1,x_4,x_5] = [0,0,0]\)</span> e valor da função objetivo de <span class="math inline">\(z=-10\)</span>. Lembrando, como o problema original era de máximização (e portanto fizemos a transformação da função), temos que o valor para o problema original é <span class="math inline">\(z = 10\)</span>.</p>
+</details>
 
+</div>
 </div>
 </div>
             </section>

@@ -46,3 +46,12 @@ exercicio-2-1
 simplex-fase-ii
 a-forma-padrão
 o-algoritmo-simplex
+exemplos
+exemplo-1
+exemplo-2-ilimitado
+sapateiro
+ilimitado
+problema-ilimitado
+multiplas-soluções
+multiplas-soluções-ótimas
+section
