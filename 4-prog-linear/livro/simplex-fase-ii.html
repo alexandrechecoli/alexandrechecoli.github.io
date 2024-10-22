@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-10-16" />
+<meta name="date" content="2024-10-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -437,7 +437,7 @@ s.a &amp;\\
 &amp; (x_1^+ - x_1^-) + x_2 + x_3 \quad \quad - 3x_5 \quad \quad +x_8 =  1 \\
 &amp; x_1^+,x_1^-, x_2, x_3, x_4, x_5 \in \mathbb{R}^+ \\
 \end{align}\]</span></p>
-<p>Passando esse modelo para o formato .lp, temos o seguinte (<span style="color:Brown">OBS</span>: os <em>solvers</em> já passam o modelo para a forma padrão, a única coisa que eles não fazer é o tratamento das variáveis irrestritas, portanto precisamos fazer essa conversão antes de otimizar o problema):</p>
+<p>Passando esse modelo para o formato .lp, temos o seguinte (<span style="color:Brown">OBS</span>: os <em>solvers</em> já passam o modelo para a forma padrão, a única coisa que eles não fazem é o tratamento das variáveis irrestritas, portanto precisamos fazer essa conversão antes de otimizar o problema):</p>
 <iframe src="LPs/Irrestrito.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 4;">
 </iframe>
 <p>Ao otimizarmos o problema temos a solução:</p>
@@ -1004,7 +1004,7 @@ s.a &amp;\\
 </iframe>
 </details>
 <p><span style="color:blue">EXEMPLO 5</span></p>
-<p>Resolva o PL e mostre o caminho Simplex.</p>
+<p>Resolva o PL:</p>
 <p><span class="math display">\[\begin{align}
 \text{max $z$ = } &amp; x_1 + 2x_2 + x_3  \\
 s.a &amp;\\
@@ -1205,6 +1205,589 @@ s.a &amp;\\
 </tbody>
 </table>
 <p>Temos a solução ótima com <span class="math inline">\(x_B^T = [x_2,x_3,x_6] = [4,2,16]\)</span> e <span class="math inline">\(x_N^T = [x_1,x_4,x_5] = [0,0,0]\)</span> e valor da função objetivo de <span class="math inline">\(z=-10\)</span>. Lembrando, como o problema original era de máximização (e portanto fizemos a transformação da função), temos que o valor para o problema original é <span class="math inline">\(z = 10\)</span>.</p>
+</details>
+<p><span style="color:blue">EXEMPLO 6 (Katta Murty)</span></p>
+<p>Resolva o PL com o auxilio do Excel (não use o solver, resolva o Simplex usando as planilhas para ajudar), em seguida confira o resultado usando o <em>solver</em> GUSEK:</p>
+<p><span class="math display">\[\begin{align}
+\text{min $z$ = } &amp; 12x_1 -10x_2 -30 x_3  \\
+s.a &amp;\\
+&amp; -3x_1 + 2x_2 + 8x_3  \leq 17\\
+&amp; -1x_1 + x_2 + 3x_3  \leq 9\\
+&amp; -2x_1 + x_2 + 8x_3 \leq 16\\
+&amp; x_1,x_2,x_3 \in \mathbb{R}^+
+\end{align}\]</span></p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">X6</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">12</td>
+<td align="left">-10</td>
+<td align="left">-30</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">-3</td>
+<td align="left">2</td>
+<td align="left">8</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">17</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">3</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">9</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_6\)</span></td>
+<td align="left">-2</td>
+<td align="left">1</td>
+<td align="left">8</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">16</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_3\)</span> entra e <span class="math inline">\(x_6\)</span> sai da base.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">X6</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">4 1/2</td>
+<td align="left">6 1/4</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">3 3/4</td>
+<td align="left">60</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">-1/4</td>
+<td align="left">5/8</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">-3/8</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">-1/4</td>
+<td align="left">1/8</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1/8</td>
+<td align="left">2</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_2\)</span> entra e <span class="math inline">\(x_4\)</span> sai da base.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">X6</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-1 3/4</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">6 1/4</td>
+<td align="left">0</td>
+<td align="left">-2 1/2</td>
+<td align="left">66 1/4</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">3/8</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">-5/8</td>
+<td align="left">1</td>
+<td align="left">1/4</td>
+<td align="left">2 3/8</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">-1/8</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">-1/8</td>
+<td align="left">0</td>
+<td align="left">1/4</td>
+<td align="left">1 7/8</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_6\)</span> entra e <span class="math inline">\(x_3\)</span> sai da base.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">X6</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-3</td>
+<td align="left">0</td>
+<td align="left">10</td>
+<td align="left">5</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">85</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">-1 1/2</td>
+<td align="left">1</td>
+<td align="left">4</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">8 1/2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">-1/2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_6\)</span></td>
+<td align="left">-1/2</td>
+<td align="left">0</td>
+<td align="left">4</td>
+<td align="left">-1/2</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">7 1/2</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_1\)</span> entra e <span class="math inline">\(x_5\)</span> sai da base.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">X6</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">4</td>
+<td align="left">2</td>
+<td align="left">6</td>
+<td align="left">0</td>
+<td align="left">88</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">3</td>
+<td align="left">0</td>
+<td align="left">10</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-2</td>
+<td align="left">-1</td>
+<td align="left">2</td>
+<td align="left">0</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_6\)</span></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">3</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">8</td>
+</tr>
+</tbody>
+</table>
+<p>Com solução ótima <span class="math inline">\(x_B^T = [x_2,x_1,x_6] = [10,1,8], x_N^T = [x_3,x_4,x_5] = [0,0,0]\)</span></p>
+</details>
+<p><span style="color:blue">EXEMPLO 7 (irrestrito - Katta Murty)</span></p>
+<p>Resolva o PL com o auxilio do Excel (não use o solver, resolva o Simplex usando as planilhas para ajudar), em seguida confira o resultado usando o <em>solver</em> GUSEK:</p>
+<p><span class="math display">\[\begin{align}
+\text{max $z$ = } &amp; 3x_1 + 11x_2 + 9x_3 -x_4 - 29x_5  \\
+s.a &amp;\\
+&amp; \quad \quad x_2 + x_3 + x_4 - 2x_5 \leq 4\\
+&amp; x_1 - x_2 + x_3 + 2x_4 + x_5 \leq 0 \\
+&amp; x_1 + x_2 + x_3 \quad \quad - 3x_5 \leq 1 \\
+&amp; x_1 \text{ irrestrito}, x_2, x_3, x_4, x_5 \in \mathbb{R}^+ \\
+\end{align}\]</span></p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Passando para a forma padrão, com a substituição de variáveis:</p>
+<span class="math display">\[\begin{cases}
+x_1 = x_1^+ - x_1^- \\
+x_1^+ \geq 0 \\
+x_1^- \geq 0
+\end{cases}\]</span>
+<p>Temos:</p>
+<p><span class="math display">\[\begin{align}
+\text{min $z$ = } &amp; -3(x_1^+ - x_1^-) - 11x_2 - 9x_3 + x_4 + 29x_5  \\
+s.a &amp;\\
+&amp; \quad \quad \quad \quad \quad x_2 + x_3 + x_4 - 2x_5 + x_6 \quad  \quad     = 4\\
+&amp; (x_1^+ - x_1^-) - x_2 + x_3 + 2x_4 + x_5 \quad  + x_7 \quad     = 0 \\
+&amp; (x_1^+ - x_1^-) + x_2 + x_3 \quad \quad - 3x_5 \quad \quad +x_8 =  1 \\
+&amp; x_1^+,x_1^-, x_2, x_3, x_4, x_5 \in \mathbb{R}^+ \\
+\end{align}\]</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1p</th>
+<th align="left">X1n</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">X6</th>
+<th align="left">X7</th>
+<th align="left">X8</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-3</td>
+<td align="left">3</td>
+<td align="left">-11</td>
+<td align="left">-9</td>
+<td align="left">1</td>
+<td align="left">29</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_6\)</span></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">-2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_7\)</span></td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_8\)</span></td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-3</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_2\)</span> entra na base e <span class="math inline">\(x_8\)</span> sai:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1p</th>
+<th align="left">X1n</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">X6</th>
+<th align="left">X7</th>
+<th align="left">X8</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">8</td>
+<td align="left">-8</td>
+<td align="left">0</td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">-4</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">11</td>
+<td align="left">11</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_6\)</span></td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_7\)</span></td>
+<td align="left">2</td>
+<td align="left">-2</td>
+<td align="left">0</td>
+<td align="left">2</td>
+<td align="left">2</td>
+<td align="left">-2</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-3</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_1^-\)</span>(X1n) entra na base e <span class="math inline">\(x_6\)</span> sai da base:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1p</th>
+<th align="left">X1n</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">X6</th>
+<th align="left">X7</th>
+<th align="left">X8</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">2</td>
+<td align="left">9</td>
+<td align="left">4</td>
+<td align="left">8</td>
+<td align="left">0</td>
+<td align="left">3</td>
+<td align="left">35</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_1^-\)</span></td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_7\)</span></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">2</td>
+<td align="left">4</td>
+<td align="left">0</td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">7</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">4</td>
+</tr>
+</tbody>
+</table>
+<p>Temos a solução básica <span class="math inline">\(x_B^T = [x_1^-,x_7,x_2] = [3,7,4]\)</span> com custo de -35. Retomando a variável <span class="math inline">\(x_1\)</span> original, temos que <span class="math inline">\(x_1\)</span> = -3.</p>
+</details>
+<p><span style="color:blue">EXEMPLO 8 (teórico - Katta Murty)</span></p>
+<p>Considere o seguinte PL, já na tabela Simplex:</p>
+<p><span class="math display">\[\begin{aligned}
+&amp;\begin{array}{cccc}
+\hline \hline x_1 &amp; x_2 &amp; x_3 &amp; x_4 &amp; x_5 &amp; x_6 &amp; x_7 &amp; b \\
+\hline 0 &amp; 0 &amp; 0 &amp; {\color{red}\delta} &amp; 3 &amp; {\color{red}\gamma} &amp; {\color{red}\zeta} &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; {\color{red}\alpha} &amp; 1 &amp; 0 &amp; 3 &amp; {\color{red}\beta} \\
+0 &amp; 0 &amp; 1 &amp; -2 &amp; 2 &amp; {\color{red}\Delta} &amp; -1 &amp; 2 \\
+1 &amp; 0 &amp; 0 &amp; 0 &amp; -1 &amp; 2 &amp; 1 &amp; 3\\
+\hline
+\end{array}
+\end{aligned}\]</span></p>
+<p>Os valores de <span class="math display">\[{\color{red}\alpha}, {\color{red}\beta}, {\color{red}\gamma}, {\color{red}\delta}, {\color{red}\Delta},{\color{red}\zeta}\]</span> são parâmetros na tabela.
+Todas as questões abaixo são independentes.Defina o intervalo dos parâmetros que farão as proposições abaixo verdadeiras, considerando que as variáveis básicas são:
+<span class="math display">\[x_B^T = [x_2,x_3,x_1]\]</span></p>
+<ol style="list-style-type: decimal">
+<li><p>A primeira restrição indica que o problema é infactível.</p></li>
+<li><p><span class="math inline">\(x_B\)</span> é factível, porém não é ótima.</p></li>
+<li><p><span class="math inline">\(x_B\)</span> é factível, e a tabela indica que o problema é ilimitado.</p></li>
+<li><p><span class="math inline">\(x_B\)</span> é factível, <span class="math inline">\(x_6\)</span> é um candidato a entrar na base, e quando <span class="math inline">\(x_6\)</span> entrar, <span class="math inline">\(x_3\)</span> deixa a base.</p></li>
+<li><p>A solução atual é ótima, porém o problema tem multiplas soluções ótimas, uma delas com <span class="math inline">\(x_7\)</span> na base.</p></li>
+</ol>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<ol style="list-style-type: decimal">
+<li><p>Para o problema ser infactível, a solução básica não pode ser factível, ou seja: <span class="math display">\[\beta &lt; 0\]</span></p></li>
+<li><p>Para que <span class="math inline">\(x_B\)</span> não seja ótimo, deve existir algum <span class="math inline">\(c_j &lt;0\)</span>, ou seja:
+<span class="math display">\[(\delta &lt; 0)\cup(\gamma &lt; 0)\cup(\zeta &lt; 0)\]</span></p></li>
+<li><p>Para que o problema seja ilimitado, <span class="math inline">\(A_{\bullet s} \leq 0\)</span>, em que <span class="math inline">\(s\)</span> é a coluna da variável que entra na base. Olhando para todos os <span class="math inline">\(A_{\bullet s}\)</span>, percebe-se que a única possibilidade é com <span class="math inline">\(x_4\)</span> entrando na base, assim:
+<span class="math display">\[(\delta &lt; 0) \cap (\delta = min\{\delta,\gamma,\zeta\}) \cap (\alpha \leq 0)\]</span></p></li>
+<li><p><span class="math display">\[(\gamma &lt; 0) \cap (\gamma = min\{\delta,\gamma,\zeta\})\cap(2/\Delta &lt; 3/2)\]</span></p></li>
+<li><p>Para que o problema tenha multiplas soluções ótimas, o custo (<span class="math inline">\(c_j\)</span>) de uma variável não-basica deve ser 0. No caso o custo de <span class="math inline">\(x_7\)</span>:
+<span class="math display">\[\zeta = 0\]</span></p></li>
+</ol>
 </details>
 
 </div>
