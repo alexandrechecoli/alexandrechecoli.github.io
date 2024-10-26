@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-10-01" />
+<meta name="date" content="2024-10-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -121,8 +121,19 @@
 <li class="chapter" data-level="3.3.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicio-2-1"><i class="fa fa-check"></i><b>3.3.2</b> Exercicio 2</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html"><i class="fa fa-check"></i><b>4</b> Simplex Fase II</a></li>
-<li class="chapter" data-level="5" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>5</b> Simplex Fase I</a></li>
+<li class="chapter" data-level="4" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html"><i class="fa fa-check"></i><b>4</b> Simplex Fase II</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#a-forma-padrão"><i class="fa fa-check"></i><b>4.1</b> A forma padrão</a></li>
+<li class="chapter" data-level="4.2" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#o-algoritmo-simplex"><i class="fa fa-check"></i><b>4.2</b> O Algoritmo Simplex</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#exemplos"><i class="fa fa-check"></i><b>4.2.1</b> Exemplos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>5</b> Simplex Fase I</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exemplos-1"><i class="fa fa-check"></i><b>5.1</b> Exemplos</a></li>
+<li class="chapter" data-level="5.2" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exercícios"><i class="fa fa-check"></i><b>5.2</b> Exercícios</a></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>6</b> Dualidade</a>
 <ul>
 <li class="chapter" data-level="6.1" data-path="dualidade.html"><a href="dualidade.html#tabela-de-conversão-primal-dual"><i class="fa fa-check"></i><b>6.1</b> Tabela de conversão primal-dual</a></li>
@@ -158,34 +169,788 @@
             <section class="normal" id="section-">
 <div id="simplex-fase-i" class="section level1 hasAnchor" number="5">
 <h1><span class="header-section-number">Chapter 5</span> Simplex Fase I<a href="simplex-fase-i.html#simplex-fase-i" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>O Método Simplex, criado por George B. Dantzig é o algoritmo padrão para resolução de modelos de PL de forma genérica (com qualquer número de variáveis).
-Para que o método possa ser aplicado, o modelo precisa estar na chamada <strong>forma padrão</strong>. Vejamos a definição de forma padrão:</p>
-<div class="tcolorbox2">
-<p><strong>Definição</strong>: Um modelo de PL está na forma padrão se puder ser escrito como:</p>
-<div class="tcolorbox">
-<span class="math display">\[\begin{align}
-\text{min $f(x_1,x_2,...x_n)$ = } &amp; c_1x_1 + c_2x_2 + ... + c_nx_n  \\
-s.a &amp;\\
-&amp; a_{11}x_1 + a_{12}x_2 + ... + a_{1n}x_n = b_1  \\
-&amp; a_{11}x_1 + a_{12}x_2 + ... + a_{1n}x_n = b_2  \\
-&amp;... \quad \quad ... \quad \quad ...       \\
-&amp; a_{m1}x_1 + a_{m2}x_2 + ... + a_{mn}x_n = b_m  \\
-&amp; x_1, x_2, ..., x_n \in \mathbb{R}^+
-\end{align}\]</span>
+<p>O método Simplex Fase II tem a premissa de que uma solução básica factível (SBF) inicial deve existir, para que o método possa começar. Quando temos um modelo com restrições do tipo <span class="math inline">\(\leq\)</span>, as próprias variáveis de folga formam uma SBF. Com restrições do tipo <span class="math inline">\(=\)</span> ou <span class="math inline">\(\geq\)</span> isso não ocorre, então o o Simplex Fase I deve ser executado, com o objetivo de encontrar uma SBF inicial.</p>
+<p>Para o método completo, veja <a href="https://alexandrechecoli.github.io/4-prog-linear/Materiais/Apresentacoes/2.0%20-%20SimplexFaseI.pdf">apresentação</a>.</p>
+<p>A Fase I pode ser executada pelo <strong>método das variáveis artificiais</strong> ou pelo método do <strong>Big-M</strong>. Usando as variáveis artificiais (explicado na apresentação acima), ao fim da Fase 1 existem 2 possibilidades:</p>
+<p><img src="img/SimplexFaseI.png" width="449" /></p>
+<div id="exemplos-1" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Exemplos<a href="simplex-fase-i.html#exemplos-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><span style="color:blue">EXEMPLO 1</span> Resolva o PL e mostre o caminho Simplex.</p>
+<p><span class="math display">\[\begin{alignat*}{10}
+          &amp; \text{max z = }            &amp; 2x_1 &amp; + 3x_2 \\
+          &amp; \text{Sujeito à}           &amp; x_1   &amp; + x_2 &amp;\geq 10\\
+          &amp;                            &amp; 2x_1   &amp; +  x_2 &amp; \leq 16\\
+          &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span></p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Colocando na forma padrão, adicionando as variáveis artificiais e trocando a função <span class="math inline">\(z\)</span> por <span class="math inline">\(w\)</span>:</p>
+<p><span class="math display">\[\begin{alignat*}{10}
+          &amp; \text{min w = }            &amp;        &amp;         &amp;       &amp;       &amp;   \bar{x_5} &amp; + \bar{x_6}               \\
+          &amp; \text{Sujeito à}           &amp; x_1   &amp; + x_2    &amp; - x_3 &amp;       &amp;  + \bar{x_5}&amp;             &amp;  = 10\\
+          &amp;                            &amp; 2x_1   &amp; +  x_2  &amp;       &amp; + x_4 &amp;             &amp; + \bar{x_6} &amp;  = 16\\
+          &amp;                            &amp;  x_1,...,\bar{x_6} \geq 0  
+\end{alignat*}\]</span></p>
+<p>Na forma Tabular:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5a</th>
+<th align="left">X6a</th>
+<th align="left">w</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(??\)</span></td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">10</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(??\)</span></td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">16</td>
+</tr>
+</tbody>
+</table>
+<p>Deixando as variáveis artificiais na base, fazemos as operações:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1-L_2\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 - L_3\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5a</th>
+<th align="left">X6a</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-3</td>
+<td align="left">-2</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">-26</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_5a\)</span></td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">10</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_6a\)</span></td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">16</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_1\)</span> entra na base e <span class="math inline">\(X6a\)</span> (<span class="math inline">\(\bar{x_6}\)</span>) sai:</p>
+<p><span class="math inline">\(L_3 \leftarrow L_3/2\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 3L_3\)</span></p>
+<p><span class="math inline">\(L_2 \leftarrow L_2 + L_3\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5a</th>
+<th align="left">X6a</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">-1/2</td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">3/2</td>
+<td align="left">-2</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_5a\)</span></td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">-1</td>
+<td align="left">-1/2</td>
+<td align="left">1</td>
+<td align="left">-1/2</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">8</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_2\)</span> entra na base e <span class="math inline">\(X5a\)</span> (<span class="math inline">\(\bar{x_6}\)</span>) sai:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + L_2\)</span></p>
+<p><span class="math inline">\(L_3 \leftarrow L_3 - L_2\)</span></p>
+<p><span class="math inline">\(L_2 \leftarrow L_2/(1/2)\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5a</th>
+<th align="left">X6a</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">-2</td>
+<td align="left">-1</td>
+<td align="left">2</td>
+<td align="left">-1</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">6</td>
+</tr>
+</tbody>
+</table>
+<p>Chegamos ao fim da Fase I. Como <span class="math inline">\(w = 0\)</span> o problema original não é infactível, e a base atual (<span class="math inline">\(x_B^T = [x_2,x_1] = [4,6]\)</span>) é uma SBF para o problema original. Podemos então remover as colunas das variáveis artificiais e reinserir a função objetivo original <span class="math inline">\(z\)</span>:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-2</td>
+<td align="left">-3</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">-2</td>
+<td align="left">-1</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">6</td>
+</tr>
+</tbody>
+</table>
+<p>Note que o sistema não está na forma canônica em relação a nova base encontrada, pois os coeficientes de <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> na fo não estão zerados. Precisamos então realizar as seguintes operações:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 2L_3\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 3L_2\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">-4</td>
+<td align="left">-1</td>
+<td align="left">24</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">-2</td>
+<td align="left">-1</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">6</td>
+</tr>
+</tbody>
+</table>
+<p>Agora o Simplex Fase II pode continuar normalmente. <span class="math inline">\(x_3\)</span> entra na base e <span class="math inline">\(x_1\)</span> sai:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 4L_3\)</span></p>
+<p><span class="math inline">\(L_2 \leftarrow L_2 + 2L_3\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">4</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">3</td>
+<td align="left">48</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">16</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">6</td>
+</tr>
+</tbody>
+</table>
+<p>A solução ótima teme então <span class="math inline">\(x_B^T = [x_2,x_3] = [16,6]\)</span>. O caminho Simplex começa a ser mapeado a partir do momento que encontramos a primeira SBF para o problema, ou seja, ao fim da Fase I. O caminho é mostrado abaixo (ponto A e em seguida B):</p>
+<iframe src="Geogebra/SimplexFaseI-1.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+</details>
+<p><span style="color:blue">EXEMPLO 2 (INFACTÍVEL)</span> Resolva o seguinte PL:</p>
+<p><span class="math display">\[\begin{alignat*}{10}
+          &amp; \text{max z = }            &amp; x_1 &amp; + x_2 \\
+          &amp; \text{Sujeito à}           &amp; x_1   &amp; + x_2 &amp; \leq 10\\
+          &amp;                            &amp;       &amp; + x_2 &amp; \geq 11\\
+          &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span></p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Colocando na forma padrão, adicionando variáveis artificiais e trocando a função objetivo, temos a tabela:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5a</th>
+<th align="left">X6a</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(??\)</span></td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">10</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(??\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">11</td>
+</tr>
+</tbody>
+</table>
+<p>Para colocar as variáveis artificiais <span class="math inline">\(\bar{x_5}\)</span> e <span class="math inline">\(\bar{x_6}\)</span> na base:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 - L_2\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 - L_3\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5a</th>
+<th align="left">X6a</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-1</td>
+<td align="left">-2</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">-21</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_{5a}\)</span></td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">10</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_{6a}\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">11</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_2\)</span> entra na base e <span class="math inline">\(\bar{x_5}\)</span> sai:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 2L_2\)</span></p>
+<p><span class="math inline">\(L_3 \leftarrow L_3 - L_2\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5a</th>
+<th align="left">X6a</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">10</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_{6a}\)</span></td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">-1</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p>Chegamos ao fim do Simplex, porém o valor de <span class="math inline">\(w \neq 0\)</span>, o que indica que o problema original é infactível.</p>
+</details>
+<p><span style="color:blue">EXEMPLO 3 (PROBLEMA DO FAZENDEIRO)</span> Resolva o seguinte PL e mostre o caminho Simplex percorrido:</p>
+<p><span class="math display">\[\begin{alignat*}{10}
+          &amp; \text{max z = }            &amp; 2x_1 &amp; + 3x_2 \\
+          &amp; \text{Sujeito à}           &amp; x_1   &amp; + x_2 &amp; = 3\\
+          &amp;                            &amp; x_1   &amp; + 2x_2 &amp; \leq 4\\
+          &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span></p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Adicionando as variáveis de folga, artificiais e trocando a função objetivo <span class="math inline">\(z\)</span> por <span class="math inline">\(w\)</span>:</p>
+<p><span class="math display">\[\begin{alignat*}{10}
+          &amp; \text{min w = }            &amp;        &amp;         &amp;        &amp;          \bar{x_4} &amp; + \bar{x_5}               \\
+          &amp; \text{Sujeito à}           &amp; x_1    &amp; + x_2   &amp;        &amp;        + \bar{x_4} &amp;             &amp;  = 3\\
+          &amp;                            &amp; x_1    &amp; +  2x_2  &amp;  + x_3 &amp;                    &amp;  \bar{x_5}  &amp;  = 4\\
+          &amp;                            &amp;  x_1,...,\bar{x_5} \geq 0  
+\end{alignat*}\]</span></p>
+<p>Na tabela Simplex:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4a</th>
+<th align="left">X5a</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(??\)</span></td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(??\)</span></td>
+<td align="left">1</td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">4</td>
+</tr>
+</tbody>
+</table>
+<p>Colocando as variáveis artificiais na base:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 - L_2\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 - L_3\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4a</th>
+<th align="left">X5a</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-2</td>
+<td align="left">-3</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">-7</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_{4a}\)</span></td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_{5a}\)</span></td>
+<td align="left">1</td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">4</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_2\)</span> entra na base e <span class="math inline">\(x_{5a}\)</span> sai:</p>
+<p><span class="math inline">\(L_3 \leftarrow L_3/2\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 3L_3\)</span></p>
+<p><span class="math inline">\(L_2 \leftarrow L_2 - L_3\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4a</th>
+<th align="left">X5a</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">3/2</td>
+<td align="left">-1</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_{4a}\)</span></td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">-1/2</td>
+<td align="left">1</td>
+<td align="left">-1/2</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">1/2</td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">2</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(x_1\)</span> entra na base e <span class="math inline">\(x_{4a}\)</span> sai:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + L_2\)</span></p>
+<p><span class="math inline">\(L_3 \leftarrow L_3 - L_2\)</span></p>
+<p><span class="math inline">\(L_2 \leftarrow L_2/(1/2)\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4a</th>
+<th align="left">X5a</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">2</td>
+<td align="left">-1</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p>Voltando a função objetivo original e removendo as colunas das variáveis de folga, temos:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-2</td>
+<td align="left">-3</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p>Atualizando a tabela para manter <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> na base:</p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 2L_2\)</span></p>
+<p><span class="math inline">\(L_1 \leftarrow L_1 + 3L_2\)</span></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">7</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p>A solução básica factível inicial, encontrada pelo método Simplex Fase I já é a solução ótima do problema.</p>
+</details>
 </div>
-</div>
-<p>Na <strong>forma matricial</strong> temos então:</p>
-<div class="tcolorbox2">
-<div class="tcolorbox">
-<span class="math display">\[\begin{align}
-\text{min $f(x)$ = } &amp; c^Tx  \\
-s.a &amp;\\
-&amp; Ax = b  \\
-&amp; x \geq 0, b \geq 0  \\
-\end{align}\]</span>
-</div>
-</div>
+<div id="exercícios" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> Exercícios<a href="simplex-fase-i.html#exercícios" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><span style="color:blue">EXERCICIO 1</span> Encontre a solução do seguinte problema usando o método Simplex, com o auxílio de uma planilha de Excel.</p>
+<p>Um vendedor de frutas pode transportar 800 caixas de frutas para sua região de vendas. Ele necessita transportar 200 caixas de laranjas a R$20,00 de lucro por caixa, pelo menos 100 caixas de pêssegos a R$10,00 de lucro por caixa, e no máximo 200 caixas de tangerinas a R$30,00 de lucro por caixa. De que forma ele deverá carregar o caminhão para obter o lucro máximo? Construa o modelo do problema.</p>
 
+</div>
 </div>
             </section>
 

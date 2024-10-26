@@ -55,3 +55,5 @@ problema-ilimitado
 multiplas-soluções
 multiplas-soluções-ótimas
 section
+exemplos-1
+exercícios
