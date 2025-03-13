@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-10-26" />
+<meta name="date" content="2025-03-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -149,7 +149,10 @@
 <li class="chapter" data-level="7.1" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas"><i class="fa fa-check"></i><b>7.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
 <li class="chapter" data-level="7.2" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal"><i class="fa fa-check"></i><b>7.2</b> Encontrando a solução dual na tabela primal</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>8</b> Algoritmo Dual Simplex</a></li>
+<li class="chapter" data-level="8" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>8</b> Algoritmo Dual Simplex</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html#exercícios-1"><i class="fa fa-check"></i><b>8.1</b> Exercícios</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -170,7 +173,7 @@
 <div id="header">
 <h1 class="title">Notas de aula Pesquisa Operacional</h1>
 <p class="author"><em>Alexandre Checoli Choueiri</em></p>
-<p class="date"><em>2024-10-26</em></p>
+<p class="date"><em>2025-03-13</em></p>
 </div>
 <div id="modelagem" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">Chapter 1</span> Modelagem<a href="index.html#modelagem" class="anchor-section" aria-label="Anchor link to header"></a></h1>
@@ -199,7 +202,7 @@
 <li><p><strong>Definição dos parâmetros</strong>: ao contrário das variáveis, os parâmetros de um modelo não mudam, são constantes ao longo de todo o processo. Podemos pensar nos parâmetros como as quantidades dadas do problema (por exemplo, preço pela produção de uma peça, quantidade disponível de matéria prima, custo por hora/máquina produzindo, etc…).</p></li>
 <li><p><strong>Definição das restrições e função objetivo</strong>: a função objetivo deve relacionar as variáveis de tal forma que ela quantifique a qualidade de uma solução, por exemplo, em um problema de produção de ração, podemos quantificar uma solução pelo custo da receita criada. Sempre devemos indicar o que queremos fazer com a fo, maximizar ou minimizar (no caso da ração, obviamente o objetivo deve ser minimizado). As restrições vão determinar quando uma solução é factível (respeita todas as restrições do sistema) ou não. Por exemplo, podemos ter uma quantidade limitada de matéria prima para a produção da ração, de forma que uma solução não pode ultrapassar essa quantidade.</p></li>
 </ol>
-<p>Para um exemplo completo de modelagem matemática (o problema da dieta), veja o material em <a href="https://alexandrechecoli.github.io/4-prog-linear/Materiais/Apresentacoes/1.0%20-%20IntroPL.pdf" class="uri">https://alexandrechecoli.github.io/4-prog-linear/Materiais/Apresentacoes/1.0%20-%20IntroPL.pdf</a>, no tópico <strong>Modelando um problema</strong> (pg. 78 do arquivo pdf).</p>
+<p>Para um exemplo completo de modelagem matemática (o problema da dieta), veja o material em <a href="https://alexandrechecoli.github.io/4-prog-linear/Materiais/Apresentacoes/1.0%20-%20IntroPL.pdf" class="uri">https://alexandrechecoli.github.io/4-prog-linear/Materiais/Apresentacoes/1.0%20-%20IntroPL.pdf</a>, no tópico <strong>Modelando um problema</strong> (pg. 84 do arquivo pdf).</p>
 </div>
 <div id="premissas-da-pl" class="section level2 hasAnchor" number="1.3">
 <h2><span class="header-section-number">1.3</span> Premissas da PL<a href="index.html#premissas-da-pl" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -210,9 +213,9 @@
 <li><p><strong>Premissa da continuidade e não negatividade das variáveis</strong>: A premissa da <strong>continuidade</strong> implica que as variáveis podem assumir quaisquer valores reais. No problema da dieta por exemplo, podemos comprar 1kg, 0.5kg, 2.85kg, etc…dos alimentos. Já a <strong>não-negatividade</strong> implica que as variáveis só podem assumir valores positivos (não seria possível comprar -0.5kg de banana, por exemplo).</p></li>
 </ol>
 <ul>
-<li><p>Quando as variáveis precisam ser inteiras, temos um modelo de (e não um PL), que é muito mais difícil de se resolver.</p></li>
+<li><p>Quando as variáveis precisam ser inteiras, temos um modelo de <strong>programação</strong> inteira (e não um PL), que é muito mais difícil de se resolver.</p></li>
 <li><p>OBS2: Em alguns modelos pode ser necessário assumir variáveis com valores negativos. É muito fácil transformar esse modelo em um PL equivalente.</p></li>
-<li><p>OBS3: As premissas de proporcionalidade e aditividade automaticamente garantem que as restrições são equações ou inequações . Elas também implicam que a função objetivo é <strong>linear</strong>.</p></li>
+<li><p>OBS3: As premissas de proporcionalidade e aditividade automaticamente garantem que as restrições são equações ou inequações <strong>lineares</strong>. Elas também implicam que a função objetivo é <strong>linear</strong>.</p></li>
 </ul>
 </div>
 <div id="exercicios" class="section level2 hasAnchor" number="1.4">
@@ -225,7 +228,7 @@
 </ol>
 <div id="exercicio-1" class="section level3 hasAnchor" number="1.4.1">
 <h3><span class="header-section-number">1.4.1</span> Exercicio 1<a href="index.html#exercicio-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Uma indústria de móveis produz 4 tipos de mesas. Cada mesa passa por dois processos, <strong>carpintaria</strong> e <strong>finalização</strong>. Os número de horas/homem necessários em cada etapa é mostrado na Tabela abaixo; bem como a disponibilidade. A Tabela também aponta o lucro pela venda de cada unidade de mesa.</p>
+<p>Uma indústria de móveis produz 4 tipos de mesas. Cada mesa passa por dois processos, <strong>carpintaria</strong> e <strong>finalização</strong>. O número de horas/homem necessários em cada etapa é mostrado na Tabela abaixo; bem como a disponibilidade. A Tabela também aponta o lucro pela venda de cada unidade de mesa.</p>
 <p><img src="img/TabelaMesas.png" /></p>
 </div>
 <div id="exercicio-2" class="section level3 hasAnchor" number="1.4.2">
