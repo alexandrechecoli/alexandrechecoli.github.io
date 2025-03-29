@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-11-06" />
+<meta name="date" content="2024-12-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -149,7 +149,10 @@
 <li class="chapter" data-level="7.1" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas"><i class="fa fa-check"></i><b>7.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
 <li class="chapter" data-level="7.2" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal"><i class="fa fa-check"></i><b>7.2</b> Encontrando a solução dual na tabela primal</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>8</b> Algoritmo Dual Simplex</a></li>
+<li class="chapter" data-level="8" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>8</b> Algoritmo Dual Simplex</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html#exercícios-1"><i class="fa fa-check"></i><b>8.1</b> Exercícios</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -350,7 +353,7 @@
 </summary>
 </details>
 <p>Ou seja, na otimalidade, o produto das variáveis de folga de um modelo pelas suas respectivas variáveis no outro modelo deve ser zero. O produto de 2 elementos só pode ser zero se pelo menos um dos dois for zero. Com isso podemos inferir valores das variáveis de um modelo com base nas respostas do outro. Por exemplo, sabendo que uma variável de um modelo tem valor <span class="math inline">\(&gt;0\)</span>, sabemos que a sua equivalente do outro modelo deve obrigatoriamente ser 0. A melhor forma de enxergar o TFC é montando as relações entre as variáveis.</p>
-<p><span style="color:blue">EXEMPLO 1</span>: Contrua todas as relações de folgas complementares para o modelo abaixo:</p>
+<p><span style="color:blue">EXEMPLO 1</span>: Construa todas as relações de folgas complementares para o modelo abaixo:</p>
 <p><span class="math display">\[\begin{alignat*}{4}
                 &amp; \text{min z = }            &amp; x_1 &amp; + 2x_2                 \\
                 &amp; \text{Sujeito à}           &amp; -2x_1  &amp; + x_2  &amp;  \geq 3   \\
