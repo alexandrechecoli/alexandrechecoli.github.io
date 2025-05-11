@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 4 Simplex Fase II | Notas de aula Pesquisa Operacional</title>
   <meta name="description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
-  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 4 Simplex Fase II | Notas de aula Pesquisa Operacional" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-10-26" />
+<meta name="date" content="2025-05-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -149,7 +149,10 @@
 <li class="chapter" data-level="7.1" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas"><i class="fa fa-check"></i><b>7.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
 <li class="chapter" data-level="7.2" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal"><i class="fa fa-check"></i><b>7.2</b> Encontrando a solução dual na tabela primal</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>8</b> Algoritmo Dual Simplex</a></li>
+<li class="chapter" data-level="8" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>8</b> Algoritmo Dual Simplex</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html#exercícios-1"><i class="fa fa-check"></i><b>8.1</b> Exercícios</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -261,8 +264,7 @@ SOLUÇÃO
             \right]
       }_{x}
       \\ \text{s.a}
-\end{equation*}\]</span>
-<span class="math display">\[\begin{equation*}
+\end{equation*}\]</span> <span class="math display">\[\begin{equation*}
      \underbrace{
             \left[
             \begin{array}{cc}
@@ -709,8 +711,7 @@ SOLUÇÃO
 </iframe>
 </details>
 <p><span style="color:blue">EXEMPLO 3 (MULTIPLAS SOLUÇÕES)</span></p>
-<p>Toda vez que um PL tiver múltiplas soluções ótimas, pelo menos uma das variáveis <strong>não básicas</strong> terá custo 0 (<span class="math inline">\(c_j\)</span>) na função objetivo. Ou seja, existe uma
-variável que pode entrar na base, mas não altera a função objetivo em nada.</p>
+<p>Toda vez que um PL tiver múltiplas soluções ótimas, pelo menos uma das variáveis <strong>não básicas</strong> terá custo 0 (<span class="math inline">\(c_j\)</span>) na função objetivo. Ou seja, existe uma variável que pode entrar na base, mas não altera a função objetivo em nada.</p>
 <p>Considere o PL:</p>
 <p><span class="math display">\[\begin{align}
 \text{min $z$ = } &amp; -2x_1 - x_2  \\
@@ -814,8 +815,241 @@ SOLUÇÃO
 <iframe src="Geogebra/SimplexFaseII-MultiplasSolucoes.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
 </iframe>
 <p>Note que os dois pontos estão na curva de nível, indicando o mesmo valor da função objetivo (<span class="math inline">\(z = -2\)</span>).</p>
+<p>Ainda, qualquer combinação convexa entre pontos ótimos de um PL, é também um ponto ótimo. Lembrando que uma combinação convexa entre os pontos <span class="math inline">\(p_1,p_2,...,p_n\)</span> tem a forma:</p>
+<p><span class="math inline">\(\sum_{i=1}^{n}\alpha_ip_i\)</span>, com</p>
+<p><span class="math inline">\(\sum\alpha_i = 1\)</span> e</p>
+<p><span class="math inline">\(\alpha_i \geq 0, \forall i\)</span></p>
+<p>Dessa forma, considerando os pontos ótimos <span class="math inline">\(p_1 = [x_1,x_2] = [1,0]\)</span> e <span class="math inline">\(p_2 = [0,2]\)</span>, temos que todos os pontos que satisfazem:</p>
+<p><span class="math inline">\(\alpha_1[1,0] + \alpha_2[0,2]\)</span>, com</p>
+<p><span class="math inline">\(\sum\alpha_i = 1\)</span> e</p>
+<p><span class="math inline">\(\alpha_i \geq 0, \forall i\)</span></p>
+<p>São soluções ótimas. Por exemplo, considerando <span class="math inline">\(\alpha_1 = 0.5\)</span> e <span class="math inline">\(\alpha_2 = 0.5\)</span> temos um terceiro ponto ótimo, dado por: <span class="math inline">\(p_3 = [0.5,1]\)</span>.</p>
 </details>
-<p><span style="color:blue">EXEMPLO 4</span></p>
+<p><span style="color:blue">EXEMPLO 4 (DEGENERADO)</span></p>
+<p>Resolva o PL e mostre o caminho Simplex.</p>
+<p><span class="math display">\[\begin{align}
+            &amp; \text{Maximize} \quad &amp; z = 2x_1 + 2x_2 &amp; \\
+            &amp; \text{Sujeito a:} &amp; x_1 + x_2 &amp; \leq 4 \\
+            &amp; &amp; x_1 - x_2 &amp; \leq 2 \\
+            &amp; &amp; x_1 &amp; \leq 3 \\
+            &amp; &amp; x_1, x_2 &amp; \in R^{+}
+\end{align}\]</span></p>
+<details>
+<summary>
+SOLUÇÃO
+</summary>
+<p>Colocando na tabela Simplex:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">-2</td>
+<td align="left">-2</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">3</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">-4</td>
+<td align="left">0</td>
+<td align="left">2</td>
+<td align="left">0</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">0</td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">-2</td>
+<td align="left">4</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_3\)</span></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">-2</td>
+<td align="left">0</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p>Note que nesta iteração temos uma <strong>variável básica com valor 0</strong> (<span class="math inline">\(x_3 = 0\)</span>). É isso que indica quando um problema é degenerado, existe alguma variável básica com valor 0, olhando gráficamente fica mais fácil de entender o que ocorreu:</p>
+<iframe src="Geogebra/SimplexDegenerado.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
+<p>Existem 3 restrições definindo o ponto, onde só seriam necessárias duas. O que vai ocorrer então, é que na próxima iteração realizaremos uma troca de variáveis da base, no entanto o Simplex permanece no mesmo ponto!</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">2</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_4\)</span></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">-2</td>
+<td align="left">0</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">-1</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p>Note que existe uma variável <strong>não básica com custo 0</strong> na função objetivo (<span class="math inline">\(c_5 = 0\)</span>), o que poderia indicar múltiplas soluções ótimas. No entento, quando existe degenerescencia, isso nem sempre é verdade. O que aconteceria se adicionássemos <span class="math inline">\(x_5\)</span> à base, é que trocaríamos a base, e permaneceriamos no mesmo ponto. Portanto a regra de múltiplas soluções ótimas só vale com certeza em pontos em que não ocorre degenerescência. Nesses casos deve ser analisado com mais cautela, pode ou não se tratar de múltiplas soluções ótimas.</p>
+</details>
+<p><span style="color:blue">EXEMPLO 5</span></p>
 <p>Resolva o PL e mostre o caminho Simplex.</p>
 <p><span class="math display">\[\begin{align}
 \text{max $z$ = } &amp; x_1 + 2x_2  \\
@@ -999,15 +1233,13 @@ s.a &amp;\\
 </tr>
 </tbody>
 </table>
-<p>Temos a solução ótima com:
-<span class="math inline">\(x_B^T = [x_1,x_4,x_2] = [1,8,5]\)</span> e
-<span class="math inline">\(x_N^T = [x_3,x_5] = [0,0]\)</span></p>
+<p>Temos a solução ótima com: <span class="math inline">\(x_B^T = [x_1,x_4,x_2] = [1,8,5]\)</span> e <span class="math inline">\(x_N^T = [x_3,x_5] = [0,0]\)</span></p>
 <p>E valor da função objetivo <span class="math inline">\(z = 10\)</span>.</p>
 <p>O caminho Simplex é representado abaixo, pelos pontos A, B e C:</p>
 <iframe src="Geogebra/SimplexFaseII-Exemplo1.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
 </iframe>
 </details>
-<p><span style="color:blue">EXEMPLO 5</span></p>
+<p><span style="color:blue">EXEMPLO 6</span></p>
 <p>Resolva o PL:</p>
 <p><span class="math display">\[\begin{align}
 \text{max $z$ = } &amp; x_1 + 2x_2 + x_3  \\
@@ -1210,7 +1442,7 @@ s.a &amp;\\
 </table>
 <p>Temos a solução ótima com <span class="math inline">\(x_B^T = [x_2,x_3,x_6] = [4,2,16]\)</span> e <span class="math inline">\(x_N^T = [x_1,x_4,x_5] = [0,0,0]\)</span> e valor da função objetivo de <span class="math inline">\(z=-10\)</span>. Lembrando, como o problema original era de máximização (e portanto fizemos a transformação da função), temos que o valor para o problema original é <span class="math inline">\(z = 10\)</span>.</p>
 </details>
-<p><span style="color:blue">EXEMPLO 6 (Katta Murty)</span></p>
+<p><span style="color:blue">EXEMPLO 7 (Katta Murty)</span></p>
 <p>Resolva o PL com o auxilio do Excel (não use o solver, resolva o Simplex usando as planilhas para ajudar), em seguida confira o resultado usando o <em>solver</em> GUSEK:</p>
 <p><span class="math display">\[\begin{align}
 \text{min $z$ = } &amp; 12x_1 -10x_2 -30 x_3  \\
@@ -1510,7 +1742,7 @@ SOLUÇÃO
 </table>
 <p>Com solução ótima <span class="math inline">\(x_B^T = [x_2,x_1,x_6] = [10,1,8], x_N^T = [x_3,x_4,x_5] = [0,0,0]\)</span></p>
 </details>
-<p><span style="color:blue">EXEMPLO 7 (irrestrito - Katta Murty)</span></p>
+<p><span style="color:blue">EXEMPLO 8 (irrestrito - Katta Murty)</span></p>
 <p>Resolva o PL com o auxilio do Excel (não use o solver, resolva o Simplex usando as planilhas para ajudar), em seguida confira o resultado usando o <em>solver</em> GUSEK:</p>
 <p><span class="math display">\[\begin{align}
 \text{max $z$ = } &amp; 3x_1 + 11x_2 + 9x_3 -x_4 - 29x_5  \\
@@ -1756,7 +1988,7 @@ s.a &amp;\\
 </table>
 <p>Temos a solução básica <span class="math inline">\(x_B^T = [x_1^-,x_7,x_2] = [3,7,4]\)</span> com custo de -35. Retomando a variável <span class="math inline">\(x_1\)</span> original, temos que <span class="math inline">\(x_1\)</span> = -3.</p>
 </details>
-<p><span style="color:blue">EXEMPLO 8 (teórico - Katta Murty)</span></p>
+<p><span style="color:blue">EXEMPLO 9 (teórico - Katta Murty)</span></p>
 <p>Considere o seguinte PL, já na tabela Simplex:</p>
 <p><span class="math display">\[\begin{aligned}
 &amp;\begin{array}{cccc}
@@ -1768,9 +2000,7 @@ s.a &amp;\\
 \hline
 \end{array}
 \end{aligned}\]</span></p>
-<p>Os valores de <span class="math display">\[{\color{red}\alpha}, {\color{red}\beta}, {\color{red}\gamma}, {\color{red}\delta}, {\color{red}\Delta},{\color{red}\zeta}\]</span> são parâmetros na tabela.
-Todas as questões abaixo são independentes.Defina o intervalo dos parâmetros que farão as proposições abaixo verdadeiras, considerando que as variáveis básicas são:
-<span class="math display">\[x_B^T = [x_2,x_3,x_1]\]</span></p>
+<p>Os valores de <span class="math display">\[{\color{red}\alpha}, {\color{red}\beta}, {\color{red}\gamma}, {\color{red}\delta}, {\color{red}\Delta},{\color{red}\zeta}\]</span> são parâmetros na tabela. Todas as questões abaixo são independentes.Defina o intervalo dos parâmetros que farão as proposições abaixo verdadeiras, considerando que as variáveis básicas são: <span class="math display">\[x_B^T = [x_2,x_3,x_1]\]</span></p>
 <ol style="list-style-type: decimal">
 <li><p>A primeira restrição indica que o problema é infactível.</p></li>
 <li><p><span class="math inline">\(x_B\)</span> é factível, porém não é ótima.</p></li>
@@ -1784,13 +2014,10 @@ SOLUÇÃO
 </summary>
 <ol style="list-style-type: decimal">
 <li><p>Para o problema ser infactível, a solução básica não pode ser factível, ou seja: <span class="math display">\[\beta &lt; 0\]</span></p></li>
-<li><p>Para que <span class="math inline">\(x_B\)</span> não seja ótimo, deve existir algum <span class="math inline">\(c_j &lt;0\)</span>, ou seja:
-<span class="math display">\[(\delta &lt; 0)\cup(\gamma &lt; 0)\cup(\zeta &lt; 0)\]</span></p></li>
-<li><p>Para que o problema seja ilimitado, <span class="math inline">\(A_{\bullet s} \leq 0\)</span>, em que <span class="math inline">\(s\)</span> é a coluna da variável que entra na base. Olhando para todos os <span class="math inline">\(A_{\bullet s}\)</span>, percebe-se que a única possibilidade é com <span class="math inline">\(x_4\)</span> entrando na base, assim:
-<span class="math display">\[(\delta &lt; 0) \cap (\delta = min\{\delta,\gamma,\zeta\}) \cap (\alpha \leq 0)\]</span></p></li>
+<li><p>Para que <span class="math inline">\(x_B\)</span> não seja ótimo, deve existir algum <span class="math inline">\(c_j &lt;0\)</span>, ou seja: <span class="math display">\[(\delta &lt; 0)\cup(\gamma &lt; 0)\cup(\zeta &lt; 0)\]</span></p></li>
+<li><p>Para que o problema seja ilimitado, <span class="math inline">\(A_{\bullet s} \leq 0\)</span>, em que <span class="math inline">\(s\)</span> é a coluna da variável que entra na base. Olhando para todos os <span class="math inline">\(A_{\bullet s}\)</span>, percebe-se que a única possibilidade é com <span class="math inline">\(x_4\)</span> entrando na base, assim: <span class="math display">\[(\delta &lt; 0) \cap (\delta = min\{\delta,\gamma,\zeta\}) \cap (\alpha \leq 0)\]</span></p></li>
 <li><p><span class="math display">\[(\gamma &lt; 0) \cap (\gamma = min\{\delta,\gamma,\zeta\})\cap(2/\Delta &lt; 3/2)\]</span></p></li>
-<li><p>Para que o problema tenha multiplas soluções ótimas, o custo (<span class="math inline">\(c_j\)</span>) de uma variável não-basica deve ser 0. No caso o custo de <span class="math inline">\(x_7\)</span>:
-<span class="math display">\[\zeta = 0\]</span></p></li>
+<li><p>Para que o problema tenha multiplas soluções ótimas, o custo (<span class="math inline">\(c_j\)</span>) de uma variável não-basica deve ser 0. No caso o custo de <span class="math inline">\(x_7\)</span>: <span class="math display">\[\zeta = 0\]</span></p></li>
 </ol>
 </details>
 
@@ -1817,42 +2044,42 @@ SOLUÇÃO
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
-"sharing": {
-"github": false,
-"facebook": true,
-"twitter": true,
-"linkedin": false,
-"weibo": false,
-"instapaper": false,
-"vk": false,
-"whatsapp": false,
-"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
-},
-"fontsettings": {
-"theme": "white",
-"family": "sans",
-"size": 2
-},
-"edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/03-SimplexFaseII.Rmd",
-"text": "Edit"
-},
-"history": {
-"link": null,
-"text": null
-},
-"view": {
-"link": null,
-"text": null
-},
-"download": ["_main.pdf", "_main.epub"],
-"search": {
-"engine": "fuse",
-"options": null
-},
-"toc": {
-"collapse": "subsection"
-}
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/03-SimplexFaseII.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.pdf", "_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
 });
 });
 </script>
