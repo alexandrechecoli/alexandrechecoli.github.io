@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2025-05-11" />
+<meta name="date" content="2025-05-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -804,8 +804,8 @@ SOLUÇÃO
 <tr class="even">
 <td align="left"><span class="math inline">\(x_1\)</span></td>
 <td align="left">2</td>
-<td align="left">2</td>
-<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">1</td>
 <td align="left">2</td>
 </tr>
 </tbody>
@@ -992,10 +992,10 @@ SOLUÇÃO
 </tr>
 </tbody>
 </table>
-<p>Note que nesta iteração temos uma <strong>variável básica com valor 0</strong> (<span class="math inline">\(x_3 = 0\)</span>). É isso que indica quando um problema é degenerado, existe alguma variável básica com valor 0, olhando gráficamente fica mais fácil de entender o que ocorreu:</p>
+<p>Note que nesta iteração temos uma <strong>variável básica com valor 0</strong> (<span class="math inline">\(x_3 = 0\)</span>). É isso que indica quando um problema é degenerado: alguma variável básica - que teóricamente é para ter valor - possi valor 0. Olhando gráficamente fica mais fácil de entender o que ocorreu:</p>
 <iframe src="Geogebra/SimplexDegenerado.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
 </iframe>
-<p>Existem 3 restrições definindo o ponto, onde só seriam necessárias duas. O que vai ocorrer então, é que na próxima iteração realizaremos uma troca de variáveis da base, no entanto o Simplex permanece no mesmo ponto!</p>
+<p>Existem 3 restrições definindo o ponto, onde só seriam necessárias duas. O que vai ocorrer então, é que na próxima iteração realizaremos uma troca de variáveis da base e o Simplex permanece no mesmo ponto!</p>
 <table>
 <thead>
 <tr class="header">
@@ -1043,6 +1043,58 @@ SOLUÇÃO
 <td align="left">1</td>
 <td align="left">0</td>
 <td align="left">-1</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<p>Ainda, existe uma variável <strong>não básica com custo 0</strong> (<span class="math inline">\(c_5 = 0\)</span>) na tabela ótima, o que indica múltiplas soluções ótimas. Realizando o pivoteamento para adicionar <span class="math inline">\(x_5\)</span> à base, temos:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">VB</th>
+<th align="left">X1</th>
+<th align="left">X2</th>
+<th align="left">X3</th>
+<th align="left">X4</th>
+<th align="left">X5</th>
+<th align="left">b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">2</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_5\)</span></td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">-1/2</td>
+<td align="left">-1/2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(x_1\)</span></td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1/2</td>
+<td align="left">1/2</td>
+<td align="left">0</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(x_2\)</span></td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">1/2</td>
+<td align="left">-1/2</td>
+<td align="left">0</td>
 <td align="left">1</td>
 </tr>
 </tbody>
@@ -2007,6 +2059,7 @@ s.a &amp;\\
 <li><p><span class="math inline">\(x_B\)</span> é factível, e a tabela indica que o problema é ilimitado.</p></li>
 <li><p><span class="math inline">\(x_B\)</span> é factível, <span class="math inline">\(x_6\)</span> é um candidato a entrar na base, e quando <span class="math inline">\(x_6\)</span> entrar, <span class="math inline">\(x_3\)</span> deixa a base.</p></li>
 <li><p>A solução atual é ótima, porém o problema tem multiplas soluções ótimas, uma delas com <span class="math inline">\(x_7\)</span> na base.</p></li>
+<li><p>Temos indicativo de que o problema é degenerado.</p></li>
 </ol>
 <details>
 <summary>
@@ -2018,6 +2071,7 @@ SOLUÇÃO
 <li><p>Para que o problema seja ilimitado, <span class="math inline">\(A_{\bullet s} \leq 0\)</span>, em que <span class="math inline">\(s\)</span> é a coluna da variável que entra na base. Olhando para todos os <span class="math inline">\(A_{\bullet s}\)</span>, percebe-se que a única possibilidade é com <span class="math inline">\(x_4\)</span> entrando na base, assim: <span class="math display">\[(\delta &lt; 0) \cap (\delta = min\{\delta,\gamma,\zeta\}) \cap (\alpha \leq 0)\]</span></p></li>
 <li><p><span class="math display">\[(\gamma &lt; 0) \cap (\gamma = min\{\delta,\gamma,\zeta\})\cap(2/\Delta &lt; 3/2)\]</span></p></li>
 <li><p>Para que o problema tenha multiplas soluções ótimas, o custo (<span class="math inline">\(c_j\)</span>) de uma variável não-basica deve ser 0. No caso o custo de <span class="math inline">\(x_7\)</span>: <span class="math display">\[\zeta = 0\]</span></p></li>
+<li><p>A degenerescêcia é mapeada quando existe uma variável básica com custo 0, portanto, <span class="math inline">\(\beta=0\)</span>.</p></li>
 </ol>
 </details>
 
