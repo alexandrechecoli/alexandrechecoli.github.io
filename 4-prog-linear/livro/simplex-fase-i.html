@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 5 Simplex Fase I | Notas de aula Pesquisa Operacional</title>
   <meta name="description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
-  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 5 Simplex Fase I | Notas de aula Pesquisa Operacional" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-10-26" />
+<meta name="date" content="2025-05-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -149,7 +149,10 @@
 <li class="chapter" data-level="7.1" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-os-elementos-da-tabela-pelas-fórmulas-genéricas"><i class="fa fa-check"></i><b>7.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
 <li class="chapter" data-level="7.2" data-path="a-inversa-simplex-e-dualidade.html"><a href="a-inversa-simplex-e-dualidade.html#encontrando-a-solução-dual-na-tabela-primal"><i class="fa fa-check"></i><b>7.2</b> Encontrando a solução dual na tabela primal</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>8</b> Algoritmo Dual Simplex</a></li>
+<li class="chapter" data-level="8" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>8</b> Algoritmo Dual Simplex</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html#exercícios-1"><i class="fa fa-check"></i><b>8.1</b> Exercícios</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -173,6 +176,15 @@
 <p>Para o método completo, veja <a href="https://alexandrechecoli.github.io/4-prog-linear/Materiais/Apresentacoes/2.0%20-%20SimplexFaseI.pdf">apresentação</a>.</p>
 <p>A Fase I pode ser executada pelo <strong>método das variáveis artificiais</strong> ou pelo método do <strong>Big-M</strong>. Usando as variáveis artificiais (explicado na apresentação acima), ao fim da Fase 1 existem 2 possibilidades:</p>
 <p><img src="img/SimplexFaseI.png" width="449" /></p>
+<p>Podemos entender o método das variáveis artificiais também de forma gráfica. Considere o seguinte problema de PL:</p>
+<p><span class="math display">\[\begin{alignat*}{10}
+          &amp; \text{max z = }            &amp; x_1 &amp;  \\
+          &amp; \text{Sujeito à}           &amp; 2x_1   &amp; + 2x_2 &amp; = 4\\
+          &amp;                            &amp;  x_1 \geq 0  &amp; \quad x_2 \geq 0&amp;
+\end{alignat*}\]</span></p>
+<p>Não temos uma SBF inicial, de forma que precisamos adicionar uma variável artificial. A idéia de adicionar variáveis artificias é a de que aumentamos a dimensionalidade do problema, criando um caminho entre a solução artificiais e a região factível do problema original. Se conseguirmos percorrer o caminho até chegar na região original, quer dizer que não precisamos mais das dos eixos artificiais criados, de forma que podemos removê-los. Segue abaixo a região factível original do problema bem como o novo plano criado:</p>
+<iframe src="Geogebra/VarArtificiais.html" width="100%" height="auto" style="border:none; aspect-ratio: 4 / 2;">
+</iframe>
 <div id="exemplos-1" class="section level2 hasAnchor" number="5.1">
 <h2><span class="header-section-number">5.1</span> Exemplos<a href="simplex-fase-i.html#exemplos-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><span style="color:blue">EXEMPLO 1</span> Resolva o PL e mostre o caminho Simplex.</p>
@@ -948,7 +960,7 @@ SOLUÇÃO
 <div id="exercícios" class="section level2 hasAnchor" number="5.2">
 <h2><span class="header-section-number">5.2</span> Exercícios<a href="simplex-fase-i.html#exercícios" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><span style="color:blue">EXERCICIO 1</span> Encontre a solução do seguinte problema usando o método Simplex, com o auxílio de uma planilha de Excel.</p>
-<p>Um vendedor de frutas pode transportar 800 caixas de frutas para sua região de vendas. Ele necessita transportar 200 caixas de laranjas a R$20,00 de lucro por caixa, pelo menos 100 caixas de pêssegos a R$10,00 de lucro por caixa, e no máximo 200 caixas de tangerinas a R$30,00 de lucro por caixa. De que forma ele deverá carregar o caminhão para obter o lucro máximo? Construa o modelo do problema.</p>
+<p>Um vendedor de frutas pode transportar 800 caixas de frutas para sua região de vendas. Ele necessita transportar 200 caixas de laranjas a R$20,00 de lucro por caixa, pelo menos 100 caixas de pêssegos a R$10,00 de lucro por caixa, e no máximo 200 caixas de tangerinas a R$30,00 de lucro por caixa. De que forma ele deverá carregar o caminhão para obter o lucro máximo?</p>
 
 </div>
 </div>
@@ -972,42 +984,42 @@ SOLUÇÃO
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
-"sharing": {
-"github": false,
-"facebook": true,
-"twitter": true,
-"linkedin": false,
-"weibo": false,
-"instapaper": false,
-"vk": false,
-"whatsapp": false,
-"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
-},
-"fontsettings": {
-"theme": "white",
-"family": "sans",
-"size": 2
-},
-"edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/04-SimplexFaseI.Rmd",
-"text": "Edit"
-},
-"history": {
-"link": null,
-"text": null
-},
-"view": {
-"link": null,
-"text": null
-},
-"download": ["_main.pdf", "_main.epub"],
-"search": {
-"engine": "fuse",
-"options": null
-},
-"toc": {
-"collapse": "subsection"
-}
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/04-SimplexFaseI.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.pdf", "_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
 });
 });
 </script>
