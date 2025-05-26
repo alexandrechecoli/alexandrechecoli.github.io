@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 6 Dualidade | Notas de aula Pesquisa Operacional</title>
   <meta name="description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
-  <meta name="generator" content="bookdown 0.39 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 6 Dualidade | Notas de aula Pesquisa Operacional" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2024-12-05" />
+<meta name="date" content="2025-05-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -334,6 +334,17 @@
 <summary>
 <span style="color:blue">PROVA</span>
 </summary>
+<p>A prova parte da primeira componente do teorema (<span class="math inline">\(V \leq Z\)</span>), e também da definição de uma solução ótima. Em seguida, por hipótese, supõe que <span class="math inline">\(V^* = Z^*\)</span>, e quando isso ocorre, chega-se na definição de solução ótima.</p>
+<p>Sabe-se que, se <span class="math inline">\(x\)</span> é uma solução factível para o primal (de minimização), e <span class="math inline">\(x^*\)</span> é a solução ótima, então:</p>
+<p><span class="math inline">\(Z^* \leq Z\)</span></p>
+<p>Vamos assumir, por hipótese, que:</p>
+<p><span class="math inline">\(V^* = Z^*\)</span></p>
+<p>Pela primeira parte do teorema, sabemos que para qualquer <span class="math inline">\(x\)</span> e <span class="math inline">\(\pi\)</span> factíveis, temos:</p>
+<p><span class="math inline">\(V \leq Z\)</span></p>
+<p>Assim, pela hipótese:</p>
+<p><span class="math inline">\(Z^* \leq Z\)</span></p>
+<p>Que é exatamente a definição de sol. ótima para <span class="math inline">\(x^*\)</span>, ou seja, quando <span class="math inline">\(Z^* \leq Z\)</span> chegamos à definição de sol. ótima.</p>
+<p>A mesma ideía pode ser usada para provar que <span class="math inline">\(\pi^*\)</span> é ótimo, somente usando a definição de ótimo para o máximo.</p>
 </details>
 <p>O teorema pode ser representado gráficamente por:</p>
 <p><img src="img/Dual_limitante2.png" width="423" /></p>
@@ -343,14 +354,89 @@
 <div class="tcolorbox2">
 <p><strong>TEOREMA</strong>: Sabe-se que para cada restrição primal existe uma variável equivalente dual. Seja <span class="math inline">\(x\)</span> as variáveis do modelo primal, <span class="math inline">\(x_f\)</span> as folgas/excessos relativos às restrições, <span class="math inline">\(\pi\)</span> as variáveis do modelo dual e <span class="math inline">\(\pi_f\)</span> as suas folgas/excessos. Temos que, na <em>otimalidade</em>:</p>
 <div class="tcolorbox">
-<p><span class="math inline">\(x_{fi}\pi_i = 0 \quad j = \{1,...,M\}\)</span></p>
-<p><span class="math inline">\(\pi_{fj}x_j  = 0 \quad i = \{1,...,N\}\)</span></p>
+<p><span class="math inline">\(x_{fi}\pi_i = 0 \quad i = \{1,...,M\}\)</span></p>
+<p><span class="math inline">\(\pi_{fj}x_j  = 0 \quad j = \{1,...,N\}\)</span></p>
 </div>
 </div>
 <details>
 <summary>
 <span style="color:blue">PROVA</span>
 </summary>
+<p>Seja o par primal-dual:</p>
+<div id="wrapper">
+<div id="left">
+<p>Primal(P):</p>
+<p><span class="math inline">\(min \quad z = c^Tx\)</span></p>
+<p>s.a: <span class="math inline">\(\quad \quad Ax \geq b\)</span></p>
+<p><span class="math inline">\(\quad \quad x \geq 0\)</span></p>
+</div>
+<div id="right">
+<p>Dual(D):</p>
+<p><span class="math inline">\(max \quad v = b^T\pi\)</span></p>
+<p>s.a: <span class="math inline">\(\quad \quad A^T\pi \leq c\)</span></p>
+<p><span class="math inline">\(\quad \quad \pi \geq 0\)</span></p>
+</div>
+</div>
+<p>Podemos adicionar as variáveis de folga de cada problema:</p>
+<div id="wrapper">
+<div id="left">
+<p>Primal(P):</p>
+<p><span class="math inline">\(min \quad z = c^Tx\)</span></p>
+<p>s.a: <span class="math inline">\(\quad \quad Ax + x_f =  b\)</span></p>
+<p><span class="math inline">\(\quad \quad x \geq 0\)</span></p>
+</div>
+<div id="right">
+<p>Dual(D):</p>
+<p><span class="math inline">\(max \quad v = b^T\pi\)</span></p>
+<p>s.a: <span class="math inline">\(\quad \quad A^T\pi - \pi_f = c\)</span></p>
+<p><span class="math inline">\(\quad \quad \pi \geq 0\)</span></p>
+</div>
+</div>
+<p>As folgas ficam então:</p>
+<div id="wrapper">
+<div id="left">
+<p>Primal(P):</p>
+<p><span class="math inline">\(\quad \quad  x_f =  (b - Ax) \quad (I)\)</span></p>
+</div>
+<div id="right">
+<p>Dual(D):</p>
+<p><span class="math inline">\(\quad \quad  \pi_f = (A^T\pi - c) \quad (II)\)</span></p>
+</div>
+</div>
+<p>Pelo teorema fraco da dualidade parte 2, sabemos que:</p>
+<p><span class="math inline">\(\pi^Tb \leq \pi^TAx \leq c^Tx\)</span></p>
+<p>E como na otimalidade, temos <span class="math inline">\(Z = V\)</span>:</p>
+<p><span class="math inline">\(\pi^Tb = \pi^TAx = c^Tx  \quad (III)\)</span></p>
+<p>Usando os dois primeiros termos de <span class="math inline">\((III)\)</span>:</p>
+<p><span class="math inline">\(\pi^Tb = \pi^TAx\)</span></p>
+<p><span class="math inline">\(\rightarrow \pi^Tb - \pi^TAx = 0\)</span></p>
+<p><span class="math inline">\(\rightarrow \pi^T(b - Ax) = 0\)</span></p>
+<p>No entanto, o termo <span class="math inline">\((b - Ax)\)</span> é exatamente o das folgas do problema primal, definido em <span class="math inline">\((I)\)</span>, assim, temos que:</p>
+<p><span class="math inline">\(\pi^Tx_f = 0\)</span></p>
+<p>Expandindo esse termo, temos o produto interno:</p>
+<p><span class="math inline">\(\sum_{i=1}^{M} \pi^T_ix_{fi} = 0\)</span></p>
+<p>Como os valores de <span class="math inline">\(x_f\)</span> e <span class="math inline">\(\pi\)</span> são positivos, a única forma da soma ser zero é se cada termo individual for zero, ou seja:</p>
+<div class="tcolorbox2">
+<div class="tcolorbox">
+<p><span class="math inline">\(\pi_ix_{fi} = 0 \quad i = \{1,...,M\}\)</span></p>
+</div>
+</div>
+<p>O mesmo pode ser feito para as folgas duais:</p>
+<p>Usando os dois últimos termos de <span class="math inline">\((III)\)</span>:</p>
+<p><span class="math inline">\(\pi^TAx = c^Tx\)</span></p>
+<p><span class="math inline">\(\rightarrow \pi^TAx - c^Tx = 0\)</span></p>
+<p><span class="math inline">\(\rightarrow (\pi^TA - c^T)x = 0\)</span></p>
+<p>Aplicando a transposta em ambos os lados de <span class="math inline">\((II)\)</span>, temos a folga dual escrita como:</p>
+<p><span class="math inline">\(\pi_f^T = (\pi^TA - c^T)\)</span>, ou seja:</p>
+<p><span class="math inline">\(\rightarrow \pi_f^Tx = 0\)</span></p>
+<p>Expandindo o produto interno:</p>
+<p><span class="math inline">\(\sum_{j = 1}^{N} \pi_{fj}^Tx_j = 0\)</span></p>
+<p>Como <span class="math inline">\(x\)</span> e <span class="math inline">\(\pi_f\)</span> devem ser positivos:</p>
+<div class="tcolorbox2">
+<div class="tcolorbox">
+<p><span class="math inline">\(\pi_{fj}x_j = 0 \quad \forall j \in {1,...,N}\)</span></p>
+</div>
+</div>
 </details>
 <p>Ou seja, na otimalidade, o produto das variáveis de folga de um modelo pelas suas respectivas variáveis no outro modelo deve ser zero. O produto de 2 elementos só pode ser zero se pelo menos um dos dois for zero. Com isso podemos inferir valores das variáveis de um modelo com base nas respostas do outro. Por exemplo, sabendo que uma variável de um modelo tem valor <span class="math inline">\(&gt;0\)</span>, sabemos que a sua equivalente do outro modelo deve obrigatoriamente ser 0. A melhor forma de enxergar o TFC é montando as relações entre as variáveis.</p>
 <p><span style="color:blue">EXEMPLO 1</span>: Construa todas as relações de folgas complementares para o modelo abaixo:</p>
@@ -550,42 +636,42 @@ SOLUÇÃO
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
-"sharing": {
-"github": false,
-"facebook": true,
-"twitter": true,
-"linkedin": false,
-"weibo": false,
-"instapaper": false,
-"vk": false,
-"whatsapp": false,
-"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
-},
-"fontsettings": {
-"theme": "white",
-"family": "sans",
-"size": 2
-},
-"edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/05-Dualidade.Rmd",
-"text": "Edit"
-},
-"history": {
-"link": null,
-"text": null
-},
-"view": {
-"link": null,
-"text": null
-},
-"download": ["_main.pdf", "_main.epub"],
-"search": {
-"engine": "fuse",
-"options": null
-},
-"toc": {
-"collapse": "subsection"
-}
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/05-Dualidade.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.pdf", "_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
 });
 });
 </script>
