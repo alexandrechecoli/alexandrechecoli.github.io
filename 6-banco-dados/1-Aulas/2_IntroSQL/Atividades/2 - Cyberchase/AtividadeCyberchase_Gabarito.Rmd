@@ -1,0 +1,323 @@
+---
+title: "Atividade 1 - Cyberchase Gabarito"
+output: html_document
+#output: flexdashboard::flex_dashboard
+date: "2024-04-07"
+css: ../../../style/style.css
+fontsize: 18pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{=html}
+<style>
+body
+{
+  text-align: justify
+}
+
+img{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+```
+```{r, echo = FALSE}
+library(DT)
+```
+
+
+
+![Programa Cyberchase](img/cyberchase.jpg)
+
+Bem-vindo ao Ciberespaço! Cyberchase é uma série de televisão infantil animada e educacional, exibida pelo Public Broadcasting Service (PBS) dos Estados Unidos desde 2002 e pela TV Cultura no Brasil. Originalmente projetado para “mostrar às crianças que a matemática está em toda parte e que todos podem ser bons nisso”, o mundo do Cyberchase está centrado em Jackie, Matt e Inez, que se unem a Digit – um “cybird” – para impedir que o Hacker assuma o controle do ciberespaço e infecte o *Motherboard*. Ao longo do caminho, o quarteto aprende matemática, ciências e habilidades de resolução de problemas para frustrar as tentativas de Hacker.
+
+As informações dos episódios da série estão em um banco de dados chamado `cyberchase.db` <a style="text-decoration: none;"
+  href="cyberchase.db" download>BAIXAR</a>
+
+                    
+O comando abaixo fornece todos os registros do banco:
+
+```{r, echo =FALSE}
+  library(DBI)
+  db = dbConnect(RSQLite::SQLite(), dbname = "cyberchase.db")
+```
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT * FROM * FROM "episodes";
+```
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT * FROM episodes')
+  datatable(dt, options = list(pageLength = 10))
+```
+
+## Schema
+
+Todo banco de dados possui um  “esquema” – as tabelas e colunas nas quais os dados são organizados. Em cyberchase.db você encontrará uma única tabela, chamada "episodes". Na tabela "episodes", você encontrará as seguintes colunas:
+
+  * `id`: Identificador único de cada linha da tabela
+  * `season`: Número da temporada a qual o episódio foi ao ar
+  * `episode_in_season`: Número do episódio na temporada
+  * `title`: Título do episódio
+  * `topic`: Identifica qual é o tema do episódio
+  * `air_date`: Data (expressa em uma string `YYYY-MM-DD`) em que o episodio foi exibido.
+  * `production_code`: Código único usado pela PBS para se referir a cada episódio
+
+
+## Problema para resolver
+
+Para cada uma das perguntas a seguir, você deve escrever uma única query SQL que produza os resultados especificados por cada problema. Sua resposta deve assumir a forma de uma única consulta SQL. Você não deve presumir nada sobre os IDs de nenhum episódio específico: suas consultas devem ser precisas, mesmo que o ID de qualquer episódio específico seja diferente. Por fim, cada consulta deve retornar apenas os dados necessários para responder à pergunta: se o problema apenas solicitar a saída dos nomes dos episódios, por exemplo, então sua consulta não deverá gerar também a data de exibição de cada episódio.
+
+
+
+  1. Escreva uma consulta SQL para listar os títulos de todos os episódios da temporada original de Cyberchase, Temporada 1.
+  2. Liste o número da temporada e o título do primeiro episódio de cada temporada.
+  3. Encontre o código de produção do episódio “Hackerized!”.
+  4. Escreva uma consulta para encontrar os títulos dos episódios que ainda não possuem um tópico listado.
+  5. encontre o título do episódio de férias que foi ao ar em 31 de dezembro de 2004.
+  6. Liste os títulos dos episódios da 6ª temporada (de 2008) que foram lançados no mais cedo, em 2007.
+  7. Escreva uma consulta SQL para listar os títulos e tópicos de todos os episódios que ensinam frações.
+  8. Escreva uma consulta que conte o número de episódios lançados nos últimos 6 anos, de 2018 a 2023 (2018 e 2023 inclusos).
+  9. Escreva uma consulta que conte o número de episódios lançados nos primeiros 6 anos do Cyberchase, de 2002 a 2007 (inclusos).
+  10. Escreva uma consulta SQL para listar os ids, títulos e códigos de produção de todos os episódios. Ordene os resultados por código de produção, do mais antigo ao mais recente.
+  11. Liste os títulos dos episódios da 5ª temporada, em ordem alfabética inversa.
+  12. Conte o número de títulos de episódios (sem duplicidadades) Existem episodios com o mesmo nome?.
+  13. Crie uma query para responder uma pergunta de sua escolha, que contenha pelo menos uma condição envolvendo `WHERE` com `AND` ou `OR`.
+  
+
+## RESPOSTAS
+
+<details>
+
+<summary>Ver</summary>
+
+
+#### 1 Escreva uma consulta SQL para listar os títulos de todos os episódios da temporada original de Cyberchase, Temporada 1.
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT "title" FROM "episodes" WHERE ("season" = 1);
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT "title" FROM "episodes" WHERE ("season" = 1);')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 2 Liste o número da temporada e o título do primeiro episódio de cada temporada.
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT "season","title" FROM "episodes" WHERE "episode_in_season" = 1;
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT "season","title" FROM "episodes" WHERE "episode_in_season" = 1;')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 3 Encontre o código de produção do episódio “Hackerized!”
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT "production_code" FROM "episodes" WHERE "title" = 'Hackerized!' = 1;
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT "production_code" FROM "episodes" WHERE "title" = "Hackerized!"')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 4 Escreva uma consulta para encontrar os títulos dos episódios que ainda não possuem um tópico listado.
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT "title" FROM "episodes" WHERE "topic" = NULL;
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT "title" FROM "episodes" WHERE "topic" IS NULL')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 5 Encontre o título do episódio de férias que foi ao ar em 31 de dezembro de 2004.
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT "title" FROM "episodes" WHERE "air_date" = '2004-12-31';
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT "title" FROM "episodes" WHERE "air_date" = "2004-12-31"')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 6 Liste os títulos dos episódios da 6ª temporada (de 2008) que foram lançados no mais cedo, em 2007.
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT "title" FROM "episodes" WHERE ("season" = 6) AND ("air_date" BETWEEN '2007-01-01' AND '2007-12-31');
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT "title" FROM "episodes" WHERE ("season" = 6) AND ("air_date" BETWEEN "2007-01-01" AND "2007-12-31")')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 7 Escreva uma consulta SQL para listar os títulos e tópicos de todos os episódios que ensinam frações.
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT "title","topic" FROM "episodes" WHERE "topic" LIKE '%fraction%';
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT "title","topic" FROM "episodes" WHERE "topic" LIKE "%fraction%";')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 8 Escreva uma consulta que conte o número de episódios lançados nos últimos 6 anos, de 2018 a 2023 (2018 e 2023 inclusos).
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT COUNT(*) AS 'CONTAGEM' FROM "episodes" WHERE "air_date" BETWEEN '2018-01-01' AND '2023-12-31' AS 'CONTAGEM';
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT COUNT(*) AS "CONTAGEM" FROM "episodes" WHERE "air_date" BETWEEN "2018-01-01" AND "2023-12-31" ;')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 9 Escreva uma consulta que conte o número de episódios lançados nos primeiros 6 anos do Cyberchase, de 2002 a 2007 (inclusos)
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT COUNT(*) AS 'CONTAGEM' FROM "episodes" WHERE "air_date" BETWEEN '2002-01-01' AND '2007-12-31';
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT COUNT(*) AS "CONTAGEM" FROM "episodes" WHERE "air_date" BETWEEN "2002-01-01" AND "2007-12-31";')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 10 Escreva uma consulta SQL para listar os ids, títulos e códigos de produção de todos os episódios. Ordene os resultados por código de produção, do mais antigo ao mais recente
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT "id","title","production_code" FROM "episodes" ORDER BY "production_code" ASC;
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT "id","title","production_code" FROM "episodes" ORDER BY "production_code" ASC;')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 11 Liste os títulos dos episódios da 5ª temporada, em ordem alfabética inversa
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT "title" FROM "episodes" WHERE "season" = 5 ORDER BY "title" ASC;
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT "title" FROM "episodes" WHERE "season" = 5 ORDER BY "title" DESC;')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 12 Conte o número de títulos de episódios (sem duplicidadades) Existem episodios com o mesmo nome?
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT DISTINCT COUNT("title") AS 'Ep. sem repetição' FROM "episodes";
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT DISTINCT COUNT("title") AS "Ep. sem repetição" FROM "episodes" AS "Ep. sem repetição"')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+#### 13 Crie uma query para responder uma pergunta de sua escolha, que contenha pelo menos uma condição envolvendo `WHERE` com `AND` ou `OR`
+
+Quais são nomes dos episódios que, em cada temporada, tem o número de sua própria temporada? Por exemplo, temporada 1 ep 1, temporada 2 ep. 2, etc.
+
+```{mysql, eval = FALSE,connection=db }
+  SELECT "title","season","episode_in_season" FROM "episodes" WHERE "season" = "episode_in_season";
+```
+
+<details>
+
+<summary>Ver resultado</summary>
+
+```{r, connection=db, echo = FALSE}
+  dt <- dbGetQuery(db, 'SELECT "title","season","episode_in_season" FROM "episodes" WHERE "season" = "episode_in_season"')
+  datatable(dt, options = list(pageLength = 5))
+```
+
+</details>
+
+
+</details>

@@ -1,0 +1,83 @@
+-- 1
+-- SELECT "name","city" FROM "schools" WHERE "type" = "Public School";
+
+-- 2
+-- SELECT "name" FROM "districts" WHERE "name" LIKE '%non-op%';
+
+-- 3
+-- SELECT AVG("per_pupil_expenditure") AS "Média por estudante" FROM "expenditures";
+
+-- 4
+-- SELECT "city",COUNT("id") AS 'Total de escolas' FROM "schools" GROUP BY "city" 
+-- ORDER BY "Total de escolas" DESC, "city" ASC
+-- LIMIT 10;
+
+-- 5 (imprimindo o tipo de escola também)
+-- find cities with 3 or fewer public schools. Your query should return the names of the 
+-- cities and the number of public schools within them, ordered from greatest number of 
+-- public schools to least. If two cities have the same number of public schools, order 
+-- them alphabetically
+-- SELECT "city","Total de escolas","type" FROM (
+--    SELECT "city",COUNT("id") AS 'Total de escolas',"type"  FROM "schools"  GROUP BY "city"
+--    ) WHERE ("Total de escolas" <= 3) AND ("type" = "Public School") ORDER BY "Total de escolas" DESC,"city" ASC;
+
+-- 6 Which schools achieved a 100% graduation rate.
+-- SELECT "name" FROM "schools" WHERE "id" IN (
+--   SELECT "school_id" FROM "graduation_rates" WHERE "graduated" = 100)
+
+-- 7
+-- SELECT "name" FROM "schools" WHERE "district_id" = (
+--   SELECT "id" FROM "districts" WHERE "name" = "Cambridge");
+
+-- 8 (o expenditure não tem registros dos distritos que não estão mais funcionando, usando o LEFT JOIN
+-- fica cácil de visualizar essa situação -  para mostrar só os ativos basta usar o INNER JOIN
+-- SELECT * FROM "districts"
+-- LEFT JOIN "expenditures" 
+-- ON "expenditures"."district_id" = "districts"."id";
+
+-- 9
+-- SELECT * FROM "districts"
+-- JOIN "expenditures" 
+-- ON "expenditures"."district_id" = "districts"."id"
+-- ORDER BY "pupils" ASC LIMIT 1;
+
+-- 10 O que o primeiro select seleciona é de TODO o Join, pode ser coisa da segunda tabela também
+-- SELECT "name","per_pupil_expenditure","district_id" FROM 
+-- "districts"
+-- JOIN (
+-- SELECT "district_id","per_pupil_expenditure" FROM "expenditures" WHERE "district_id" IN (
+-- SELECT "id" FROM "schools" WHERE "type" = "Public School")
+-- ORDER BY "per_pupil_expenditure" DESC LIMIT 10)
+-- ON "districts".id = "district_id";
+
+-- 11 -- LEFT JOIN pq tem valores faltantes de per_pupil_expenditure
+--SELECT
+--  "schools"."district_id",
+--  "schools"."id" AS 'school_id',
+--  "schools"."name",
+--  "per_pupil_expenditure" ,
+--  "graduation_rates".graduated
+--FROM "schools"
+--LEFT JOIN "expenditures"
+--ON "schools"."district_id" = "expenditures".district_id 
+--LEFT JOIN "graduation_rates"
+--ON "schools"."id" = "graduation_rates"."school_id" 
+--ORDER BY "per_pupil_expenditure";
+
+SELECT
+  "schools"."district_id",
+  "schools"."id" AS 'school_id',
+  "schools"."name",
+  "per_pupil_expenditure" ,
+  "graduation_rates".graduated
+FROM "schools"
+JOIN "expenditures"
+ON "schools"."district_id" = "expenditures".district_id 
+JOIN "graduation_rates"
+ON "schools"."id" = "graduation_rates"."school_id" 
+ORDER BY "per_pupil_expenditure";
+
+
+
+
+

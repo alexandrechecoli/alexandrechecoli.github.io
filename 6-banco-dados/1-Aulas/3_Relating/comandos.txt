@@ -1,0 +1,73 @@
+.tables :comando do sqlite para mostras as tabelas de um db
+
+
+SELECT "id" FROM "publisher" WHERE "publisher" = 'Fitzcarraldo Editions';
+
+SELECT "title" 
+FROM "books" 
+WHERE "publisher id" = ( 
+     SELECT "id" 
+     FROM "publisher" 
+     WHERE "publisher" = 'Fitzcarraldo Editions'
+     );
+
+
+QUAL AUTOR ESCREVEU 'FLIGHTS'
+
+- Pegar o id do livro FLIGHTS:
+SELECT "id" FROM "books" WHERE "title" = "Flights";
+
+ Pegar o id do autor que tem o livro com o id de cima:
+SELECT "author_id" FROM "authored" WHERE "book_id" = XX
+
+ Pegar o nome do autor com o id acima
+SELECT "name" FROM "authors" WHERE "id" = YY
+
+
+
+SELECT "name" FROM "authors" 
+WHERE "id" = (
+    SELECT "author_id" FROM "authored" 
+    WHERE "book_id" = (
+        SELECT "id" FROM "books" 
+        WHERE "title" = "Flights"
+    )
+);
+
+
+PALAVRA CHAVE: IN
+
+
+PALAVRA CHAVE: JOIN
+SELECT * from "sea_lions"
+JOIN "migrations" ON "migrations"."id" = "sea_lions"."id";
+
+
+Tipos de join:
+
+Só o JOIN: Inner join - > manda todos os valores que não tem match de ambas as tabelas embora
+
+outer joins:
+LEFT JOIN: junta e mantém os valores nulos da tabela da esquerda
+RIGHT JOIN: junta e mantém os valores nulos da direita
+FULL JOIN: junta e mantém todos os valores nulos
+NATURAL JOIN: já assume que os valores terão o match por uma coluna chamada "id", e não duplica o "id".
+
+SELECT * from "sea_lions"
+NATURAL JOIN "migrations";
+
+
+PALAVRA CHAVE: UNION, EXCEPT, INTERSECT
+
+SELECT "name" FROM "translators"
+UNION
+SELECT "name" FROM "authors";
+
+
+SELECT "name" FROM "authors"
+INTERSECT
+SELECT "name" FROM "translators";
+
+GROUP BY
+HAVING
+

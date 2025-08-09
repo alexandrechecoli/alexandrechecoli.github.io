@@ -1,0 +1,206 @@
+-- 1
+SELECT "year",ROUND(AVG("salary"),2) as "MEDIA" FROM "salaries"
+GROUP BY "yea-r"
+ORDER BY "year" DESC;
+
+-- 2
+SELECT "year","salary" FROM "salaries" WHERE "player_id" = (
+    SELECT "id" FROM "players" WHERE ("first_name" = "Cal") AND ("last_name" = "Ripken")
+    )
+ORDER BY "year" DESC;
+
+-- 3
+-- Existem 2 jogadores com esse nome, é preciso encontrar o Jr, ou seja, o mais novo (que nasceu
+-- em uma data mais tarde
+SELECT "id" FROM "players" WHERE ("first_name" = "Ken" AND "last_name" LIKE "Griffey")
+ORDER BY "birth_year" DESC LIMIT 1;
+
+-- Selecionando os home-runs desse jogador
+SELECT "year", "H" FROM "performances" WHERE "player_id" = 
+    (
+    SELECT "id" FROM "players" WHERE ("first_name" = "Ken" AND "last_name" LIKE "Griffey")
+    ORDER BY "birth_year" DESC LIMIT 1
+    )
+ORDER BY "performances".year DESC;
+
+
+-- 4
+-- which players were paid the lowest salaries in 2001. In 4.sql, 
+-- write a SQL query to find the 50 players paid the least in 2001.
+SELECT "players"."first_name","players"."last_name","salaries"."salary","salaries"."year" FROM "players"
+JOIN "salaries" ON
+"players"."id" = "salaries"."player_id"
+WHERE
+"salaries"."year" = 2001
+ORDER BY "salaries"."salary","players"."first_name","players"."last_name","players"."id"
+LIMIT 50;
+
+-- 5 
+-- write a SQL query to find all teams that Satchel Paige played for.
+SELECT "teams"."name" FROM "teams" WHERE "teams"."id" IN 
+    (
+    SELECT "team_id" FROM "performances" WHERE "performances"."player_id" = 
+        (
+        SELECT "players"."id" FROM "players" WHERE ("first_name" = 'Satchel') AND ("last_name" = 'Paige')
+        )
+    );
+
+
+-- 6
+-- In 6.sql, write a SQL query to return the top 5 teams, sorted by the 
+-- total number of hits by players in 2001.
+
+
+-- Criando a tabela com os dados agrupados (soma de H em 2001 por team id)
+SELECT  SUM("performances"."H") as 'Soma', "team_id", "year" 
+FROM "performances" 
+WHERE "year" = 2001 
+GROUP BY "team_id";
+
+-- Usando essa tabela 'temporaria' em um JOIN com a teams para pegar os nomes dos times
+SELECT "teams".name, "Soma","year" FROM "teams"
+JOIN ( 
+        SELECT  SUM("performances"."H") as 'Soma', "team_id", "year" FROM "performances" 
+        WHERE "year" = 2001 
+        GROUP BY "team_id"
+     )
+ON "teams"."id" = "team_id"
+ORDER BY "Soma" DESC LIMIT 5
+;
+
+
+-- 7
+-- write a SQL query to find the name of the 
+-- player who’s been paid the highest salary, of all time, in Major League Baseballs
+SELECT "first_name", "last_name" 
+FROM "players" 
+WHERE "id" = 
+(
+    SELECT "salaries"."player_id" 
+    FROM "salaries" 
+    ORDER BY "salary" 
+    DESC LIMIT 1
+);
+
+
+-- 8
+-- write a SQL query to find the 2001 salary of the 
+-- player who hit the most home runs in 2001.
+
+SELECT "salary" 
+FROM "salaries" 
+WHERE "player_id" = 
+(
+        SELECT "player_id" 
+        FROM 
+        (
+            SELECT "player_id",SUM("HR") AS 'Soma HR' 
+            FROM "performances" 
+            WHERE "year" = 2001 
+            GROUP BY "player_id"
+            ORDER BY "Soma HR" DESC LIMIT 1
+        )
+)
+AND
+"year" = 2001;
+
+-- 9
+-- write a SQL query to find the 5 lowest 
+-- paying teams (by average salary) in 2001.
+SELECT "teams"."name", "Media salarios" 
+FROM "teams"
+JOIN 
+( 
+    SELECT "year","team_id",ROUND(AVG("salary"),2) as "Media salarios" 
+    FROM "salaries" 
+    WHERE "year" = 2001
+    GROUP BY "team_id" 
+    ORDER BY "Media salarios" ASC
+    LIMIT 5
+)
+ON
+"teams"."id" = "team_id";
+
+
+-- 10
+-- Considere que mum jogador pode ter jogado em mais de um time em um mesmo ano, exemplo o jogador de 
+-- id = 1725 em 1997 -> isso implica que existe mais de um salario para um mesmo jogador em um mesmo ano
+-- na tabela de salarios:
+-- NÃO IMPORTA, PODE REPETIR JOGADOR,ANO,SALARIO -> VAI ACONTECER, O QUE PODE DIFERENCIAR OS DOIS
+-- É O NÚMERO DE HR, NO MESMO ANO, JOGANDO EM 2 TIMES DIFERENTES ELE PODE TER HR DIFERENTES, O
+-- SALARIO VAI SER O MESMO
+
+SELECT * FROM "salaries" WHERE "salaries".player_id = 1725;
+
+
+SELECT "players"."id","first_name","last_name", "HR", "performances"."year" FROM "performances"
+JOIN "players" ON "players"."id" = "performances"."player_id"
+JOIN "salaries" ON "players"."id" = "salaries"."player_id" AND "performances"."year" = "salaries"."year";
+
+-- exemplo do jogador de ID 362 "Brady Anderson"
+
+-- 11 write a SQL query to find the 10 least expensive players per hit in 2001
+-- Your query should return a table with three columns, one for the players’ first names, 
+-- one of their last names, and one called “dollars per hit”.
+
+SELECT "players"."id","first_name","last_name","salaries"."year",
+"salaries"."salary", "performances"."H", ("salaries"."salary"/"performances"."H") AS "Salario/hit"  FROM "players"
+JOIN "salaries" ON "salaries"."player_id" = "players"."id"
+JOIN "performances" ON "players"."id" = "performances"."player_id" AND "salaries"."year" = "performances"."year" 
+WHERE
+"salaries"."year"= "2001" AND
+"performances"."H" != 0
+ORDER BY "Salario/hit" ASC
+LIMIT 10;
+
+
+-- 12
+
+-- Criando as duas tabelas
+
+SELECT "players"."id","first_name","last_name","salaries"."year",
+"salaries"."salary", "performances"."H", ("salaries"."salary"/"performances"."H") AS "Salario/hit"  FROM "players"
+JOIN "salaries" ON "salaries"."player_id" = "players"."id"
+JOIN "performances" ON "players"."id" = "performances"."player_id" AND "salaries"."year" = "performances"."year"
+WHERE  "salaries"."year"= "2001" AND "performances"."H" > 0
+ORDER BY "Salario/hit" ASC
+LIMIT 10;
+
+SELECT "players"."id","first_name","last_name","salaries"."year",
+"salaries"."salary", "performances"."RBI", ("salaries"."salary"/"performances"."RBI") AS "Salario/RBI"  FROM "players"
+JOIN "salaries" ON "salaries"."player_id" = "players"."id"
+JOIN "performances" ON "players"."id" = "performances"."player_id" AND "salaries"."year" = "performances"."year"
+WHERE "salaries"."year"= "2001" AND "performances"."RBI" > 0
+ORDER BY "Salario/RBI" ASC
+LIMIT 10;
+
+
+-- Podemos usar o intersect entre elas, mas os operadores de conjunto só podem ser aplicados ENTRE CLAUSULAS SELECT
+-- então fazemos um "chunchu" colocando cada uma das tabelas anteriores com um novo select
+
+SELECT "id","first_name" FROM 
+(
+    SELECT "players"."id","first_name","last_name","salaries"."year",
+    "salaries"."salary", "performances"."H", ("salaries"."salary"/"performances"."H") AS "Salario/hit"  FROM "players"
+    JOIN "salaries" ON "salaries"."player_id" = "players"."id"
+    JOIN "performances" ON "players"."id" = "performances"."player_id" AND "salaries"."year" = "performances"."year"
+    WHERE  "salaries"."year"= "2001" AND "performances"."H" > 0
+    ORDER BY "Salario/hit" ASC
+    LIMIT 10
+)
+INTERSECT
+SELECT "id","first_name" FROM
+(
+    SELECT "players"."id","first_name","last_name","salaries"."year",
+    "salaries"."salary", "performances"."RBI", ("salaries"."salary"/"performances"."RBI") AS "Salario/RBI"  FROM "players"
+    JOIN "salaries" ON "salaries"."player_id" = "players"."id"
+    JOIN "performances" ON "players"."id" = "performances"."player_id" AND "salaries"."year" = "performances"."year"
+    WHERE "salaries"."year"= "2001" AND "performances"."RBI" > 0
+    ORDER BY "Salario/RBI" ASC
+    LIMIT 10
+);
+
+
+
+
+
