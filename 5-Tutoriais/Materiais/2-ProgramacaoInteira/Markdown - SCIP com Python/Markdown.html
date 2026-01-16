@@ -1540,6 +1540,11 @@ margin-left: 0 !important;
           <li><a href="#restri%C3%A7%C3%B5es-e-quicksum" id="toc-restrições-e-quicksum">Restrições e Quicksum</a></li>
           <li><a href="#exportando-modelos" id="toc-exportando-modelos">Exportando modelos</a></li>
           <li><a href="#dualidade" id="toc-dualidade">Dualidade</a></li>
+          <li><a href="#t%C3%B3picos-avan%C3%A7ados" id="toc-tópicos-avançados">Tópicos avançados</a>
+          <ul>
+          <li><a href="#decomposi%C3%A7%C3%A3o-de-dantwig-wolfe" id="toc-decomposição-de-dantwig-wolfe">Decomposição de
+          Dantwig-Wolfe</a></li>
+          </ul></li>
           </ul>
         </nav>
         <ul class="authors">
@@ -1998,7 +2003,7 @@ variável:</p>
 <span id="cb36-10"><a href="#cb36-10" tabindex="-1"></a><span class="co"># Declarando as variaveis - com dummy</span></span>
 <span id="cb36-11"><a href="#cb36-11" tabindex="-1"></a>x1     <span class="op">=</span> scip.addVar(vtype <span class="op">=</span> <span class="st">&#39;C&#39;</span>, lb <span class="op">=</span> <span class="dv">0</span>, ub <span class="op">=</span> <span class="va">None</span>, name <span class="op">=</span> <span class="st">&#39;x1&#39;</span>)</span>
 <span id="cb36-12"><a href="#cb36-12" tabindex="-1"></a>x2     <span class="op">=</span> scip.addVar(vtype <span class="op">=</span> <span class="st">&#39;C&#39;</span>, lb <span class="op">=</span> <span class="dv">0</span>, ub <span class="op">=</span> <span class="va">None</span>, name <span class="op">=</span> <span class="st">&#39;x2&#39;</span>)</span>
-<span id="cb36-13"><a href="#cb36-13" tabindex="-1"></a>dummy  <span class="op">=</span> scip.addVar(vtype <span class="op">=</span> <span class="st">&#39;C&#39;</span>, lb <span class="op">=</span> <span class="dv">0</span>, ub <span class="op">=</span> <span class="va">None</span>, name <span class="op">=</span> <span class="st">&#39;dummy&#39;</span>)</span>
+<span id="cb36-13"><a href="#cb36-13" tabindex="-1"></a>dummy  <span class="op">=</span> scip.addVar(vtype <span class="op">=</span> <span class="st">&#39;C&#39;</span>, lb <span class="op">=</span> <span class="dv">0</span>, ub <span class="op">=</span> <span class="dv">0</span>, name <span class="op">=</span> <span class="st">&#39;dummy&#39;</span>)</span>
 <span id="cb36-14"><a href="#cb36-14" tabindex="-1"></a><span class="co"># Restricoes</span></span>
 <span id="cb36-15"><a href="#cb36-15" tabindex="-1"></a>res1 <span class="op">=</span> scip.addCons(<span class="dv">10</span><span class="op">*</span>x1 <span class="op">+</span> <span class="dv">12</span><span class="op">*</span>x2        <span class="op">&lt;=</span> <span class="dv">60</span>, name <span class="op">=</span> <span class="st">&quot;res1&quot;</span>)</span>
 <span id="cb36-16"><a href="#cb36-16" tabindex="-1"></a>res2 <span class="op">=</span> scip.addCons(<span class="dv">2</span><span class="op">*</span>x1  <span class="op">+</span> dummy        <span class="op">&lt;=</span> <span class="dv">6</span>,  name <span class="op">=</span> <span class="st">&quot;res2&quot;</span>)</span>
@@ -2016,6 +2021,168 @@ variável:</p>
 <span id="cb36-28"><a href="#cb36-28" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;pis&quot;</span>,pi1,pi2)</span></code></pre></div>
 <p>E agora para corrigir, adicionamos uma variável <em>dummy</em> nessa
 restrição, e os valores duais ficam corretos.</p>
+</div>
+<div id="tópicos-avançados" class="section level1">
+<h1>Tópicos avançados</h1>
+<div id="decomposição-de-dantwig-wolfe" class="section level2">
+<h2>Decomposição de Dantwig-Wolfe</h2>
+<div class="sourceCode" id="cb37"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="im">import</span> logging</span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a>logger <span class="op">=</span> logging.getLogger(<span class="va">__name__</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a>logger.setLevel(logging.DEBUG)</span>
+<span id="cb37-5"><a href="#cb37-5" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" tabindex="-1"></a>console_handler <span class="op">=</span> logging.StreamHandler()</span>
+<span id="cb37-7"><a href="#cb37-7" tabindex="-1"></a>console_handler.setLevel(logging.DEBUG)</span>
+<span id="cb37-8"><a href="#cb37-8" tabindex="-1"></a></span>
+<span id="cb37-9"><a href="#cb37-9" tabindex="-1"></a><span class="kw">class</span> LoggerColor(logging.Formatter):</span>
+<span id="cb37-10"><a href="#cb37-10" tabindex="-1"></a>    <span class="kw">def</span> <span class="bu">format</span>(<span class="va">self</span>, record):</span>
+<span id="cb37-11"><a href="#cb37-11" tabindex="-1"></a>        msg <span class="op">=</span> <span class="bu">super</span>().<span class="bu">format</span>(record)</span>
+<span id="cb37-12"><a href="#cb37-12" tabindex="-1"></a></span>
+<span id="cb37-13"><a href="#cb37-13" tabindex="-1"></a>        <span class="cf">if</span> record.levelname <span class="op">==</span> <span class="st">&quot;DEBUG&quot;</span>:</span>
+<span id="cb37-14"><a href="#cb37-14" tabindex="-1"></a>            levelname <span class="op">=</span> <span class="ss">f&quot;</span><span class="ch">\033</span><span class="ss">[94m</span><span class="ch">\033</span><span class="ss">[1m==&gt; </span><span class="sc">{</span>record<span class="sc">.</span>levelname<span class="sc">}</span><span class="ss">:</span><span class="ch">\033</span><span class="ss">[0m&quot;</span> <span class="co"># blue</span></span>
+<span id="cb37-15"><a href="#cb37-15" tabindex="-1"></a>        <span class="cf">elif</span> record.levelname <span class="op">==</span> <span class="st">&quot;INFO&quot;</span>:</span>
+<span id="cb37-16"><a href="#cb37-16" tabindex="-1"></a>            levelname <span class="op">=</span> <span class="ss">f&quot;</span><span class="ch">\033</span><span class="ss">[92m</span><span class="ch">\033</span><span class="ss">[1m=&gt; </span><span class="sc">{</span>record<span class="sc">.</span>levelname<span class="sc">}</span><span class="ss">:</span><span class="ch">\033</span><span class="ss">[0m&quot;</span> <span class="co"># green</span></span>
+<span id="cb37-17"><a href="#cb37-17" tabindex="-1"></a>        <span class="cf">elif</span> record.levelname <span class="op">==</span> <span class="st">&quot;WARNING&quot;</span>:</span>
+<span id="cb37-18"><a href="#cb37-18" tabindex="-1"></a>            levelname <span class="op">=</span> <span class="ss">f&quot;</span><span class="ch">\033</span><span class="ss">[93m</span><span class="ch">\033</span><span class="ss">[1m===&gt; </span><span class="sc">{</span>record<span class="sc">.</span>levelname<span class="sc">}</span><span class="ss">:</span><span class="ch">\033</span><span class="ss">[0m&quot;</span>  <span class="co"># yellow</span></span>
+<span id="cb37-19"><a href="#cb37-19" tabindex="-1"></a>        <span class="cf">elif</span> record.levelname <span class="op">==</span> <span class="st">&quot;ERROR&quot;</span>:</span>
+<span id="cb37-20"><a href="#cb37-20" tabindex="-1"></a>            levelname <span class="op">=</span> <span class="ss">f&quot;</span><span class="ch">\033</span><span class="ss">[38;5;214m</span><span class="ch">\033</span><span class="ss">[1m===&gt; </span><span class="sc">{</span>record<span class="sc">.</span>levelname<span class="sc">}</span><span class="ss">:</span><span class="ch">\033</span><span class="ss">[0m&quot;</span>  <span class="co"># orange</span></span>
+<span id="cb37-21"><a href="#cb37-21" tabindex="-1"></a>        <span class="cf">elif</span> record.levelname <span class="op">==</span> <span class="st">&quot;CRITICAL&quot;</span>:</span>
+<span id="cb37-22"><a href="#cb37-22" tabindex="-1"></a>            levelname <span class="op">=</span> <span class="ss">f&quot;</span><span class="ch">\033</span><span class="ss">[91m</span><span class="ch">\033</span><span class="ss">[1m===&gt; </span><span class="sc">{</span>record<span class="sc">.</span>levelname<span class="sc">}</span><span class="ss">:</span><span class="ch">\033</span><span class="ss">[0m&quot;</span> <span class="co"># red</span></span>
+<span id="cb37-23"><a href="#cb37-23" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb37-24"><a href="#cb37-24" tabindex="-1"></a>            levelname <span class="op">=</span> record.levelname </span>
+<span id="cb37-25"><a href="#cb37-25" tabindex="-1"></a></span>
+<span id="cb37-26"><a href="#cb37-26" tabindex="-1"></a>        <span class="cf">return</span> <span class="ss">f&quot;</span><span class="sc">{</span>levelname<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>record<span class="sc">.</span>message<span class="sc">}</span><span class="ss">&quot;</span></span>
+<span id="cb37-27"><a href="#cb37-27" tabindex="-1"></a></span>
+<span id="cb37-28"><a href="#cb37-28" tabindex="-1"></a>formatter <span class="op">=</span> LoggerColor(<span class="st">&quot;</span><span class="sc">%(levelname)s</span><span class="st">: </span><span class="sc">%(message)s</span><span class="st">&quot;</span>)</span>
+<span id="cb37-29"><a href="#cb37-29" tabindex="-1"></a>console_handler.setFormatter(formatter)</span>
+<span id="cb37-30"><a href="#cb37-30" tabindex="-1"></a></span>
+<span id="cb37-31"><a href="#cb37-31" tabindex="-1"></a>logger.addHandler(console_handler)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a><span class="co"># Exemplo de aplicação da decomposição de Dantzig-Wolfe</span></span>
+<span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a><span class="co"># usando o SCIP</span></span>
+<span id="cb38-3"><a href="#cb38-3" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" tabindex="-1"></a><span class="im">import</span> logging</span>
+<span id="cb38-5"><a href="#cb38-5" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" tabindex="-1"></a><span class="im">from</span> numpy <span class="im">import</span> pi</span>
+<span id="cb38-7"><a href="#cb38-7" tabindex="-1"></a><span class="im">from</span> logger_config <span class="im">import</span> logger</span>
+<span id="cb38-8"><a href="#cb38-8" tabindex="-1"></a><span class="im">from</span> pyscipopt <span class="im">import</span> Model, quicksum, SCIP_PARAMSETTING</span>
+<span id="cb38-9"><a href="#cb38-9" tabindex="-1"></a></span>
+<span id="cb38-10"><a href="#cb38-10" tabindex="-1"></a><span class="kw">def</span> gera_col(sol_x, n_cons):</span>
+<span id="cb38-11"><a href="#cb38-11" tabindex="-1"></a>    c    <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb38-12"><a href="#cb38-12" tabindex="-1"></a>    x    <span class="op">=</span> [<span class="va">None</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_cons)]</span>
+<span id="cb38-13"><a href="#cb38-13" tabindex="-1"></a>    c    <span class="op">=</span> sol_x[<span class="dv">0</span>] <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> sol_x[<span class="dv">1</span>]</span>
+<span id="cb38-14"><a href="#cb38-14" tabindex="-1"></a>    x[<span class="dv">0</span>] <span class="op">=</span>   <span class="dv">2</span> <span class="op">*</span> sol_x[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> sol_x[<span class="dv">1</span>]</span>
+<span id="cb38-15"><a href="#cb38-15" tabindex="-1"></a>    x[<span class="dv">1</span>] <span class="op">=</span> <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> sol_x[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> sol_x[<span class="dv">1</span>]</span>
+<span id="cb38-16"><a href="#cb38-16" tabindex="-1"></a>    x[<span class="dv">2</span>] <span class="op">=</span>   <span class="dv">2</span> <span class="op">*</span> sol_x[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">1</span> <span class="op">*</span> sol_x[<span class="dv">1</span>]</span>
+<span id="cb38-17"><a href="#cb38-17" tabindex="-1"></a>    x[<span class="dv">3</span>] <span class="op">=</span>   <span class="dv">1</span></span>
+<span id="cb38-18"><a href="#cb38-18" tabindex="-1"></a></span>
+<span id="cb38-19"><a href="#cb38-19" tabindex="-1"></a>    <span class="cf">return</span> c, x</span>
+<span id="cb38-20"><a href="#cb38-20" tabindex="-1"></a></span>
+<span id="cb38-21"><a href="#cb38-21" tabindex="-1"></a><span class="kw">def</span> calcula_fo_subproblema(pi, n_var):</span>
+<span id="cb38-22"><a href="#cb38-22" tabindex="-1"></a>    custo <span class="op">=</span> [<span class="va">None</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_var)]</span>
+<span id="cb38-23"><a href="#cb38-23" tabindex="-1"></a>    custo[<span class="dv">0</span>] <span class="op">=</span>  <span class="dv">1</span> <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> pi[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> pi[<span class="dv">1</span>] <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> pi[<span class="dv">2</span>] <span class="co"># x1</span></span>
+<span id="cb38-24"><a href="#cb38-24" tabindex="-1"></a>    custo[<span class="dv">1</span>] <span class="op">=</span> <span class="op">-</span><span class="dv">2</span> <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> pi[<span class="dv">0</span>] <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> pi[<span class="dv">1</span>] <span class="op">-</span> <span class="dv">1</span> <span class="op">*</span> pi[<span class="dv">2</span>] <span class="co"># x2</span></span>
+<span id="cb38-25"><a href="#cb38-25" tabindex="-1"></a>    <span class="cf">return</span> custo</span>
+<span id="cb38-26"><a href="#cb38-26" tabindex="-1"></a></span>
+<span id="cb38-27"><a href="#cb38-27" tabindex="-1"></a><span class="kw">def</span> gera_mestre_initial_col(inital_sol, initial_c):</span>
+<span id="cb38-28"><a href="#cb38-28" tabindex="-1"></a>    mestre <span class="op">=</span> Model(<span class="st">&quot;Mestre Dantzig-Wolfe&quot;</span>)</span>
+<span id="cb38-29"><a href="#cb38-29" tabindex="-1"></a>    mestre.hideOutput(<span class="va">True</span>)</span>
+<span id="cb38-30"><a href="#cb38-30" tabindex="-1"></a>    <span class="co">#mestre.enableReoptimization()</span></span>
+<span id="cb38-31"><a href="#cb38-31" tabindex="-1"></a>    mestre.setPresolve(SCIP_PARAMSETTING.OFF)</span>
+<span id="cb38-32"><a href="#cb38-32" tabindex="-1"></a>    mestre.setHeuristics(SCIP_PARAMSETTING.OFF)</span>
+<span id="cb38-33"><a href="#cb38-33" tabindex="-1"></a>    mestre.disablePropagation()</span>
+<span id="cb38-34"><a href="#cb38-34" tabindex="-1"></a></span>
+<span id="cb38-35"><a href="#cb38-35" tabindex="-1"></a>    <span class="co"># A última é a var. Dummy</span></span>
+<span id="cb38-36"><a href="#cb38-36" tabindex="-1"></a>    mestre_dummy_var <span class="op">=</span> mestre.addVar(<span class="st">&quot;dummy&quot;</span>, vtype <span class="op">=</span> <span class="st">&quot;C&quot;</span>, lb <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb38-37"><a href="#cb38-37" tabindex="-1"></a>    <span class="co"># Inicializa com uma coluna (uma variável)</span></span>
+<span id="cb38-38"><a href="#cb38-38" tabindex="-1"></a>    alpha            <span class="op">=</span> [mestre.addVar(<span class="st">&quot;a0&quot;</span>, vtype <span class="op">=</span> <span class="st">&quot;C&quot;</span>, lb <span class="op">=</span> <span class="dv">0</span>)]</span>
+<span id="cb38-39"><a href="#cb38-39" tabindex="-1"></a>    sol              <span class="op">=</span> inital_sol <span class="co"># Initial sol =&gt; x1 x2</span></span>
+<span id="cb38-40"><a href="#cb38-40" tabindex="-1"></a>    c, nova_coluna   <span class="op">=</span> gera_col(sol, <span class="dv">4</span>)</span>
+<span id="cb38-41"><a href="#cb38-41" tabindex="-1"></a>    <span class="co">#logger.info(f&quot;Custo da nova coluna:, {c}&quot;)</span></span>
+<span id="cb38-42"><a href="#cb38-42" tabindex="-1"></a>    <span class="co">#logger.info(f&quot;Nova coluna:, {nova_coluna}&quot;)</span></span>
+<span id="cb38-43"><a href="#cb38-43" tabindex="-1"></a></span>
+<span id="cb38-44"><a href="#cb38-44" tabindex="-1"></a>    <span class="co"># Adiciona a primeira coluna ao mestre</span></span>
+<span id="cb38-45"><a href="#cb38-45" tabindex="-1"></a>    <span class="co"># Custo da fo</span></span>
+<span id="cb38-46"><a href="#cb38-46" tabindex="-1"></a>    mestre.setObjective(c <span class="op">*</span> alpha[<span class="dv">0</span>], sense <span class="op">=</span> <span class="st">&quot;minimize&quot;</span>)</span>
+<span id="cb38-47"><a href="#cb38-47" tabindex="-1"></a></span>
+<span id="cb38-48"><a href="#cb38-48" tabindex="-1"></a>    <span class="co"># Restrições do mestre</span></span>
+<span id="cb38-49"><a href="#cb38-49" tabindex="-1"></a>    mestre.addCons(alpha[<span class="dv">0</span>] <span class="op">*</span> nova_coluna[<span class="dv">0</span>] <span class="op">+</span> mestre_dummy_var <span class="op">&gt;=</span> <span class="dv">3</span>)</span>
+<span id="cb38-50"><a href="#cb38-50" tabindex="-1"></a>    mestre.addCons(alpha[<span class="dv">0</span>] <span class="op">*</span> nova_coluna[<span class="dv">1</span>] <span class="op">+</span> mestre_dummy_var <span class="op">&lt;=</span> <span class="dv">3</span>)</span>
+<span id="cb38-51"><a href="#cb38-51" tabindex="-1"></a>    mestre.addCons(alpha[<span class="dv">0</span>] <span class="op">*</span> nova_coluna[<span class="dv">2</span>] <span class="op">+</span> mestre_dummy_var <span class="op">&lt;=</span> <span class="dv">10</span>)</span>
+<span id="cb38-52"><a href="#cb38-52" tabindex="-1"></a>    mestre.addCons(alpha[<span class="dv">0</span>] <span class="op">*</span> nova_coluna[<span class="dv">3</span>] <span class="op">+</span> mestre_dummy_var <span class="op">==</span> <span class="dv">1</span>)</span>
+<span id="cb38-53"><a href="#cb38-53" tabindex="-1"></a>    <span class="cf">return</span> mestre, alpha, mestre_dummy_var</span>
+<span id="cb38-54"><a href="#cb38-54" tabindex="-1"></a></span>
+<span id="cb38-55"><a href="#cb38-55" tabindex="-1"></a><span class="kw">def</span> gera_subproblema_inicial():</span>
+<span id="cb38-56"><a href="#cb38-56" tabindex="-1"></a>    subproblema <span class="op">=</span> Model(<span class="st">&quot;Sub Dantzig-Wolfe&quot;</span>)</span>
+<span id="cb38-57"><a href="#cb38-57" tabindex="-1"></a>    subproblema.hideOutput(<span class="va">True</span>)</span>
+<span id="cb38-58"><a href="#cb38-58" tabindex="-1"></a>    subproblema.setPresolve(SCIP_PARAMSETTING.OFF)</span>
+<span id="cb38-59"><a href="#cb38-59" tabindex="-1"></a>    subproblema.setHeuristics(SCIP_PARAMSETTING.OFF)</span>
+<span id="cb38-60"><a href="#cb38-60" tabindex="-1"></a>    subproblema.disablePropagation()</span>
+<span id="cb38-61"><a href="#cb38-61" tabindex="-1"></a></span>
+<span id="cb38-62"><a href="#cb38-62" tabindex="-1"></a>    <span class="co"># Variáveis do subproblema</span></span>
+<span id="cb38-63"><a href="#cb38-63" tabindex="-1"></a>    x <span class="op">=</span> [subproblema.addVar(<span class="ss">f&quot;x_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">&quot;</span> ,vtype <span class="op">=</span> <span class="st">&quot;C&quot;</span>, lb <span class="op">=</span> <span class="dv">0</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>)]</span>
+<span id="cb38-64"><a href="#cb38-64" tabindex="-1"></a>    <span class="co"># Restrições do subproblema</span></span>
+<span id="cb38-65"><a href="#cb38-65" tabindex="-1"></a>    subproblema.addCons(<span class="dv">1</span> <span class="op">&lt;=</span> (x[<span class="dv">0</span>] <span class="op">&lt;=</span> <span class="dv">3</span>))</span>
+<span id="cb38-66"><a href="#cb38-66" tabindex="-1"></a>    subproblema.addCons(<span class="dv">1</span> <span class="op">&lt;=</span> (x[<span class="dv">1</span>] <span class="op">&lt;=</span> <span class="dv">3</span>))</span>
+<span id="cb38-67"><a href="#cb38-67" tabindex="-1"></a>    <span class="co"># Fo</span></span>
+<span id="cb38-68"><a href="#cb38-68" tabindex="-1"></a>    subproblema.setObjective(<span class="dv">0</span>, sense <span class="op">=</span> <span class="st">&quot;minimize&quot;</span>)</span>
+<span id="cb38-69"><a href="#cb38-69" tabindex="-1"></a>    <span class="cf">return</span> subproblema, x</span>
+<span id="cb38-70"><a href="#cb38-70" tabindex="-1"></a></span>
+<span id="cb38-71"><a href="#cb38-71" tabindex="-1"></a><span class="kw">def</span> add_col_mestre(mestre, alpha, c, nova_coluna):</span>
+<span id="cb38-72"><a href="#cb38-72" tabindex="-1"></a>    <span class="co"># Add. a variável e o custo na fo</span></span>
+<span id="cb38-73"><a href="#cb38-73" tabindex="-1"></a>    alpha.append(mestre.addVar(<span class="ss">f&quot;a</span><span class="sc">{</span><span class="bu">len</span>(alpha)<span class="sc">}</span><span class="ss">&quot;</span>, vtype <span class="op">=</span> <span class="st">&quot;C&quot;</span>, lb <span class="op">=</span> <span class="dv">0</span>, obj <span class="op">=</span> c))</span>
+<span id="cb38-74"><a href="#cb38-74" tabindex="-1"></a>    i <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb38-75"><a href="#cb38-75" tabindex="-1"></a>    <span class="cf">for</span> c <span class="kw">in</span> mestre.getConss():</span>
+<span id="cb38-76"><a href="#cb38-76" tabindex="-1"></a>        mestre.addConsCoeff(c, alpha[<span class="op">-</span><span class="dv">1</span>], nova_coluna[i])  <span class="co"># adds 1.0 * z to cons1</span></span>
+<span id="cb38-77"><a href="#cb38-77" tabindex="-1"></a>        i <span class="op">=</span> i <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb38-78"><a href="#cb38-78" tabindex="-1"></a>    <span class="cf">return</span> mestre,alpha</span>
+<span id="cb38-79"><a href="#cb38-79" tabindex="-1"></a></span>
+<span id="cb38-80"><a href="#cb38-80" tabindex="-1"></a><span class="co"># Mestre inicializado com uma sol. inicial</span></span>
+<span id="cb38-81"><a href="#cb38-81" tabindex="-1"></a>initial_sol <span class="op">=</span> [<span class="dv">2</span>,<span class="dv">2</span>]</span>
+<span id="cb38-82"><a href="#cb38-82" tabindex="-1"></a>mestre, alpha, mestre_dummy_var <span class="op">=</span> gera_mestre_initial_col(initial_sol, <span class="dv">0</span>)</span>
+<span id="cb38-83"><a href="#cb38-83" tabindex="-1"></a></span>
+<span id="cb38-84"><a href="#cb38-84" tabindex="-1"></a><span class="co"># Subproblema inicial com fo sem termos</span></span>
+<span id="cb38-85"><a href="#cb38-85" tabindex="-1"></a>sub, x <span class="op">=</span> gera_subproblema_inicial()</span>
+<span id="cb38-86"><a href="#cb38-86" tabindex="-1"></a>l_pontos <span class="op">=</span> []</span>
+<span id="cb38-87"><a href="#cb38-87" tabindex="-1"></a>l_pontos.append(initial_sol)</span>
+<span id="cb38-88"><a href="#cb38-88" tabindex="-1"></a>custo_atualizado <span class="op">=</span> <span class="op">-</span><span class="bu">float</span>(<span class="st">&#39;inf&#39;</span>)</span>
+<span id="cb38-89"><a href="#cb38-89" tabindex="-1"></a>i <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb38-90"><a href="#cb38-90" tabindex="-1"></a><span class="cf">while</span> custo_atualizado <span class="op">+</span> <span class="fl">0.01</span> <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb38-91"><a href="#cb38-91" tabindex="-1"></a>    mestre.writeProblem(<span class="ss">f&quot;C:</span><span class="ch">\\</span><span class="ss">Users</span><span class="ch">\\</span><span class="ss">x-eco</span><span class="ch">\\</span><span class="ss">OneDrive - ufpr.br</span><span class="ch">\\</span><span class="ss">Documentos</span><span class="ch">\\</span><span class="ss">Alexandre</span><span class="ch">\\</span><span class="ss">DW</span><span class="ch">\\</span><span class="ss">mestre_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">.lp&quot;</span>,trans <span class="op">=</span> <span class="va">False</span>, genericnames <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb38-92"><a href="#cb38-92" tabindex="-1"></a>    mestre.optimize()</span>
+<span id="cb38-93"><a href="#cb38-93" tabindex="-1"></a>    <span class="co"># Duais, fo e variáveis</span></span>
+<span id="cb38-94"><a href="#cb38-94" tabindex="-1"></a>    pi          <span class="op">=</span> [mestre.getDualsolLinear(c) <span class="cf">for</span> c <span class="kw">in</span> mestre.getConss()] <span class="co"># keep dual variables</span></span>
+<span id="cb38-95"><a href="#cb38-95" tabindex="-1"></a>    z           <span class="op">=</span> mestre.getObjVal()</span>
+<span id="cb38-96"><a href="#cb38-96" tabindex="-1"></a>    alpha_val   <span class="op">=</span> [mestre.getVal(v) <span class="cf">for</span> v <span class="kw">in</span> alpha]</span>
+<span id="cb38-97"><a href="#cb38-97" tabindex="-1"></a>    logger.info(<span class="ss">f&quot;Sol. Ótima do Mestre: </span><span class="sc">{</span>alpha_val<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb38-98"><a href="#cb38-98" tabindex="-1"></a>    logger.info(<span class="ss">f&quot;Custo: </span><span class="sc">{</span>z<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb38-99"><a href="#cb38-99" tabindex="-1"></a>    logger.info(<span class="ss">f&quot;Valores duais: </span><span class="sc">{</span>pi<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb38-100"><a href="#cb38-100" tabindex="-1"></a></span>
+<span id="cb38-101"><a href="#cb38-101" tabindex="-1"></a>    <span class="co"># Calcula novo custo do subproblema</span></span>
+<span id="cb38-102"><a href="#cb38-102" tabindex="-1"></a>    custo_sub <span class="op">=</span> calcula_fo_subproblema(pi, <span class="bu">len</span>(x))</span>
+<span id="cb38-103"><a href="#cb38-103" tabindex="-1"></a>    sub.freeTransform()</span>
+<span id="cb38-104"><a href="#cb38-104" tabindex="-1"></a>    sub.chgReoptObjective(quicksum(custo_sub[i] <span class="op">*</span> x[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x))), sense <span class="op">=</span> <span class="st">&#39;minimize&#39;</span>)</span>
+<span id="cb38-105"><a href="#cb38-105" tabindex="-1"></a>    sub.writeProblem(<span class="ss">f&quot;C:</span><span class="ch">\\</span><span class="ss">Users</span><span class="ch">\\</span><span class="ss">x-eco</span><span class="ch">\\</span><span class="ss">OneDrive - ufpr.br</span><span class="ch">\\</span><span class="ss">Documentos</span><span class="ch">\\</span><span class="ss">Alexandre</span><span class="ch">\\</span><span class="ss">DW</span><span class="ch">\\</span><span class="ss">sub_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">.lp&quot;</span>,trans <span class="op">=</span> <span class="va">False</span>, genericnames <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb38-106"><a href="#cb38-106" tabindex="-1"></a>    sub.optimize()</span>
+<span id="cb38-107"><a href="#cb38-107" tabindex="-1"></a></span>
+<span id="cb38-108"><a href="#cb38-108" tabindex="-1"></a>    x_sol <span class="op">=</span> [sub.getVal(x[i]) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x))]</span>
+<span id="cb38-109"><a href="#cb38-109" tabindex="-1"></a>    z_sub <span class="op">=</span> sub.getObjVal()</span>
+<span id="cb38-110"><a href="#cb38-110" tabindex="-1"></a>    logger.info(<span class="ss">f&quot;Sol. Ótima do Subproblema: </span><span class="sc">{</span>x_sol<span class="sc">}</span><span class="ss">, com valor: </span><span class="sc">{</span>z_sub<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb38-111"><a href="#cb38-111" tabindex="-1"></a>    l_pontos.append(x_sol)</span>
+<span id="cb38-112"><a href="#cb38-112" tabindex="-1"></a></span>
+<span id="cb38-113"><a href="#cb38-113" tabindex="-1"></a>    custo_atualizado <span class="op">=</span> (z_sub <span class="op">-</span> pi[<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb38-114"><a href="#cb38-114" tabindex="-1"></a>    logger.warning(<span class="ss">f&quot;Custo atualizado: </span><span class="sc">{</span>custo_atualizado<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb38-115"><a href="#cb38-115" tabindex="-1"></a>    <span class="cf">if</span> custo_atualizado <span class="op">&gt;</span> <span class="op">-</span><span class="fl">0.01</span>:</span>
+<span id="cb38-116"><a href="#cb38-116" tabindex="-1"></a>        logger.info(<span class="st">&quot;Solução ótima encontrada pelo Mestre&quot;</span>)</span>
+<span id="cb38-117"><a href="#cb38-117" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb38-118"><a href="#cb38-118" tabindex="-1"></a>        mestre.freeTransform()</span>
+<span id="cb38-119"><a href="#cb38-119" tabindex="-1"></a>        logger.info(<span class="st">&quot;Coluna consegue melhorar a solução do Mestre, adicionando nova coluna...&quot;</span>)</span>
+<span id="cb38-120"><a href="#cb38-120" tabindex="-1"></a>        c, nova_coluna <span class="op">=</span> gera_col(x_sol, <span class="dv">4</span>)</span>
+<span id="cb38-121"><a href="#cb38-121" tabindex="-1"></a>        mestre,alpha <span class="op">=</span> add_col_mestre(mestre, alpha, c, nova_coluna)</span>
+<span id="cb38-122"><a href="#cb38-122" tabindex="-1"></a>        <span class="co">#mestre.writeProblem(r&quot;G:\\Meu Drive\\Arquivos\\UFPR\\1 - Disciplinas\\8 - PI Avançada\\Codigos\\Python\\1-LeituraDeDados\\modelo.lp&quot;)</span></span>
+<span id="cb38-123"><a href="#cb38-123" tabindex="-1"></a>    i <span class="op">=</span> i<span class="op">+</span><span class="dv">1</span></span>
+<span id="cb38-124"><a href="#cb38-124" tabindex="-1"></a>logger.info(<span class="st">&quot;Processo de Dantzig-Wolfe finalizado!!&quot;</span>)</span>
+<span id="cb38-125"><a href="#cb38-125" tabindex="-1"></a>logger.info(<span class="ss">f&quot;Pontos gerados: </span><span class="sc">{</span>l_pontos<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+</div>
 </div>
 
    
