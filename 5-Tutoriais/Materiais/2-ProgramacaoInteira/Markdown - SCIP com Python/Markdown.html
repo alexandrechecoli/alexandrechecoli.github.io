@@ -1542,8 +1542,8 @@ margin-left: 0 !important;
           <li><a href="#dualidade" id="toc-dualidade">Dualidade</a></li>
           <li><a href="#t%C3%B3picos-avan%C3%A7ados" id="toc-tópicos-avançados">Tópicos avançados</a>
           <ul>
-          <li><a href="#decomposi%C3%A7%C3%A3o-de-dantwig-wolfe" id="toc-decomposição-de-dantwig-wolfe">Decomposição de
-          Dantwig-Wolfe</a></li>
+          <li><a href="#decomposi%C3%A7%C3%A3o-de-dantzig-wolfe" id="toc-decomposição-de-dantzig-wolfe">Decomposição de
+          Dantzig-Wolfe</a></li>
           </ul></li>
           </ul>
         </nav>
@@ -2024,8 +2024,10 @@ restrição, e os valores duais ficam corretos.</p>
 </div>
 <div id="tópicos-avançados" class="section level1">
 <h1>Tópicos avançados</h1>
-<div id="decomposição-de-dantwig-wolfe" class="section level2">
-<h2>Decomposição de Dantwig-Wolfe</h2>
+<div id="decomposição-de-dantzig-wolfe" class="section level2">
+<h2>Decomposição de Dantzig-Wolfe</h2>
+<div id="exemplo-simples" class="section level3">
+<h3>Exemplo Simples</h3>
 <div class="sourceCode" id="cb37"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="im">import</span> logging</span>
 <span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a></span>
 <span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a>logger <span class="op">=</span> logging.getLogger(<span class="va">__name__</span>)</span>
@@ -2182,6 +2184,256 @@ restrição, e os valores duais ficam corretos.</p>
 <span id="cb38-123"><a href="#cb38-123" tabindex="-1"></a>    i <span class="op">=</span> i<span class="op">+</span><span class="dv">1</span></span>
 <span id="cb38-124"><a href="#cb38-124" tabindex="-1"></a>logger.info(<span class="st">&quot;Processo de Dantzig-Wolfe finalizado!!&quot;</span>)</span>
 <span id="cb38-125"><a href="#cb38-125" tabindex="-1"></a>logger.info(<span class="ss">f&quot;Pontos gerados: </span><span class="sc">{</span>l_pontos<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+</div>
+<div id="exemplo-com-estrutura-em-blocos" class="section level3">
+<h3>Exemplo com estrutura em blocos</h3>
+<div class="sourceCode" id="cb39"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="co"># Exemplo de decomposição de DW usando</span></span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a><span class="co"># a estrutura em blocos</span></span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a><span class="co"># Exemplo de aplicação da decomposição de Dantzig-Wolfe</span></span>
+<span id="cb39-6"><a href="#cb39-6" tabindex="-1"></a><span class="co"># usando o SCIP</span></span>
+<span id="cb39-7"><a href="#cb39-7" tabindex="-1"></a></span>
+<span id="cb39-8"><a href="#cb39-8" tabindex="-1"></a><span class="im">import</span> logging</span>
+<span id="cb39-9"><a href="#cb39-9" tabindex="-1"></a></span>
+<span id="cb39-10"><a href="#cb39-10" tabindex="-1"></a><span class="im">from</span> logger_config <span class="im">import</span> logger</span>
+<span id="cb39-11"><a href="#cb39-11" tabindex="-1"></a><span class="im">from</span> pyscipopt <span class="im">import</span> Model, quicksum, SCIP_PARAMSETTING</span>
+<span id="cb39-12"><a href="#cb39-12" tabindex="-1"></a></span>
+<span id="cb39-13"><a href="#cb39-13" tabindex="-1"></a></span>
+<span id="cb39-14"><a href="#cb39-14" tabindex="-1"></a><span class="kw">def</span> gera_mestre_initial_col(param, initial_sol_x, initial_sol_I):</span>
+<span id="cb39-15"><a href="#cb39-15" tabindex="-1"></a>    </span>
+<span id="cb39-16"><a href="#cb39-16" tabindex="-1"></a>    mestre <span class="op">=</span> Model(<span class="st">&quot;Mestre Dantzig-Wolfe&quot;</span>)</span>
+<span id="cb39-17"><a href="#cb39-17" tabindex="-1"></a>    <span class="co">#mestre.hideOutput(True)</span></span>
+<span id="cb39-18"><a href="#cb39-18" tabindex="-1"></a>    mestre.setPresolve(SCIP_PARAMSETTING.OFF)</span>
+<span id="cb39-19"><a href="#cb39-19" tabindex="-1"></a>    mestre.setHeuristics(SCIP_PARAMSETTING.OFF)</span>
+<span id="cb39-20"><a href="#cb39-20" tabindex="-1"></a>    mestre.disablePropagation()</span>
+<span id="cb39-21"><a href="#cb39-21" tabindex="-1"></a></span>
+<span id="cb39-22"><a href="#cb39-22" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;&quot;</span></span>
+<span id="cb39-23"><a href="#cb39-23" tabindex="-1"></a><span class="co">    alpha            = [ [mestre.addVar(f&quot;a_{i}_0&quot;, vtype = &quot;C&quot;, lb = 0)] for i in range(len(param[&quot;D&quot;])) ]</span></span>
+<span id="cb39-24"><a href="#cb39-24" tabindex="-1"></a><span class="co">    var_art          = mestre.addVar(f&quot;va&quot;, vtype = &quot;C&quot;, lb = 0)</span></span>
+<span id="cb39-25"><a href="#cb39-25" tabindex="-1"></a><span class="co">    mestre_dummy_var = mestre.addVar(&quot;dummy&quot;, vtype = &quot;C&quot;, lb = 0, ub = 0)</span></span>
+<span id="cb39-26"><a href="#cb39-26" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb39-27"><a href="#cb39-27" tabindex="-1"></a><span class="co">    mestre.addCons(var_art + 450 * alpha[0][0] + 32 * alpha[1][0] + mestre_dummy_var &lt;= 240)</span></span>
+<span id="cb39-28"><a href="#cb39-28" tabindex="-1"></a><span class="co">    mestre.addCons(var_art +  112 * alpha[1][0] + mestre_dummy_var &lt;= 320) </span></span>
+<span id="cb39-29"><a href="#cb39-29" tabindex="-1"></a><span class="co">    mestre.addCons(var_art  + mestre_dummy_var &lt;= 200)</span></span>
+<span id="cb39-30"><a href="#cb39-30" tabindex="-1"></a><span class="co">    mestre.addCons(var_art + alpha[0][0] + mestre_dummy_var == 1)</span></span>
+<span id="cb39-31"><a href="#cb39-31" tabindex="-1"></a><span class="co">    mestre.addCons(var_art + alpha[1][0] + mestre_dummy_var == 1)</span></span>
+<span id="cb39-32"><a href="#cb39-32" tabindex="-1"></a></span>
+<span id="cb39-33"><a href="#cb39-33" tabindex="-1"></a><span class="co">    mestre.setObjective(100000 * var_art + 6750 * alpha[0][0] + 1100 * alpha[1][0], sense = &quot;minimize&quot;)</span></span>
+<span id="cb39-34"><a href="#cb39-34" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb39-35"><a href="#cb39-35" tabindex="-1"></a>    </span>
+<span id="cb39-36"><a href="#cb39-36" tabindex="-1"></a>    n_prod <span class="op">=</span> <span class="bu">len</span>(param[<span class="st">&quot;D&quot;</span>]) <span class="co"># número de produtos</span></span>
+<span id="cb39-37"><a href="#cb39-37" tabindex="-1"></a>    var_art          <span class="op">=</span> mestre.addVar(<span class="ss">f&quot;va&quot;</span>, vtype <span class="op">=</span> <span class="st">&quot;C&quot;</span>, lb <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb39-38"><a href="#cb39-38" tabindex="-1"></a>    <span class="co"># Inicializa uma variável para cada produto</span></span>
+<span id="cb39-39"><a href="#cb39-39" tabindex="-1"></a>    alpha           <span class="op">=</span> [ [mestre.addVar(<span class="ss">f&quot;a_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">_0&quot;</span>, vtype <span class="op">=</span> <span class="st">&quot;C&quot;</span>, lb <span class="op">=</span> <span class="dv">0</span>)] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(param[<span class="st">&quot;D&quot;</span>])) ]</span>
+<span id="cb39-40"><a href="#cb39-40" tabindex="-1"></a>    </span>
+<span id="cb39-41"><a href="#cb39-41" tabindex="-1"></a>    <span class="co"># A última é a var. Dummy</span></span>
+<span id="cb39-42"><a href="#cb39-42" tabindex="-1"></a>    mestre_dummy_var <span class="op">=</span> mestre.addVar(<span class="st">&quot;dummy&quot;</span>, vtype <span class="op">=</span> <span class="st">&quot;C&quot;</span>, lb <span class="op">=</span> <span class="dv">0</span>, ub <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb39-43"><a href="#cb39-43" tabindex="-1"></a></span>
+<span id="cb39-44"><a href="#cb39-44" tabindex="-1"></a>    <span class="co"># Adicionando uma coluna por produto</span></span>
+<span id="cb39-45"><a href="#cb39-45" tabindex="-1"></a>    l_c      <span class="op">=</span> []</span>
+<span id="cb39-46"><a href="#cb39-46" tabindex="-1"></a>    l_coluna <span class="op">=</span> []</span>
+<span id="cb39-47"><a href="#cb39-47" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_prod):</span>
+<span id="cb39-48"><a href="#cb39-48" tabindex="-1"></a>        <span class="co"># Cria a coluna por produto i</span></span>
+<span id="cb39-49"><a href="#cb39-49" tabindex="-1"></a>        c, nova_coluna  <span class="op">=</span> gera_col(param, initial_sol_x[i], initial_sol_I[i], i)</span>
+<span id="cb39-50"><a href="#cb39-50" tabindex="-1"></a>        l_c.append(c)</span>
+<span id="cb39-51"><a href="#cb39-51" tabindex="-1"></a>        l_coluna.append(nova_coluna)</span>
+<span id="cb39-52"><a href="#cb39-52" tabindex="-1"></a></span>
+<span id="cb39-53"><a href="#cb39-53" tabindex="-1"></a>    <span class="co"># Adiciona restrições somente com a var alpha 1 (para ter um RHS), depois adiciona por inserção de coluna mesmo</span></span>
+<span id="cb39-54"><a href="#cb39-54" tabindex="-1"></a>    <span class="co"># primeiro as restrições de capacidade dos tanques</span></span>
+<span id="cb39-55"><a href="#cb39-55" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(param[<span class="st">&quot;DispTanque&quot;</span>])):</span>
+<span id="cb39-56"><a href="#cb39-56" tabindex="-1"></a>        mestre.addCons(alpha[<span class="dv">0</span>][<span class="dv">0</span>] <span class="op">*</span> l_coluna[<span class="dv">0</span>][j] <span class="op">+</span> mestre_dummy_var <span class="op">&lt;=</span> param[<span class="st">&quot;DispTanque&quot;</span>][j])</span>
+<span id="cb39-57"><a href="#cb39-57" tabindex="-1"></a></span>
+<span id="cb39-58"><a href="#cb39-58" tabindex="-1"></a>    <span class="co"># Agora as restrições de convexidade</span></span>
+<span id="cb39-59"><a href="#cb39-59" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(param[<span class="st">&quot;DispTanque&quot;</span>]),<span class="bu">len</span>(param[<span class="st">&quot;DispTanque&quot;</span>]) <span class="op">+</span> <span class="bu">len</span>(param[<span class="st">&quot;D&quot;</span>])): <span class="co"># Convexidade</span></span>
+<span id="cb39-60"><a href="#cb39-60" tabindex="-1"></a>        mestre.addCons(alpha[<span class="dv">0</span>][<span class="dv">0</span>] <span class="op">*</span> l_coluna[<span class="dv">0</span>][j] <span class="op">+</span> mestre_dummy_var <span class="op">==</span> <span class="dv">1</span>)</span>
+<span id="cb39-61"><a href="#cb39-61" tabindex="-1"></a></span>
+<span id="cb39-62"><a href="#cb39-62" tabindex="-1"></a>    <span class="co"># Adiciona as outras colunas por inserção de coluna</span></span>
+<span id="cb39-63"><a href="#cb39-63" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="bu">len</span>(param[<span class="st">&quot;D&quot;</span>])): <span class="co"># para cada produto além do primeiro</span></span>
+<span id="cb39-64"><a href="#cb39-64" tabindex="-1"></a>        <span class="cf">for</span> i,c <span class="kw">in</span> <span class="bu">enumerate</span>(mestre.getConss()):     <span class="co"># para cada restrição</span></span>
+<span id="cb39-65"><a href="#cb39-65" tabindex="-1"></a>            mestre.addConsCoeff(c, alpha[p][<span class="dv">0</span>], l_coluna[p][i])</span>
+<span id="cb39-66"><a href="#cb39-66" tabindex="-1"></a> </span>
+<span id="cb39-67"><a href="#cb39-67" tabindex="-1"></a>    <span class="co"># Custo da fo</span></span>
+<span id="cb39-68"><a href="#cb39-68" tabindex="-1"></a>    mestre.setObjective(quicksum(l_c[i] <span class="op">*</span> alpha[i][<span class="dv">0</span>] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_prod)), sense <span class="op">=</span> <span class="st">&quot;minimize&quot;</span>)</span>
+<span id="cb39-69"><a href="#cb39-69" tabindex="-1"></a>    </span>
+<span id="cb39-70"><a href="#cb39-70" tabindex="-1"></a>    <span class="cf">return</span> mestre, alpha, var_art</span>
+<span id="cb39-71"><a href="#cb39-71" tabindex="-1"></a></span>
+<span id="cb39-72"><a href="#cb39-72" tabindex="-1"></a><span class="kw">def</span> gera_col(param, sol_x, sol_I, sub_prob):</span>
+<span id="cb39-73"><a href="#cb39-73" tabindex="-1"></a>    </span>
+<span id="cb39-74"><a href="#cb39-74" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb39-75"><a href="#cb39-75" tabindex="-1"></a><span class="co">    Gera uma nova coluna a partir da solução do subproblema sol_x e sol_I</span></span>
+<span id="cb39-76"><a href="#cb39-76" tabindex="-1"></a><span class="co">    sub_prob indica a qual subproblema a coluna pertence, pois isso vai influenciar</span></span>
+<span id="cb39-77"><a href="#cb39-77" tabindex="-1"></a><span class="co">    na posição em que o valor da restrição de convexidade é adicionado.</span></span>
+<span id="cb39-78"><a href="#cb39-78" tabindex="-1"></a><span class="co">    Finalmente, n_cons indica o número total de restrições do mestre.</span></span>
+<span id="cb39-79"><a href="#cb39-79" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb39-80"><a href="#cb39-80" tabindex="-1"></a></span>
+<span id="cb39-81"><a href="#cb39-81" tabindex="-1"></a>    n_prod <span class="op">=</span> <span class="bu">len</span>(param[<span class="st">&quot;D&quot;</span>]) <span class="co"># número de produtos</span></span>
+<span id="cb39-82"><a href="#cb39-82" tabindex="-1"></a></span>
+<span id="cb39-83"><a href="#cb39-83" tabindex="-1"></a>    c_coeff       <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb39-84"><a href="#cb39-84" tabindex="-1"></a>    alpha_coeff   <span class="op">=</span> [<span class="dv">0</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(param[<span class="st">&quot;DispTanque&quot;</span>]) <span class="op">+</span> n_prod) ]</span>
+<span id="cb39-85"><a href="#cb39-85" tabindex="-1"></a></span>
+<span id="cb39-86"><a href="#cb39-86" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(param[<span class="st">&quot;DispTanque&quot;</span>])):</span>
+<span id="cb39-87"><a href="#cb39-87" tabindex="-1"></a>        alpha_coeff[i] <span class="op">=</span> param[<span class="st">&quot;HMaquina&quot;</span>][sub_prob] <span class="op">*</span> sol_x[i]</span>
+<span id="cb39-88"><a href="#cb39-88" tabindex="-1"></a></span>
+<span id="cb39-89"><a href="#cb39-89" tabindex="-1"></a>    alpha_coeff[<span class="bu">len</span>(param[<span class="st">&quot;DispTanque&quot;</span>]) <span class="op">+</span> sub_prob] <span class="op">=</span> <span class="dv">1</span>  <span class="co"># Restrição de convexidade</span></span>
+<span id="cb39-90"><a href="#cb39-90" tabindex="-1"></a></span>
+<span id="cb39-91"><a href="#cb39-91" tabindex="-1"></a>    c_coeff       <span class="op">=</span> <span class="bu">sum</span>(x <span class="op">*</span> c <span class="cf">for</span> x, c <span class="kw">in</span> <span class="bu">zip</span>(sol_x, param[<span class="st">&quot;Cp&quot;</span>][sub_prob])) </span>
+<span id="cb39-92"><a href="#cb39-92" tabindex="-1"></a>    c_coeff       <span class="op">=</span> c_coeff <span class="op">+</span> <span class="bu">sum</span>(I <span class="op">*</span> c <span class="cf">for</span> I, c <span class="kw">in</span> <span class="bu">zip</span>(sol_I, param[<span class="st">&quot;Ci&quot;</span>][sub_prob]))</span>
+<span id="cb39-93"><a href="#cb39-93" tabindex="-1"></a>    <span class="cf">return</span> c_coeff, alpha_coeff</span>
+<span id="cb39-94"><a href="#cb39-94" tabindex="-1"></a></span>
+<span id="cb39-95"><a href="#cb39-95" tabindex="-1"></a><span class="kw">def</span> gera_subproblem(param, sub_prob):</span>
+<span id="cb39-96"><a href="#cb39-96" tabindex="-1"></a></span>
+<span id="cb39-97"><a href="#cb39-97" tabindex="-1"></a>    n_prod <span class="op">=</span> <span class="bu">len</span>(param[<span class="st">&quot;D&quot;</span>]) <span class="co"># número de produtos</span></span>
+<span id="cb39-98"><a href="#cb39-98" tabindex="-1"></a>    T <span class="op">=</span> <span class="bu">len</span>(param[<span class="st">&quot;D&quot;</span>][<span class="dv">0</span>])   <span class="co"># número de períodos</span></span>
+<span id="cb39-99"><a href="#cb39-99" tabindex="-1"></a></span>
+<span id="cb39-100"><a href="#cb39-100" tabindex="-1"></a>    subproblema <span class="op">=</span> Model(<span class="ss">f&quot;sub_</span><span class="sc">{</span>sub_prob<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb39-101"><a href="#cb39-101" tabindex="-1"></a>    subproblema.hideOutput(<span class="va">True</span>)</span>
+<span id="cb39-102"><a href="#cb39-102" tabindex="-1"></a>    subproblema.setPresolve(SCIP_PARAMSETTING.OFF)</span>
+<span id="cb39-103"><a href="#cb39-103" tabindex="-1"></a>    subproblema.setHeuristics(SCIP_PARAMSETTING.OFF)</span>
+<span id="cb39-104"><a href="#cb39-104" tabindex="-1"></a>    subproblema.disablePropagation()</span>
+<span id="cb39-105"><a href="#cb39-105" tabindex="-1"></a></span>
+<span id="cb39-106"><a href="#cb39-106" tabindex="-1"></a>    <span class="co"># Variáveis do subproblema</span></span>
+<span id="cb39-107"><a href="#cb39-107" tabindex="-1"></a>    x <span class="op">=</span> [subproblema.addVar(<span class="ss">f&quot;x_</span><span class="sc">{</span>sub_prob<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">&quot;</span> ,vtype <span class="op">=</span> <span class="st">&quot;C&quot;</span>, lb <span class="op">=</span> <span class="dv">0</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(T)]</span>
+<span id="cb39-108"><a href="#cb39-108" tabindex="-1"></a>    I <span class="op">=</span> [subproblema.addVar(<span class="ss">f&quot;I_</span><span class="sc">{</span>sub_prob<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">&quot;</span> ,vtype <span class="op">=</span> <span class="st">&quot;C&quot;</span>, lb <span class="op">=</span> <span class="dv">0</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(T)]</span>
+<span id="cb39-109"><a href="#cb39-109" tabindex="-1"></a>    </span>
+<span id="cb39-110"><a href="#cb39-110" tabindex="-1"></a>    <span class="co"># Restrições do subproblema</span></span>
+<span id="cb39-111"><a href="#cb39-111" tabindex="-1"></a>    <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T):</span>
+<span id="cb39-112"><a href="#cb39-112" tabindex="-1"></a>        demanda_t <span class="op">=</span> param[<span class="st">&quot;D&quot;</span>][sub_prob][t]</span>
+<span id="cb39-113"><a href="#cb39-113" tabindex="-1"></a>        <span class="cf">if</span> t <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb39-114"><a href="#cb39-114" tabindex="-1"></a>            subproblema.addCons(x[t] <span class="op">-</span> I[t] <span class="op">==</span> demanda_t)</span>
+<span id="cb39-115"><a href="#cb39-115" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb39-116"><a href="#cb39-116" tabindex="-1"></a>            subproblema.addCons(x[t] <span class="op">+</span> I[t<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span> I[t] <span class="op">==</span> demanda_t)</span>
+<span id="cb39-117"><a href="#cb39-117" tabindex="-1"></a></span>
+<span id="cb39-118"><a href="#cb39-118" tabindex="-1"></a>    <span class="co"># Fo</span></span>
+<span id="cb39-119"><a href="#cb39-119" tabindex="-1"></a>    subproblema.setObjective(<span class="dv">0</span>, sense <span class="op">=</span> <span class="st">&quot;minimize&quot;</span>)</span>
+<span id="cb39-120"><a href="#cb39-120" tabindex="-1"></a>    <span class="cf">return</span> subproblema, x, I</span>
+<span id="cb39-121"><a href="#cb39-121" tabindex="-1"></a></span>
+<span id="cb39-122"><a href="#cb39-122" tabindex="-1"></a><span class="kw">def</span> add_col_mestre(mestre, alpha, c, nova_coluna, sub_prob):</span>
+<span id="cb39-123"><a href="#cb39-123" tabindex="-1"></a>    <span class="co"># Add. a variável e o custo na fo</span></span>
+<span id="cb39-124"><a href="#cb39-124" tabindex="-1"></a>    alpha[sub_prob].append(mestre.addVar(<span class="ss">f&quot;a_</span><span class="sc">{</span>sub_prob<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span><span class="bu">len</span>(alpha[sub_prob])<span class="sc">}</span><span class="ss">&quot;</span>, vtype <span class="op">=</span> <span class="st">&quot;C&quot;</span>, lb <span class="op">=</span> <span class="dv">0</span>, obj <span class="op">=</span> c))</span>
+<span id="cb39-125"><a href="#cb39-125" tabindex="-1"></a>    i <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb39-126"><a href="#cb39-126" tabindex="-1"></a>    <span class="cf">for</span> i,c <span class="kw">in</span> <span class="bu">enumerate</span>(mestre.getConss()):</span>
+<span id="cb39-127"><a href="#cb39-127" tabindex="-1"></a>        mestre.addConsCoeff(c, alpha[sub_prob][<span class="op">-</span><span class="dv">1</span>], nova_coluna[i])  <span class="co"># adds 1.0 * z to cons1</span></span>
+<span id="cb39-128"><a href="#cb39-128" tabindex="-1"></a>    <span class="cf">return</span> mestre, alpha</span>
+<span id="cb39-129"><a href="#cb39-129" tabindex="-1"></a></span>
+<span id="cb39-130"><a href="#cb39-130" tabindex="-1"></a><span class="kw">def</span> recupera_solucao(alpha_val, l_solucoes_x, l_solucoes_I):</span>
+<span id="cb39-131"><a href="#cb39-131" tabindex="-1"></a>    n_prod <span class="op">=</span> <span class="bu">len</span>(l_solucoes_x)</span>
+<span id="cb39-132"><a href="#cb39-132" tabindex="-1"></a>    T      <span class="op">=</span> <span class="bu">len</span>(l_solucoes_x[<span class="dv">0</span>][<span class="dv">0</span>])</span>
+<span id="cb39-133"><a href="#cb39-133" tabindex="-1"></a>    solucoes_x <span class="op">=</span> [ [<span class="dv">0</span> <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)] <span class="cf">for</span> p <span class="kw">in</span> <span class="bu">range</span>(n_prod)]</span>
+<span id="cb39-134"><a href="#cb39-134" tabindex="-1"></a>    solucoes_I <span class="op">=</span> [ [<span class="dv">0</span> <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)] <span class="cf">for</span> p <span class="kw">in</span> <span class="bu">range</span>(n_prod)]</span>
+<span id="cb39-135"><a href="#cb39-135" tabindex="-1"></a></span>
+<span id="cb39-136"><a href="#cb39-136" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> <span class="bu">range</span>(n_prod):</span>
+<span id="cb39-137"><a href="#cb39-137" tabindex="-1"></a>        <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T):</span>
+<span id="cb39-138"><a href="#cb39-138" tabindex="-1"></a>            <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(l_solucoes_x[p])): <span class="co"># para cada coluna usada</span></span>
+<span id="cb39-139"><a href="#cb39-139" tabindex="-1"></a>                solucoes_x[p][t] <span class="op">+=</span> alpha_val[p][<span class="dv">0</span>][k] <span class="op">*</span> l_solucoes_x[p][k][t]</span>
+<span id="cb39-140"><a href="#cb39-140" tabindex="-1"></a>                solucoes_I[p][t] <span class="op">+=</span> alpha_val[p][<span class="dv">0</span>][k] <span class="op">*</span> l_solucoes_I[p][k][t]</span>
+<span id="cb39-141"><a href="#cb39-141" tabindex="-1"></a>    <span class="cf">return</span> solucoes_x, solucoes_I</span>
+<span id="cb39-142"><a href="#cb39-142" tabindex="-1"></a></span>
+<span id="cb39-143"><a href="#cb39-143" tabindex="-1"></a>param <span class="op">=</span> {<span class="st">&quot;D&quot;</span>:[[<span class="dv">900</span>,<span class="dv">1800</span>,<span class="dv">1800</span>],[<span class="dv">400</span>,<span class="dv">600</span>,<span class="dv">800</span>]],</span>
+<span id="cb39-144"><a href="#cb39-144" tabindex="-1"></a>        <span class="st">&quot;Cp&quot;</span>:[[<span class="fl">1.0</span>,<span class="fl">1.5</span>,<span class="fl">2.0</span>],[<span class="fl">0.5</span>,<span class="fl">0.5</span>,<span class="fl">0.9</span>]],</span>
+<span id="cb39-145"><a href="#cb39-145" tabindex="-1"></a>        <span class="st">&quot;Ci&quot;</span>:[[<span class="fl">0.5</span>,<span class="fl">0.25</span>,<span class="dv">0</span>],[<span class="fl">0.25</span>,<span class="fl">0.25</span>,<span class="dv">0</span>]],</span>
+<span id="cb39-146"><a href="#cb39-146" tabindex="-1"></a>        <span class="st">&quot;DispTanque&quot;</span>:[<span class="dv">240</span>,<span class="dv">320</span>,<span class="dv">200</span>],</span>
+<span id="cb39-147"><a href="#cb39-147" tabindex="-1"></a>        <span class="st">&quot;HMaquina&quot;</span>:[<span class="fl">0.1</span>,<span class="fl">0.08</span>],}</span>
+<span id="cb39-148"><a href="#cb39-148" tabindex="-1"></a></span>
+<span id="cb39-149"><a href="#cb39-149" tabindex="-1"></a>n_prod <span class="op">=</span> <span class="bu">len</span>(param[<span class="st">&quot;D&quot;</span>]) <span class="co"># número de produtos</span></span>
+<span id="cb39-150"><a href="#cb39-150" tabindex="-1"></a>T      <span class="op">=</span> <span class="bu">len</span>(param[<span class="st">&quot;D&quot;</span>][<span class="dv">0</span>])   <span class="co"># número de períodos</span></span>
+<span id="cb39-151"><a href="#cb39-151" tabindex="-1"></a></span>
+<span id="cb39-152"><a href="#cb39-152" tabindex="-1"></a><span class="co"># Mestre inicializado com uma sol. inicial</span></span>
+<span id="cb39-153"><a href="#cb39-153" tabindex="-1"></a>initial_sol_x <span class="op">=</span> [[<span class="dv">1800</span>,<span class="dv">1800</span>,<span class="dv">900</span>],[<span class="dv">750</span>,<span class="dv">250</span>,<span class="dv">800</span>]]</span>
+<span id="cb39-154"><a href="#cb39-154" tabindex="-1"></a>initial_sol_I <span class="op">=</span> [[<span class="dv">900</span>,<span class="dv">900</span>,<span class="dv">0</span>],[<span class="dv">350</span>,<span class="dv">0</span>,<span class="dv">0</span>]]</span>
+<span id="cb39-155"><a href="#cb39-155" tabindex="-1"></a></span>
+<span id="cb39-156"><a href="#cb39-156" tabindex="-1"></a>mestre, alpha, var_art <span class="op">=</span> gera_mestre_initial_col(param, initial_sol_x, initial_sol_I)</span>
+<span id="cb39-157"><a href="#cb39-157" tabindex="-1"></a>mestre.writeProblem(<span class="ss">f&quot;C:</span><span class="ch">\\</span><span class="ss">Users</span><span class="ch">\\</span><span class="ss">x-eco</span><span class="ch">\\</span><span class="ss">OneDrive - ufpr.br</span><span class="ch">\\</span><span class="ss">Documentos</span><span class="ch">\\</span><span class="ss">Alexandre</span><span class="ch">\\</span><span class="ss">DW</span><span class="ch">\\</span><span class="ss">mestre_0.lp&quot;</span>, trans <span class="op">=</span> <span class="va">False</span>, genericnames <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb39-158"><a href="#cb39-158" tabindex="-1"></a>alpha_val   <span class="op">=</span> [[] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_prod)] <span class="co"># valores das variávies alpha</span></span>
+<span id="cb39-159"><a href="#cb39-159" tabindex="-1"></a></span>
+<span id="cb39-160"><a href="#cb39-160" tabindex="-1"></a>l_sub <span class="op">=</span> []</span>
+<span id="cb39-161"><a href="#cb39-161" tabindex="-1"></a>l_x   <span class="op">=</span> []</span>
+<span id="cb39-162"><a href="#cb39-162" tabindex="-1"></a>l_I   <span class="op">=</span> []</span>
+<span id="cb39-163"><a href="#cb39-163" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_prod):</span>
+<span id="cb39-164"><a href="#cb39-164" tabindex="-1"></a>    sub, x, I <span class="op">=</span> gera_subproblem(param, i)</span>
+<span id="cb39-165"><a href="#cb39-165" tabindex="-1"></a>    l_sub.append(sub)</span>
+<span id="cb39-166"><a href="#cb39-166" tabindex="-1"></a>    l_x.append(x)</span>
+<span id="cb39-167"><a href="#cb39-167" tabindex="-1"></a>    l_I.append(I)</span>
+<span id="cb39-168"><a href="#cb39-168" tabindex="-1"></a>    <span class="co">#sub.writeProblem(f&quot;C:\\Users\\x-eco\\OneDrive - ufpr.br\\Documentos\\Alexandre\\DW\\sub_{i}.lp&quot;, trans = False, genericnames = False)</span></span>
+<span id="cb39-169"><a href="#cb39-169" tabindex="-1"></a></span>
+<span id="cb39-170"><a href="#cb39-170" tabindex="-1"></a>i <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb39-171"><a href="#cb39-171" tabindex="-1"></a>l_solucoes_I <span class="op">=</span> [[] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_prod)] <span class="co"># lista de listas com os pontos usados nos subproblemas: usados no final</span></span>
+<span id="cb39-172"><a href="#cb39-172" tabindex="-1"></a>l_solucoes_x <span class="op">=</span> [[] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_prod)] <span class="co"># lista de listas com os pontos usados nos subproblemas: usados no final </span></span>
+<span id="cb39-173"><a href="#cb39-173" tabindex="-1"></a>                  <span class="co"># para, junto dos valores de alpha recuperar os valores de x e I</span></span>
+<span id="cb39-174"><a href="#cb39-174" tabindex="-1"></a></span>
+<span id="cb39-175"><a href="#cb39-175" tabindex="-1"></a>l_solucoes_x[<span class="dv">0</span>].append(initial_sol_x[<span class="dv">0</span>])</span>
+<span id="cb39-176"><a href="#cb39-176" tabindex="-1"></a>l_solucoes_x[<span class="dv">1</span>].append(initial_sol_x[<span class="dv">1</span>])</span>
+<span id="cb39-177"><a href="#cb39-177" tabindex="-1"></a>l_solucoes_I[<span class="dv">0</span>].append(initial_sol_I[<span class="dv">0</span>])</span>
+<span id="cb39-178"><a href="#cb39-178" tabindex="-1"></a>l_solucoes_I[<span class="dv">1</span>].append(initial_sol_I[<span class="dv">1</span>])</span>
+<span id="cb39-179"><a href="#cb39-179" tabindex="-1"></a></span>
+<span id="cb39-180"><a href="#cb39-180" tabindex="-1"></a><span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb39-181"><a href="#cb39-181" tabindex="-1"></a>    custo_atualizado <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb39-182"><a href="#cb39-182" tabindex="-1"></a>    mestre.optimize()</span>
+<span id="cb39-183"><a href="#cb39-183" tabindex="-1"></a>    z <span class="op">=</span> mestre.getObjVal()</span>
+<span id="cb39-184"><a href="#cb39-184" tabindex="-1"></a></span>
+<span id="cb39-185"><a href="#cb39-185" tabindex="-1"></a>    <span class="co"># Duais, fo e variáveis</span></span>
+<span id="cb39-186"><a href="#cb39-186" tabindex="-1"></a>    pi          <span class="op">=</span> [mestre.getDualsolLinear(c) <span class="cf">for</span> c <span class="kw">in</span> mestre.getConss()] <span class="co"># coleta as variáveis duais</span></span>
+<span id="cb39-187"><a href="#cb39-187" tabindex="-1"></a>    var_art_val <span class="op">=</span> mestre.getVal(var_art)</span>
+<span id="cb39-188"><a href="#cb39-188" tabindex="-1"></a></span>
+<span id="cb39-189"><a href="#cb39-189" tabindex="-1"></a>    <span class="co"># Coleta a solução atual das variáveis alpha</span></span>
+<span id="cb39-190"><a href="#cb39-190" tabindex="-1"></a>    alpha_val   <span class="op">=</span> [[] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_prod)] <span class="co"># valores das variávies alpha</span></span>
+<span id="cb39-191"><a href="#cb39-191" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> <span class="bu">range</span>(n_prod):</span>
+<span id="cb39-192"><a href="#cb39-192" tabindex="-1"></a>        l_val <span class="op">=</span> [mestre.getVal(v) <span class="cf">for</span> v <span class="kw">in</span> alpha[p]]</span>
+<span id="cb39-193"><a href="#cb39-193" tabindex="-1"></a>        alpha_val[p].append(l_val)</span>
+<span id="cb39-194"><a href="#cb39-194" tabindex="-1"></a></span>
+<span id="cb39-195"><a href="#cb39-195" tabindex="-1"></a>    <span class="co"># Usa os duais obtidos para atualizar as fo dos subproblemas</span></span>
+<span id="cb39-196"><a href="#cb39-196" tabindex="-1"></a>    l_melhor_sol_x   <span class="op">=</span> []</span>
+<span id="cb39-197"><a href="#cb39-197" tabindex="-1"></a>    l_melhor_sol_I   <span class="op">=</span> []</span>
+<span id="cb39-198"><a href="#cb39-198" tabindex="-1"></a>    melhor_p         <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb39-199"><a href="#cb39-199" tabindex="-1"></a>    menor_custo_reduzido <span class="op">=</span> <span class="dv">999</span></span>
+<span id="cb39-200"><a href="#cb39-200" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> <span class="bu">range</span>(n_prod):</span>
+<span id="cb39-201"><a href="#cb39-201" tabindex="-1"></a>        <span class="co"># Atualiza a fo do subproblema p</span></span>
+<span id="cb39-202"><a href="#cb39-202" tabindex="-1"></a>        l_sub[p].freeTransform()</span>
+<span id="cb39-203"><a href="#cb39-203" tabindex="-1"></a>        l_sub[p].chgReoptObjective( quicksum(param[<span class="st">&quot;Cp&quot;</span>][p][t] <span class="op">*</span> l_x[p][t] <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)) <span class="op">+</span> quicksum(param[<span class="st">&quot;Ci&quot;</span>][p][t] <span class="op">*</span> l_I[p][t] <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)) <span class="op">-</span></span>
+<span id="cb39-204"><a href="#cb39-204" tabindex="-1"></a>                               quicksum(pi[t] <span class="op">*</span> l_x[p][t] <span class="op">*</span> param[<span class="st">&quot;HMaquina&quot;</span>][p] <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)) ,</span>
+<span id="cb39-205"><a href="#cb39-205" tabindex="-1"></a>                               sense <span class="op">=</span> <span class="st">&quot;minimize&quot;</span>)</span>
+<span id="cb39-206"><a href="#cb39-206" tabindex="-1"></a>        l_sub[p].writeProblem(<span class="ss">f&quot;C:</span><span class="ch">\\</span><span class="ss">Users</span><span class="ch">\\</span><span class="ss">x-eco</span><span class="ch">\\</span><span class="ss">OneDrive - ufpr.br</span><span class="ch">\\</span><span class="ss">Documentos</span><span class="ch">\\</span><span class="ss">Alexandre</span><span class="ch">\\</span><span class="ss">DW</span><span class="ch">\\</span><span class="ss">sub_</span><span class="sc">{</span>p<span class="sc">}</span><span class="ss">.lp&quot;</span>, trans <span class="op">=</span> <span class="va">False</span>, genericnames <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb39-207"><a href="#cb39-207" tabindex="-1"></a></span>
+<span id="cb39-208"><a href="#cb39-208" tabindex="-1"></a>        <span class="co"># Resolve o subproblema p</span></span>
+<span id="cb39-209"><a href="#cb39-209" tabindex="-1"></a>        l_sub[p].optimize()</span>
+<span id="cb39-210"><a href="#cb39-210" tabindex="-1"></a></span>
+<span id="cb39-211"><a href="#cb39-211" tabindex="-1"></a>        <span class="co"># Verifica o custo reduzido (compara com o dual da restrição de convexidade)</span></span>
+<span id="cb39-212"><a href="#cb39-212" tabindex="-1"></a>        z_sub_p        <span class="op">=</span> l_sub[p].getObjVal()</span>
+<span id="cb39-213"><a href="#cb39-213" tabindex="-1"></a>        custo_reduzido <span class="op">=</span> z_sub_p <span class="op">-</span> pi[T <span class="op">+</span> p]  <span class="co"># considerando a restrição de convexidade na posição T + p</span></span>
+<span id="cb39-214"><a href="#cb39-214" tabindex="-1"></a>        </span>
+<span id="cb39-215"><a href="#cb39-215" tabindex="-1"></a>        <span class="co"># Se o custo reduzido for &lt; 0, ele trás melhoria</span></span>
+<span id="cb39-216"><a href="#cb39-216" tabindex="-1"></a>        <span class="cf">if</span> custo_reduzido <span class="op">&lt;</span> <span class="op">-</span><span class="fl">0.001</span>:</span>
+<span id="cb39-217"><a href="#cb39-217" tabindex="-1"></a>            <span class="co"># Verifica se ele é o melhor custo reduzido dentre todos os subproblemas</span></span>
+<span id="cb39-218"><a href="#cb39-218" tabindex="-1"></a>            <span class="cf">if</span> custo_reduzido <span class="op">&lt;</span> menor_custo_reduzido:</span>
+<span id="cb39-219"><a href="#cb39-219" tabindex="-1"></a>                menor_custo_reduzido <span class="op">=</span> custo_reduzido</span>
+<span id="cb39-220"><a href="#cb39-220" tabindex="-1"></a>                melhor_p             <span class="op">=</span> p</span>
+<span id="cb39-221"><a href="#cb39-221" tabindex="-1"></a>                l_melhor_sol_x       <span class="op">=</span> [l_sub[p].getVal(l_x[p][t]) <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)]</span>
+<span id="cb39-222"><a href="#cb39-222" tabindex="-1"></a>                l_melhor_sol_I       <span class="op">=</span> [l_sub[p].getVal(l_I[p][t]) <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)]</span>
+<span id="cb39-223"><a href="#cb39-223" tabindex="-1"></a></span>
+<span id="cb39-224"><a href="#cb39-224" tabindex="-1"></a>    <span class="cf">if</span> menor_custo_reduzido <span class="op">&gt;=</span> <span class="op">-</span><span class="fl">0.001</span>:</span>
+<span id="cb39-225"><a href="#cb39-225" tabindex="-1"></a>        <span class="co"># Nenhum subproblema trouxe melhoria, então a solução é ótima</span></span>
+<span id="cb39-226"><a href="#cb39-226" tabindex="-1"></a>        <span class="cf">break</span></span>
+<span id="cb39-227"><a href="#cb39-227" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb39-228"><a href="#cb39-228" tabindex="-1"></a>        i <span class="op">=</span> i<span class="op">+</span><span class="dv">1</span></span>
+<span id="cb39-229"><a href="#cb39-229" tabindex="-1"></a>        mestre.freeTransform()</span>
+<span id="cb39-230"><a href="#cb39-230" tabindex="-1"></a>        logger.info(<span class="st">&quot;Coluna consegue melhorar a solução do Mestre, adicionando nova coluna...&quot;</span>)</span>
+<span id="cb39-231"><a href="#cb39-231" tabindex="-1"></a>        c_nova_col, nova_coluna <span class="op">=</span> gera_col(param, l_melhor_sol_x, l_melhor_sol_I, melhor_p)</span>
+<span id="cb39-232"><a href="#cb39-232" tabindex="-1"></a>        mestre, alpha <span class="op">=</span> add_col_mestre(mestre, alpha, c_nova_col, nova_coluna,melhor_p)</span>
+<span id="cb39-233"><a href="#cb39-233" tabindex="-1"></a>        l_solucoes_x[melhor_p].append(l_melhor_sol_x)</span>
+<span id="cb39-234"><a href="#cb39-234" tabindex="-1"></a>        l_solucoes_I[melhor_p].append(l_melhor_sol_I)</span>
+<span id="cb39-235"><a href="#cb39-235" tabindex="-1"></a>        mestre.writeProblem(<span class="ss">f&quot;C:</span><span class="ch">\\</span><span class="ss">Users</span><span class="ch">\\</span><span class="ss">x-eco</span><span class="ch">\\</span><span class="ss">OneDrive - ufpr.br</span><span class="ch">\\</span><span class="ss">Documentos</span><span class="ch">\\</span><span class="ss">Alexandre</span><span class="ch">\\</span><span class="ss">DW</span><span class="ch">\\</span><span class="ss">mestre_</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">.lp&quot;</span>, trans <span class="op">=</span> <span class="va">False</span>, genericnames <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb39-236"><a href="#cb39-236" tabindex="-1"></a></span>
+<span id="cb39-237"><a href="#cb39-237" tabindex="-1"></a>logger.info(<span class="ss">f&quot;Sol. Ótima do Mestre: </span><span class="sc">{</span>alpha_val<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb39-238"><a href="#cb39-238" tabindex="-1"></a>logger.info(<span class="ss">f&quot;Custo: </span><span class="sc">{</span>z<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb39-239"><a href="#cb39-239" tabindex="-1"></a></span>
+<span id="cb39-240"><a href="#cb39-240" tabindex="-1"></a></span>
+<span id="cb39-241"><a href="#cb39-241" tabindex="-1"></a><span class="co"># Recupera as soluções dos subproblemas</span></span>
+<span id="cb39-242"><a href="#cb39-242" tabindex="-1"></a>x_sol, I_sol <span class="op">=</span> recupera_solucao(alpha_val, l_solucoes_x, l_solucoes_I)</span>
+<span id="cb39-243"><a href="#cb39-243" tabindex="-1"></a><span class="cf">for</span> p <span class="kw">in</span> <span class="bu">range</span>(n_prod):</span>
+<span id="cb39-244"><a href="#cb39-244" tabindex="-1"></a>    logger.info(<span class="ss">f&quot;Produto </span><span class="sc">{</span>p<span class="sc">}</span><span class="ss">:&quot;</span>)</span>
+<span id="cb39-245"><a href="#cb39-245" tabindex="-1"></a>    logger.info(<span class="ss">f&quot;  x: </span><span class="sc">{</span>x_sol[p]<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb39-246"><a href="#cb39-246" tabindex="-1"></a>    logger.info(<span class="ss">f&quot;  I: </span><span class="sc">{</span>I_sol[p]<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+</div>
 </div>
 </div>
 
