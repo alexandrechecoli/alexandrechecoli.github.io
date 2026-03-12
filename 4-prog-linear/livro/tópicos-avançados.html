@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 9 Tópicos Avançados | Notas de aula Pesquisa Operacional</title>
+  <meta name="description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 9 Tópicos Avançados | Notas de aula Pesquisa Operacional" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 9 Tópicos Avançados | Notas de aula Pesquisa Operacional" />
+  
+  <meta name="twitter:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  
+
+<meta name="author" content="Alexandre Checoli Choueiri" />
+
+
+<meta name="date" content="2026-03-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="algoritmo-dual-simplex.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Notas Pesquisa Operacional</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Modelagem</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="08-TopicosAvancados.html"><a href="#defini%C3%A7%C3%B5es"><i class="fa fa-check"></i><b>1.1</b> Definições</a></li>
+<li class="chapter" data-level="1.2" data-path="08-TopicosAvancados.html"><a href="#modelagem-matem%C3%A1tica"><i class="fa fa-check"></i><b>1.2</b> Modelagem matemática</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#premissas-da-pl"><i class="fa fa-check"></i><b>1.3</b> Premissas da PL</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#exercicios"><i class="fa fa-check"></i><b>1.4</b> Exercicios</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#exercicio-1"><i class="fa fa-check"></i><b>1.4.1</b> Exercicio 1</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#exercicio-2"><i class="fa fa-check"></i><b>1.4.2</b> Exercicio 2</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#exercicio-3"><i class="fa fa-check"></i><b>1.4.3</b> Exercicio 3</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#exercicio-4"><i class="fa fa-check"></i><b>1.4.4</b> Exercicio 4</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="08-TopicosAvancados.html"><a href="#revis%C3%A3o-algebra"><i class="fa fa-check"></i><b>2</b> Revisão Algebra</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="revisão-algebra.html"><a href="revisão-algebra.html"><i class="fa fa-check"></i><b>2.1</b> Sistemas lineares</a></li>
+<li class="chapter" data-level="2.2" data-path="08-TopicosAvancados.html"><a href="#resolu%C3%A7%C3%A3o-de-sistemas-lineares"><i class="fa fa-check"></i><b>2.2</b> Resolução de sistemas lineares</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="08-TopicosAvancados.html"><a href="#sistemas-can%C3%B4nicos"><i class="fa fa-check"></i><b>2.2.1</b> Sistemas canônicos</a></li>
+<li class="chapter" data-level="2.2.2" data-path="revisão-algebra.html"><a href="revisão-algebra.html#pivoteamento"><i class="fa fa-check"></i><b>2.2.2</b> Pivoteamento</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="08-TopicosAvancados.html"><a href="#representa%C3%A7%C3%A3o-de-inequa%C3%A7%C3%B5es-lineares"><i class="fa fa-check"></i><b>2.3</b> Representação de inequações lineares</a></li>
+<li class="chapter" data-level="2.4" data-path="08-TopicosAvancados.html"><a href="#vetor-gradiente-e-curvas-de-n%C3%ADvel"><i class="fa fa-check"></i><b>2.4</b> Vetor gradiente e curvas de nível</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="revisão-algebra.html"><a href="revisão-algebra.html#gradiente"><i class="fa fa-check"></i><b>2.4.1</b> Gradiente</a></li>
+<li class="chapter" data-level="2.4.2" data-path="08-TopicosAvancados.html"><a href="#curvas-de-n%C3%ADvel"><i class="fa fa-check"></i><b>2.4.2</b> Curvas de nível</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="08-TopicosAvancados.html"><a href="#m%C3%A9todo-gr%C3%A1fico-para-pl"><i class="fa fa-check"></i><b>3</b> Método gráfico para PL</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="08-TopicosAvancados.html"><a href="#m%C3%A9todo-de-resolu%C3%A7%C3%A3o"><i class="fa fa-check"></i><b>3.1</b> Método de resolução</a></li>
+<li class="chapter" data-level="3.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html"><i class="fa fa-check"></i><b>3.2</b> Casos especiais</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="08-TopicosAvancados.html"><a href="#a.-s-ilimitado-solu%C3%A7%C3%A3o-%C3%B3tima-%C3%BAnica"><i class="fa fa-check"></i><b>3.2.1</b> A. <span class="math inline">\(S\)</span> ilimitado, solução ótima única</a></li>
+<li class="chapter" data-level="3.2.2" data-path="08-TopicosAvancados.html"><a href="#b.-infinitas-solu%C3%A7%C3%B5es-%C3%B3timas"><i class="fa fa-check"></i><b>3.2.2</b> B. Infinitas soluções ótimas</a></li>
+<li class="chapter" data-level="3.2.3" data-path="08-TopicosAvancados.html"><a href="#c.-problema-infact%C3%ADvel"><i class="fa fa-check"></i><b>3.2.3</b> C. Problema infactível</a></li>
+<li class="chapter" data-level="3.2.4" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#d.-problema-ilimitado"><i class="fa fa-check"></i><b>3.2.4</b> D. Problema ilimitado</a></li>
+<li class="chapter" data-level="3.2.5" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#d.-problema-degenerado"><i class="fa fa-check"></i><b>3.2.5</b> D. Problema degenerado</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicios-1"><i class="fa fa-check"></i><b>3.3</b> Exercicios</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicio-1-1"><i class="fa fa-check"></i><b>3.3.1</b> Exercicio 1</a></li>
+<li class="chapter" data-level="3.3.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicio-2-1"><i class="fa fa-check"></i><b>3.3.2</b> Exercicio 2</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html"><i class="fa fa-check"></i><b>4</b> Simplex Fase II</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="08-TopicosAvancados.html"><a href="#a-forma-padr%C3%A3o"><i class="fa fa-check"></i><b>4.1</b> A forma padrão</a></li>
+<li class="chapter" data-level="4.2" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#o-algoritmo-simplex"><i class="fa fa-check"></i><b>4.2</b> O Algoritmo Simplex</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#exemplos"><i class="fa fa-check"></i><b>4.2.1</b> Exemplos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>5</b> Simplex Fase I</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exemplos-1"><i class="fa fa-check"></i><b>5.1</b> Exemplos</a></li>
+<li class="chapter" data-level="5.2" data-path="08-TopicosAvancados.html"><a href="#exerc%C3%ADcios"><i class="fa fa-check"></i><b>5.2</b> Exercícios</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>6</b> Dualidade</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="08-TopicosAvancados.html"><a href="#tabela-de-convers%C3%A3o-primal-dual"><i class="fa fa-check"></i><b>6.1</b> Tabela de conversão primal-dual</a></li>
+<li class="chapter" data-level="6.2" data-path="dualidade.html"><a href="dualidade.html#teoremas-da-dualidade"><i class="fa fa-check"></i><b>6.2</b> Teoremas da dualidade</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-1"><i class="fa fa-check"></i><b>6.2.1</b> Teorema fraco da dualidade parte 1</a></li>
+<li class="chapter" data-level="6.2.2" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-2"><i class="fa fa-check"></i><b>6.2.2</b> Teorema fraco da dualidade parte 2</a></li>
+<li class="chapter" data-level="6.2.3" data-path="dualidade.html"><a href="dualidade.html#teorema-das-folgas-complementares-tfc"><i class="fa fa-check"></i><b>6.2.3</b> Teorema das folgas complementares (TFC)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="InversaDimplexDualidade.html"><a href="InversaDimplexDualidade.html"><i class="fa fa-check"></i><b>7</b> A inversa, simplex e dualidade</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="08-TopicosAvancados.html"><a href="#encontrando-os-elementos-da-tabela-pelas-f%C3%B3rmulas-gen%C3%A9ricas"><i class="fa fa-check"></i><b>7.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
+<li class="chapter" data-level="7.2" data-path="08-TopicosAvancados.html"><a href="#encontrando-a-solu%C3%A7%C3%A3o-dual-na-tabela-primal"><i class="fa fa-check"></i><b>7.2</b> Encontrando a solução dual na tabela primal</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>8</b> Algoritmo Dual Simplex</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="08-TopicosAvancados.html"><a href="#exerc%C3%ADcios-1"><i class="fa fa-check"></i><b>8.1</b> Exercícios</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="08-TopicosAvancados.html"><a href="#t%C3%B3picos-avan%C3%A7ados"><i class="fa fa-check"></i><b>9</b> Tópicos Avançados</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="08-TopicosAvancados.html"><a href="#decomposi%C3%A7%C3%A3o-de-dantzig-wolfe"><i class="fa fa-check"></i><b>9.1</b> Decomposição de Dantzig-Wolfe</a>
+<ul>
+<li class="chapter" data-level="9.1.1" data-path="tópicos-avançados.html"><a href="tópicos-avançados.html"><i class="fa fa-check"></i><b>9.1.1</b> Exemplo inicial</a></li>
+<li class="chapter" data-level="9.1.2" data-path="tópicos-avançados.html"><a href="tópicos-avançados.html#resolvendo-o-exemplo"><i class="fa fa-check"></i><b>9.1.2</b> Resolvendo o exemplo</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notas de aula Pesquisa Operacional</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="tópicos-avançados" class="section level1 hasAnchor" number="9">
+<h1><span class="header-section-number">Chapter 9</span> Tópicos Avançados<a href="#t%C3%B3picos-avan%C3%A7ados" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="decomposição-de-dantzig-wolfe" class="section level2 hasAnchor" number="9.1">
+<h2><span class="header-section-number">9.1</span> Decomposição de Dantzig-Wolfe<a href="#decomposi%C3%A7%C3%A3o-de-dantzig-wolfe" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Vamos entender a idéia por trás do método, primeiramente por meio de um exemplo.</p>
+<div id="exemplo-inicial" class="section level3 hasAnchor" number="9.1.1">
+<h3><span class="header-section-number">9.1.1</span> Exemplo inicial<a href="tópicos-avançados.html#exemplo-inicial" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Considere um produto detergente, que é composto por duas substancias, <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span>. A fábrica <em>PROD</em> consegue criar diversas receitas desse detergente (com várias combinações de <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span>), pois ela sabe como as substâncias reagem entre si, os equipamentos necessários, etc…Para determinar as quantidades de <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span>, as restrições a serem satisfeitas são as seguintes:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{align}
+&amp; 1 \leq x_1  \leq 3\\
+&amp; 1 \leq x_2  \leq 3\\
+\end{align}\]</span></p>
+</div>
+<p>A fábrica <strong>PROD</strong> produz e vende detergentes prontos, ou seja, composições</p>
+<p><span class="math display">\[\begin{equation*}
+x_0 =
+    \left[
+    \begin{array}{cc}
+        x_1  \\
+        x_2
+    \end{array}
+    \right]
+\end{equation*}\]</span></p>
+<p>Já a fábrica <strong>MIST</strong> <em>somente usa</em> os detergentes de <strong>PROD</strong> para venda. O que a <strong>MIST</strong> faz é criar composições com os detergentes prontos da PROD. As composições podem ser realizadas como combinações convexas dos detergentes. As combinações, no entanto, devem garatir que as quantidades <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> do produto final respeitem as seguintes restrições:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{align}
+2 x_1  + 2 x_2  &amp; \geq 3\\
+-2 x_1 + 2 x_2  &amp; \leq 3\\
+2 x_1  + x_2    &amp; \leq 10\\
+\end{align}\]</span></p>
+</div>
+<p><span style="color:Brown">Sempre lembrando que <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> já são o resultado da mistura completa</span>.</p>
+<p>A mistura completa tem seu lucro atrelado às quantidades finais de <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span>:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{equation*}
+z = - x_1 + 2 x_2
+\end{equation*}\]</span></p>
+</div>
+<p>Ou seja, podemos usar como função objetivo na forma de minimização o inverso:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{equation*}
+\text{min} \quad z = x_1 - 2 x_2
+\end{equation*}\]</span></p>
+</div>
+<p>No entanto, MIST <strong>não controla as quantidades de</strong> <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> diretamente! Dados detergentes prontos que já contém quantidades fixas de <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> (fornecidos por PROD), MIST controla somente <strong>quanto de cada detergente será utilizado</strong>.</p>
+<p>Por exemplo: suponha que <strong>MIST</strong> tenha 2 composições de detergentes já fornecidos por <strong>PROD</strong>, <span class="math inline">\(d_1\)</span> E <span class="math inline">\(d_2\)</span>:</p>
+<p><span class="math display">\[\begin{equation*}
+d_1
+=
+\left[
+\begin{array}{cc}
+    x_1^1  \\
+    x_2^1
+\end{array}
+\right],
+d_2
+=
+\left[
+\begin{array}{cc}
+    x_1^2  \\
+    x_2^2
+\end{array}
+\right]
+\end{equation*}\]</span></p>
+<p>A decisão de MIST então é como <strong>combinar as quantidades de detergentes</strong> <span class="math inline">\(d_1\)</span> e <span class="math inline">\(d_2\)</span> (determinar as proporções de cada um, expressas pelas variáveis <span class="math inline">\(\alpha_1\)</span> e <span class="math inline">\(\alpha_2\)</span>), para criar um novo detergente <span class="math inline">\(d_n\)</span>:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{equation*}
+d_n
+=
+\alpha_1
+\left[
+\begin{array}{cc}
+    x_1^1  \\
+    x_2^1
+\end{array}
+\right]
++
+\alpha_2
+\left[
+\begin{array}{cc}
+    x_1^2  \\
+    x_2^2
+\end{array}
+\right]\\
+\alpha_1 + \alpha_2 = 1 \\
+\alpha_1, \alpha_2 \geq 0
+\end{equation*}\]</span></p>
+</div>
+<p>De forma geral, se MIST tiver <span class="math inline">\(n\)</span> detergentes disponíveis, então temos que:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{equation*}
+d_n
+=
+\left[
+\begin{array}{cc}
+    x_1  \\
+    x_2
+\end{array}
+\right]
+=
+\left[
+\begin{array}{cc}
+    \sum\alpha_ix_1^{i}  \\
+    \sum\alpha_ix_2^{i}
+\end{array}
+\right]
+\\
+\sum\alpha_i = 1 \\
+\alpha_i \geq 0, i=1...n
+\end{equation*}\]</span></p>
+</div>
+<p>Lembrando que após a mistura, existem restrições em <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> que ainda devem ser seguidas. Podemos então fazer a substituição dos valores finais de <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span>, já com as proporções <span class="math inline">\(\alpha_i\)</span> nas restrições:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{align}
+\text{min z} \quad =  \sum\alpha_ix_1^{i} - 2 \sum\alpha_ix_2^{i} \\  
+2  \sum\alpha_ix_1^{i}  + 2 \sum\alpha_ix_2^{i}  &amp; \geq 3\\
+-2 \sum\alpha_ix_1^{i} + 2 \sum\alpha_ix_2^{i}  &amp; \leq 3\\
+2 \sum\alpha_ix_1^{i}  + \sum\alpha_ix_2^{i}    &amp; \leq 10\\
+\sum\alpha_i &amp; = 1 \\
+\alpha_i \geq 0, i=1...n
+\end{align}\]</span></p>
+</div>
+<p>Como neste problema <span style="color:Brown"><span class="math inline">\(\alpha_i\)</span> são as variáveis</span>, podemos agrupá-las, ficando com:</p>
+<div class="tcolorbox2">
+<p>Mod I <span class="math display">\[\begin{align}
+\text{min z} \quad =  \sum\alpha_i(x_1^{i} - 2x_2^i) \\  
+   \sum\alpha_i(2x_1^{i}  + 2 x_2^{i})  &amp; \geq 3\\
+  \sum\alpha_i(-2x_1^{i} + 2 x_2^{i})  &amp; \leq 3\\
+  \sum\alpha_i(2x_1^{i}  + x_2^{i})    &amp; \leq 10\\
+\sum\alpha_i &amp; = 1 \\
+\alpha_i \geq 0, i=1...n
+\end{align}\]</span></p>
+</div>
+<p>Note que, para que o problema acima possa ser resolvido, é necessário pelo menos um detergente.</p>
+<p>Vamos considerar que <strong>PROD</strong> já tem um detergente produzido, com as composições:</p>
+<p><span class="math display">\[\begin{equation*}
+d_1
+=
+\left[
+\begin{array}{cc}
+    x_1^1  \\
+    x_2^1
+\end{array}
+\right]
+=
+\left[
+\begin{array}{cc}
+    1  \\
+    1
+\end{array}
+\right]
+\end{equation*}\]</span></p>
+<p>Podemos agora substituir esses valores de <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> no modelo de MIST:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{align}
+\text{min z} \quad =  \alpha_1(1 - 2) \\  
+  \alpha_1(2  + 2)  &amp; \geq 3\\
+  \alpha_1(-2 + 2)  &amp; \leq 3\\
+  \alpha_1(2  + 1)    &amp; \leq 10\\
+  \alpha_1 &amp; = 1 \\
+\alpha_1 \geq 0
+\end{align}\]</span></p>
+</div>
+<p>E finalmente:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{align}
+\text{min z} \quad = -\alpha_1 \\  
+  4\alpha_1  &amp; \geq 3\\
+  0\alpha_1  &amp; \leq 3\\
+  3\alpha_1  &amp; \leq 10\\
+  \alpha_1 &amp; = 1 \\
+\alpha_1 \geq 0
+\end{align}\]</span></p>
+</div>
+<p>Resolvendo o PL, temos a solução (obvia) <span class="math inline">\(\alpha_1 =1\)</span> com custo -1. A pergunta que podemos fazer agora é a seguinte: <span style="color:Brown"><strong>será que PROD poderia produzir algum detergente, com composições</strong> <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> de tal forma que, quando MIST for usar na mistura com o detergente já existente, consiga melhorar a função objetivo?</span> Se sim, MIST pode “ligar” para PROD e pedir para que esse detergente seja produzido. A relação entre as empresas pode ser sintetizada na imagem abaixo:</p>
+<p><img src="img/DW_1.png" width="393" /></p>
+<p>Agora surge mais uma dúvida: o que MIST deve pedir?</p>
+<p>Podemos usar o próprio algoritmo Simplex para nos ajudar. Sabemos que para que uma variável entre na base (ou seja <span class="math inline">\(\rightarrow\)</span> [melhore a função objetivo]{style = “color:Brown”}), seu <strong>custo atualizado deve ser negativo</strong>. Ainda, sabemos pela tabela genérica Simplex, que o custo atualzado é dado por (para mais informações sobre a Tabela genérica, ver o Capítulo <a href="InversaDimplexDualidade.html#InversaDimplexDualidade">7</a>):</p>
+<div class="tcolorbox1">
+<p><span class="math display">\[\begin{equation*}
+c_i^T = c_i^T - c_B^TB^{-1}A_i
+\end{equation*}\]</span></p>
+</div>
+<p>Sabemos que as variáveis duais <span class="math inline">\(\pi\)</span> podem ser definidas como:</p>
+<div class="tcolorbox1">
+<p><span class="math display">\[\begin{equation*}
+\pi = c_B^TB^{-1}
+\end{equation*}\]</span></p>
+</div>
+<p>Substituindo, temos então que o custo atualizado para uma coluna <span class="math inline">\(i\)</span>:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{equation*}
+c_i^T = c_i^T - \pi A_i
+\end{equation*}\]</span></p>
+</div>
+<p>Ora, que pelo Mod I percebemos que para qualquer nova variável que seja inserida no modelo (<strong>lembrando que os valores de</strong> <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> são constantes, as variáveis são os <span class="math inline">\(\alpha_i\)</span>), teremos um custo <span class="math inline">\(c_i\)</span> de:</p>
+<div class="tcolorbox1">
+<p><span class="math display">\[\begin{equation*}
+c_i^T = (x_1 - 2x_2)
+\end{equation*}\]</span></p>
+</div>
+<p>E a sua coluna <span class="math inline">\(A_i\)</span> no modelo fica:</p>
+<p><span class="math display">\[\begin{equation*}
+A_i
+=
+\left[
+\begin{array}{cc}
+    2x_1 + 2x_2 \\
+    -2x_1 + 2x_2 \\
+    2x_1 + x_2
+\end{array}
+\right]
+\end{equation*}\]</span></p>
+<p>De forma que, <strong>para quaisquer valores</strong> de <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> o custo atualizado na função objetivo fica da seguinte forma:</p>
+<div class="tcolorbox1">
+<p><span class="math display">\[\begin{equation*}
+c_i^T = c_i^T - \pi A_i \Rightarrow \\
+c_i^T = (x_1 - 2x_2) -
+\left[
+\begin{array}{cccc}
+     \pi_1 &amp; \pi_2 &amp; \pi_3 &amp; \pi_4
+\end{array}
+\right]
+\left[
+\begin{array}{cc}
+    2x_1 + 2x_2 \\
+    -2x_1 + 2x_2 \\
+    2x_1 + x_2
+\end{array}
+\right]
+\Rightarrow \\
+c_i^T = x_1 - 2x_2 - \pi_1(2x_1 + 2x_2) - \pi_2(-2x_1 + 2x_2) - \pi_3(2x_1 + x_2) - \pi_4
+\end{equation*}\]</span></p>
+</div>
+<p>E finalmente:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{equation*}
+c_i^T = (1 - 2\pi_1 + 2\pi_2 - 2\pi_3)x_1 + (-2 - 2\pi_1 + 2\pi_2 - \pi_3)x_2 - \pi_4
+\end{equation*}\]</span></p>
+</div>
+<p>Agora sabemos que, independentemente do detergente que seja produzido por PROD, o seu custo atualizado na função objetivo de MIST será esse. Dessa forma, MIST pode [<strong>pedir para PROD produzir um detergente com o menor custo atualizado possível</strong>]{style = “color:Brown”} (pois sabemos que se <span class="math inline">\(c_i &lt; 0\)</span> indica uma variável que vai entrar na base), seguindo, é claro, as regras de produção impostas por PROD.</p>
+<p>Lembrando das considerações:</p>
+<ol style="list-style-type: decimal">
+<li>Pelo menos um detergente deve ser fornecido para MIST</li>
+<li>Com esse detergente o modelo é resolvido e os valores duais coletados</li>
+<li>Com os valores duais MIST repassa para PROD uma nova função objetivo, que PROD deve minimizar</li>
+</ol>
+<p>Podemos verificar a nova relação por meio da seguinte Figura:</p>
+<p><img src="img/DW_2.png" width="520" /></p>
+<p>Ainda, se considerarmos os termos matemáticos, temos dois modelos de PL que se retroalimentam, como na Figura:</p>
+<p><img src="img/DW_3.png" width="559" /></p>
+</div>
+<div id="resolvendo-o-exemplo" class="section level3 hasAnchor" number="9.1.2">
+<h3><span class="header-section-number">9.1.2</span> Resolvendo o exemplo<a href="tópicos-avançados.html#resolvendo-o-exemplo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Vamos agora resolver o problema. Precisamos determinar quais serão as porcentagens usadas de cada detergente por MIST, e ao longo do processo, <strong>de forma iterativa</strong>, vamos pedindo mais detergentes prontos para PROD, até o momento que nenhum detergente melhore a função objetivo de MIST.</p>
+<p>Considerando o detergente inicial</p>
+<p><span class="math display">\[\begin{equation*}
+d_1
+=
+\left[
+\begin{array}{cc}
+    x_1^1  \\
+    x_2^1
+\end{array}
+\right]
+=
+\left[
+\begin{array}{cc}
+    1  \\
+    1
+\end{array}
+\right]
+\end{equation*}\]</span></p>
+<p>MIST tem o modelo:</p>
+<div class="tcolorbox2">
+<p>Modelo 1 MIST <span class="math display">\[\begin{align}
+\text{min z} \quad = -\alpha_1 \\  
+  4\alpha_1  &amp; \geq 3\\
+  0\alpha_1  &amp; \leq 3\\
+  3\alpha_1  &amp; \leq 10\\
+  \alpha_1 &amp; = 1 \\
+\alpha_1 \geq 0
+\end{align}\]</span></p>
+</div>
+<p>Resolvendo, temos:</p>
+<ul>
+<li><span class="math inline">\(z = -1\)</span></li>
+<li><span class="math inline">\(\alpha_1 = 1\)</span></li>
+<li><span class="math inline">\(\pi_1\)</span> = 0, <span class="math inline">\(\pi_2\)</span> = 0, <span class="math inline">\(\pi_3\)</span> = 0, <span class="math inline">\(\pi_4\)</span> = -1</li>
+<li>Detergentes: <span class="math inline">\(d_1^T =[1,1]\)</span></li>
+</ul>
+<p>Ou seja, MIST usa 100% (<span class="math inline">\(\alpha_1 = 1\)</span>) do único detergente que ela possui.</p>
+<p>Agora fazemos a substituição dos valores de <span class="math inline">\(\pi\)</span> na função de custo atualizado (que será repassado para PROD), gerando o modelo (o último -1 é do <span class="math inline">\(\pi_4\)</span>):</p>
+<div class="tcolorbox2">
+<p>Modelo 1 PROD
+<span class="math display">\[\begin{align}
+\text{min z} \quad = x_1 - 2x_2 -(-1)\\  
+2 x_1  + 2 x_2  &amp; \geq 3\\
+-2 x_1 + 2 x_2  &amp; \leq 3\\
+2 x_1  + x_2    &amp; \leq 10\\
+x_1 \geq 0, x_2 &amp; \geq 0
+\end{align}\]</span></p>
+</div>
+<p>Resolvendo o modelo 1 PROD temos:</p>
+<ul>
+<li><span class="math inline">\(z = -4\)</span></li>
+<li><span class="math inline">\(x^T = [x_1,x_2] = [1,3]\)</span></li>
+</ul>
+<p>Como <span class="math inline">\(z = -4\)</span> e portanto <span class="math inline">\(\leq 0\)</span>, esse novo detergente pode ser usado por MIST para melhorar a sua função objetivo. Substituindo os novos valores e criando uma nova variável <span class="math inline">\(\alpha_2\)</span>, temos:</p>
+<div class="tcolorbox2">
+<p>Modelo 2 MIST <span class="math display">\[\begin{align}
+\text{min z} \quad = -\alpha_1 &amp; -5 \alpha_2 \\  
+  4\alpha_1  &amp; + 8 \alpha_2 \geq 3\\
+  0\alpha_1  &amp; + 4 \alpha_2 \leq 3\\
+  3\alpha_1  &amp; + 5 \alpha_2 \leq 10\\
+  \alpha_1   &amp; +   \alpha_2 = 1 \\
+\alpha_1, \alpha_2 \geq 0
+\end{align}\]</span></p>
+</div>
+<p>Note que [<strong>uma nova coluna foi inserida ao modelo</strong>]{style = “color:Brown”}. Resolvendo o PL temos:</p>
+<ul>
+<li><span class="math inline">\(z = -4\)</span></li>
+<li><span class="math inline">\(\alpha_1 = 0.25\)</span>, <span class="math inline">\(\alpha_2 = 0.75\)</span></li>
+<li><span class="math inline">\(\pi_1 = 0\)</span>, <span class="math inline">\(\pi_2 = -1\)</span>, <span class="math inline">\(\pi_3 = 0\)</span>, <span class="math inline">\(\pi_4 = -1\)</span></li>
+<li>Detergentes: <span class="math inline">\(d_1^T =[1,1]\)</span>, <span class="math inline">\(d_2^T =[1,3]\)</span></li>
+</ul>
+<p>Ou seja, o melhor detergente que MIST consegue produzir é uma mistura dos dois que eles possuem, nas seguintes proporções:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{equation*}
+d
+=
+0.25
+\left[
+\begin{array}{cc}
+    1.0  \\
+    1.0
+\end{array}
+\right]
++
+0.75
+\left[
+\begin{array}{cc}
+    1.0  \\
+    3.0
+\end{array}
+\right]
+=
+\left[
+\begin{array}{cc}
+    1.0  \\
+    2.5
+\end{array}
+\right]
+\end{equation*}\]</span></p>
+</div>
+<p>Novamente podemos substituir os valores de <span class="math inline">\(\pi\)</span> para construir a nova função objetivo do problema de PROD, ficando com:</p>
+<div class="tcolorbox2">
+<p>Modelo 2 PROD
+<span class="math display">\[\begin{align}
+\text{min z} \quad = -x_1 -(-1)\\  
+2 x_1  + 2 x_2  &amp; \geq 3\\
+-2 x_1 + 2 x_2  &amp; \leq 3\\
+2 x_1  + x_2    &amp; \leq 10\\
+x_1 \geq 0, x_2 &amp; \geq 0
+\end{align}\]</span></p>
+</div>
+<p>Com solução:</p>
+<ul>
+<li><span class="math inline">\(z = -2\)</span></li>
+<li><span class="math inline">\(x^T = [x_1,x_2] = [3,1]\)</span></li>
+</ul>
+<p>Como <span class="math inline">\(z = -2\)</span> e portanto <span class="math inline">\(\leq 0\)</span>, esse novo detergente pode ser usado por MIST para melhorar a sua função objetivo. Substituindo os novos valores e criando uma nova variável <span class="math inline">\(\alpha_3\)</span>, temos:</p>
+<div class="tcolorbox2">
+<p>Modelo 3 MIST <span class="math display">\[\begin{align}
+\text{min z} \quad = -\alpha_1 &amp; -5 \alpha_2  &amp; + \alpha_3 &amp; \\  
+                    4\alpha_1  &amp; + 8 \alpha_2 &amp; + 8\alpha_3 &amp;\geq 3\\
+                    0\alpha_1  &amp; + 4 \alpha_2 &amp; - 4\alpha_3 &amp;\leq 3\\
+                    3\alpha_1  &amp; + 5 \alpha_2 &amp; + 7\alpha_3 &amp;\leq 10\\
+                    \alpha_1   &amp; +   \alpha_2 &amp; + \alpha_3  &amp; = 1\\
+                    \alpha_1, &amp;\alpha_2, &amp;\alpha_3 &amp;\geq 0
+\end{align}\]</span></p>
+</div>
+<p>Resolvendo, temos:</p>
+<ul>
+<li><span class="math inline">\(z = -4.25\)</span></li>
+<li><span class="math inline">\(\alpha_1 = 0.000\)</span>, <span class="math inline">\(\alpha_2 =  0.875\)</span> , <span class="math inline">\(\alpha_3 =  0.125\)</span></li>
+<li><span class="math inline">\(\pi_1 = 0\)</span>, <span class="math inline">\(\pi_2 = -0.75\)</span>, <span class="math inline">\(\pi_3 = 0\)</span>, <span class="math inline">\(\pi_4 = -2\)</span></li>
+<li>Detergentes: <span class="math inline">\(d_1^T =[1,1]\)</span>, <span class="math inline">\(d_2^T =[1,3]\)</span>, <span class="math inline">\(d_3^T =[3,1]\)</span></li>
+</ul>
+<p>Ou seja, o melhor detergente que MIST consegue produzir é uma mistura dos 3 que eles possuem, nas seguintes proporções:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{equation*}
+d
+=
+0.000
+\left[
+\begin{array}{cc}
+    1.0  \\
+    1.0
+\end{array}
+\right]
++
+0.875
+\left[
+\begin{array}{cc}
+    1.0  \\
+    3.0
+\end{array}
+\right]
++
+0.125
+\left[
+\begin{array}{cc}
+    3.0  \\
+    1.0
+\end{array}
+\right]
+=
+\left[
+\begin{array}{cc}
+    1.25  \\
+    2.75
+\end{array}
+\right]
+\end{equation*}\]</span></p>
+</div>
+<p>Substituindo os valores de <span class="math inline">\(\pi\)</span> para calcular o custo reduzido, e a nova função objetivo de PROD:</p>
+<div class="tcolorbox2">
+<p>Modelo 3 PROD
+<span class="math display">\[\begin{align}
+\text{min z} \quad = -0.5x_1 &amp; - 0.5x_2 -(-2)\\  
+2 x_1  + 2 x_2  &amp; \geq 3\\
+-2 x_1 + 2 x_2  &amp; \leq 3\\
+2 x_1  + x_2    &amp; \leq 10\\
+x_1 \geq 0, x_2 &amp; \geq 0
+\end{align}\]</span></p>
+</div>
+<p>Resolvendo temos:</p>
+<ul>
+<li><span class="math inline">\(z = -1\)</span></li>
+<li><span class="math inline">\(x^T = [x_1,x_2] = [3,3]\)</span></li>
+</ul>
+<p>O custo atualizado é <span class="math inline">\(\leq 0\)</span>, portanto o novo detergente pode ser adicionado ao modelo de MIST:</p>
+<div class="tcolorbox2">
+<p>Modelo 3 MIST <span class="math display">\[\begin{align}
+\text{min z} \quad = -\alpha_1 &amp; -5 \alpha_2  &amp; + \alpha_3  &amp;  -3 \alpha_4  &amp;\\  
+                    4\alpha_1  &amp; + 8 \alpha_2 &amp; + 8\alpha_3 &amp;  +12 \alpha_4 &amp;\geq 3\\
+                    0\alpha_1  &amp; + 4 \alpha_2 &amp; - 4\alpha_3 &amp; + 0\alpha_4   &amp; \leq 3\\
+                    3\alpha_1  &amp; + 5 \alpha_2 &amp; + 7\alpha_3 &amp; + 9\alpha_4   &amp; \leq 10\\
+                    \alpha_1   &amp; +   \alpha_2 &amp; + \alpha_3  &amp; +  \alpha_4   &amp;= 1\\
+                    \alpha_1, &amp;\alpha_2, &amp;\alpha_3 &amp; \alpha_4 \geq 0
+\end{align}\]</span></p>
+</div>
+<p>Resolvendo, temos:</p>
+<ul>
+<li><span class="math inline">\(z = -4.25\)</span></li>
+<li><span class="math inline">\(\alpha_1 = 0.000\)</span>, <span class="math inline">\(\alpha_2 =  0.75\)</span> , <span class="math inline">\(\alpha_3 =  0.0\)</span>, <span class="math inline">\(\alpha_4 =  0.25\)</span></li>
+<li><span class="math inline">\(\pi_1 = 0\)</span>, <span class="math inline">\(\pi_2 = -0.5\)</span>, <span class="math inline">\(\pi_3 = 0\)</span>, <span class="math inline">\(\pi_4 = -3\)</span></li>
+<li>Detergentes: <span class="math inline">\(d_1^T =[1,1]\)</span>, <span class="math inline">\(d_2^T =[1,3]\)</span>, <span class="math inline">\(d_3^T =[3,1]\)</span>, <span class="math inline">\(d_4^T =[3,3]\)</span></li>
+</ul>
+<p>Ou seja, o melhor detergente que MIST consegue produzir é uma mistura dos 4 que eles possuem, nas seguintes proporções:</p>
+<div class="tcolorbox2">
+<p><span class="math display">\[\begin{equation*}
+d
+=
+0.0
+\left[
+\begin{array}{cc}
+    1.0  \\
+    1.0
+\end{array}
+\right]
++
+0.75
+\left[
+\begin{array}{cc}
+    1.0  \\
+    3.0
+\end{array}
+\right]
++
+0.0
+\left[
+\begin{array}{cc}
+    3.0  \\
+    1.0
+\end{array}
+\right]
++
+0.25
+\left[
+\begin{array}{cc}
+    3.0  \\
+    3.0
+\end{array}
+\right]
+=
+\left[
+\begin{array}{cc}
+    1.5  \\
+    3.0
+\end{array}
+\right]
+\end{equation*}\]</span></p>
+</div>
+<p>Substituindo os valores de <span class="math inline">\(\pi\)</span> para calcular o custo reduzido, e a nova função objetivo de PROD:</p>
+<div class="tcolorbox2">
+<p>Modelo 4 PROD
+<span class="math display">\[\begin{align}
+\text{min z} \quad =  &amp; -x_2 -(-3)\\  
+2 x_1  + 2 x_2  &amp; \geq 3\\
+-2 x_1 + 2 x_2  &amp; \leq 3\\
+2 x_1  + x_2    &amp; \leq 10\\
+x_1 \geq 0, x_2 &amp; \geq 0
+\end{align}\]</span></p>
+</div>
+<p>Resolvendo temos:</p>
+<ul>
+<li><span class="math inline">\(z = 0\)</span></li>
+<li><span class="math inline">\(x^T = [x_1,x_2] = [1,3]\)</span></li>
+</ul>
+<p>Como o custo atualizado é zero, isso implica que <strong>não existe mais nenhum detergente que PROD possa criar</strong>, que vai melhorar as misturas que MIST faz.</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="algoritmo-dual-simplex.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/08-TopicosAvancados.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.pdf", "_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
