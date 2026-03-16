@@ -23,7 +23,7 @@
 <meta name="author" content="Alexandre Checoli Choueiri" />
 
 
-<meta name="date" content="2026-03-11" />
+<meta name="date" content="2026-03-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -354,7 +354,7 @@ d_1
 <p>Resolvendo o PL, temos a solução (obvia) <span class="math inline">\(\alpha_1 =1\)</span> com custo -1. A pergunta que podemos fazer agora é a seguinte: <span style="color:Brown"><strong>será que PROD poderia produzir algum detergente, com composições</strong> <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> de tal forma que, quando MIST for usar na mistura com o detergente já existente, consiga melhorar a função objetivo?</span> Se sim, MIST pode “ligar” para PROD e pedir para que esse detergente seja produzido. A relação entre as empresas pode ser sintetizada na imagem abaixo:</p>
 <p><img src="img/DW_1.png" width="393" /></p>
 <p>Agora surge mais uma dúvida: o que MIST deve pedir?</p>
-<p>Podemos usar o próprio algoritmo Simplex para nos ajudar. Sabemos que para que uma variável entre na base (ou seja <span class="math inline">\(\rightarrow\)</span> [melhore a função objetivo]{style = “color:Brown”}), seu <strong>custo atualizado deve ser negativo</strong>. Ainda, sabemos pela tabela genérica Simplex, que o custo atualzado é dado por (para mais informações sobre a Tabela genérica, ver o Capítulo <a href="InversaDimplexDualidade.html#InversaDimplexDualidade">7</a>):</p>
+<p>Podemos usar o próprio algoritmo Simplex para nos ajudar. Sabemos que para que uma variável entre na base (ou seja <span class="math inline">\(\rightarrow\)</span> <span style="color:Brown">melhore a função objetivo</span> ), seu <strong>custo atualizado deve ser negativo</strong>. Ainda, sabemos pela tabela genérica Simplex, que o custo atualzado é dado por (para mais informações sobre a Tabela genérica, ver o Capítulo <a href="InversaDimplexDualidade.html#InversaDimplexDualidade">7</a>):</p>
 <div class="tcolorbox1">
 <p><span class="math display">\[\begin{equation*}
 c_i^T = c_i^T - c_B^TB^{-1}A_i
@@ -417,7 +417,7 @@ c_i^T = x_1 - 2x_2 - \pi_1(2x_1 + 2x_2) - \pi_2(-2x_1 + 2x_2) - \pi_3(2x_1 + x_2
 c_i^T = (1 - 2\pi_1 + 2\pi_2 - 2\pi_3)x_1 + (-2 - 2\pi_1 + 2\pi_2 - \pi_3)x_2 - \pi_4
 \end{equation*}\]</span></p>
 </div>
-<p>Agora sabemos que, independentemente do detergente que seja produzido por PROD, o seu custo atualizado na função objetivo de MIST será esse. Dessa forma, MIST pode [<strong>pedir para PROD produzir um detergente com o menor custo atualizado possível</strong>]{style = “color:Brown”} (pois sabemos que se <span class="math inline">\(c_i &lt; 0\)</span> indica uma variável que vai entrar na base), seguindo, é claro, as regras de produção impostas por PROD.</p>
+<p>Agora sabemos que, independentemente do detergente que seja produzido por PROD, o seu custo atualizado na função objetivo de MIST será esse. Dessa forma, MIST pode <span style="color:Brown"><strong>pedir para PROD produzir um detergente com o menor custo atualizado possível</strong></span> (pois sabemos que se <span class="math inline">\(c_i &lt; 0\)</span> indica uma variável que vai entrar na base), seguindo, é claro, as regras de produção impostas por PROD.</p>
 <p>Lembrando das considerações:</p>
 <ol style="list-style-type: decimal">
 <li>Pelo menos um detergente deve ser fornecido para MIST</li>
@@ -470,8 +470,7 @@ d_1
 <p>Ou seja, MIST usa 100% (<span class="math inline">\(\alpha_1 = 1\)</span>) do único detergente que ela possui.</p>
 <p>Agora fazemos a substituição dos valores de <span class="math inline">\(\pi\)</span> na função de custo atualizado (que será repassado para PROD), gerando o modelo (o último -1 é do <span class="math inline">\(\pi_4\)</span>):</p>
 <div class="tcolorbox2">
-<p>Modelo 1 PROD
-<span class="math display">\[\begin{align}
+<p>Modelo 1 PROD <span class="math display">\[\begin{align}
 \text{min z} \quad = x_1 - 2x_2 -(-1)\\  
 2 x_1  + 2 x_2  &amp; \geq 3\\
 -2 x_1 + 2 x_2  &amp; \leq 3\\
@@ -533,8 +532,7 @@ d
 </div>
 <p>Novamente podemos substituir os valores de <span class="math inline">\(\pi\)</span> para construir a nova função objetivo do problema de PROD, ficando com:</p>
 <div class="tcolorbox2">
-<p>Modelo 2 PROD
-<span class="math display">\[\begin{align}
+<p>Modelo 2 PROD <span class="math display">\[\begin{align}
 \text{min z} \quad = -x_1 -(-1)\\  
 2 x_1  + 2 x_2  &amp; \geq 3\\
 -2 x_1 + 2 x_2  &amp; \leq 3\\
@@ -604,8 +602,7 @@ d
 </div>
 <p>Substituindo os valores de <span class="math inline">\(\pi\)</span> para calcular o custo reduzido, e a nova função objetivo de PROD:</p>
 <div class="tcolorbox2">
-<p>Modelo 3 PROD
-<span class="math display">\[\begin{align}
+<p>Modelo 3 PROD <span class="math display">\[\begin{align}
 \text{min z} \quad = -0.5x_1 &amp; - 0.5x_2 -(-2)\\  
 2 x_1  + 2 x_2  &amp; \geq 3\\
 -2 x_1 + 2 x_2  &amp; \leq 3\\
@@ -683,8 +680,7 @@ d
 </div>
 <p>Substituindo os valores de <span class="math inline">\(\pi\)</span> para calcular o custo reduzido, e a nova função objetivo de PROD:</p>
 <div class="tcolorbox2">
-<p>Modelo 4 PROD
-<span class="math display">\[\begin{align}
+<p>Modelo 4 PROD <span class="math display">\[\begin{align}
 \text{min z} \quad =  &amp; -x_2 -(-3)\\  
 2 x_1  + 2 x_2  &amp; \geq 3\\
 -2 x_1 + 2 x_2  &amp; \leq 3\\
@@ -703,8 +699,7 @@ x_1 \geq 0, x_2 &amp; \geq 0
 <h3><span class="header-section-number">9.1.2</span> Entendendo o que aconteceu<a href="decomposição-de-dantzig-wolfe.html#entendendo-o-que-aconteceu" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Poderíamos pensar que, como os problemas de PROD e de MIST envolvem as variáveis <span class="math inline">\(x_1\)</span> e <span class="math inline">\(x_2\)</span> (MIST de forma indireta, por meio da <strong>combinação linear</strong>), se MIST soubesse das restrições envolvidas no processo de fabricação, ela mesma poderia determinar qual detergente fabricar. Ou seja, um único modelo poderia ser criado com todas as restrições, como mostrado abaixo:</p>
 <div class="tcolorbox2">
-<p><strong>Modelo COMPLETO</strong>
-<span class="math display">\[\begin{align}
+<p><strong>Modelo COMPLETO</strong> <span class="math display">\[\begin{align}
 \text{min z} \quad = x_1 - 2 x_2 \\
 x_1  \quad  \leq 3\\
 \quad x_2  \leq 3\\
