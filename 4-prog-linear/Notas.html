@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Alexandre Checoli Choueiri</title>
+        <meta name = "description" content = "Programação linear">
+        <link rel="stylesheet" href="../sty/style.css">
+        <link rel="stylesheet" href="../sty/flip_card.css">
+        <link rel="stylesheet" href="../sty/alerts.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="icon" href="../img/cedrus_logo_sem_fundo.png">
+        
+        <script src="../libs/p5.min.js"></script>
+        <script src="../sketch.js"></script>
+    </head>
+    <body>
+        
+        <header class = "main-header">
+          <div class="navbar">
+            <a href="/index.html">Início</a>
+            <a href="/Pesquisa/pesquisa.html">Pesquisa</a>
+            <div class="dropdown">
+              <button class="dropbtn">Disciplinas
+                <i class="fa fa-caret-down"></i>
+              </button>
+              <div class="dropdown-content">
+                <a href="/1-meta/meta.html">Meta heurísticas</a>
+                <a href="/2-mindados/mindados.html">Mineração de dados</a>
+                <a href="/3-programacao/programacao.html">Programação</a>
+                <a href="/4-prog-linear/prog-linear.html">Programação linear</a>
+                <a href="/5-Tutoriais/tutoriais.html">Tutoriais/treinamentos</a>          
+              </div>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn">Orientação
+                  <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="/Orientacao/Instrucoes/instrucoes.html">Instruções</a>
+                    <a href="/Orientacao/Treinamentos/treinamentos.html">Treinamentos</a>
+                    <a href="/Orientacao/Concluidas/concluidas.html">Concluídas</a> 
+                </div>
+              </div>
+            <a href="/Calendario/calendario.html">Calendário</a>
+          </div>
+        </div>
+
+            <h1 class = "titulo">Tecnologia da decisão - Programação linear</h1>
+        </header>
+
+              
+
+          </div>
+      </section>
+
+    <section class="content-section container">
+
+        <h2 class="section-header">PLANO DE AULA 2026-1</h2>
+            <div>
+
+                Este é o plano de aula "previsto" para o semestre. Pequenas alterações sempre ocorrem.
+
+                <style type="text/css">
+.tg  {border-collapse:collapse;border-color:#93a1a1;border-spacing:0;}
+.tg td{background-color:#fdf6e3;border-color:#93a1a1;border-style:solid;border-width:1px;color:#002b36;
+  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{background-color:#657b83;border-color:#93a1a1;border-style:solid;border-width:1px;color:#fdf6e3;
+  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-pb0m{border-color:inherit;text-align:center;vertical-align:bottom}
+.tg .tg-ujx6{color:#333;text-align:left;vertical-align:top}
+.tg .tg-uzvj{border-color:inherit;font-weight:bold;text-align:center;vertical-align:middle}
+.tg .tg-za14{border-color:inherit;text-align:left;vertical-align:bottom}
+.tg .tg-7zrl{text-align:left;vertical-align:bottom}
+.tg .tg-8d8j{text-align:center;vertical-align:bottom}
+</style>
+<table class="tg" style="margin-bottom:1cm;margin-top:1cm"><thead>
+  <tr>
+    <th class="tg-uzvj">GRR</th>
+    <th class="tg-uzvj">P1 (3.0)</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-za14">GRR20262311</td>
+    <td class="tg-pb0m">2,30</td>
+  </tr>
+  <tr>
+    <td class="tg-za14">GRR20255324</td>
+    <td class="tg-pb0m">2,80</td>
+  </tr>
+  <tr>
+    <td class="tg-za14">GRR20253491</td>
+    <td class="tg-pb0m">3,25</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20251708</td>
+    <td class="tg-8d8j">2,10</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20250455</td>
+    <td class="tg-8d8j">3,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20245566</td>
+    <td class="tg-8d8j"> </td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20252990</td>
+    <td class="tg-8d8j">2,10</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20251545</td>
+    <td class="tg-8d8j">2,20</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20253231</td>
+    <td class="tg-8d8j">0,10</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20222207</td>
+    <td class="tg-8d8j">2,50</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20202423</td>
+    <td class="tg-8d8j">0,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20244648</td>
+    <td class="tg-8d8j">1,80</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20243208</td>
+    <td class="tg-8d8j">2,80</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20256303</td>
+    <td class="tg-8d8j">1,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20251267</td>
+    <td class="tg-8d8j">0,25</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20224592</td>
+    <td class="tg-8d8j">1,40</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20250696</td>
+    <td class="tg-8d8j">2,30</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20255725</td>
+    <td class="tg-8d8j"> </td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20252832</td>
+    <td class="tg-8d8j">3,15</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20251087</td>
+    <td class="tg-8d8j">2,70</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20251331</td>
+    <td class="tg-8d8j">1,65</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20250889</td>
+    <td class="tg-8d8j">1,80</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20254190</td>
+    <td class="tg-8d8j">2,30</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20241911</td>
+    <td class="tg-8d8j">1,50</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20250763</td>
+    <td class="tg-8d8j">3,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20252006</td>
+    <td class="tg-8d8j">3,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20251023</td>
+    <td class="tg-8d8j"> </td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20254149</td>
+    <td class="tg-8d8j">1,70</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20202294</td>
+    <td class="tg-8d8j"> </td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20255528</td>
+    <td class="tg-8d8j">0,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20252439</td>
+    <td class="tg-8d8j">3,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20230685</td>
+    <td class="tg-8d8j"> </td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20255680</td>
+    <td class="tg-8d8j">3,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20245318</td>
+    <td class="tg-8d8j">1,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20252262</td>
+    <td class="tg-8d8j">2,80</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20242318</td>
+    <td class="tg-8d8j"> </td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20252544</td>
+    <td class="tg-8d8j">3,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20255711</td>
+    <td class="tg-8d8j">2,15</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20253364</td>
+    <td class="tg-8d8j">2,90</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20251543</td>
+    <td class="tg-8d8j">0,75</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20253475</td>
+    <td class="tg-8d8j">3,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20256460</td>
+    <td class="tg-8d8j">0,80</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20250473</td>
+    <td class="tg-8d8j">1,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20245457</td>
+    <td class="tg-8d8j">1,40</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20253350</td>
+    <td class="tg-8d8j">0,70</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20254359</td>
+    <td class="tg-8d8j">0,25</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20255762</td>
+    <td class="tg-8d8j">1,35</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20253133</td>
+    <td class="tg-8d8j">1,40</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20245349</td>
+    <td class="tg-8d8j"> </td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20230660</td>
+    <td class="tg-8d8j">0,10</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20222196</td>
+    <td class="tg-8d8j">2,80</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20255563</td>
+    <td class="tg-8d8j">2,90</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20250849</td>
+    <td class="tg-8d8j">3,25</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20251090</td>
+    <td class="tg-8d8j">3,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20251951</td>
+    <td class="tg-8d8j">1,70</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20244393</td>
+    <td class="tg-8d8j">2,90</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20215601</td>
+    <td class="tg-8d8j"> </td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20224598</td>
+    <td class="tg-8d8j"> </td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl"> </td>
+    <td class="tg-8d8j">2,60</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl"> </td>
+    <td class="tg-8d8j">0,00</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl"> </td>
+    <td class="tg-8d8j">1,95</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl"> </td>
+    <td class="tg-8d8j">0,70</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl"> </td>
+    <td class="tg-8d8j">2,40</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20265880</td>
+    <td class="tg-8d8j">2,05</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20265874</td>
+    <td class="tg-8d8j">1,2</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20264319</td>
+    <td class="tg-8d8j">1,1</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20264419</td>
+    <td class="tg-8d8j">2,5</td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl">GRR20265059</td>
+    <td class="tg-8d8j">3</td>
+  </tr>
+  <tr>
+    <td class="tg-ujx6">GRR20264454</td>
+    <td class="tg-8d8j"> </td>
+  </tr>
+  <tr>
+    <td class="tg-7zrl"> </td>
+    <td class="tg-8d8j">1,6</td>
+  </tr>
+</tbody></table>
+
+
+
+        
+            </div>
+        
+    </section>
+
+        <footer class="main-footer">
+            <div class = "container main-footer-container">
+                <h3 class="nome-footer">Alexandre Checoli</h3>
+                <ul style="list-style: none;">
+                    <li>alexandrechecoli@ufpr.br</li>
+                    <li>UFPR</li>
+                    <li>Departamento de Eng. de Produção</li>
+                </ul>
+            </div>
+        </footer>
+
+    </body>
+
+    
+
+</html>
+
+
