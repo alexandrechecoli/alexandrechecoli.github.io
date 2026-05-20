@@ -228,3 +228,45 @@ html,body
   margin-right: auto;
  margin-bottom: 50px;
 }
+
+.virus-popup{
+    display:none;
+    position:fixed;
+    z-index:9999;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:black;
+    animation:piscando 0.2s infinite;
+}
+
+@keyframes piscando{
+    0%{background:#200;}
+    50%{background:#500;}
+    100%{background:#200;}
+}
+
+.virus-box{
+    width:60%;
+    margin:10% auto;
+    background:#111;
+    border:5px solid red;
+    color:white;
+    text-align:center;
+    padding:40px;
+    font-family:Arial;
+    box-shadow:0 0 30px red;
+}
+
+.virus-box h1{
+    color:red;
+    font-size:50px;
+}
+
+.virus-box button{
+    margin-top:20px;
+    padding:15px;
+    font-size:20px;
+    cursor:pointer;
+}

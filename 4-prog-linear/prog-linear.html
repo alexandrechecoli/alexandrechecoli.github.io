@@ -550,12 +550,15 @@
 
 
             <div class="tour-row">
-              <span class="tour-item tour-date">16.04.26</span>
+              <span class="tour-item tour-date">20.05.26</span>
               <span class="tour-item tour-city">  Notas</span>
               <span class="tour-item tour-arena">Notas</span>
-              <button type="button" class="tour-item tour-btn btn btn-primary"> 
-                <a style="text-decoration: none;" href="/4-prog-linear/Notas.html" >ABRIR</a></button>
-            </div>
+                <button onclick="mostrarVirus()" 
+              type="button" 
+              class="tour-item tour-btn btn btn-primary">
+              ABRIR
+              </button>
+             </div>
 
 
             <div class="tour-row">
@@ -673,9 +676,47 @@
               } 
             });
           }
+
+      function mostrarVirus()
+      {
+
+        document.getElementById("virusPopup").style.display = "block";
+        // som opcional
+        let audio = new Audio("https://www.soundjay.com/button/beep-07.wav");
+        audio.play();
+      }
+
+      function fecharVirus(){
+
+      alert("Sistema restaurado -.\n\nBrincadeira 😄\n Nunca mais tente acessar as notas sem a minha permissão!");
+
+      window.location.href = "/4-prog-linear/prog-linear.html";
+}
       </script>
 
 
+<div id="virusPopup" class="virus-popup">
+    <div class="virus-box">
+        <h1>⚠ VÍRUS DETECTADO ⚠</h1>
 
+        <p>
+            Seu sistema foi comprometido por:
+        </p>
+
+        <h2>Trojan.Win32.NotaBaixa</h2>
+
+        <p>
+            As notas foram criptografadas.
+        </p>
+
+        <p>
+            Média encontrada: <b>2.3</b>
+        </p>
+
+        <button onclick="fecharVirus()">
+            TENTAR RECUPERAR
+        </button>
+    </div>
+</div>
     </body>
 </html>
