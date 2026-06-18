@@ -13,6 +13,32 @@ html,body
   margin:0;
 }
 
+/* =====================
+   HAMBURGER BUTTON
+   ===================== */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 22px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 14px 16px;
+  float: right;
+}
+
+.hamburger span {
+  display: block;
+  width: 30px;
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
 /* Navbar container */
 .navbar {
     overflow: hidden;
@@ -269,4 +295,177 @@ html,body
     padding:15px;
     font-size:20px;
     cursor:pointer;
+}
+
+/* =====================
+   RESPONSIVE — MOBILE
+   ===================== */
+@media screen and (max-width: 768px) {
+
+  /* --- Navbar --- */
+  .hamburger {
+    display: flex;
+  }
+
+  .navbar {
+    overflow: visible;
+    position: relative;
+  }
+
+  /* Hide all nav items by default on mobile */
+  .navbar > a,
+  .navbar > .dropdown {
+    display: none;
+    float: none;
+    width: 100%;
+  }
+
+  /* When menu is open, show them */
+  .navbar.open > a,
+  .navbar.open > .dropdown {
+    display: block;
+  }
+
+  .navbar a {
+    float: none;
+    display: block;
+    width: 100%;
+    font-size: 17px;
+    padding: 12px 20px;
+    text-align: left;
+  }
+
+  .dropdown {
+    float: none;
+    overflow: visible;
+    width: 100%;
+  }
+
+  .dropdown .dropbtn {
+    width: 100%;
+    text-align: left;
+    padding: 12px 20px;
+    font-size: 17px;
+  }
+
+  /* Dropdown on mobile: show inline instead of absolute */
+  .dropdown-content {
+    position: static;
+    box-shadow: none;
+    background-color: rgba(255,255,255,0.08);
+    min-width: 100%;
+    display: none;
+  }
+
+  .dropdown.open .dropdown-content {
+    display: block;
+  }
+
+  .dropdown-content a {
+    color: #ddd;
+    padding: 10px 36px;
+    font-size: 15px;
+  }
+
+  .dropdown-content a:hover {
+    background-color: rgba(163,155,238,0.3);
+    color: white;
+  }
+
+  /* Remove hover-based dropdown on mobile */
+  .dropdown:hover .dropdown-content {
+    display: none;
+  }
+
+  .dropdown.open:hover .dropdown-content {
+    display: block;
+  }
+
+  /* --- Header title --- */
+  .titulo {
+    font-size: 1.4em;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 10px;
+  }
+
+  /* --- Content --- */
+  .content-section {
+    font-size: 16px;
+    margin: 0.5em;
+  }
+
+  .container {
+    padding: 0 1em;
+  }
+
+  /* --- Profile image --- */
+  .main-image {
+    float: none;
+    display: block;
+    margin: 10px auto;
+    height: 160px;
+    width: 160px;
+  }
+
+  /* --- Tour rows (material lists) --- */
+  .tour-row {
+    display: flex;
+    flex-direction: column;
+    padding: 0.6em 0;
+    gap: 4px;
+  }
+
+  .tour-item {
+    display: block;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-right: 0;
+    padding-bottom: 2px;
+  }
+
+  .tour-date {
+    font-size: 13px;
+    color: #777;
+  }
+
+  .tour-city {
+    font-weight: bold;
+  }
+
+  .tour-arena {
+    font-size: 15px;
+  }
+
+  /* Buttons row: show side by side */
+  .tour-row .tour-btn {
+    display: inline-block;
+    width: auto !important;
+    margin-right: 6px;
+    margin-top: 4px;
+  }
+
+  /* --- Tables: make scrollable --- */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* --- Footer --- */
+  .main-footer-container {
+    flex-direction: column;
+    text-align: center;
+    padding: 1em;
+  }
+
+  .main-footer-container ul {
+    text-align: center;
+    padding: 0;
+  }
+
+  .nome-footer {
+    float: none;
+    text-align: center;
+  }
 }
