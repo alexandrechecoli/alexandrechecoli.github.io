@@ -410,39 +410,47 @@ html,body
 
   /* --- Tour rows (material lists) --- */
   .tour-row {
-    display: flex;
-    flex-direction: column;
+    display: block;
     padding: 0.6em 0;
-    gap: 4px;
+    margin-bottom: 0.4em;
   }
 
-  .tour-item {
-    display: block;
+  /* Stack date, type, title as full-width blocks */
+  .tour-item.tour-date,
+  .tour-item.tour-city,
+  .tour-item.tour-arena {
+    display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     padding-right: 0;
-    padding-bottom: 2px;
+    padding-bottom: 1px;
+    float: none !important;
   }
 
   .tour-date {
     font-size: 13px;
     color: #777;
+    width: auto !important;
   }
 
   .tour-city {
     font-weight: bold;
+    width: auto !important;
   }
 
   .tour-arena {
     font-size: 15px;
+    width: auto !important;
   }
 
-  /* Buttons row: show side by side */
-  .tour-row .tour-btn {
-    display: inline-block;
+  /* Buttons: inline side by side */
+  .tour-item.tour-btn {
+    display: inline-block !important;
     width: auto !important;
+    max-width: none !important;
     margin-right: 6px;
-    margin-top: 4px;
+    margin-top: 6px;
+    float: none !important;
   }
 
   /* --- Tables: make scrollable --- */
