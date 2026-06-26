@@ -8,6 +8,10 @@
   <!-- CodeMirror 5 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/monokai.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/nord.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
 
   <style>
     /* ─── Reset & variables ─────────────────────────────────────────── */
@@ -163,7 +167,7 @@
       transition: color .1s, border-color .1s;
     }
     .font-btn:hover { color: var(--text); border-color: var(--muted); }
-    #font-size-display {
+    #font-size-display, #result-font-size-display {
       font-size: 10px;
       color: var(--muted);
       min-width: 26px;
@@ -171,25 +175,27 @@
       user-select: none;
     }
 
+    /* Editor color theme selector */
+    .editor-theme-select {
+      font-size: 10.5px;
+      padding: 2px 5px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--bg3);
+      color: var(--muted);
+      font-family: inherit;
+      cursor: pointer;
+      transition: color .1s, border-color .1s;
+    }
+    .editor-theme-select:hover { color: var(--text); border-color: var(--muted); }
+    .editor-theme-select option { background-color: var(--bg); color: var(--text); }
+
     .cm-wrapper { flex: 1; overflow: hidden; }
     .CodeMirror  { height: 100% !important; font-size: 13.5px; line-height: 1.65; }
     .CodeMirror-scroll { padding-bottom: 0; }
-
-    /* LP syntax — dark (Dracula overrides) */
-    .cm-keyword  { color: #ff79c6 !important; font-weight: 600; }
-    .cm-def      { color: #8be9fd !important; }
-    .cm-variable { color: #f8f8f2 !important; }
-    .cm-number   { color: #bd93f9 !important; }
-    .cm-operator { color: #ff79c6 !important; }
-    .cm-comment  { color: #6272a4 !important; font-style: italic; }
-
-    /* LP syntax — light overrides */
-    html[data-theme="light"] .cm-keyword  { color: #7c3aed !important; font-weight: 600; }
-    html[data-theme="light"] .cm-def      { color: #0369a1 !important; }
-    html[data-theme="light"] .cm-variable { color: #111827 !important; }
-    html[data-theme="light"] .cm-number   { color: #7c3aed !important; }
-    html[data-theme="light"] .cm-operator { color: #9d174d !important; }
-    html[data-theme="light"] .cm-comment  { color: #9ca3af !important; font-style: italic; }
+    /* Note: editor colors (background, gutter, syntax tokens) are fully controlled
+       by the chosen CodeMirror theme (see #editor-theme-select) — independent of
+       the page's light/dark UI toggle. No hardcoded color overrides here on purpose. */
 
     /* Log line colors — light overrides (hardcoded dark values need fixing) */
     html[data-theme="light"] .ll-normal  { color: #374151; }
@@ -206,12 +212,6 @@
       padding-right: 4px;
     }
 
-    /* CodeMirror — light base */
-    html[data-theme="light"] .CodeMirror { background: #ffffff !important; color: #111827 !important; }
-    html[data-theme="light"] .CodeMirror-gutters { background: #f3f4f8 !important; border-right-color: #d1d5db !important; }
-    html[data-theme="light"] .CodeMirror-linenumber { color: #9ca3af !important; }
-    html[data-theme="light"] .CodeMirror-cursor { border-left-color: #111827 !important; }
-    html[data-theme="light"] .CodeMirror-selected { background: #ddd6fe !important; }
 
     /* Badge colors maintain contrast on light bg */
     html[data-theme="light"] .badge-optimal    { background: rgba(21,128,61,.08);   border-color: rgba(21,128,61,.3); }
@@ -500,6 +500,14 @@
       <div class="panel-header">
         Modelo LP (CPLEX format)
         <span id="line-count"></span>
+        <select class="editor-theme-select" id="editor-theme-select" title="Tema de cores do editor">
+          <option value="dracula">Dracula</option>
+          <option value="monokai">Monokai</option>
+          <option value="material-darker">Material Darker</option>
+          <option value="nord">Nord</option>
+          <option value="eclipse">Eclipse</option>
+          <option value="default">Claro (padrão)</option>
+        </select>
         <div class="font-btns">
           <button class="font-btn" id="font-dec" title="Diminuir fonte (Ctrl+-)">A−</button>
           <span id="font-size-display">14px</span>
@@ -512,7 +520,14 @@
 
     <!-- Results -->
     <div class="panel-results">
-      <div class="panel-header">Resultados</div>
+      <div class="panel-header">
+        Resultados
+        <div class="font-btns">
+          <button class="font-btn" id="result-font-dec" title="Diminuir tamanho do texto">A−</button>
+          <span id="result-font-size-display">100%</span>
+          <button class="font-btn" id="result-font-inc" title="Aumentar tamanho do texto">A+</button>
+        </div>
+      </div>
       <div class="results-body" id="results">
         <div class="placeholder" id="placeholder">
           <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
@@ -733,10 +748,13 @@ End`
   /* ════════════════════════════════════════════════════════════════════
      3. CodeMirror setup
   ════════════════════════════════════════════════════════════════════ */
+  let savedEditorTheme = 'dracula';
+  try { savedEditorTheme = localStorage.getItem('lp-editor-theme') || 'dracula'; } catch (_) {}
+
   const editor = CodeMirror(document.getElementById('cm-wrapper'), {
     value: EXAMPLES.producao,
     mode: 'lp',
-    theme: 'dracula',
+    theme: savedEditorTheme,
     lineNumbers: true,
     lineWrapping: false,
     autofocus: true,
@@ -808,14 +826,42 @@ End`
     reader.readAsText(file);
     this.value = '';
   });
-  document.getElementById('btn-save').addEventListener('click', () => {
-    const blob = new Blob([editor.getValue()], { type: 'text/plain' });
+  document.getElementById('btn-save').addEventListener('click', async () => {
+    const content = editor.getValue();
+
+    // Navegadores compatíveis (Chrome/Edge) abrem um diálogo nativo "Salvar como…"
+    // que deixa escolher pasta e nome do arquivo.
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'modelo.lp',
+          types: [{ description: 'Modelo LP', accept: { 'text/plain': ['.lp'] } }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(content);
+        await writable.close();
+      } catch (err) {
+        // Usuário cancelou o diálogo — não faz nada
+        if (err.name !== 'AbortError') {
+          console.error('Erro ao salvar:', err);
+          downloadFallback(content);
+        }
+      }
+      return;
+    }
+
+    // Fallback (Firefox, Safari, etc.): faz o download direto na pasta padrão
+    downloadFallback(content);
+  });
+
+  function downloadFallback(content) {
+    const blob = new Blob([content], { type: 'text/plain' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'modelo.lp';
     a.click();
     URL.revokeObjectURL(a.href);
-  });
+  }
   document.getElementById('btn-clear').addEventListener('click', () => {
     if (confirm('Limpar o editor?')) {
       editor.setValue('');
@@ -989,7 +1035,47 @@ onmessage = async function({ data }) {
       if (e.key === '0')                                             { e.preventDefault(); applySize(14); }
     });
 
-    applySize(size);  // apply saved/default on load
+    applySize(size);
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     Editor color theme selector
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const sel = document.getElementById('editor-theme-select');
+    sel.value = savedEditorTheme;
+    sel.addEventListener('change', () => {
+      editor.setOption('theme', sel.value);
+      editor.refresh();
+      try { localStorage.setItem('lp-editor-theme', sel.value); } catch (_) {}
+    });
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     Results panel — text size controls (scales the whole results area,
+     same A−/A+ idea used for the editor)
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const MIN = 80, MAX = 160, STEP = 10;
+    let pct = 100;
+    try { pct = parseInt(localStorage.getItem('lp-results-zoom'), 10) || 100; } catch (_) {}
+    pct = Math.min(MAX, Math.max(MIN, pct));
+
+    const body = document.getElementById('results');
+
+    function apply(p) {
+      pct = Math.min(MAX, Math.max(MIN, p));
+      body.style.zoom = pct / 100;
+      document.getElementById('result-font-size-display').textContent = pct + '%';
+      document.getElementById('result-font-dec').disabled = pct <= MIN;
+      document.getElementById('result-font-inc').disabled = pct >= MAX;
+      try { localStorage.setItem('lp-results-zoom', pct); } catch (_) {}
+    }
+
+    document.getElementById('result-font-dec').addEventListener('click', () => apply(pct - STEP));
+    document.getElementById('result-font-inc').addEventListener('click', () => apply(pct + STEP));
+
+    apply(pct);
   })();
 
   // ── Error marker helpers ─────────────────────────────────────────────
@@ -1211,14 +1297,14 @@ onmessage = async function({ data }) {
         <div class="table-wrap">
           <table class="result">
             <thead><tr>
-              <th>Restrição</th><th>LHS</th><th title="Preço Sombra / Dual">Preço Sombra</th>
+              <th>Restrição</th><th>LHS</th><th title="Valor Dual (multiplicador da restrição)">Valor Dual</th>
               <th>Status</th><th>RHS inf.</th><th>RHS sup.</th>
             </tr></thead>
             <tbody>${constrRows}</tbody>
           </table>
         </div>
         <div style="margin-top:8px;font-size:10.5px;color:var(--muted)">
-          Preço sombra: variação no objetivo por unidade de folga da restrição
+          Valor dual: variação no objetivo por unidade de folga da restrição
         </div>` : '<div style="color:var(--muted);font-size:12px;padding:8px">Sem restrições</div>'}
       </div>
 
@@ -1329,10 +1415,10 @@ onmessage = async function({ data }) {
     const btn  = document.getElementById('btn-theme');
     const root = document.documentElement;
 
-    // Map theme → { label, cm-theme, next-theme }
+    // Map theme → { label, next-theme }  (editor color theme is now independent — see "Editor color theme selector")
     const THEMES = {
-      dark:  { icon: '🌙', title: 'Mudar para tema claro',  cmTheme: 'dracula',  next: 'light' },
-      light: { icon: '☀️', title: 'Mudar para tema escuro', cmTheme: 'default',  next: 'dark'  },
+      dark:  { icon: '🌙', title: 'Mudar para tema claro',  next: 'light' },
+      light: { icon: '☀️', title: 'Mudar para tema escuro', next: 'dark'  },
     };
 
     function applyTheme(name) {
@@ -1340,7 +1426,6 @@ onmessage = async function({ data }) {
       root.dataset.theme = name;
       btn.textContent    = t.icon;
       btn.title          = t.title;
-      editor.setOption('theme', t.cmTheme);
       try { localStorage.setItem('lp-theme', name); } catch (_) {}
     }
 
