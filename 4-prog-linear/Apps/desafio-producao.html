@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafio da Produção</title>
+
+  <!-- Chart.js + plugins -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+
+  <!-- MathJax -->
+  <script>
+    MathJax = { tex: { inlineMath: [['$','$']] } };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Source Sans Pro", "Segoe UI", sans-serif;
+      background: #f0f2f6;
+      color: #31333f;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 820px;
+      margin: 0 auto;
+      background: #fff;
+      min-height: 100vh;
+      padding: 2.5rem 3rem;
+    }
+
+    h1 {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #0e1117;
+      margin: 2rem 0 0.8rem;
+    }
+    h1:first-child { margin-top: 0; }
+
+    h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #0e1117;
+      margin: 1.8rem 0 0.6rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 2px solid #e6e6e6;
+    }
+
+    h5 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #444;
+      margin: 1.4rem 0 0.5rem;
+    }
+
+    p { margin: 0.6rem 0 1rem; }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e6e6e6;
+      margin: 1.8rem 0;
+    }
+
+    /* Formula box */
+    .formula {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      padding: 0.7rem 1.5rem;
+      margin: 0.8rem 0;
+      text-align: center;
+      font-size: 1.05rem;
+    }
+
+    /* Subject line after "Sujeito à:" */
+    .sujeito {
+      margin: 0.4rem 0 0;
+      font-size: 0.92rem;
+      color: #555;
+    }
+
+    /* Sliders */
+    .slider-group { margin: 1rem 0 0.5rem; }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 0.55rem 0;
+    }
+
+    .slider-label {
+      min-width: 30px;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #ddd;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ff4b4b;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ff4b4b;
+      cursor: pointer;
+      border: none;
+    }
+
+    .slider-value {
+      min-width: 48px;
+      text-align: right;
+      font-weight: 700;
+      color: #ff4b4b;
+      font-size: 0.95rem;
+    }
+
+    /* Charts */
+    .chart-wrap {
+      position: relative;
+      height: 280px;
+      margin: 1rem 0 1.8rem;
+    }
+
+    .chart-row {
+      display: flex;
+      gap: 1.2rem;
+      margin: 1rem 0 1.8rem;
+    }
+
+    .chart-row .chart-wrap {
+      flex: 1;
+      margin: 0;
+    }
+
+    /* Desafio 2 */
+    .challenge-box {
+      background: #fff8e1;
+      border-left: 4px solid #ffc107;
+      border-radius: 0 6px 6px 0;
+      padding: 1rem 1.4rem;
+      margin: 1rem 0;
+    }
+
+    .challenge-box p { margin: 0.4rem 0; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- =================== TÍTULO =================== -->
+  <h1>Desafio da produção</h1>
+
+  <p>
+    Uma fábrica produz duas variedades de ração, A e B. Os dois tipos devem ser processados em duas
+    máquinas diferentes, M1 e M2. M1 possui uma disponibilidade mensal de processamento de 60h e M2 de
+    40h. A ração A precisa de 2 horas de processamento em ambas as máquinas. Já a ração B precisa de 3
+    horas na máquina M1 e somente 1 hora em M2. O lucro líquido/kg vendido de A é de R&#36;&nbsp;60,00 e o de
+    B, R&#36;&nbsp;70,00. Quais devem ser as quantidades produzidas das rações A e B? (Assuma que quantidades
+    fracionárias são permitidas, e toda a produção é vendida).
+  </p>
+
+  <hr>
+
+  <!-- =================== VARIÁVEIS =================== -->
+  <h3>Variáveis</h3>
+
+  <p>
+    Queremos descobrir as quantidades (em kg) de cada produto, de forma que, obviamente, essas serão as
+    nossas variáveis. Seja então:<br>
+    $x_A$ : Quantidade produzida da ração A (kg) e<br>
+    $x_B$ : Quantidade produzida da ração B (kg).
+  </p>
+
+  <hr>
+
+  <!-- =================== OBJETIVO =================== -->
+  <h3>Objetivo</h3>
+
+  <p>
+    Queremos descobrir as quantidades de $x_A$ e $x_B$ para que o lucro seja <em>maximizado</em>, ou seja,
+    precisamos encontrar uma função que descreve o lucro a partir das variáveis $x_A$ e $x_B$. Como cada
+    kg de $x_A$ será vendido a R&#36;&nbsp;60,00 e cada kg de $x_B$ a R&#36;&nbsp;70,00, temos uma função da
+    seguinte forma:
+  </p>
+
+  <div class="formula">$f(x_A,x_B) = 60x_A + 70x_B$</div>
+
+  <p>
+    Considere os sliders abaixo. Alterando os valores de $x_A$ e de $x_B$ podemos ver no gráfico qual
+    será o lucro da empresa.
+  </p>
+
+  <div class="slider-group">
+    <div class="slider-row">
+      <span class="slider-label">$x_A$</span>
+      <input type="range" id="xa1" min="0" max="100" step="0.25" value="0">
+      <span class="slider-value" id="xa1-val">0</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">$x_B$</span>
+      <input type="range" id="xb1" min="0" max="100" step="0.25" value="0">
+      <span class="slider-value" id="xb1-val">0</span>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="chart1"></canvas>
+  </div>
+
+  <p>
+    O problema é que não podemos fabricar o quanto quisermos dos produtos, essas quantidades serão
+    limitadas pelo tempo disponível nas máquinas...
+  </p>
+
+  <hr>
+
+  <!-- =================== RESTRIÇÕES =================== -->
+  <h3>Restrições</h3>
+
+  <p>
+    Cada kg de ração produzido consome um tempo nas duas máquinas M1 e M2, e as máquinas possuem um
+    tempo máximo disponível para a produção. Dessa forma, os produtos "competem" para a utilização dos
+    recursos M1 e M2. Existe uma restrição para o tempo da máquina 1 e uma para o tempo da máquina 2,
+    vamos criá-las separadamente:
+  </p>
+
+  <!-- --- Máquina 1 --- -->
+  <h5>Máquina 1</h5>
+
+  <p>
+    Cada kg produzido de $x_A$ consome 2 unidades de tempo da máquina 1. E cada kg de $x_B$ consome 3.
+    Assim, a quantidade consumida de tempo da máquina 1, para quaisquer valores de $x_A$ e $x_B$ fica:
+  </p>
+
+  <div class="formula">$2x_A + 3x_B$</div>
+
+  <p>Como sabemos que a máquina tem uma disponibilidade de 60 horas, temos a seguinte restrição:</p>
+
+  <div class="formula">$2x_A + 3x_B \leq 60$</div>
+
+  <p>
+    Também é possível verificar como o tempo da máquina é afetado pelas quantidades produzidas de
+    $x_A$ e $x_B$:
+  </p>
+
+  <div class="slider-group">
+    <div class="slider-row">
+      <span class="slider-label">$x_A$</span>
+      <input type="range" id="xa2" min="0" max="40" step="0.25" value="0">
+      <span class="slider-value" id="xa2-val">0</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">$x_B$</span>
+      <input type="range" id="xb2" min="0" max="40" step="0.25" value="0">
+      <span class="slider-value" id="xb2-val">0</span>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="chart2"></canvas>
+  </div>
+
+  <!-- --- Máquina 2 --- -->
+  <h5>Máquina 2</h5>
+
+  <p>Da mesma forma, montamos a restrição de tempo da máquina 2:</p>
+
+  <div class="formula">$2x_A + x_B \leq 40$</div>
+
+  <div class="slider-group">
+    <div class="slider-row">
+      <span class="slider-label">$x_A$</span>
+      <input type="range" id="xa3" min="0" max="40" step="0.25" value="0">
+      <span class="slider-value" id="xa3-val">0</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">$x_B$</span>
+      <input type="range" id="xb3" min="0" max="40" step="0.25" value="0">
+      <span class="slider-value" id="xb3-val">0</span>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="chart3"></canvas>
+  </div>
+
+  <!-- --- Modelo completo --- -->
+  <h5>Modelo completo</h5>
+
+  <p>O modelo completo (função objetivo + restrições) fica da seguinte forma:</p>
+
+  <div class="formula">$f(x_A,x_B) = 60x_A + 70x_B$</div>
+  <p class="sujeito">Sujeito à:</p>
+  <div class="formula">$2x_A + 3x_B \leq 60$</div>
+  <div class="formula">$2x_A + x_B \leq 40$</div>
+
+  <p>Os gráficos das restrições junto à função objetivo ficam da seguinte forma:</p>
+
+  <div class="slider-group">
+    <div class="slider-row">
+      <span class="slider-label">$x_A$</span>
+      <input type="range" id="xa4" min="0" max="40" step="0.25" value="0">
+      <span class="slider-value" id="xa4-val">0</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">$x_B$</span>
+      <input type="range" id="xb4" min="0" max="40" step="0.25" value="0">
+      <span class="slider-value" id="xb4-val">0</span>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <canvas id="chart4a"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chart4b"></canvas>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- =================== DESAFIO 2 =================== -->
+  <h1>DESAFIO 2</h1>
+
+  <div class="challenge-box">
+    <p>
+      Se junte a um grupo de no máximo 4 alunos e encontre a quantidade que deve ser produzida das
+      rações. O grupo que conseguir o maior lucro (L) terá um bônus na nota dado pela fórmula abaixo:
+    </p>
+    <div class="formula" style="background:transparent; border:none; margin:0.6rem 0;">
+      $Nota = \dfrac{L}{5333{,}333}$
+    </div>
+    <p>Tempo total de 10 min.</p>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+  // ─── Register plugins ─────────────────────────────────────────────────────
+  Chart.register(ChartDataLabels);
+  // chartjs-plugin-annotation auto-registers with Chart.js when loaded via script tag
+
+  const GREEN = 'rgba(46, 160, 67, 0.82)';
+  const RED   = 'rgba(203, 36,  49, 0.82)';
+
+  // ─── Annotation helpers ───────────────────────────────────────────────────
+  function hLine(yVal) {
+    return {
+      type: 'line',
+      yMin: yVal, yMax: yVal,
+      borderColor: 'rgba(220, 53, 69, 0.9)',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      label: {
+        display: true,
+        content: yVal + 'h',
+        position: 'end',
+        backgroundColor: 'rgba(220,53,69,0.15)',
+        color: '#c00',
+        font: { size: 11 }
+      }
+    };
+  }
+
+  // ─── Chart factory ────────────────────────────────────────────────────────
+  function makeChart(id, labels, title, yLabel, yMax, lines) {
+    const annotations = {};
+    (lines || []).forEach((y, i) => { annotations['l' + i] = hLine(y); });
+
+    return new Chart(document.getElementById(id), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: new Array(labels.length).fill(0),
+          backgroundColor: GREEN,
+          borderRadius: 3,
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 80 },
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: title,
+            font: { size: 13, weight: '600' },
+            color: '#333',
+            padding: { bottom: 8 }
+          },
+          datalabels: {
+            anchor: 'center',
+            align: 'center',
+            formatter: function(val) {
+              if (val <= 0) return null;
+              return Number.isInteger(val) ? val : val.toFixed(2);
+            },
+            color: '#fff',
+            font: { weight: 'bold', size: 12 }
+          },
+          annotation: { annotations: annotations }
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: yMax,
+            title: yLabel ? { display: true, text: yLabel, font: { size: 12 } } : { display: false },
+            grid: { color: 'rgba(0,0,0,0.06)' }
+          },
+          x: {
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  }
+
+  // ─── Instantiate charts ───────────────────────────────────────────────────
+  const chart1  = makeChart('chart1',  ['','','Lucro','',''],              'Lucro pela venda dos produtos', 'Lucro (R$)',           5000, null);
+  const chart2  = makeChart('chart2',  ['0','1','M1','2','3'],             'Tempo gasto na máquina M1',     'Tempo (h) consumido',  90,   [60]);
+  const chart3  = makeChart('chart3',  ['0','1','M1','M2','2','3'],        'Tempo gasto em M1 e M2',        null,                   90,   [60, 40]);
+  const chart4a = makeChart('chart4a', ['0','1','M1','M2','2','3'],        'Tempo gasto em M1 e M2',        null,                   90,   [60, 40]);
+  const chart4b = makeChart('chart4b', ['','','Lucro','',''],              'Lucro pela venda dos produtos', 'Lucro (R$)',           5000, null);
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+  function val(id)   { return parseFloat(document.getElementById(id).value); }
+
+  function showVal(id, v) {
+    document.getElementById(id + '-val').textContent =
+      Number.isInteger(v) ? v : v.toFixed(2);
+  }
+
+  function setChart(chart, data, color) {
+    chart.data.datasets[0].data             = data;
+    chart.data.datasets[0].backgroundColor  = color;
+    chart.update();
+  }
+
+  // ─── Section 1 — Lucro ────────────────────────────────────────────────────
+  function updateS1() {
+    const xa = val('xa1'), xb = val('xb1');
+    showVal('xa1', xa); showVal('xb1', xb);
+    setChart(chart1, [0, 0, 60*xa + 70*xb, 0, 0], GREEN);
+  }
+  document.getElementById('xa1').addEventListener('input', updateS1);
+  document.getElementById('xb1').addEventListener('input', updateS1);
+
+  // ─── Section 2 — M1 ───────────────────────────────────────────────────────
+  function updateS2() {
+    const xa = val('xa2'), xb = val('xb2');
+    showVal('xa2', xa); showVal('xb2', xb);
+    const m1 = 2*xa + 3*xb;
+    setChart(chart2, [0, 0, m1, 0, 0], m1 > 60 ? RED : GREEN);
+  }
+  document.getElementById('xa2').addEventListener('input', updateS2);
+  document.getElementById('xb2').addEventListener('input', updateS2);
+
+  // ─── Section 3 — M1 + M2 ─────────────────────────────────────────────────
+  function updateS3() {
+    const xa = val('xa3'), xb = val('xb3');
+    showVal('xa3', xa); showVal('xb3', xb);
+    const m1 = 2*xa + 3*xb;
+    const m2 = 2*xa +   xb;
+    setChart(chart3, [0, 0, m1, m2, 0, 0], (m1 > 60 || m2 > 40) ? RED : GREEN);
+  }
+  document.getElementById('xa3').addEventListener('input', updateS3);
+  document.getElementById('xb3').addEventListener('input', updateS3);
+
+  // ─── Section 4 — Modelo completo ─────────────────────────────────────────
+  function updateS4() {
+    const xa = val('xa4'), xb = val('xb4');
+    showVal('xa4', xa); showVal('xb4', xb);
+    const m1    = 2*xa + 3*xb;
+    const m2    = 2*xa +   xb;
+    const lucro = 60*xa + 70*xb;
+    const color = (m1 > 60 || m2 > 40) ? RED : GREEN;
+    setChart(chart4a, [0, 0, m1, m2, 0, 0], color);
+    setChart(chart4b, [0, 0, lucro, 0, 0],  GREEN);
+  }
+  document.getElementById('xa4').addEventListener('input', updateS4);
+  document.getElementById('xb4').addEventListener('input', updateS4);
+</script>
+</body>
+</html>

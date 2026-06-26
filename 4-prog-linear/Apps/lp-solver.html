@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LP Solver — Programação Linear</title>
+
+  <!-- CodeMirror 5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+
+  <style>
+    /* ─── Reset & variables ─────────────────────────────────────────── */
+    /* ── Dark theme (default) ── */
+    :root {
+      --bg:      #282a36;
+      --bg2:     #1e2029;
+      --bg3:     #21222c;
+      --border:  #44475a;
+      --text:    #f8f8f2;
+      --muted:   #6272a4;
+      --accent:  #bd93f9;
+      --green:   #50fa7b;
+      --red:     #ff5555;
+      --orange:  #ffb86c;
+      --yellow:  #f1fa8c;
+      --cyan:    #8be9fd;
+      --pink:    #ff79c6;
+      --shadow:  0 1px 3px rgba(0,0,0,.5);
+    }
+
+    /* ── Light theme ── */
+    html[data-theme="light"] {
+      --bg:      #ffffff;
+      --bg2:     #f3f4f8;
+      --bg3:     #e8eaf2;
+      --border:  #d1d5db;
+      --text:    #111827;
+      --muted:   #6b7280;
+      --accent:  #7c3aed;
+      --green:   #15803d;
+      --red:     #dc2626;
+      --orange:  #b45309;
+      --yellow:  #92400e;
+      --cyan:    #0369a1;
+      --pink:    #9d174d;
+      --shadow:  0 1px 3px rgba(0,0,0,.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg2);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+    }
+
+    /* ─── Toolbar ───────────────────────────────────────────────────── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .brand {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--accent);
+      letter-spacing: -0.3px;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+    .sep { width: 1px; height: 22px; background: var(--border); margin: 0 2px; flex-shrink: 0; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      transition: background 0.12s, border-color 0.12s;
+      white-space: nowrap;
+    }
+    .btn:hover:not(:disabled) { background: rgba(255,255,255,0.06); border-color: var(--muted); }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #1e1f29;
+      font-weight: 600;
+    }
+    .btn.primary:hover:not(:disabled) { background: #c9a6fa; border-color: #c9a6fa; }
+    .btn.primary.solving { background: var(--orange); border-color: var(--orange); cursor: wait; }
+
+    select.btn {
+      padding-right: 6px;
+      max-width: 170px;
+    }
+    /* Force option background/color — browsers use OS native rendering by default,
+       which ignores the parent background and leaves text unreadable in dark mode */
+    select.btn option {
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    .toolbar-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+    /* ─── Main layout ───────────────────────────────────────────────── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ─── Editor panel ──────────────────────────────────────────────── */
+    .panel-editor {
+      display: flex;
+      flex-direction: column;
+      width: 56%;
+      min-width: 260px;
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+    .panel-header {
+      padding: 5px 12px;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .panel-header span { margin-left: auto; }
+    .font-btns { display: flex; gap: 2px; margin-left: auto; align-items: center; }
+    .font-btn {
+      padding: 1px 6px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: inherit;
+      line-height: 1.4;
+      transition: color .1s, border-color .1s;
+    }
+    .font-btn:hover { color: var(--text); border-color: var(--muted); }
+    #font-size-display {
+      font-size: 10px;
+      color: var(--muted);
+      min-width: 26px;
+      text-align: center;
+      user-select: none;
+    }
+
+    .cm-wrapper { flex: 1; overflow: hidden; }
+    .CodeMirror  { height: 100% !important; font-size: 13.5px; line-height: 1.65; }
+    .CodeMirror-scroll { padding-bottom: 0; }
+
+    /* LP syntax — dark (Dracula overrides) */
+    .cm-keyword  { color: #ff79c6 !important; font-weight: 600; }
+    .cm-def      { color: #8be9fd !important; }
+    .cm-variable { color: #f8f8f2 !important; }
+    .cm-number   { color: #bd93f9 !important; }
+    .cm-operator { color: #ff79c6 !important; }
+    .cm-comment  { color: #6272a4 !important; font-style: italic; }
+
+    /* LP syntax — light overrides */
+    html[data-theme="light"] .cm-keyword  { color: #7c3aed !important; font-weight: 600; }
+    html[data-theme="light"] .cm-def      { color: #0369a1 !important; }
+    html[data-theme="light"] .cm-variable { color: #111827 !important; }
+    html[data-theme="light"] .cm-number   { color: #7c3aed !important; }
+    html[data-theme="light"] .cm-operator { color: #9d174d !important; }
+    html[data-theme="light"] .cm-comment  { color: #9ca3af !important; font-style: italic; }
+
+    /* Log line colors — light overrides (hardcoded dark values need fixing) */
+    html[data-theme="light"] .ll-normal  { color: #374151; }
+    html[data-theme="light"] .ll-sep     { color: #d1d5db; }
+    html[data-theme="light"] .ll-mip-row { color: #374151; }
+    html[data-theme="light"] .log-pane   { background: #f9fafb; }
+
+    /* Error line highlight */
+    .cm-error-line { background: rgba(255,85,85,.18) !important; }
+    html[data-theme="light"] .cm-error-line { background: rgba(220,38,38,.10) !important; }
+    .cm-error-gutter {
+      color: var(--red) !important;
+      font-weight: bold;
+      padding-right: 4px;
+    }
+
+    /* CodeMirror — light base */
+    html[data-theme="light"] .CodeMirror { background: #ffffff !important; color: #111827 !important; }
+    html[data-theme="light"] .CodeMirror-gutters { background: #f3f4f8 !important; border-right-color: #d1d5db !important; }
+    html[data-theme="light"] .CodeMirror-linenumber { color: #9ca3af !important; }
+    html[data-theme="light"] .CodeMirror-cursor { border-left-color: #111827 !important; }
+    html[data-theme="light"] .CodeMirror-selected { background: #ddd6fe !important; }
+
+    /* Badge colors maintain contrast on light bg */
+    html[data-theme="light"] .badge-optimal    { background: rgba(21,128,61,.08);   border-color: rgba(21,128,61,.3); }
+    html[data-theme="light"] .badge-infeasible { background: rgba(220,38,38,.08);   border-color: rgba(220,38,38,.3); }
+    html[data-theme="light"] .badge-unbounded  { background: rgba(180,83,9,.08);    border-color: rgba(180,83,9,.3); }
+    html[data-theme="light"] .badge-pending    { background: rgba(107,114,128,.08); border-color: #d1d5db; }
+
+    /* Theme toggle button */
+    .theme-toggle {
+      padding: 5px 9px;
+      font-size: 15px;
+      line-height: 1;
+      border-color: var(--border);
+    }
+
+    /* Resize handle */
+    .resize-handle {
+      position: absolute;
+      right: -3px;
+      top: 0; bottom: 0;
+      width: 6px;
+      cursor: col-resize;
+      z-index: 10;
+    }
+    .resize-handle:hover, .resize-handle.dragging { background: var(--accent); opacity: 0.4; }
+
+    /* ─── Results panel ─────────────────────────────────────────────── */
+    .panel-results {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+    }
+    .results-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 14px 24px;
+    }
+    .results-body::-webkit-scrollbar { width: 6px; }
+    .results-body::-webkit-scrollbar-track { background: transparent; }
+    .results-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Placeholder */
+    .placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 260px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+    .placeholder svg { opacity: 0.25; }
+    kbd {
+      display: inline-block;
+      padding: 1px 5px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-size: 11px;
+      font-family: monospace;
+      background: var(--bg3);
+    }
+
+    /* Status card */
+    .status-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      margin-bottom: 14px;
+    }
+    .status-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      flex-shrink: 0;
+    }
+    .badge-optimal   { background: rgba(80,250,123,.12); color: var(--green);  border: 1px solid rgba(80,250,123,.35); }
+    .badge-infeasible{ background: rgba(255,85,85,.12);  color: var(--red);    border: 1px solid rgba(255,85,85,.35); }
+    .badge-unbounded { background: rgba(255,184,108,.12);color: var(--orange); border: 1px solid rgba(255,184,108,.35); }
+    .badge-error     { background: rgba(255,85,85,.12);  color: var(--red);    border: 1px solid rgba(255,85,85,.35); }
+    .badge-pending   { background: rgba(98,114,164,.12); color: var(--muted);  border: 1px solid var(--border); }
+
+    .obj-block { margin-left: auto; text-align: right; }
+    .obj-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .obj-value { font-size: 20px; font-weight: 700; font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; color: var(--cyan); }
+
+    /* Tabs */
+    .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 12px; gap: 0; }
+    .tab {
+      padding: 6px 14px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      border-bottom: 2px solid transparent;
+      transition: color .12s, border-color .12s;
+    }
+    .tab:hover:not(.active) { color: var(--text); }
+    .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+    /* Result tables */
+    .table-wrap { overflow-x: auto; }
+    table.result {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    table.result th {
+      padding: 5px 10px;
+      text-align: left;
+      font-size: 10.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    table.result td {
+      padding: 5px 10px;
+      border-bottom: 1px solid rgba(68,71,90,.35);
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    table.result tr:hover td { background: rgba(255,255,255,.025); }
+    table.result .num { text-align: right; }
+    table.result .varname { color: var(--cyan); }
+    table.result .bsrow  td:first-child { border-left: 2px solid var(--green); }
+    table.result .lbrow  td:first-child { border-left: 2px solid var(--muted); }
+    table.result .ubrow  td:first-child { border-left: 2px solid var(--yellow); }
+    .tag-bs { color: var(--green); }
+    .tag-lb { color: var(--muted); }
+    .tag-ub { color: var(--yellow); }
+    .tag-nb { color: var(--pink); }
+
+    /* Error message */
+    .error-msg {
+      background: rgba(255,85,85,.07);
+      border: 1px solid rgba(255,85,85,.3);
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 12px;
+      font-family: Consolas, monospace;
+      color: var(--red);
+      word-break: break-all;
+      white-space: pre-wrap;
+      margin-bottom: 10px;
+    }
+    .hint-link { color: var(--accent); font-size: 12px; font-family: inherit; }
+
+    /* Section heading inside results */
+    .result-section { margin-bottom: 6px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ─── Solver log pane ───────────────────────────────────────────── */
+    .log-pane {
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, 'Courier New', monospace;
+      font-size: 11.5px;
+      line-height: 1.55;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      overflow-y: auto;
+      max-height: 100%;
+      white-space: pre;
+    }
+    .log-pane::-webkit-scrollbar { width: 5px; }
+    .log-pane::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Log line types */
+    .ll-normal   { color: #bbc2e8; }
+    .ll-header   { color: var(--accent); }
+    .ll-section  { color: var(--cyan); font-weight: 600; }
+    .ll-sep      { color: #44475a; }
+    .ll-mip-hdr  { color: var(--muted); font-weight: 600; }
+    .ll-mip-row  { color: #e0e0e0; }
+    .ll-mip-best { color: var(--yellow); font-weight: 600; }
+    .ll-optimal  { color: var(--green); font-weight: 600; }
+    .ll-infeas   { color: var(--red); font-weight: 600; }
+    .ll-warning  { color: var(--orange); }
+    .ll-err      { color: var(--red); }
+    .ll-blank    { }
+
+    /* Live log during solve */
+    .log-live-wrap {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+      gap: 8px;
+    }
+    .log-live-wrap .log-pane {
+      flex: 1;
+      max-height: none;
+    }
+    .log-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .log-toolbar span { font-size: 11px; color: var(--muted); }
+    .log-copy-btn {
+      margin-left: auto;
+      padding: 2px 8px;
+      font-size: 11px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .log-copy-btn:hover { color: var(--text); border-color: var(--muted); }
+
+    /* ─── Status bar ────────────────────────────────────────────────── */
+    .statusbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 3px 12px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--green);
+    }
+    .dot.loading { background: var(--orange); animation: blink 1s ease-in-out infinite; }
+    .dot.error   { background: var(--red); }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+    .statusbar-right { margin-left: auto; display: flex; gap: 14px; }
+  </style>
+</head>
+
+<body>
+  <!-- ── Toolbar ──────────────────────────────────────────────────────── -->
+  <div class="toolbar">
+    <span class="brand">⚡ LP Solver</span>
+    <div class="sep"></div>
+
+    <select class="btn" id="examples-select" title="Carregar modelo de exemplo">
+      <option value="">Exemplos…</option>
+      <option value="producao">Produção (PL)</option>
+      <option value="transporte">Transporte (PL)</option>
+      <option value="mochila">Mochila (PLI)</option>
+      <option value="dieta">Dieta (PL)</option>
+      <option value="mix">Mix de Produtos (PLI)</option>
+    </select>
+
+    <div class="sep"></div>
+    <button class="btn" id="btn-open" title="Abrir arquivo .lp">📂 Abrir</button>
+    <button class="btn" id="btn-save" title="Salvar como .lp">💾 Salvar</button>
+    <input type="file" id="file-input" accept=".lp,.txt" style="display:none">
+
+    <div class="toolbar-right">
+      <button class="btn theme-toggle" id="btn-theme" title="Alternar tema claro/escuro">🌙</button>
+      <div class="sep"></div>
+      <button class="btn" id="btn-clear" title="Limpar editor">✕ Limpar</button>
+      <button class="btn primary" id="btn-solve" disabled>▶ Resolver</button>
+    </div>
+  </div>
+
+  <!-- ── Main ─────────────────────────────────────────────────────────── -->
+  <div class="main" id="main">
+
+    <!-- Editor -->
+    <div class="panel-editor" id="panel-editor">
+      <div class="panel-header">
+        Modelo LP (CPLEX format)
+        <span id="line-count"></span>
+        <div class="font-btns">
+          <button class="font-btn" id="font-dec" title="Diminuir fonte (Ctrl+-)">A−</button>
+          <span id="font-size-display">14px</span>
+          <button class="font-btn" id="font-inc" title="Aumentar fonte (Ctrl++)">A+</button>
+        </div>
+      </div>
+      <div class="cm-wrapper" id="cm-wrapper"></div>
+      <div class="resize-handle" id="resize-handle"></div>
+    </div>
+
+    <!-- Results -->
+    <div class="panel-results">
+      <div class="panel-header">Resultados</div>
+      <div class="results-body" id="results">
+        <div class="placeholder" id="placeholder">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M3 9h18M9 21V9"/>
+            <path d="M14 14h2M14 17h2M7 14h2M7 17h2"/>
+          </svg>
+          <div>Escreva ou carregue um modelo, depois clique<br>
+          <strong>▶ Resolver</strong> ou pressione <kbd>Ctrl</kbd>+<kbd>Enter</kbd></div>
+          <div style="font-size:11px">Solver: <strong style="color:var(--accent)">HiGHS 1.8</strong> via WebAssembly · Suporta LP e PLI</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Status bar ────────────────────────────────────────────────────── -->
+  <div class="statusbar">
+    <span class="dot loading" id="dot"></span>
+    <span id="solver-msg">Carregando HiGHS WebAssembly…</span>
+    <span class="statusbar-right">
+      <span>HiGHS 1.8 · WebAssembly</span>
+      <span><kbd>Ctrl+Enter</kbd> resolve</span>
+    </span>
+  </div>
+
+  <!-- ── CodeMirror ────────────────────────────────────────────────────── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+
+  <script>
+  /* ════════════════════════════════════════════════════════════════════
+     1. LP Syntax Mode for CodeMirror
+  ════════════════════════════════════════════════════════════════════ */
+  CodeMirror.defineMode('lp', function () {
+    // Section keywords (case-insensitive)
+    const kw = /^(Minimize|Maximize|Minimum|Maximum|Min|Max|Subject\s+To|Such\s+That|s\.t\.|Bounds?|Generals?|Integers?|Binaries|Binary|Free|End)\b/i;
+
+    return {
+      startState: () => ({ section: null }),
+      token(stream, state) {
+        // Skip leading whitespace
+        if (stream.eatSpace()) return null;
+
+        // Comments: backslash to end of line
+        if (stream.peek() === '\\') { stream.skipToEnd(); return 'comment'; }
+
+        // Section keywords
+        if (stream.match(kw)) { return 'keyword'; }
+
+        // Constraint / variable label  (identifier followed by colon)
+        // But NOT inside Bounds section numbers like "0 <= x <= 1"
+        if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_.]*\s*:/)) { return 'def'; }
+
+        // Numbers (including scientific notation, negative handled by operator)
+        if (stream.match(/^\d+(\.\d+)?([eE][+-]?\d+)?/)) { return 'number'; }
+
+        // Operators
+        if (stream.match(/^(<=|>=|=)/)) { return 'operator'; }
+        if (stream.match(/^[+\-]/))     { return 'operator'; }
+
+        // Identifiers (variables)
+        if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_.']*/)) { return 'variable'; }
+
+        stream.next();
+        return null;
+      }
+    };
+  });
+
+  /* ════════════════════════════════════════════════════════════════════
+     2. Example models
+  ════════════════════════════════════════════════════════════════════ */
+  const EXAMPLES = {
+    producao: `\\ Problema de Produção
+\\ Maximizar lucro fabricando dois produtos (P1 e P2)
+\\ P1 usa 6h máquina + 1h mão-de-obra, P2 usa 4h + 2h
+\\ Lucro: R$5/P1, R$4/P2
+
+Maximize
+  obj: 5 x1 + 4 x2
+
+Subject To
+  maquina:    6 x1 + 4 x2 <= 24
+  mao_obra:   x1  + 2 x2  <= 6
+
+Bounds
+  x1 >= 0
+  x2 >= 0
+
+End`,
+
+    transporte: `\\ Problema de Transporte
+\\ Minimizar custo de transporte de 2 origens para 3 destinos
+\\   xij = quantidade enviada da origem i para destino j
+
+Minimize
+  obj: 2 x11 + 3 x12 + 1 x13
+     + 5 x21 + 4 x22 + 8 x23
+
+Subject To
+  \\ Capacidade das origens
+  origem1: x11 + x12 + x13 <= 120
+  origem2: x21 + x22 + x23 <= 80
+
+  \\ Demanda dos destinos
+  dest1: x11 + x21 >= 50
+  dest2: x12 + x22 >= 70
+  dest3: x13 + x23 >= 60
+
+Bounds
+  x11 >= 0
+  x12 >= 0
+  x13 >= 0
+  x21 >= 0
+  x22 >= 0
+  x23 >= 0
+
+End`,
+
+    mochila: `\\ Problema da Mochila (Programação Linear Inteira)
+\\ Selecionar itens para maximizar valor total com peso <= 15kg
+\\   Item  Peso  Valor
+\\   a     5kg   10
+\\   b     3kg   6
+\\   c     7kg   12
+\\   d     2kg   3
+\\   e     4kg   8
+
+Maximize
+  obj: 10 a + 6 b + 12 c + 3 d + 8 e
+
+Subject To
+  peso: 5 a + 3 b + 7 c + 2 d + 4 e <= 15
+
+Bounds
+  0 <= a <= 1
+  0 <= b <= 1
+  0 <= c <= 1
+  0 <= d <= 1
+  0 <= e <= 1
+
+Generals
+  a b c d e
+
+End`,
+
+    dieta: `\\ Problema da Dieta
+\\ Minimizar custo satisfazendo requisitos nutricionais diários
+\\ Alimentos: feijao(x1), laranja(x2), frango(x3), leite(x4)
+\\ Preço (R$/porção): 0.60, 0.35, 0.90, 1.50
+
+Minimize
+  obj: 0.6 x1 + 0.35 x2 + 0.9 x3 + 1.5 x4
+
+Subject To
+  \\ Calorias: 2000-2500 kcal
+  cal_min: 295 x1 + 110 x2 + 330 x3 +  80 x4 >= 2000
+  cal_max: 295 x1 + 110 x2 + 330 x3 +  80 x4 <= 2500
+  \\ Proteína >= 55g
+  proteina:  60 x1 +  20 x2 +  70 x3 +  15 x4 >= 55
+  \\ Ferro >= 100% VD
+  ferro:     20 x1 +   0 x2 +  10 x3 +  15 x4 >= 100
+  \\ Cálcio >= 100% VD
+  calcio:   110 x1 +   0 x2 +  30 x3 +   0 x4 >= 100
+  \\ Vitamina C >= 100% VD
+  vitc:       0 x1 + 120 x2 +   0 x3 +   0 x4 >= 100
+
+Bounds
+  x1 >= 0
+  x2 >= 0
+  x3 >= 0
+  x4 >= 0
+
+End`,
+
+    mix: `\\ Mix de Produtos com Capacidade Inteira
+\\ Empresa pode produzir até 3 linhas de produtos.
+\\ Decide quantas máquinas alocar (variáveis inteiras) e
+\\ quanto produzir em cada linha (contínuo).
+\\
+\\ Nota LP format: o RHS deve ser constante.
+\\   ERRADO:  p1 <= 100 m1
+\\   CORRETO: p1 - 100 m1 <= 0
+
+Maximize
+  obj: 15 p1 + 25 p2 + 20 p3 - 8 m1 - 12 m2 - 10 m3
+
+Subject To
+  \\ Cada máquina produz até 100 unidades: p_i - 100*m_i <= 0
+  cap1: p1 - 100 m1 <= 0
+  cap2: p2 - 100 m2 <= 0
+  cap3: p3 - 100 m3 <= 0
+
+  \\ Mão de obra total: 240h/dia
+  mao_obra: 2 p1 + 3 p2 + 2.5 p3 <= 240
+
+  \\ Máximo 3 máquinas no total
+  total_maq: m1 + m2 + m3 <= 3
+
+  \\ Demanda máxima
+  dem1: p1 <= 150
+  dem2: p2 <= 120
+  dem3: p3 <= 80
+
+Bounds
+  p1 >= 0
+  p2 >= 0
+  p3 >= 0
+  0 <= m1 <= 2
+  0 <= m2 <= 2
+  0 <= m3 <= 2
+
+Generals
+  m1 m2 m3
+
+End`
+  };
+
+  /* ════════════════════════════════════════════════════════════════════
+     3. CodeMirror setup
+  ════════════════════════════════════════════════════════════════════ */
+  const editor = CodeMirror(document.getElementById('cm-wrapper'), {
+    value: EXAMPLES.producao,
+    mode: 'lp',
+    theme: 'dracula',
+    lineNumbers: true,
+    lineWrapping: false,
+    autofocus: true,
+    tabSize: 2,
+    indentWithTabs: false,
+    extraKeys: {
+      'Ctrl-Enter': () => solve(),
+      'Cmd-Enter':  () => solve()
+    }
+  });
+  editor.setSize('100%', '100%');
+
+  // Line count in header
+  function updateLineCount() {
+    const n = editor.lineCount();
+    document.getElementById('line-count').textContent = n + ' linha' + (n !== 1 ? 's' : '');
+  }
+  editor.on('change', updateLineCount);
+  updateLineCount();
+
+  /* ════════════════════════════════════════════════════════════════════
+     4. Resizable split panel
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const handle = document.getElementById('resize-handle');
+    const panelL = document.getElementById('panel-editor');
+    const main   = document.getElementById('main');
+    let dragging = false, startX, startW;
+
+    handle.addEventListener('mousedown', e => {
+      dragging = true;
+      startX = e.clientX;
+      startW = panelL.offsetWidth;
+      handle.classList.add('dragging');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    });
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const totalW = main.offsetWidth;
+      const newW = Math.max(200, Math.min(totalW - 220, startW + dx));
+      panelL.style.width = newW + 'px';
+    });
+    document.addEventListener('mouseup', () => {
+      if (!dragging) return;
+      dragging = false;
+      handle.classList.remove('dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      editor.refresh();
+    });
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     5. File open / save
+  ════════════════════════════════════════════════════════════════════ */
+  document.getElementById('btn-open').addEventListener('click', () => {
+    document.getElementById('file-input').click();
+  });
+  document.getElementById('file-input').addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      editor.setValue(ev.target.result);
+      editor.focus();
+    };
+    reader.readAsText(file);
+    this.value = '';
+  });
+  document.getElementById('btn-save').addEventListener('click', () => {
+    const blob = new Blob([editor.getValue()], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'modelo.lp';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    if (confirm('Limpar o editor?')) {
+      editor.setValue('');
+      editor.focus();
+      setPlaceholder();
+    }
+  });
+
+  /* ════════════════════════════════════════════════════════════════════
+     6. Examples selector
+  ════════════════════════════════════════════════════════════════════ */
+  document.getElementById('examples-select').addEventListener('change', function () {
+    const ex = EXAMPLES[this.value];
+    if (ex) {
+      editor.setValue(ex);
+      editor.focus();
+      setPlaceholder();
+    }
+    this.value = '';
+  });
+
+  /* ════════════════════════════════════════════════════════════════════
+     7. HiGHS Web Worker (inline blob)
+  ════════════════════════════════════════════════════════════════════ */
+  const HIGHS_BASE = 'https://lovasoa.github.io/highs-js/';
+
+  const workerSrc = `
+importScripts('${HIGHS_BASE}highs.js');
+
+let highs = null;
+
+// Capture all HiGHS stdout/stderr via Emscripten callbacks and stream to main thread
+Module({
+  locateFile: f => '${HIGHS_BASE}' + f,
+  print:    line => postMessage({ type: 'log', line, isErr: false }),
+  printErr: line => postMessage({ type: 'log', line, isErr: true })
+})
+  .then(h => {
+    highs = h;
+    postMessage({ type: 'ready' });
+  })
+  .catch(err => {
+    postMessage({ type: 'init_error', message: err.toString() });
+  });
+
+onmessage = async function({ data }) {
+  if (!highs) {
+    await new Promise(res => {
+      const t = setInterval(() => { if (highs) { clearInterval(t); res(); } }, 50);
+    });
+  }
+  try {
+    // output_flag: true ensures HiGHS writes to stdout (captured by print above)
+    const solution = highs.solve(data, { output_flag: true });
+    postMessage({ type: 'solution', solution });
+  } catch (err) {
+    postMessage({ type: 'error', message: err.toString() });
+  }
+};
+`;
+
+  const workerBlob = new Blob([workerSrc], { type: 'application/javascript' });
+  const worker = new Worker(URL.createObjectURL(workerBlob));
+
+  let solverReady = false;
+  let solving = false;
+  let logLines = [];   // { line, isErr } – accumulated for current/last solve
+
+  worker.onmessage = function ({ data }) {
+    switch (data.type) {
+      case 'ready':
+        solverReady = true;
+        setDot('ok');
+        setMsg('HiGHS pronto ✓');
+        document.getElementById('btn-solve').disabled = false;
+        document.getElementById('btn-solve').textContent = '▶ Resolver';
+        break;
+
+      case 'init_error':
+        setDot('error');
+        setMsg('Erro ao carregar HiGHS: ' + data.message);
+        break;
+
+      case 'log': {
+        // Stream each line into the live log pane (if visible) and buffer it
+        logLines.push({ line: data.line, isErr: data.isErr });
+        const live = document.getElementById('log-live');
+        if (live) {
+          const el = document.createElement('div');
+          el.className = logLineClass(data.line, data.isErr);
+          el.textContent = data.line;
+          live.appendChild(el);
+          // Auto-scroll unless user has scrolled up
+          const atBottom = live.scrollHeight - live.clientHeight - live.scrollTop < 40;
+          if (atBottom) live.scrollTop = live.scrollHeight;
+        }
+        // Update live node/gap counters in status card
+        updateLiveStats(data.line);
+        break;
+      }
+
+      case 'solution':
+        solving = false;
+        renderSolution(data.solution);
+        setSolveBtn(false);
+        setDot('ok');
+        break;
+
+      case 'error':
+        solving = false;
+        renderError(data.message);
+        setSolveBtn(false);
+        setDot('ok');
+        break;
+    }
+  };
+
+  worker.onerror = function (err) {
+    setDot('error');
+    setMsg('Erro no worker: ' + (err.message || err));
+    solving = false;
+    setSolveBtn(false);
+  };
+
+  /* ════════════════════════════════════════════════════════════════════
+     8. Solve trigger
+  ════════════════════════════════════════════════════════════════════ */
+  document.getElementById('btn-solve').addEventListener('click', solve);
+
+  function solve() {
+    if (!solverReady || solving) return;
+    const lp = editor.getValue().trim();
+    if (!lp) return;
+    solving = true;
+    logLines = [];
+    clearErrorMarkers();    // remove previous error highlights
+    showSolvingView();
+    setSolveBtn(true);
+    setDot('loading');
+    setMsg('Resolvendo…');
+    worker.postMessage(lp);
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     Font size controls
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const MIN = 9, MAX = 28, STEP = 1;
+    let size = 14;
+    try { size = parseInt(localStorage.getItem('lp-font-size'), 10) || 14; } catch (_) {}
+    size = Math.min(MAX, Math.max(MIN, size));
+
+    function applySize(s) {
+      size = Math.min(MAX, Math.max(MIN, s));
+      editor.getWrapperElement().style.fontSize = size + 'px';
+      editor.refresh();
+      document.getElementById('font-size-display').textContent = size + 'px';
+      document.getElementById('font-dec').disabled = size <= MIN;
+      document.getElementById('font-inc').disabled = size >= MAX;
+      try { localStorage.setItem('lp-font-size', size); } catch (_) {}
+    }
+
+    document.getElementById('font-dec').addEventListener('click', () => applySize(size - STEP));
+    document.getElementById('font-inc').addEventListener('click', () => applySize(size + STEP));
+
+    // Ctrl+- / Ctrl+=  (reset with Ctrl+0)
+    document.addEventListener('keydown', e => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      if (e.key === '-' || e.key === '_')                            { e.preventDefault(); applySize(size - STEP); }
+      if (e.key === '+' || e.key === '=' || e.key === 'NumpadAdd')   { e.preventDefault(); applySize(size + STEP); }
+      if (e.key === '0')                                             { e.preventDefault(); applySize(14); }
+    });
+
+    applySize(size);  // apply saved/default on load
+  })();
+
+  // ── Error marker helpers ─────────────────────────────────────────────
+  let _errorMarkedLine = -1;
+
+  function clearErrorMarkers() {
+    if (_errorMarkedLine >= 0) {
+      editor.removeLineClass(_errorMarkedLine, 'background', 'cm-error-line');
+      editor.setGutterMarker(_errorMarkedLine, 'CodeMirror-linenumbers', null);
+      _errorMarkedLine = -1;
+    }
+  }
+
+  function markErrorLine(lineNum) {   // lineNum is 1-based from HiGHS
+    clearErrorMarkers();
+    const idx = lineNum - 1;          // CodeMirror is 0-based
+    if (idx < 0 || idx >= editor.lineCount()) return;
+    _errorMarkedLine = idx;
+    editor.addLineClass(idx, 'background', 'cm-error-line');
+    // Gutter marker: a small red arrow
+    const marker = document.createElement('span');
+    marker.className = 'cm-error-gutter';
+    marker.textContent = '▶';
+    marker.title = `Erro na linha ${lineNum}`;
+    editor.setGutterMarker(idx, 'CodeMirror-linenumbers', marker);
+    editor.scrollIntoView({ line: idx, ch: 0 }, 80);
+    editor.setCursor({ line: idx, ch: 0 });
+    editor.focus();
+  }
+
+  // Extract 1-based line number from HiGHS error strings like:
+  //   "LP file error on line 12"  /  "line 12:"  /  "at line 12"
+  function extractErrorLine(msg) {
+    const m = msg.match(/(?:line|ln)[:\s]+(\d+)/i)
+           || msg.match(/\bat\s+(\d+)\b/i);
+    return m ? parseInt(m[1], 10) : null;
+  }
+
+  // ── Live view shown while the solver is running ──────────────────────
+  function showSolvingView() {
+    document.getElementById('results').innerHTML = `
+      <div class="status-card" id="live-status-card">
+        <div class="status-badge badge-pending" id="live-badge">⏳ Resolvendo…</div>
+        <div id="live-stats" style="margin-left:auto;text-align:right;font-size:11px;color:var(--muted)"></div>
+      </div>
+      <div class="log-toolbar">
+        <span>Output do solver (ao vivo):</span>
+      </div>
+      <div id="log-live" class="log-pane" style="flex:1;max-height:calc(100vh - 200px)"></div>`;
+  }
+
+  // Parse MIP progress lines to update the live status card
+  // HiGHS MIP table row looks like: "   N   Q   L   Exp%   BestBound   BestSol  Gap%  ..."
+  function updateLiveStats(line) {
+    // Match lines that contain a gap percentage, e.g. "     1       0 ... 11.52%"
+    const gapMatch = line.match(/(\d+\.\d+)%\s*$/);
+    const stats = document.getElementById('live-stats');
+    if (!stats) return;
+    if (gapMatch) {
+      const gap = parseFloat(gapMatch[1]);
+      stats.innerHTML = `Gap: <strong style="color:${gap < 1 ? 'var(--green)' : gap < 10 ? 'var(--yellow)' : 'var(--orange)'}">${gap.toFixed(2)}%</strong>`;
+    }
+  }
+
+  function setSolveBtn(running) {
+    const btn = document.getElementById('btn-solve');
+    btn.disabled = running;
+    btn.className = 'btn primary' + (running ? ' solving' : '');
+    btn.textContent = running ? '⏳ Resolvendo…' : '▶ Resolver';
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     9. Log line classifier
+  ════════════════════════════════════════════════════════════════════ */
+  function logLineClass(line, isErr) {
+    if (isErr) return 'll-err';
+    if (!line || !line.trim()) return 'll-blank';
+    const t = line.trim();
+
+    // HiGHS version / copyright header
+    if (t.startsWith('Running HiGHS') || t.startsWith('Copyright')) return 'll-header';
+
+    // Status / conclusion lines
+    if (/\bOptimal\b/i.test(t))    return 'll-optimal';
+    if (/\bInfeasible\b/i.test(t)) return 'll-infeas';
+    if (/\bUnbounded\b/i.test(t))  return 'll-infeas';
+
+    // Warnings
+    if (/warning|warn/i.test(t)) return 'll-warning';
+
+    // Section headings (e.g. "Solving MIP model with:", "Solving report")
+    if (/^(Solving|Presolv|Running|Model|Problem|Solution|Using|Reading|Writing)/i.test(t)) return 'll-section';
+
+    // MIP B&B table header (contains "Nodes" and "B&B Tree" or "Objective")
+    if (/Nodes/.test(t) && /B&B|Objective|Leaves/.test(t)) return 'll-mip-hdr';
+    if (/Proc\.|InQueue|BestBound|BestSol/.test(t)) return 'll-mip-hdr';
+
+    // MIP progress rows: start with whitespace + digits, end with a time "0.0s"
+    // These are the main B&B rows; mark the best-update ones (prefixed with B/C/H)
+    if (/^\s*[BCHF]\s+\d/.test(line)) return 'll-mip-best';  // new incumbent found
+    if (/^\s+\d+\s+\d+.*\d+\.\d+s\s*$/.test(line)) return 'll-mip-row';
+
+    // Separator lines (-------)
+    if (/^[-=\s]+$/.test(t)) return 'll-sep';
+
+    return 'll-normal';
+  }
+
+  // Build HTML for the full log from the logLines buffer
+  function buildLogHTML(lines) {
+    if (!lines.length) return '<div class="ll-normal" style="color:var(--muted)">Nenhum output capturado. O HiGHS pode estar em modo silencioso.</div>';
+    return lines.map(({ line, isErr }) => {
+      const cls = logLineClass(line, isErr);
+      return `<div class="${cls}">${escHtml(line) || '&nbsp;'}</div>`;
+    }).join('');
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     10. Render results
+  ════════════════════════════════════════════════════════════════════ */
+  function fmt(n) {
+    if (n === null || n === undefined) return '—';
+    if (typeof n !== 'number') return String(n);
+    if (!isFinite(n)) return n > 0 ? '+∞' : '−∞';
+    if (n === 0) return '0';
+    const abs = Math.abs(n);
+    if (abs >= 1e9 || (abs < 1e-5 && abs > 0)) return n.toExponential(4);
+    if (Number.isInteger(n)) return n.toString();
+    return parseFloat(n.toPrecision(7)).toString();
+  }
+
+  function statusTag(s) {
+    if (!s) return '<span class="tag-nb">—</span>';
+    const map = { BS: ['BS','tag-bs','Básica'], LB: ['LB','tag-lb','Inf'], UB: ['UB','tag-ub','Sup'], NB: ['NB','tag-nb','Não-básica'] };
+    const [label, cls, title] = map[s.toUpperCase()] || [s, '', ''];
+    return `<span class="${cls}" title="${title}">${label}</span>`;
+  }
+
+  function rowClass(s) {
+    if (!s) return '';
+    return { BS: 'bsrow', LB: 'lbrow', UB: 'ubrow' }[s.toUpperCase()] || '';
+  }
+
+  function renderSolution(sol) {
+    const res = document.getElementById('results');
+    const vars = Object.values(sol.Columns || {});
+    const rows = sol.Rows || [];
+    const isOpt = sol.Status === 'Optimal';
+    const isInf = sol.Status === 'Infeasible';
+    const isUnb = sol.Status === 'Unbounded';
+
+    const badgeClass = isOpt ? 'badge-optimal' : isInf ? 'badge-infeasible' : isUnb ? 'badge-unbounded' : 'badge-pending';
+    const badgeText  = isOpt ? '✓ Ótimo' : isInf ? '✗ Inviável' : isUnb ? '∞ Ilimitado' : sol.Status;
+
+    const varRows = vars.map(v => `
+      <tr class="${rowClass(v.Status)}">
+        <td class="varname">${v.Name}</td>
+        <td class="num" style="color:${v.Primal !== 0 ? 'var(--cyan)' : ''}">${fmt(v.Primal)}</td>
+        <td class="num">${fmt(v.Dual)}</td>
+        <td>${statusTag(v.Status)}</td>
+        <td class="num">${fmt(v.Lower)}</td>
+        <td class="num">${fmt(v.Upper)}</td>
+        <td>${v.Type || '—'}</td>
+      </tr>`).join('');
+
+    const constrRows = rows.map(r => `
+      <tr class="${rowClass(r.Status)}">
+        <td class="varname">${r.Name || 'r' + r.Index}</td>
+        <td class="num">${fmt(r.Primal)}</td>
+        <td class="num" style="color:${r.Dual && r.Dual !== 0 ? 'var(--yellow)' : ''}">${fmt(r.Dual)}</td>
+        <td>${statusTag(r.Status)}</td>
+        <td class="num">${fmt(r.Lower)}</td>
+        <td class="num">${fmt(r.Upper)}</td>
+      </tr>`).join('');
+
+    res.innerHTML = `
+      <div class="status-card">
+        <div>
+          <div class="status-badge ${badgeClass}">${badgeText}</div>
+        </div>
+        ${isOpt ? `
+          <div class="obj-block">
+            <div class="obj-label">Valor Objetivo</div>
+            <div class="obj-value">${fmt(sol.ObjectiveValue)}</div>
+          </div>` : ''}
+      </div>
+
+      <div class="tabs" id="result-tabs">
+        <button class="tab active" data-tab="vars">
+          Variáveis&nbsp;<span style="color:var(--muted);font-size:11px">(${vars.length})</span>
+        </button>
+        <button class="tab" data-tab="constrs">
+          Restrições&nbsp;<span style="color:var(--muted);font-size:11px">(${rows.length})</span>
+        </button>
+        <button class="tab" data-tab="log">
+          Log&nbsp;<span style="color:var(--muted);font-size:11px">(${logLines.length})</span>
+        </button>
+        <button class="tab" data-tab="raw">JSON</button>
+      </div>
+
+      <div id="tab-vars">
+        ${vars.length ? `
+        <div class="table-wrap">
+          <table class="result">
+            <thead><tr>
+              <th>Variável</th><th>Valor</th><th title="Custo Reduzido">C. Reduzido</th>
+              <th>Status</th><th>Inf.</th><th>Sup.</th><th>Tipo</th>
+            </tr></thead>
+            <tbody>${varRows}</tbody>
+          </table>
+        </div>
+        <div style="margin-top:8px;font-size:10.5px;color:var(--muted)">
+          BS = básica (ativa) · LB = no limite inferior · UB = no limite superior
+        </div>` : '<div style="color:var(--muted);font-size:12px;padding:8px">Sem variáveis</div>'}
+      </div>
+
+      <div id="tab-constrs" style="display:none">
+        ${rows.length ? `
+        <div class="table-wrap">
+          <table class="result">
+            <thead><tr>
+              <th>Restrição</th><th>LHS</th><th title="Preço Sombra / Dual">Preço Sombra</th>
+              <th>Status</th><th>RHS inf.</th><th>RHS sup.</th>
+            </tr></thead>
+            <tbody>${constrRows}</tbody>
+          </table>
+        </div>
+        <div style="margin-top:8px;font-size:10.5px;color:var(--muted)">
+          Preço sombra: variação no objetivo por unidade de folga da restrição
+        </div>` : '<div style="color:var(--muted);font-size:12px;padding:8px">Sem restrições</div>'}
+      </div>
+
+      <div id="tab-log" style="display:none">
+        <div class="log-toolbar">
+          <span>${logLines.length} linha(s) de output</span>
+          <button class="log-copy-btn" id="log-copy-btn">📋 Copiar</button>
+        </div>
+        <div class="log-pane" id="log-pane-final" style="max-height:calc(100vh - 260px)">${buildLogHTML(logLines)}</div>
+      </div>
+
+      <div id="tab-raw" style="display:none">
+        <pre style="font-size:11px;color:var(--muted);white-space:pre-wrap;word-break:break-all;background:var(--bg3);padding:10px;border-radius:6px;border:1px solid var(--border);max-height:400px;overflow:auto">${JSON.stringify(sol, (k,v) => !isFinite(v) && typeof v==='number' ? (v>0?'+Inf':'-Inf') : v, 2)}</pre>
+      </div>`;
+
+    const ALL_TABS = ['vars','constrs','log','raw'];
+
+    // Tab logic
+    document.getElementById('result-tabs').addEventListener('click', e => {
+      const btn = e.target.closest('.tab');
+      if (!btn) return;
+      document.querySelectorAll('#result-tabs .tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      ALL_TABS.forEach(id => {
+        document.getElementById('tab-' + id).style.display = btn.dataset.tab === id ? '' : 'none';
+      });
+      // Scroll log pane to bottom on first open
+      if (btn.dataset.tab === 'log') {
+        const pane = document.getElementById('log-pane-final');
+        if (pane) pane.scrollTop = pane.scrollHeight;
+      }
+    });
+
+    // Copy log button
+    document.getElementById('log-copy-btn').addEventListener('click', () => {
+      const text = logLines.map(l => l.line).join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('log-copy-btn');
+        btn.textContent = '✓ Copiado!';
+        setTimeout(() => { btn.textContent = '📋 Copiar'; }, 1500);
+      });
+    });
+
+    setMsg(`${badgeText} · ${vars.length} var · ${rows.length} restrições · obj = ${fmt(sol.ObjectiveValue)}`);
+  }
+
+  function renderError(msg) {
+    const errLine = extractErrorLine(msg);
+    if (errLine) markErrorLine(errLine);
+
+    const lineHint = errLine
+      ? `<span style="color:var(--red);font-size:12px;margin-left:auto">↑ linha ${errLine} destacada no editor</span>`
+      : '';
+
+    document.getElementById('results').innerHTML = `
+      <div class="status-card" style="border-color:rgba(255,85,85,.4)">
+        <div class="status-badge badge-error">✗ Erro</div>
+        <div style="margin-left:8px;color:var(--muted);font-size:12px">Verifique a sintaxe do modelo</div>
+        ${lineHint}
+      </div>
+      <div class="error-msg">${escHtml(msg)}</div>
+      <div style="margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--text)">Dicas comuns:</strong><br>
+        • RHS deve ser constante — <code style="color:var(--red)">x &lt;= 2 y</code> é inválido; use <code style="color:var(--green)">x - 2 y &lt;= 0</code><br>
+        • Cada restrição precisa de um único operador (<code>&lt;=</code>, <code>&gt;=</code> ou <code>=</code>)<br>
+        • Seções obrigatórias: objetivo + <code>Subject To</code> + <code>End</code>
+      </div>
+      <a class="hint-link" href="http://lim.univ-reunion.fr/staff/fred/Enseignement/Optim/doc/CPLEX-LP/CPLEX-LP-file-format.html" target="_blank">
+        📖 Referência do formato LP (CPLEX)
+      </a>
+      ${logLines.length ? `
+      <div style="margin-top:14px">
+        <div class="log-toolbar">
+          <span>Output do solver (${logLines.length} linha(s)):</span>
+          <button class="log-copy-btn" id="err-log-copy-btn">📋 Copiar</button>
+        </div>
+        <div class="log-pane" id="err-log-pane" style="max-height:300px">${buildLogHTML(logLines)}</div>
+      </div>` : ''}`;
+
+    if (logLines.length) {
+      const pane = document.getElementById('err-log-pane');
+      if (pane) pane.scrollTop = pane.scrollHeight;
+      document.getElementById('err-log-copy-btn').addEventListener('click', () => {
+        navigator.clipboard.writeText(logLines.map(l => l.line).join('\n'));
+      });
+    }
+    setMsg('Erro ao resolver — verifique o modelo');
+  }
+
+  function setPlaceholder() {
+    document.getElementById('results').innerHTML = document.getElementById('placeholder')?.outerHTML || '';
+  }
+
+  function setDot(state) {
+    const d = document.getElementById('dot');
+    d.className = 'dot' + (state === 'loading' ? ' loading' : state === 'error' ? ' error' : '');
+  }
+  function setMsg(m) { document.getElementById('solver-msg').textContent = m; }
+  function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  /* Initial loading state */
+  setDot('loading');
+
+  /* ════════════════════════════════════════════════════════════════════
+     Theme toggle
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const btn  = document.getElementById('btn-theme');
+    const root = document.documentElement;
+
+    // Map theme → { label, cm-theme, next-theme }
+    const THEMES = {
+      dark:  { icon: '🌙', title: 'Mudar para tema claro',  cmTheme: 'dracula',  next: 'light' },
+      light: { icon: '☀️', title: 'Mudar para tema escuro', cmTheme: 'default',  next: 'dark'  },
+    };
+
+    function applyTheme(name) {
+      const t = THEMES[name] || THEMES.dark;
+      root.dataset.theme = name;
+      btn.textContent    = t.icon;
+      btn.title          = t.title;
+      editor.setOption('theme', t.cmTheme);
+      try { localStorage.setItem('lp-theme', name); } catch (_) {}
+    }
+
+    btn.addEventListener('click', () => {
+      const current = root.dataset.theme || 'dark';
+      applyTheme(THEMES[current]?.next || 'light');
+    });
+
+    // Restore saved preference, or honour OS preference as fallback
+    let saved = null;
+    try { saved = localStorage.getItem('lp-theme'); } catch (_) {}
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+  })();
+  </script>
+</body>
+</html>
