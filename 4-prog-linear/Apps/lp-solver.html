@@ -190,6 +190,57 @@
     .editor-theme-select:hover { color: var(--text); border-color: var(--muted); }
     .editor-theme-select option { background-color: var(--bg); color: var(--text); }
 
+    /* ─── Editor tabs ───────────────────────────────────────────────── */
+    .tab-bar {
+      display: flex;
+      align-items: stretch;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      flex-shrink: 0;
+      scrollbar-width: thin;
+    }
+    .tab-bar::-webkit-scrollbar { height: 4px; }
+    .tab-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 6px 6px 12px;
+      font-size: 12.5px;
+      color: var(--muted);
+      border-right: 1px solid var(--border);
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+      flex-shrink: 0;
+      max-width: 180px;
+      transition: background .1s, color .1s;
+    }
+    .tab:hover { background: rgba(127,127,127,0.12); color: var(--text); }
+    .tab.active { color: var(--text); background: var(--bg); box-shadow: inset 0 -2px 0 var(--accent); }
+    .tab-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tab-close {
+      flex-shrink: 0;
+      width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1;
+    }
+    .tab-close:hover { background: rgba(255,85,85,.25); color: var(--red); }
+    .tab-add {
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      width: 30px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      user-select: none;
+    }
+    .tab-add:hover { background: rgba(127,127,127,0.12); color: var(--text); }
+
     .cm-wrapper { flex: 1; overflow: hidden; }
     .CodeMirror  { height: 100% !important; font-size: 13.5px; line-height: 1.65; }
     .CodeMirror-scroll { padding-bottom: 0; }
@@ -482,7 +533,7 @@
     <div class="sep"></div>
     <button class="btn" id="btn-open" title="Abrir arquivo .lp">📂 Abrir</button>
     <button class="btn" id="btn-save" title="Salvar como .lp">💾 Salvar</button>
-    <input type="file" id="file-input" accept=".lp,.txt" style="display:none">
+    <input type="file" id="file-input" accept=".lp,.txt" multiple style="display:none">
 
     <div class="toolbar-right">
       <button class="btn theme-toggle" id="btn-theme" title="Alternar tema claro/escuro">🌙</button>
@@ -514,6 +565,7 @@
           <button class="font-btn" id="font-inc" title="Aumentar fonte (Ctrl++)">A+</button>
         </div>
       </div>
+      <div class="tab-bar" id="tab-bar"></div>
       <div class="cm-wrapper" id="cm-wrapper"></div>
       <div class="resize-handle" id="resize-handle"></div>
     </div>
@@ -746,13 +798,170 @@ End`
   };
 
   /* ════════════════════════════════════════════════════════════════════
-     3. CodeMirror setup
+     3. Tabs + CodeMirror setup
+     Each tab keeps its own CodeMirror.Doc, which preserves undo history,
+     cursor/scroll position and error markers independently per tab.
+     Solving always acts on the doc of the currently active tab.
   ════════════════════════════════════════════════════════════════════ */
   let savedEditorTheme = 'dracula';
   try { savedEditorTheme = localStorage.getItem('lp-editor-theme') || 'dracula'; } catch (_) {}
 
+  let tabs = [];
+  let activeTabId = null;
+  let tabSeq = 0;
+
+  function makeTab(name, content, id) {
+    return {
+      id: id || ('tab-' + (++tabSeq) + '-' + Date.now().toString(36)),
+      name: name || 'Sem título',
+      doc: new CodeMirror.Doc(content || '', 'lp'),
+      errorLine: -1
+    };
+  }
+
+  function getActiveTab() {
+    return tabs.find(t => t.id === activeTabId) || null;
+  }
+
+  // Restore tabs saved from a previous session, if any
+  (function restoreTabs() {
+    try {
+      const raw = localStorage.getItem('lp-tabs');
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (saved && Array.isArray(saved.tabs) && saved.tabs.length) {
+        tabSeq = saved.tabSeq || 0;
+        saved.tabs.forEach(t => tabs.push(makeTab(t.name, t.content, t.id)));
+        if (saved.activeTabId && tabs.some(t => t.id === saved.activeTabId)) {
+          activeTabId = saved.activeTabId;
+        }
+      }
+    } catch (_) {}
+  })();
+
+  if (!tabs.length) {
+    tabs.push(makeTab('Produção (PL)', EXAMPLES.producao));
+  }
+  if (!activeTabId || !tabs.some(t => t.id === activeTabId)) {
+    activeTabId = tabs[0].id;
+  }
+
+  let _persistTimer = null;
+  function persistTabs() {
+    clearTimeout(_persistTimer);
+    _persistTimer = setTimeout(() => {
+      try {
+        localStorage.setItem('lp-tabs', JSON.stringify({
+          activeTabId,
+          tabSeq,
+          tabs: tabs.map(t => ({ id: t.id, name: t.name, content: t.doc.getValue() }))
+        }));
+      } catch (_) {}
+    }, 400);
+  }
+
+  function sanitizeFileName(name) {
+    return (name || 'modelo').replace(/[\\/:*?"<>|]/g, '_').trim() || 'modelo';
+  }
+
+  function renderTabBar() {
+    const bar = document.getElementById('tab-bar');
+    bar.innerHTML = '';
+    tabs.forEach(tab => {
+      const el = document.createElement('div');
+      el.className = 'tab' + (tab.id === activeTabId ? ' active' : '');
+      el.title = tab.name + ' (duplo clique para renomear)';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'tab-name';
+      nameSpan.textContent = tab.name;
+
+      const closeBtn = document.createElement('span');
+      closeBtn.className = 'tab-close';
+      closeBtn.textContent = '×';
+      closeBtn.title = 'Fechar aba';
+
+      el.appendChild(nameSpan);
+      el.appendChild(closeBtn);
+
+      el.addEventListener('click', e => {
+        if (e.target === closeBtn) return;
+        activateTab(tab.id);
+      });
+      closeBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        closeTab(tab.id);
+      });
+      el.addEventListener('dblclick', e => {
+        if (e.target === closeBtn) return;
+        renameTab(tab.id);
+      });
+
+      bar.appendChild(el);
+    });
+
+    const addBtn = document.createElement('div');
+    addBtn.className = 'tab-add';
+    addBtn.title = 'Nova aba';
+    addBtn.textContent = '+';
+    addBtn.addEventListener('click', () => newTab());
+    bar.appendChild(addBtn);
+  }
+
+  function activateTab(id) {
+    if (id === activeTabId) return;
+    const tab = tabs.find(t => t.id === id);
+    if (!tab) return;
+    activeTabId = id;
+    editor.swapDoc(tab.doc);
+    updateLineCount();
+    renderTabBar();
+    editor.refresh();
+    editor.focus();
+    persistTabs();
+  }
+
+  function closeTab(id) {
+    const idx = tabs.findIndex(t => t.id === id);
+    if (idx === -1) return;
+    const wasActive = id === activeTabId;
+    tabs.splice(idx, 1);
+
+    if (!tabs.length) {
+      tabs.push(makeTab('Sem título', ''));
+    }
+
+    if (wasActive) {
+      const nextIdx = Math.min(idx, tabs.length - 1);
+      activeTabId = tabs[nextIdx].id;
+      editor.swapDoc(tabs[nextIdx].doc);
+      updateLineCount();
+      editor.refresh();
+    }
+    renderTabBar();
+    persistTabs();
+  }
+
+  function newTab(name, content) {
+    const tab = makeTab(name, content);
+    tabs.push(tab);
+    activateTab(tab.id);
+    return tab;
+  }
+
+  function renameTab(id) {
+    const tab = tabs.find(t => t.id === id);
+    if (!tab) return;
+    const newName = prompt('Nome da aba:', tab.name);
+    if (newName && newName.trim()) {
+      tab.name = newName.trim();
+      renderTabBar();
+      persistTabs();
+    }
+  }
+
   const editor = CodeMirror(document.getElementById('cm-wrapper'), {
-    value: EXAMPLES.producao,
+    value: getActiveTab().doc,
     mode: 'lp',
     theme: savedEditorTheme,
     lineNumbers: true,
@@ -766,6 +975,7 @@ End`
     }
   });
   editor.setSize('100%', '100%');
+  renderTabBar();
 
   // Line count in header
   function updateLineCount() {
@@ -773,6 +983,7 @@ End`
     document.getElementById('line-count').textContent = n + ' linha' + (n !== 1 ? 's' : '');
   }
   editor.on('change', updateLineCount);
+  editor.on('change', persistTabs);
   updateLineCount();
 
   /* ════════════════════════════════════════════════════════════════════
@@ -816,54 +1027,64 @@ End`
     document.getElementById('file-input').click();
   });
   document.getElementById('file-input').addEventListener('change', function () {
-    const file = this.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      editor.setValue(ev.target.result);
-      editor.focus();
-    };
-    reader.readAsText(file);
+    const files = Array.from(this.files || []);
+    if (!files.length) return;
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const name = file.name.replace(/\.(lp|txt)$/i, '');
+        newTab(name, ev.target.result);
+      };
+      reader.readAsText(file);
+    });
     this.value = '';
   });
   document.getElementById('btn-save').addEventListener('click', async () => {
+    const tab = getActiveTab();
     const content = editor.getValue();
+    const suggested = sanitizeFileName(tab ? tab.name : 'modelo') + '.lp';
 
     // Navegadores compatíveis (Chrome/Edge) abrem um diálogo nativo "Salvar como…"
     // que deixa escolher pasta e nome do arquivo.
     if (window.showSaveFilePicker) {
       try {
         const handle = await window.showSaveFilePicker({
-          suggestedName: 'modelo.lp',
+          suggestedName: suggested,
           types: [{ description: 'Modelo LP', accept: { 'text/plain': ['.lp'] } }]
         });
         const writable = await handle.createWritable();
         await writable.write(content);
         await writable.close();
+        // Mantém o nome da aba sincronizado com o arquivo salvo
+        if (tab && handle.name) {
+          tab.name = handle.name.replace(/\.(lp|txt)$/i, '');
+          renderTabBar();
+          persistTabs();
+        }
       } catch (err) {
         // Usuário cancelou o diálogo — não faz nada
         if (err.name !== 'AbortError') {
           console.error('Erro ao salvar:', err);
-          downloadFallback(content);
+          downloadFallback(content, suggested);
         }
       }
       return;
     }
 
     // Fallback (Firefox, Safari, etc.): faz o download direto na pasta padrão
-    downloadFallback(content);
+    downloadFallback(content, suggested);
   });
 
-  function downloadFallback(content) {
+  function downloadFallback(content, filename) {
     const blob = new Blob([content], { type: 'text/plain' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'modelo.lp';
+    a.download = filename || 'modelo.lp';
     a.click();
     URL.revokeObjectURL(a.href);
   }
   document.getElementById('btn-clear').addEventListener('click', () => {
-    if (confirm('Limpar o editor?')) {
+    if (confirm('Limpar o conteúdo desta aba?')) {
       editor.setValue('');
       editor.focus();
       setPlaceholder();
@@ -876,8 +1097,8 @@ End`
   document.getElementById('examples-select').addEventListener('change', function () {
     const ex = EXAMPLES[this.value];
     if (ex) {
-      editor.setValue(ex);
-      editor.focus();
+      const label = this.options[this.selectedIndex].textContent;
+      newTab(label, ex);
       setPlaceholder();
     }
     this.value = '';
@@ -1078,14 +1299,13 @@ onmessage = async function({ data }) {
     apply(pct);
   })();
 
-  // ── Error marker helpers ─────────────────────────────────────────────
-  let _errorMarkedLine = -1;
-
+  // ── Error marker helpers (scoped to the active tab) ──────────────────
   function clearErrorMarkers() {
-    if (_errorMarkedLine >= 0) {
-      editor.removeLineClass(_errorMarkedLine, 'background', 'cm-error-line');
-      editor.setGutterMarker(_errorMarkedLine, 'CodeMirror-linenumbers', null);
-      _errorMarkedLine = -1;
+    const tab = getActiveTab();
+    if (tab && tab.errorLine >= 0) {
+      editor.removeLineClass(tab.errorLine, 'background', 'cm-error-line');
+      editor.setGutterMarker(tab.errorLine, 'CodeMirror-linenumbers', null);
+      tab.errorLine = -1;
     }
   }
 
@@ -1093,7 +1313,8 @@ onmessage = async function({ data }) {
     clearErrorMarkers();
     const idx = lineNum - 1;          // CodeMirror is 0-based
     if (idx < 0 || idx >= editor.lineCount()) return;
-    _errorMarkedLine = idx;
+    const tab = getActiveTab();
+    if (tab) tab.errorLine = idx;
     editor.addLineClass(idx, 'background', 'cm-error-line');
     // Gutter marker: a small red arrow
     const marker = document.createElement('span');
