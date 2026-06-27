@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LP Solver — Programação Linear</title>
+  <title>WebHIGHS — Programação Linear</title>
 
   <!-- CodeMirror 5 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
@@ -167,6 +167,8 @@
       transition: color .1s, border-color .1s;
     }
     .font-btn:hover { color: var(--text); border-color: var(--muted); }
+    .font-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .font-btn:disabled:hover { color: var(--muted); border-color: var(--border); }
     #font-size-display, #result-font-size-display {
       font-size: 10px;
       color: var(--muted);
@@ -490,6 +492,108 @@
     }
     .log-copy-btn:hover { color: var(--text); border-color: var(--muted); }
 
+    /* ─── Options modal ──────────────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-panel {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 480px;
+      max-width: 92vw;
+      max-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 30px rgba(0,0,0,.4);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-body {
+      padding: 14px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .opt-row { display: flex; gap: 14px; }
+    .opt-row .opt-group { flex: 1; }
+    .opt-group { display: flex; flex-direction: column; gap: 4px; }
+    .opt-label { font-size: 12.5px; color: var(--text); display: flex; flex-direction: column; gap: 2px; }
+    .opt-hint { font-size: 10.5px; color: var(--muted); font-weight: 400; }
+    .opt-input {
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--bg3);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13px;
+    }
+    .opt-input:focus { outline: none; border-color: var(--accent); }
+    select.opt-input option { background-color: var(--bg); color: var(--text); }
+
+    /* ─── About modal ────────────────────────────────────────────────── */
+    .about-section + .about-section { margin-top: 4px; border-top: 1px solid var(--border); padding-top: 14px; }
+    .about-section h3 {
+      font-size: 13px;
+      margin: 0 0 6px;
+      color: var(--text);
+    }
+    .about-section p {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .about-refs {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .about-refs li {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .about-refs strong { color: var(--text); }
+    .about-refs a { color: var(--accent); text-decoration: none; }
+    .about-refs a:hover { text-decoration: underline; }
+
     /* ─── Status bar ────────────────────────────────────────────────── */
     .statusbar {
       display: flex;
@@ -518,7 +622,7 @@
 <body>
   <!-- ── Toolbar ──────────────────────────────────────────────────────── -->
   <div class="toolbar">
-    <span class="brand">⚡ LP Solver</span>
+    <span class="brand">🔺 WebHIGHS</span>
     <div class="sep"></div>
 
     <select class="btn" id="examples-select" title="Carregar modelo de exemplo">
@@ -536,10 +640,168 @@
     <input type="file" id="file-input" accept=".lp,.txt" multiple style="display:none">
 
     <div class="toolbar-right">
+      <button class="btn" id="btn-about" title="Sobre este projeto">ℹ️ Sobre</button>
+      <button class="btn" id="btn-options" title="Opções do solver HiGHS">⚙️ Opções</button>
       <button class="btn theme-toggle" id="btn-theme" title="Alternar tema claro/escuro">🌙</button>
       <div class="sep"></div>
       <button class="btn" id="btn-clear" title="Limpar editor">✕ Limpar</button>
       <button class="btn primary" id="btn-solve" disabled>▶ Resolver</button>
+    </div>
+  </div>
+
+  <!-- ── Options modal ────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="options-overlay">
+    <div class="modal-panel" id="options-panel">
+      <div class="modal-header">
+        <span>⚙️ Opções do Solver (HiGHS)</span>
+        <button class="modal-close" id="options-close" title="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+
+        <div class="opt-group">
+          <label class="opt-label" for="opt-time-limit">
+            Tempo máximo de resolução (segundos)
+            <span class="opt-hint">Em vazio = sem limite. Ao atingir o tempo, o HiGHS retorna a melhor solução encontrada até então.</span>
+          </label>
+          <input type="number" class="opt-input" id="opt-time-limit" min="0" step="1" placeholder="sem limite">
+        </div>
+
+        <div class="opt-group">
+          <label class="opt-label" for="opt-mip-rel-gap">
+            Gap relativo aceitável — PLI (%)
+            <span class="opt-hint">Encerra ao chegar perto do ótimo por essa margem. Padrão do HiGHS: 0,01%.</span>
+          </label>
+          <input type="number" class="opt-input" id="opt-mip-rel-gap" min="0" step="0.01" placeholder="0.01 (padrão)">
+        </div>
+
+        <div class="opt-group">
+          <label class="opt-label" for="opt-mip-abs-gap">
+            Gap absoluto aceitável — PLI
+            <span class="opt-hint">Mesma ideia do gap relativo, mas em unidades do valor objetivo.</span>
+          </label>
+          <input type="number" class="opt-input" id="opt-mip-abs-gap" min="0" step="0.000001" placeholder="0.000001 (padrão)">
+        </div>
+
+        <div class="opt-group">
+          <label class="opt-label" for="opt-heuristic-effort">
+            Esforço de heurísticas — PLI (0 a 1)
+            <span class="opt-hint">Fração do tempo dedicada a heurísticas para achar soluções inteiras rapidamente. Padrão: 0,05.</span>
+          </label>
+          <input type="number" class="opt-input" id="opt-heuristic-effort" min="0" max="1" step="0.05" placeholder="0.05 (padrão)">
+        </div>
+
+        <div class="opt-row">
+          <div class="opt-group">
+            <label class="opt-label" for="opt-presolve">Pré-processamento (presolve)</label>
+            <select class="opt-input" id="opt-presolve">
+              <option value="">Automático</option>
+              <option value="on">Ativado</option>
+              <option value="off">Desativado</option>
+            </select>
+          </div>
+          <div class="opt-group">
+            <label class="opt-label" for="opt-solver">Algoritmo (LP)</label>
+            <select class="opt-input" id="opt-solver">
+              <option value="">Automático</option>
+              <option value="simplex">Simplex</option>
+              <option value="ipm">Pontos Interiores</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="opt-row">
+          <div class="opt-group">
+            <label class="opt-label" for="opt-parallel">Paralelismo</label>
+            <select class="opt-input" id="opt-parallel">
+              <option value="">Automático</option>
+              <option value="on">Ativado</option>
+              <option value="off">Desativado</option>
+            </select>
+          </div>
+          <div class="opt-group">
+            <label class="opt-label" for="opt-threads">Número de threads</label>
+            <input type="number" class="opt-input" id="opt-threads" min="1" step="1" placeholder="automático">
+          </div>
+        </div>
+
+        <div class="opt-group">
+          <label class="opt-label" for="opt-random-seed">
+            Semente aleatória (random seed)
+            <span class="opt-hint">Útil para reproduzir o mesmo resultado em modelos com múltiplas soluções ótimas.</span>
+          </label>
+          <input type="number" class="opt-input" id="opt-random-seed" step="1" placeholder="automático">
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="options-reset">Restaurar padrões</button>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn" id="options-cancel">Cancelar</button>
+          <button class="btn primary" id="options-save">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── About modal ──────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="about-overlay">
+    <div class="modal-panel" id="about-panel">
+      <div class="modal-header">
+        <span>ℹ️ Sobre este projeto</span>
+        <button class="modal-close" id="about-close" title="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+
+        <div class="about-section">
+          <h3>Sobre mim</h3>
+          <p>
+            <!-- ✏️ Escreva aqui um texto sobre você: quem é, por que criou este
+                 projeto, contato, link para LinkedIn/GitHub, etc. -->
+            [Escreva aqui um texto sobre você.]
+          </p>
+        </div>
+
+        <div class="about-section">
+          <h3>Sobre o projeto</h3>
+          <p>
+            WebHIGHS é um editor e resolvedor de modelos de Programação Linear (PL) e
+            Programação Linear Inteira (PLI), no formato CPLEX LP, que roda inteiramente
+            no navegador — sem precisar instalar nada ou enviar o modelo para um servidor.
+          </p>
+        </div>
+
+        <div class="about-section">
+          <h3>Tecnologias e referências</h3>
+          <ul class="about-refs">
+            <li>
+              <strong>HiGHS</strong> — solver de otimização linear, inteira-mista e de
+              programação quadrática, de código aberto, que faz toda a resolução dos modelos.
+              <br><a href="https://highs.dev" target="_blank" rel="noopener">highs.dev</a>
+            </li>
+            <li>
+              <strong>highs-js</strong> — compilação do HiGHS para WebAssembly, o que permite
+              rodar o solver inteiro dentro do navegador.
+              <br><a href="https://github.com/lovasoa/highs-js" target="_blank" rel="noopener">github.com/lovasoa/highs-js</a>
+            </li>
+            <li>
+              <strong>CodeMirror 5</strong> — editor de texto com numeração de linhas, destaque
+              de sintaxe e temas de cores.
+              <br><a href="https://codemirror.net/5/" target="_blank" rel="noopener">codemirror.net/5</a>
+            </li>
+            <li>
+              <strong>Claude (Anthropic)</strong> — assistente de IA utilizado no
+              desenvolvimento deste aplicativo.
+              <br><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <div style="margin-left:auto">
+          <button class="btn primary" id="about-ok">Fechar</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -574,6 +836,7 @@
     <div class="panel-results">
       <div class="panel-header">
         Resultados
+        <button class="font-btn" id="btn-export-solution" title="Exportar solução para arquivo" disabled>💾 Exportar</button>
         <div class="font-btns">
           <button class="font-btn" id="result-font-dec" title="Diminuir tamanho do texto">A−</button>
           <span id="result-font-size-display">100%</span>
@@ -831,7 +1094,15 @@ End`
       const saved = JSON.parse(raw);
       if (saved && Array.isArray(saved.tabs) && saved.tabs.length) {
         tabSeq = saved.tabSeq || 0;
-        saved.tabs.forEach(t => tabs.push(makeTab(t.name, t.content, t.id)));
+        saved.tabs.forEach(t => {
+          if (t.tooLargeToPersist) {
+            // The model was too big to keep in localStorage between sessions —
+            // restore an empty placeholder tab instead of silently losing it.
+            tabs.push(makeTab(t.name, '⌐ Este modelo era grande demais para ser salvo automaticamente.\n⌐ Abra o arquivo novamente em 📂 Abrir.', t.id));
+          } else {
+            tabs.push(makeTab(t.name, t.content, t.id));
+          }
+        });
         if (saved.activeTabId && tabs.some(t => t.id === saved.activeTabId)) {
           activeTabId = saved.activeTabId;
         }
@@ -847,6 +1118,8 @@ End`
   }
 
   let _persistTimer = null;
+  const PERSIST_MAX_CHARS = 1_000_000;   // ~1 MB of text — beyond this, skip auto-saving the content
+
   function persistTabs() {
     clearTimeout(_persistTimer);
     _persistTimer = setTimeout(() => {
@@ -854,9 +1127,22 @@ End`
         localStorage.setItem('lp-tabs', JSON.stringify({
           activeTabId,
           tabSeq,
-          tabs: tabs.map(t => ({ id: t.id, name: t.name, content: t.doc.getValue() }))
+          tabs: tabs.map(t => {
+            const content = t.doc.getValue();
+            // Very large models are intentionally NOT auto-saved to localStorage:
+            // re-serializing megabytes of text on every keystroke is itself a
+            // source of the "uso elevado de memória" warnings, and localStorage
+            // has a small quota (a few MB) anyway. The tab stays open normally
+            // in this session — it just won't be restored after a reload.
+            if (content.length > PERSIST_MAX_CHARS) {
+              return { id: t.id, name: t.name, tooLargeToPersist: true };
+            }
+            return { id: t.id, name: t.name, content };
+          })
         }));
-      } catch (_) {}
+      } catch (_) {
+        // Quota exceeded or similar — silently skip persistence rather than crash
+      }
     }, 400);
   }
 
@@ -978,9 +1264,17 @@ End`
   renderTabBar();
 
   // Line count in header
+  const LARGE_MODEL_WARN_LINES = 20000;   // editor performance/memory tends to suffer past this
+
   function updateLineCount() {
     const n = editor.lineCount();
-    document.getElementById('line-count').textContent = n + ' linha' + (n !== 1 ? 's' : '');
+    const el = document.getElementById('line-count');
+    el.textContent = n + ' linha' + (n !== 1 ? 's' : '');
+    el.title = (n > LARGE_MODEL_WARN_LINES)
+      ? 'Modelo grande — pode deixar o editor lento e aumentar o uso de memória do navegador'
+      : '';
+    el.style.color = (n > LARGE_MODEL_WARN_LINES) ? 'var(--orange)' : '';
+    el.textContent = (n > LARGE_MODEL_WARN_LINES ? '⚠️ ' : '') + el.textContent;
   }
   editor.on('change', updateLineCount);
   editor.on('change', persistTabs);
@@ -1026,10 +1320,23 @@ End`
   document.getElementById('btn-open').addEventListener('click', () => {
     document.getElementById('file-input').click();
   });
+  const LARGE_FILE_WARN_BYTES = 2 * 1024 * 1024;   // 2 MB — warn before loading into the editor
+
   document.getElementById('file-input').addEventListener('change', function () {
     const files = Array.from(this.files || []);
     if (!files.length) return;
     files.forEach(file => {
+      if (file.size > LARGE_FILE_WARN_BYTES) {
+        const mb = (file.size / (1024 * 1024)).toFixed(1);
+        const proceed = confirm(
+          `O arquivo "${file.name}" tem ${mb} MB.\n\n` +
+          'Arquivos grandes podem deixar o editor lento e usar bastante memória do navegador ' +
+          '(o editor de texto e o solver duplicam o conteúdo internamente várias vezes). ' +
+          'Em casos extremos, a aba do navegador pode até travar.\n\n' +
+          'Deseja carregar mesmo assim?'
+        );
+        if (!proceed) return;
+      }
       const reader = new FileReader();
       reader.onload = ev => {
         const name = file.name.replace(/\.(lp|txt)$/i, '');
@@ -1105,6 +1412,87 @@ End`
   });
 
   /* ════════════════════════════════════════════════════════════════════
+     6b. Export solution to file
+  ════════════════════════════════════════════════════════════════════ */
+  function buildSolutionReport(sol, modelName) {
+    const vars = Object.values(sol.Columns || {});
+    const rows = sol.Rows || [];
+    const sep  = '─'.repeat(64);
+    const now  = new Date().toLocaleString('pt-BR');
+
+    const pad = (s, n) => String(s).padEnd(n);
+
+    let out = '';
+    out += '═'.repeat(64) + '\n';
+    out += ' WebHIGHS — Relatório de Solução\n';
+    out += '═'.repeat(64) + '\n';
+    out += `Modelo:          ${modelName}\n`;
+    out += `Gerado em:       ${now}\n`;
+    out += `Status:          ${sol.Status}\n`;
+    if (sol.Status === 'Optimal') {
+      out += `Valor Objetivo:  ${fmt(sol.ObjectiveValue)}\n`;
+    }
+    out += '\n';
+
+    out += sep + '\n';
+    out += ` Variáveis (${vars.length})\n`;
+    out += sep + '\n';
+    if (vars.length) {
+      out += pad('Nome', 16) + pad('Valor', 14) + pad('C.Reduzido', 14) + pad('Status', 8) + pad('Inf.', 12) + pad('Sup.', 12) + 'Tipo\n';
+      vars.forEach(v => {
+        out += pad(v.Name, 16) + pad(fmt(v.Primal), 14) + pad(fmt(v.Dual), 14) + pad(v.Status || '—', 8) +
+               pad(fmt(v.Lower), 12) + pad(fmt(v.Upper), 12) + (v.Type || '—') + '\n';
+      });
+    } else {
+      out += '(sem variáveis)\n';
+    }
+    out += '\n';
+
+    out += sep + '\n';
+    out += ` Restrições (${rows.length})\n`;
+    out += sep + '\n';
+    if (rows.length) {
+      out += pad('Nome', 16) + pad('LHS', 14) + pad('Valor Dual', 14) + pad('Status', 8) + pad('RHS inf.', 12) + 'RHS sup.\n';
+      rows.forEach(r => {
+        out += pad(r.Name || ('r' + r.Index), 16) + pad(fmt(r.Primal), 14) + pad(fmt(r.Dual), 14) + pad(r.Status || '—', 8) +
+               pad(fmt(r.Lower), 12) + fmt(r.Upper) + '\n';
+      });
+    } else {
+      out += '(sem restrições)\n';
+    }
+
+    return out;
+  }
+
+  document.getElementById('btn-export-solution').addEventListener('click', async () => {
+    if (!lastSolution) return;
+    const tab = getActiveTab();
+    const modelName = tab ? tab.name : 'modelo';
+    const content = buildSolutionReport(lastSolution, modelName);
+    const suggested = sanitizeFileName(modelName) + '-solucao.txt';
+
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: suggested,
+          types: [{ description: 'Relatório de Solução', accept: { 'text/plain': ['.txt'] } }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(content);
+        await writable.close();
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Erro ao exportar solução:', err);
+          downloadFallback(content, suggested);
+        }
+      }
+      return;
+    }
+
+    downloadFallback(content, suggested);
+  });
+
+  /* ════════════════════════════════════════════════════════════════════
      7. HiGHS Web Worker (inline blob)
   ════════════════════════════════════════════════════════════════════ */
   const HIGHS_BASE = 'https://lovasoa.github.io/highs-js/';
@@ -1113,6 +1501,30 @@ End`
 importScripts('${HIGHS_BASE}highs.js');
 
 let highs = null;
+let dead  = false;   // true once a fatal WASM/Emscripten error has occurred
+
+// A normal HiGHS error (e.g. bad LP syntax) is just a thrown JS Error with a
+// message — the WASM instance keeps working fine afterwards. A *fatal* error
+// (out of memory, Emscripten abort()) leaves the WASM instance corrupted, so
+// it must be told apart and reported as such, since the worker needs to be
+// thrown away and recreated by the main thread in that case.
+function isFatalWasmError(err) {
+  const msg = String((err && err.message) || err || '');
+  return (err && err.name === 'RuntimeError') ||
+         /abort\\(|Aborted|out of memory|Cannot enlarge memory|WebAssembly\\.Memory|memory access out of bounds|RuntimeError/i.test(msg);
+}
+
+// Catches errors that escape any try/catch (e.g. thrown from inside
+// Emscripten's own internal callbacks while growing the heap).
+self.addEventListener('error', function (e) {
+  dead = true;
+  try { postMessage({ type: 'fatal_error', message: (e && e.message) || String(e) }); } catch (_) {}
+});
+self.addEventListener('unhandledrejection', function (e) {
+  dead = true;
+  const reason = e && e.reason;
+  try { postMessage({ type: 'fatal_error', message: (reason && reason.message) || String(reason) }); } catch (_) {}
+});
 
 // Capture all HiGHS stdout/stderr via Emscripten callbacks and stream to main thread
 Module({
@@ -1129,6 +1541,7 @@ Module({
   });
 
 onmessage = async function({ data }) {
+  if (dead) return;   // this worker instance is already corrupted; main thread is replacing it
   if (!highs) {
     await new Promise(res => {
       const t = setInterval(() => { if (highs) { clearInterval(t); res(); } }, 50);
@@ -1136,76 +1549,253 @@ onmessage = async function({ data }) {
   }
   try {
     // output_flag: true ensures HiGHS writes to stdout (captured by print above)
-    const solution = highs.solve(data, { output_flag: true });
+    // Extra options (time_limit, mip_rel_gap, presolve, etc.) come from the
+    // "Opções do Solver" panel and are merged in by the main thread.
+    const opts = Object.assign({ output_flag: true }, data.options || {});
+    const solution = highs.solve(data.lp, opts);
     postMessage({ type: 'solution', solution });
   } catch (err) {
-    postMessage({ type: 'error', message: err.toString() });
+    if (isFatalWasmError(err)) {
+      dead = true;
+      postMessage({ type: 'fatal_error', message: err.toString() });
+    } else {
+      postMessage({ type: 'error', message: err.toString() });
+    }
   }
 };
 `;
 
-  const workerBlob = new Blob([workerSrc], { type: 'application/javascript' });
-  const worker = new Worker(URL.createObjectURL(workerBlob));
-
+  let worker = null;
   let solverReady = false;
   let solving = false;
   let logLines = [];   // { line, isErr } – accumulated for current/last solve
+  let lastSolution = null;   // last solved result, kept for the export button
 
-  worker.onmessage = function ({ data }) {
-    switch (data.type) {
-      case 'ready':
-        solverReady = true;
-        setDot('ok');
-        setMsg('HiGHS pronto ✓');
-        document.getElementById('btn-solve').disabled = false;
-        document.getElementById('btn-solve').textContent = '▶ Resolver';
-        break;
+  function spawnWorker() {
+    const blob = new Blob([workerSrc], { type: 'application/javascript' });
+    const w = new Worker(URL.createObjectURL(blob));
 
-      case 'init_error':
-        setDot('error');
-        setMsg('Erro ao carregar HiGHS: ' + data.message);
-        break;
+    w.onmessage = function ({ data }) {
+      switch (data.type) {
+        case 'ready':
+          solverReady = true;
+          setDot('ok');
+          setMsg('HiGHS pronto ✓');
+          document.getElementById('btn-solve').disabled = false;
+          document.getElementById('btn-solve').textContent = '▶ Resolver';
+          break;
 
-      case 'log': {
-        // Stream each line into the live log pane (if visible) and buffer it
-        logLines.push({ line: data.line, isErr: data.isErr });
-        const live = document.getElementById('log-live');
-        if (live) {
-          const el = document.createElement('div');
-          el.className = logLineClass(data.line, data.isErr);
-          el.textContent = data.line;
-          live.appendChild(el);
-          // Auto-scroll unless user has scrolled up
-          const atBottom = live.scrollHeight - live.clientHeight - live.scrollTop < 40;
-          if (atBottom) live.scrollTop = live.scrollHeight;
+        case 'init_error':
+          setDot('error');
+          setMsg('Erro ao carregar HiGHS: ' + data.message);
+          break;
+
+        case 'log': {
+          // Stream each line into the live log pane (if visible) and buffer it
+          logLines.push({ line: data.line, isErr: data.isErr });
+          const live = document.getElementById('log-live');
+          if (live) {
+            const el = document.createElement('div');
+            el.className = logLineClass(data.line, data.isErr);
+            el.textContent = data.line;
+            live.appendChild(el);
+            // Auto-scroll unless user has scrolled up
+            const atBottom = live.scrollHeight - live.clientHeight - live.scrollTop < 40;
+            if (atBottom) live.scrollTop = live.scrollHeight;
+          }
+          // Update live node/gap counters in status card
+          updateLiveStats(data.line);
+          break;
         }
-        // Update live node/gap counters in status card
-        updateLiveStats(data.line);
-        break;
+
+        case 'solution':
+          solving = false;
+          renderSolution(data.solution);
+          setSolveBtn(false);
+          setDot('ok');
+          break;
+
+        case 'error':
+          solving = false;
+          renderError(data.message);
+          setSolveBtn(false);
+          setDot('ok');
+          break;
+
+        case 'fatal_error':
+          handleFatalWorkerError(data.message);
+          break;
       }
+    };
 
-      case 'solution':
-        solving = false;
-        renderSolution(data.solution);
-        setSolveBtn(false);
-        setDot('ok');
-        break;
+    w.onerror = function (err) {
+      // A genuinely uncaught error in the worker thread itself (rare — most
+      // cases are already caught and reported as 'fatal_error' from inside
+      // the worker). Treat it the same way: the WASM instance can no longer
+      // be trusted, so it gets replaced.
+      handleFatalWorkerError((err && err.message) || String(err));
+    };
 
-      case 'error':
-        solving = false;
-        renderError(data.message);
-        setSolveBtn(false);
-        setDot('ok');
-        break;
-    }
-  };
+    return w;
+  }
 
-  worker.onerror = function (err) {
-    setDot('error');
-    setMsg('Erro no worker: ' + (err.message || err));
+  function handleFatalWorkerError(message) {
     solving = false;
     setSolveBtn(false);
-  };
+    setDot('error');
+    document.getElementById('btn-solve').disabled = true;
+
+    renderFatalError(message);
+
+    try { worker.terminate(); } catch (_) {}
+    worker = spawnWorker();
+  }
+
+  function renderFatalError(message) {
+    lastSolution = null;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = true;
+
+    document.getElementById('results').innerHTML = `
+      <div class="status-card" style="border-color:rgba(255,85,85,.4)">
+        <div class="status-badge badge-error">💥 Erro crítico do solver</div>
+        <div style="margin-left:8px;color:var(--muted);font-size:12px">O solver foi reiniciado automaticamente</div>
+      </div>
+      <div class="error-msg">${escHtml(message)}</div>
+      <div style="margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--text)">O que provavelmente aconteceu:</strong><br>
+        O modelo era grande/complexo demais e o solver (que roda em WebAssembly, com um limite
+        de memória próprio) ficou sem memória durante a resolução. Isso não tem relação com a
+        sintaxe do modelo.
+      </div>
+      <div style="margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--text)">O que tentar:</strong><br>
+        • Reduza o tamanho do modelo (menos variáveis/restrições), se possível<br>
+        • Em "⚙️ Opções", defina um <em>tempo máximo de resolução</em> — evita que o PLI explore
+        uma árvore de busca enorme até estourar a memória<br>
+        • Aumente o <em>gap relativo aceitável</em>, para o solver parar mais perto do início,
+        próximo do ótimo, em vez de continuar refinando indefinidamente
+      </div>`;
+
+    setMsg('Erro crítico — solver reiniciado, já pode tentar de novo');
+  }
+
+  worker = spawnWorker();
+
+  /* ════════════════════════════════════════════════════════════════════
+     7b. Solver options modal (time limit, MIP gap, heuristics, etc.)
+  ════════════════════════════════════════════════════════════════════ */
+  const OPT_FIELDS = [
+    { id: 'opt-time-limit',       key: 'time_limit',          type: 'float' },
+    { id: 'opt-mip-rel-gap',      key: 'mip_rel_gap',         type: 'percent' }, // stored as fraction
+    { id: 'opt-mip-abs-gap',      key: 'mip_abs_gap',         type: 'float' },
+    { id: 'opt-heuristic-effort', key: 'mip_heuristic_effort', type: 'float' },
+    { id: 'opt-presolve',         key: 'presolve',            type: 'string' },
+    { id: 'opt-solver',           key: 'solver',              type: 'string' },
+    { id: 'opt-parallel',         key: 'parallel',            type: 'string' },
+    { id: 'opt-threads',          key: 'threads',             type: 'int' },
+    { id: 'opt-random-seed',      key: 'random_seed',         type: 'int' },
+  ];
+
+  function getSolverOptions() {
+    try {
+      const raw = localStorage.getItem('lp-solver-options');
+      return raw ? JSON.parse(raw) : {};
+    } catch (_) {
+      return {};
+    }
+  }
+
+  function saveSolverOptions(opts) {
+    try { localStorage.setItem('lp-solver-options', JSON.stringify(opts)); } catch (_) {}
+  }
+
+  function fillOptionsForm(opts) {
+    OPT_FIELDS.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (!el) return;
+      const v = opts[f.key];
+      if (v === undefined || v === null) { el.value = ''; return; }
+      el.value = (f.type === 'percent') ? (v * 100) : v;
+    });
+  }
+
+  function readOptionsForm() {
+    const opts = {};
+    OPT_FIELDS.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (!el) return;
+      const raw = el.value.trim();
+      if (raw === '') return; // not set → use HiGHS default
+      if (f.type === 'string') {
+        opts[f.key] = raw;
+      } else if (f.type === 'int') {
+        const n = parseInt(raw, 10);
+        if (!isNaN(n)) opts[f.key] = n;
+      } else if (f.type === 'percent') {
+        const n = parseFloat(raw);
+        if (!isNaN(n)) opts[f.key] = n / 100;
+      } else {
+        const n = parseFloat(raw);
+        if (!isNaN(n)) opts[f.key] = n;
+      }
+    });
+    return opts;
+  }
+
+  (function () {
+    const overlay  = document.getElementById('options-overlay');
+    const btnOpen  = document.getElementById('btn-options');
+    const btnClose = document.getElementById('options-close');
+    const btnCancel = document.getElementById('options-cancel');
+    const btnSave  = document.getElementById('options-save');
+    const btnReset = document.getElementById('options-reset');
+
+    function openModal() {
+      fillOptionsForm(getSolverOptions());
+      overlay.classList.add('open');
+    }
+    function closeModal() { overlay.classList.remove('open'); }
+
+    btnOpen.addEventListener('click', openModal);
+    btnClose.addEventListener('click', closeModal);
+    btnCancel.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+
+    btnSave.addEventListener('click', () => {
+      saveSolverOptions(readOptionsForm());
+      closeModal();
+    });
+
+    btnReset.addEventListener('click', () => {
+      fillOptionsForm({});
+      saveSolverOptions({});
+    });
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     7c. About modal
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const overlay  = document.getElementById('about-overlay');
+    const btnOpen  = document.getElementById('btn-about');
+    const btnClose = document.getElementById('about-close');
+    const btnOk    = document.getElementById('about-ok');
+
+    function openModal()  { overlay.classList.add('open'); }
+    function closeModal() { overlay.classList.remove('open'); }
+
+    btnOpen.addEventListener('click', openModal);
+    btnClose.addEventListener('click', closeModal);
+    btnOk.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+  })();
 
   /* ════════════════════════════════════════════════════════════════════
      8. Solve trigger
@@ -1218,12 +1808,15 @@ onmessage = async function({ data }) {
     if (!lp) return;
     solving = true;
     logLines = [];
+    lastSolution = null;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = true;
     clearErrorMarkers();    // remove previous error highlights
     showSolvingView();
     setSolveBtn(true);
     setDot('loading');
     setMsg('Resolvendo…');
-    worker.postMessage(lp);
+    worker.postMessage({ lp, options: getSolverOptions() });
   }
 
   /* ════════════════════════════════════════════════════════════════════
@@ -1441,6 +2034,10 @@ onmessage = async function({ data }) {
   }
 
   function renderSolution(sol) {
+    lastSolution = sol;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = false;
+
     const res = document.getElementById('results');
     const vars = Object.values(sol.Columns || {});
     const rows = sol.Rows || [];
@@ -1573,6 +2170,10 @@ onmessage = async function({ data }) {
   }
 
   function renderError(msg) {
+    lastSolution = null;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = true;
+
     const errLine = extractErrorLine(msg);
     if (errLine) markErrorLine(errLine);
 
@@ -1617,6 +2218,9 @@ onmessage = async function({ data }) {
 
   function setPlaceholder() {
     document.getElementById('results').innerHTML = document.getElementById('placeholder')?.outerHTML || '';
+    lastSolution = null;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = true;
   }
 
   function setDot(state) {
