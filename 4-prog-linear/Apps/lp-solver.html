@@ -655,6 +655,60 @@
     .dot.error   { background: var(--red); }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
     .statusbar-right { margin-left: auto; display: flex; gap: 14px; }
+
+    /* ═══════════════════════════════════════════════════════════════════
+       Responsive layout — phones & narrow tablets (stacked panels)
+       The desktop side-by-side layout (above) is untouched; everything
+       below only kicks in under the breakpoint.
+    ═══════════════════════════════════════════════════════════════════ */
+    @media (max-width: 760px) {
+      html, body { height: 100%; }
+      body { height: 100dvh; font-size: 13.5px; }
+
+      /* Toolbar: let buttons wrap to a second row instead of overflowing */
+      .toolbar { flex-wrap: wrap; row-gap: 6px; padding: 6px 8px; }
+      .toolbar-right { margin-left: 0; flex-wrap: wrap; row-gap: 6px; }
+      .brand { font-size: 14px; }
+      select.btn { max-width: 120px; }
+      select.btn.lang-select { max-width: 92px; }
+
+      /* Stack the editor and results panels instead of side-by-side */
+      .main { flex-direction: column; overflow-y: auto; }
+      .panel-editor {
+        width: 100% !important;   /* overrides any inline width left over from desktop drag-resize */
+        min-width: 0;
+        height: 46vh;
+        flex: 0 0 auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .panel-results { flex: 1 1 auto; min-height: 280px; }
+      .resize-handle { display: none; }   /* drag-to-resize is a mouse/desktop affordance */
+
+      /* Panel headers: allow the controls to wrap onto their own row */
+      .panel-header { flex-wrap: wrap; row-gap: 4px; }
+      .panel-header > span:first-child { margin-left: 0; flex-basis: 100%; }
+
+      /* Status bar: drop the secondary keyboard-shortcut hint, it has no
+         meaning on a touch device without a physical keyboard */
+      .statusbar { font-size: 10px; gap: 8px; flex-wrap: wrap; }
+      .statusbar-right { gap: 8px; }
+      .kbd-hint { display: none; }
+
+      /* Modals: use most of the screen width/height on small phones */
+      .modal-panel { width: 96vw; max-width: 96vw; max-height: 92vh; }
+      .opt-row { flex-direction: column; gap: 14px; }
+
+      /* iOS Safari zooms the page in when focusing a text input/select
+         smaller than 16px — keep all form controls at/above that size */
+      .opt-input, select.btn, .editor-theme-select, select.lang-select { font-size: 16px; }
+    }
+
+    @media (max-width: 420px) {
+      .brand { display: none; }   /* free up space for the controls on very small phones */
+      select.btn { max-width: 100px; }
+      .btn { padding: 5px 8px; font-size: 12.5px; }
+    }
   </style>
 </head>
 
@@ -909,7 +963,7 @@
             <path d="M14 14h2M14 17h2M7 14h2M7 17h2"/>
           </svg>
           <div data-i18n-html="placeholder_line1_html">Escreva ou carregue um modelo, depois clique<br>
-          <strong>▶ Resolver</strong> ou pressione <kbd>Ctrl</kbd>+<kbd>Enter</kbd></div>
+          <strong>▶ Resolver</strong> <span class="kbd-hint">ou pressione <kbd>Ctrl</kbd>+<kbd>Enter</kbd></span></div>
           <div style="font-size:11px" data-i18n-html="placeholder_solver_info_html">Solver: <strong style="color:var(--accent)">HiGHS 1.8</strong> via WebAssembly · Suporta LP e PLI</div>
         </div>
       </div>
@@ -922,7 +976,7 @@
     <span id="solver-msg" data-i18n="status_loading">Carregando HiGHS WebAssembly…</span>
     <span class="statusbar-right">
       <span data-i18n="status_highs_version">HiGHS 1.8 · WebAssembly</span>
-      <span data-i18n-html="status_ctrl_enter_hint_html"><kbd>Ctrl+Enter</kbd> resolve</span>
+      <span class="kbd-hint" data-i18n-html="status_ctrl_enter_hint_html"><kbd>Ctrl+Enter</kbd> resolve</span>
     </span>
   </div>
 
@@ -1018,7 +1072,7 @@
       tt_result_font_dec: 'Diminuir tamanho do texto',
       tt_result_font_inc: 'Aumentar tamanho do texto',
 
-      placeholder_line1_html: 'Escreva ou carregue um modelo, depois clique<br><strong>▶ Resolver</strong> ou pressione <kbd>Ctrl</kbd>+<kbd>Enter</kbd>',
+      placeholder_line1_html: 'Escreva ou carregue um modelo, depois clique<br><strong>▶ Resolver</strong> <span class="kbd-hint">ou pressione <kbd>Ctrl</kbd>+<kbd>Enter</kbd></span>',
       placeholder_solver_info_html: 'Solver: <strong style="color:var(--accent)">HiGHS 1.8</strong> via WebAssembly · Suporta LP e PLI',
 
       status_loading: 'Carregando HiGHS WebAssembly…',
@@ -1211,7 +1265,7 @@
       tt_result_font_dec: 'Decrease text size',
       tt_result_font_inc: 'Increase text size',
 
-      placeholder_line1_html: 'Write or load a model, then click<br><strong>▶ Solve</strong> or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd>',
+      placeholder_line1_html: 'Write or load a model, then click<br><strong>▶ Solve</strong> <span class="kbd-hint">or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd></span>',
       placeholder_solver_info_html: 'Solver: <strong style="color:var(--accent)">HiGHS 1.8</strong> via WebAssembly · Supports LP and MILP',
 
       status_loading: 'Loading HiGHS WebAssembly…',
@@ -1748,6 +1802,18 @@ End`
   });
   editor.setSize('100%', '100%');
   renderTabBar();
+
+  // Re-measure CodeMirror after viewport changes (phone rotation, the toolbar
+  // wrapping to a second row, etc.) — the layout can change size without the
+  // editor's own container firing any event CodeMirror listens to natively.
+  let _resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(() => editor.refresh(), 150);
+  });
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => editor.refresh(), 250);
+  });
 
   // Line count in header
   const LARGE_MODEL_WARN_LINES = 20000;   // editor performance/memory tends to suffer past this
