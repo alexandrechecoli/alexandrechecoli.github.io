@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebHIGHS — Programação Linear</title>
+  <title data-i18n="page_title">WebHIGHS — Programação Linear</title>
 
   <!-- CodeMirror 5 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
@@ -192,6 +192,12 @@
     .editor-theme-select:hover { color: var(--text); border-color: var(--muted); }
     .editor-theme-select option { background-color: var(--bg); color: var(--text); }
 
+    /* Language selector (toolbar) */
+    select.lang-select {
+      padding-right: 6px;
+      max-width: 130px;
+    }
+
     /* ─── Editor tabs ───────────────────────────────────────────────── */
     .tab-bar {
       display: flex;
@@ -272,13 +278,46 @@
     html[data-theme="light"] .badge-unbounded  { background: rgba(180,83,9,.08);    border-color: rgba(180,83,9,.3); }
     html[data-theme="light"] .badge-pending    { background: rgba(107,114,128,.08); border-color: #d1d5db; }
 
-    /* Theme toggle button */
-    .theme-toggle {
-      padding: 5px 9px;
-      font-size: 15px;
-      line-height: 1;
-      border-color: var(--border);
+    /* Theme toggle switch (on/off style) */
+    .theme-switch {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      flex-shrink: 0;
     }
+    .theme-switch-input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .theme-switch-track {
+      width: 38px;
+      height: 20px;
+      background: var(--border);
+      border-radius: 10px;
+      position: relative;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .theme-switch-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--bg);
+      box-shadow: 0 1px 2px rgba(0,0,0,.35);
+      transition: left .2s, background .2s;
+    }
+    .theme-switch-input:checked + .theme-switch-track { background: var(--accent); }
+    .theme-switch-input:checked + .theme-switch-track .theme-switch-thumb {
+      left: 20px;
+      background: #fff;
+    }
+    .theme-switch-input:focus-visible + .theme-switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
 
     /* Resize handle */
     .resize-handle {
@@ -625,27 +664,35 @@
     <span class="brand">🔺 WebHIGHS</span>
     <div class="sep"></div>
 
-    <select class="btn" id="examples-select" title="Carregar modelo de exemplo">
-      <option value="">Exemplos…</option>
-      <option value="producao">Produção (PL)</option>
-      <option value="transporte">Transporte (PL)</option>
-      <option value="mochila">Mochila (PLI)</option>
-      <option value="dieta">Dieta (PL)</option>
-      <option value="mix">Mix de Produtos (PLI)</option>
+    <select class="btn" id="examples-select" data-i18n-title="tt_examples" title="Carregar modelo de exemplo">
+      <option value="" data-i18n="opt_examples_placeholder">Exemplos…</option>
+      <option value="producao" data-i18n="ex_producao">Produção (PL)</option>
+      <option value="transporte" data-i18n="ex_transporte">Transporte (PL)</option>
+      <option value="mochila" data-i18n="ex_mochila">Mochila (PLI)</option>
+      <option value="dieta" data-i18n="ex_dieta">Dieta (PL)</option>
+      <option value="mix" data-i18n="ex_mix">Mix de Produtos (PLI)</option>
     </select>
 
     <div class="sep"></div>
-    <button class="btn" id="btn-open" title="Abrir arquivo .lp">📂 Abrir</button>
-    <button class="btn" id="btn-save" title="Salvar como .lp">💾 Salvar</button>
+    <button class="btn" id="btn-open" data-i18n-title="tt_open" title="Abrir arquivo .lp" data-i18n="btn_open">📂 Abrir</button>
+    <button class="btn" id="btn-save" data-i18n-title="tt_save" title="Salvar como .lp" data-i18n="btn_save">💾 Salvar</button>
     <input type="file" id="file-input" accept=".lp,.txt" multiple style="display:none">
 
     <div class="toolbar-right">
-      <button class="btn" id="btn-about" title="Sobre este projeto">ℹ️ Sobre</button>
-      <button class="btn" id="btn-options" title="Opções do solver HiGHS">⚙️ Opções</button>
-      <button class="btn theme-toggle" id="btn-theme" title="Alternar tema claro/escuro">🌙</button>
+      <button class="btn" id="btn-about" data-i18n-title="tt_about" title="Sobre este projeto" data-i18n="btn_about">ℹ️ Sobre</button>
+      <button class="btn" id="btn-options" data-i18n-title="tt_options" title="Opções do solver HiGHS" data-i18n="btn_options">⚙️ Opções</button>
+      <label class="theme-switch" id="theme-switch-label" title="Alternar tema claro/escuro">
+        <input type="checkbox" id="btn-theme" class="theme-switch-input">
+        <span class="theme-switch-track"><span class="theme-switch-thumb"></span></span>
+      </label>
       <div class="sep"></div>
-      <button class="btn" id="btn-clear" title="Limpar editor">✕ Limpar</button>
-      <button class="btn primary" id="btn-solve" disabled>▶ Resolver</button>
+      <select class="btn lang-select" id="lang-select" data-i18n-title="tt_lang_select" title="Idioma / Language">
+        <option value="pt">🇧🇷 Português</option>
+        <option value="en">🇺🇸 English</option>
+      </select>
+      <div class="sep"></div>
+      <button class="btn" id="btn-clear" data-i18n-title="tt_clear" title="Limpar editor" data-i18n="btn_clear">✕ Limpar</button>
+      <button class="btn primary" id="btn-solve" disabled data-i18n="btn_solve">▶ Resolver</button>
     </div>
   </div>
 
@@ -653,91 +700,91 @@
   <div class="modal-overlay" id="options-overlay">
     <div class="modal-panel" id="options-panel">
       <div class="modal-header">
-        <span>⚙️ Opções do Solver (HiGHS)</span>
-        <button class="modal-close" id="options-close" title="Fechar">×</button>
+        <span data-i18n="opt_modal_title">⚙️ Opções do Solver (HiGHS)</span>
+        <button class="modal-close" id="options-close" data-i18n-title="tt_close" title="Fechar">×</button>
       </div>
       <div class="modal-body">
 
         <div class="opt-group">
           <label class="opt-label" for="opt-time-limit">
-            Tempo máximo de resolução (segundos)
-            <span class="opt-hint">Em vazio = sem limite. Ao atingir o tempo, o HiGHS retorna a melhor solução encontrada até então.</span>
+            <span data-i18n="opt_time_limit_label">Tempo máximo de resolução (segundos)</span>
+            <span class="opt-hint" data-i18n="opt_time_limit_hint">Em vazio = sem limite. Ao atingir o tempo, o HiGHS retorna a melhor solução encontrada até então.</span>
           </label>
-          <input type="number" class="opt-input" id="opt-time-limit" min="0" step="1" placeholder="sem limite">
+          <input type="number" class="opt-input" id="opt-time-limit" min="0" step="1" data-i18n-placeholder="opt_time_limit_placeholder" placeholder="sem limite">
         </div>
 
         <div class="opt-group">
           <label class="opt-label" for="opt-mip-rel-gap">
-            Gap relativo aceitável — PLI (%)
-            <span class="opt-hint">Encerra ao chegar perto do ótimo por essa margem. Padrão do HiGHS: 0,01%.</span>
+            <span data-i18n="opt_mip_rel_gap_label">Gap relativo aceitável — PLI (%)</span>
+            <span class="opt-hint" data-i18n="opt_mip_rel_gap_hint">Encerra ao chegar perto do ótimo por essa margem. Padrão do HiGHS: 0,01%.</span>
           </label>
-          <input type="number" class="opt-input" id="opt-mip-rel-gap" min="0" step="0.01" placeholder="0.01 (padrão)">
+          <input type="number" class="opt-input" id="opt-mip-rel-gap" min="0" step="0.01" data-i18n-placeholder="opt_mip_rel_gap_placeholder" placeholder="0.01 (padrão)">
         </div>
 
         <div class="opt-group">
           <label class="opt-label" for="opt-mip-abs-gap">
-            Gap absoluto aceitável — PLI
-            <span class="opt-hint">Mesma ideia do gap relativo, mas em unidades do valor objetivo.</span>
+            <span data-i18n="opt_mip_abs_gap_label">Gap absoluto aceitável — PLI</span>
+            <span class="opt-hint" data-i18n="opt_mip_abs_gap_hint">Mesma ideia do gap relativo, mas em unidades do valor objetivo.</span>
           </label>
-          <input type="number" class="opt-input" id="opt-mip-abs-gap" min="0" step="0.000001" placeholder="0.000001 (padrão)">
+          <input type="number" class="opt-input" id="opt-mip-abs-gap" min="0" step="0.000001" data-i18n-placeholder="opt_mip_abs_gap_placeholder" placeholder="0.000001 (padrão)">
         </div>
 
         <div class="opt-group">
           <label class="opt-label" for="opt-heuristic-effort">
-            Esforço de heurísticas — PLI (0 a 1)
-            <span class="opt-hint">Fração do tempo dedicada a heurísticas para achar soluções inteiras rapidamente. Padrão: 0,05.</span>
+            <span data-i18n="opt_heuristic_effort_label">Esforço de heurísticas — PLI (0 a 1)</span>
+            <span class="opt-hint" data-i18n="opt_heuristic_effort_hint">Fração do tempo dedicada a heurísticas para achar soluções inteiras rapidamente. Padrão: 0,05.</span>
           </label>
-          <input type="number" class="opt-input" id="opt-heuristic-effort" min="0" max="1" step="0.05" placeholder="0.05 (padrão)">
+          <input type="number" class="opt-input" id="opt-heuristic-effort" min="0" max="1" step="0.05" data-i18n-placeholder="opt_heuristic_effort_placeholder" placeholder="0.05 (padrão)">
         </div>
 
         <div class="opt-row">
           <div class="opt-group">
-            <label class="opt-label" for="opt-presolve">Pré-processamento (presolve)</label>
+            <label class="opt-label" for="opt-presolve" data-i18n="opt_presolve_label">Pré-processamento (presolve)</label>
             <select class="opt-input" id="opt-presolve">
-              <option value="">Automático</option>
-              <option value="on">Ativado</option>
-              <option value="off">Desativado</option>
+              <option value="" data-i18n="opt_auto">Automático</option>
+              <option value="on" data-i18n="opt_on">Ativado</option>
+              <option value="off" data-i18n="opt_off">Desativado</option>
             </select>
           </div>
           <div class="opt-group">
-            <label class="opt-label" for="opt-solver">Algoritmo (LP)</label>
+            <label class="opt-label" for="opt-solver" data-i18n="opt_solver_label">Algoritmo (LP)</label>
             <select class="opt-input" id="opt-solver">
-              <option value="">Automático</option>
-              <option value="simplex">Simplex</option>
-              <option value="ipm">Pontos Interiores</option>
+              <option value="" data-i18n="opt_auto">Automático</option>
+              <option value="simplex" data-i18n="opt_simplex">Simplex</option>
+              <option value="ipm" data-i18n="opt_ipm">Pontos Interiores</option>
             </select>
           </div>
         </div>
 
         <div class="opt-row">
           <div class="opt-group">
-            <label class="opt-label" for="opt-parallel">Paralelismo</label>
+            <label class="opt-label" for="opt-parallel" data-i18n="opt_parallel_label">Paralelismo</label>
             <select class="opt-input" id="opt-parallel">
-              <option value="">Automático</option>
-              <option value="on">Ativado</option>
-              <option value="off">Desativado</option>
+              <option value="" data-i18n="opt_auto">Automático</option>
+              <option value="on" data-i18n="opt_on">Ativado</option>
+              <option value="off" data-i18n="opt_off">Desativado</option>
             </select>
           </div>
           <div class="opt-group">
-            <label class="opt-label" for="opt-threads">Número de threads</label>
-            <input type="number" class="opt-input" id="opt-threads" min="1" step="1" placeholder="automático">
+            <label class="opt-label" for="opt-threads" data-i18n="opt_threads_label">Número de threads</label>
+            <input type="number" class="opt-input" id="opt-threads" min="1" step="1" data-i18n-placeholder="opt_auto_placeholder" placeholder="automático">
           </div>
         </div>
 
         <div class="opt-group">
           <label class="opt-label" for="opt-random-seed">
-            Semente aleatória (random seed)
-            <span class="opt-hint">Útil para reproduzir o mesmo resultado em modelos com múltiplas soluções ótimas.</span>
+            <span data-i18n="opt_random_seed_label">Semente aleatória (random seed)</span>
+            <span class="opt-hint" data-i18n="opt_random_seed_hint">Útil para reproduzir o mesmo resultado em modelos com múltiplas soluções ótimas.</span>
           </label>
-          <input type="number" class="opt-input" id="opt-random-seed" step="1" placeholder="automático">
+          <input type="number" class="opt-input" id="opt-random-seed" step="1" data-i18n-placeholder="opt_auto_placeholder" placeholder="automático">
         </div>
 
       </div>
       <div class="modal-footer">
-        <button class="btn" id="options-reset">Restaurar padrões</button>
+        <button class="btn" id="options-reset" data-i18n="opt_reset">Restaurar padrões</button>
         <div style="margin-left:auto;display:flex;gap:8px">
-          <button class="btn" id="options-cancel">Cancelar</button>
-          <button class="btn primary" id="options-save">Salvar</button>
+          <button class="btn" id="options-cancel" data-i18n="opt_cancel">Cancelar</button>
+          <button class="btn primary" id="options-save" data-i18n="btn_generic_save">Salvar</button>
         </div>
       </div>
     </div>
@@ -747,28 +794,28 @@
   <div class="modal-overlay" id="about-overlay">
     <div class="modal-panel" id="about-panel">
       <div class="modal-header">
-        <span>ℹ️ Sobre este projeto</span>
-        <button class="modal-close" id="about-close" title="Fechar">×</button>
+        <span data-i18n="about_modal_title">ℹ️ Sobre este projeto</span>
+        <button class="modal-close" id="about-close" data-i18n-title="tt_close" title="Fechar">×</button>
       </div>
       <div class="modal-body">
 
         <div class="about-section">
-          <h3>Sobre mim</h3>
+          <h3 data-i18n="about_me_heading">Sobre mim</h3>
           <p>
             <strong style="color:var(--text)">Alexandre Checoli Choueiri</strong>
             (<a href="mailto:alexandrechecoli@ufpr.br">alexandrechecoli@ufpr.br</a>)<br><br>
-            Sou professor do curso de Engenharia de Produção da Universidade Federal do Paraná
+            <span data-i18n="about_me_bio">Sou professor do curso de Engenharia de Produção da Universidade Federal do Paraná
             (UFPR), e ministro a disciplina de programação linear. Desenvolvi esse aplicativo
             baseado no programa GUSEK (desenvolvido pelo professor Leandro Magatão e Luiz Betoni)
             para visualização de modelos de otimização. A ideia principal é usar em aulas, porém
             pode ser usado para resolver problemas reais (respeitando a limitação de memória do
-            navegador).
+            navegador).</span>
           </p>
         </div>
 
         <div class="about-section">
-          <h3>Sobre o projeto</h3>
-          <p>
+          <h3 data-i18n="about_project_heading">Sobre o projeto</h3>
+          <p data-i18n="about_project_text">
             WebHIGHS é um editor e resolvedor de modelos de Programação Linear (PL) e
             Programação Linear Inteira (PLI), no formato CPLEX LP, que roda inteiramente
             no navegador — sem precisar instalar nada ou enviar o modelo para um servidor.
@@ -776,32 +823,32 @@
         </div>
 
         <div class="about-section">
-          <h3>Tecnologias e referências</h3>
+          <h3 data-i18n="about_tech_heading">Tecnologias e referências</h3>
           <ul class="about-refs">
             <li>
-              <strong>Gusek</strong> — IDE para GLPK (GNU Linear Programming Kit), com editor
+              <strong>Gusek</strong> — <span data-i18n="about_tech_gusek">IDE para GLPK (GNU Linear Programming Kit), com editor
               de modelos e visualização de resultados. Foi a inspiração para a criação deste
-              aplicativo.
+              aplicativo.</span>
               <br><a href="https://gusek.sourceforge.net/gusek.html#11" target="_blank" rel="noopener">gusek.sourceforge.net</a>
             </li>
             <li>
-              <strong>HiGHS</strong> — solver de otimização linear, inteira-mista e de
-              programação quadrática, de código aberto, que faz toda a resolução dos modelos.
+              <strong>HiGHS</strong> — <span data-i18n="about_tech_highs">solver de otimização linear, inteira-mista e de
+              programação quadrática, de código aberto, que faz toda a resolução dos modelos.</span>
               <br><a href="https://highs.dev" target="_blank" rel="noopener">highs.dev</a>
             </li>
             <li>
-              <strong>highs-js</strong> — compilação do HiGHS para WebAssembly, o que permite
-              rodar o solver inteiro dentro do navegador.
+              <strong>highs-js</strong> — <span data-i18n="about_tech_highsjs">compilação do HiGHS para WebAssembly, o que permite
+              rodar o solver inteiro dentro do navegador.</span>
               <br><a href="https://github.com/lovasoa/highs-js" target="_blank" rel="noopener">github.com/lovasoa/highs-js</a>
             </li>
             <li>
-              <strong>CodeMirror 5</strong> — editor de texto com numeração de linhas, destaque
-              de sintaxe e temas de cores.
+              <strong>CodeMirror 5</strong> — <span data-i18n="about_tech_codemirror">editor de texto com numeração de linhas, destaque
+              de sintaxe e temas de cores.</span>
               <br><a href="https://codemirror.net/5/" target="_blank" rel="noopener">codemirror.net/5</a>
             </li>
             <li>
-              <strong>Claude (Anthropic)</strong> — assistente de IA muito usado no
-              desenvolvimento deste aplicativo. Na verdade...eu fui somente um gerente para o Cloude.
+              <strong>Claude (Anthropic)</strong> — <span data-i18n="about_tech_claude">assistente de IA muito usado no
+              desenvolvimento deste aplicativo...na verdade mesmo, trabalhei como um gerente geral do Claude.</span>
               <br><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>
             </li>
           </ul>
@@ -810,7 +857,7 @@
       </div>
       <div class="modal-footer">
         <div style="margin-left:auto">
-          <button class="btn primary" id="about-ok">Fechar</button>
+          <button class="btn primary" id="about-ok" data-i18n="btn_close_generic">Fechar</button>
         </div>
       </div>
     </div>
@@ -822,20 +869,20 @@
     <!-- Editor -->
     <div class="panel-editor" id="panel-editor">
       <div class="panel-header">
-        Modelo LP (CPLEX format)
+        <span data-i18n="editor_panel_header">Modelo LP (CPLEX format)</span>
         <span id="line-count"></span>
-        <select class="editor-theme-select" id="editor-theme-select" title="Tema de cores do editor">
+        <select class="editor-theme-select" id="editor-theme-select" data-i18n-title="tt_editor_theme" title="Tema de cores do editor">
           <option value="dracula">Dracula</option>
           <option value="monokai">Monokai</option>
           <option value="material-darker">Material Darker</option>
           <option value="nord">Nord</option>
           <option value="eclipse">Eclipse</option>
-          <option value="default">Claro (padrão)</option>
+          <option value="default" data-i18n="theme_light_default">Claro (padrão)</option>
         </select>
         <div class="font-btns">
-          <button class="font-btn" id="font-dec" title="Diminuir fonte (Ctrl+-)">A−</button>
+          <button class="font-btn" id="font-dec" data-i18n-title="tt_font_dec" title="Diminuir fonte (Ctrl+-)">A−</button>
           <span id="font-size-display">14px</span>
-          <button class="font-btn" id="font-inc" title="Aumentar fonte (Ctrl++)">A+</button>
+          <button class="font-btn" id="font-inc" data-i18n-title="tt_font_inc" title="Aumentar fonte (Ctrl++)">A+</button>
         </div>
       </div>
       <div class="tab-bar" id="tab-bar"></div>
@@ -846,12 +893,12 @@
     <!-- Results -->
     <div class="panel-results">
       <div class="panel-header">
-        Resultados
-        <button class="font-btn" id="btn-export-solution" title="Exportar solução para arquivo" disabled>💾 Exportar</button>
+        <span data-i18n="results_panel_header">Resultados</span>
+        <button class="font-btn" id="btn-export-solution" data-i18n-title="tt_export" title="Exportar solução para arquivo" disabled data-i18n="btn_export">💾 Exportar</button>
         <div class="font-btns">
-          <button class="font-btn" id="result-font-dec" title="Diminuir tamanho do texto">A−</button>
+          <button class="font-btn" id="result-font-dec" data-i18n-title="tt_result_font_dec" title="Diminuir tamanho do texto">A−</button>
           <span id="result-font-size-display">100%</span>
-          <button class="font-btn" id="result-font-inc" title="Aumentar tamanho do texto">A+</button>
+          <button class="font-btn" id="result-font-inc" data-i18n-title="tt_result_font_inc" title="Aumentar tamanho do texto">A+</button>
         </div>
       </div>
       <div class="results-body" id="results">
@@ -861,9 +908,9 @@
             <path d="M3 9h18M9 21V9"/>
             <path d="M14 14h2M14 17h2M7 14h2M7 17h2"/>
           </svg>
-          <div>Escreva ou carregue um modelo, depois clique<br>
+          <div data-i18n-html="placeholder_line1_html">Escreva ou carregue um modelo, depois clique<br>
           <strong>▶ Resolver</strong> ou pressione <kbd>Ctrl</kbd>+<kbd>Enter</kbd></div>
-          <div style="font-size:11px">Solver: <strong style="color:var(--accent)">HiGHS 1.8</strong> via WebAssembly · Suporta LP e PLI</div>
+          <div style="font-size:11px" data-i18n-html="placeholder_solver_info_html">Solver: <strong style="color:var(--accent)">HiGHS 1.8</strong> via WebAssembly · Suporta LP e PLI</div>
         </div>
       </div>
     </div>
@@ -872,10 +919,10 @@
   <!-- ── Status bar ────────────────────────────────────────────────────── -->
   <div class="statusbar">
     <span class="dot loading" id="dot"></span>
-    <span id="solver-msg">Carregando HiGHS WebAssembly…</span>
+    <span id="solver-msg" data-i18n="status_loading">Carregando HiGHS WebAssembly…</span>
     <span class="statusbar-right">
-      <span>HiGHS 1.8 · WebAssembly</span>
-      <span><kbd>Ctrl+Enter</kbd> resolve</span>
+      <span data-i18n="status_highs_version">HiGHS 1.8 · WebAssembly</span>
+      <span data-i18n-html="status_ctrl_enter_hint_html"><kbd>Ctrl+Enter</kbd> resolve</span>
     </span>
   </div>
 
@@ -883,6 +930,434 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
 
   <script>
+  /* ════════════════════════════════════════════════════════════════════
+     0. i18n — translation dictionary + helpers
+  ════════════════════════════════════════════════════════════════════ */
+  const LANG_KEY = 'lp-lang';
+
+  const I18N = {
+    pt: {
+      page_title: 'WebHIGHS — Programação Linear',
+
+      tt_examples: 'Carregar modelo de exemplo',
+      opt_examples_placeholder: 'Exemplos…',
+      ex_producao: 'Produção (PL)',
+      ex_transporte: 'Transporte (PL)',
+      ex_mochila: 'Mochila (PLI)',
+      ex_dieta: 'Dieta (PL)',
+      ex_mix: 'Mix de Produtos (PLI)',
+
+      tt_open: 'Abrir arquivo .lp',
+      btn_open: '📂 Abrir',
+      tt_save: 'Salvar como .lp',
+      btn_save: '💾 Salvar',
+      tt_about: 'Sobre este projeto',
+      btn_about: 'ℹ️ Sobre',
+      tt_options: 'Opções do solver HiGHS',
+      btn_options: '⚙️ Opções',
+      theme_switch_to_light: 'Mudar para tema claro',
+      theme_switch_to_dark: 'Mudar para tema escuro',
+      tt_lang_select: 'Idioma / Language',
+      tt_clear: 'Limpar editor',
+      btn_clear: '✕ Limpar',
+      btn_solve: '▶ Resolver',
+      btn_solving: '⏳ Resolvendo…',
+
+      opt_modal_title: '⚙️ Opções do Solver (HiGHS)',
+      tt_close: 'Fechar',
+      opt_time_limit_label: 'Tempo máximo de resolução (segundos)',
+      opt_time_limit_hint: 'Em vazio = sem limite. Ao atingir o tempo, o HiGHS retorna a melhor solução encontrada até então.',
+      opt_time_limit_placeholder: 'sem limite',
+      opt_mip_rel_gap_label: 'Gap relativo aceitável — PLI (%)',
+      opt_mip_rel_gap_hint: 'Encerra ao chegar perto do ótimo por essa margem. Padrão do HiGHS: 0,01%.',
+      opt_mip_rel_gap_placeholder: '0.01 (padrão)',
+      opt_mip_abs_gap_label: 'Gap absoluto aceitável — PLI',
+      opt_mip_abs_gap_hint: 'Mesma ideia do gap relativo, mas em unidades do valor objetivo.',
+      opt_mip_abs_gap_placeholder: '0.000001 (padrão)',
+      opt_heuristic_effort_label: 'Esforço de heurísticas — PLI (0 a 1)',
+      opt_heuristic_effort_hint: 'Fração do tempo dedicada a heurísticas para achar soluções inteiras rapidamente. Padrão: 0,05.',
+      opt_heuristic_effort_placeholder: '0.05 (padrão)',
+      opt_presolve_label: 'Pré-processamento (presolve)',
+      opt_auto: 'Automático',
+      opt_on: 'Ativado',
+      opt_off: 'Desativado',
+      opt_solver_label: 'Algoritmo (LP)',
+      opt_simplex: 'Simplex',
+      opt_ipm: 'Pontos Interiores',
+      opt_parallel_label: 'Paralelismo',
+      opt_threads_label: 'Número de threads',
+      opt_auto_placeholder: 'automático',
+      opt_random_seed_label: 'Semente aleatória (random seed)',
+      opt_random_seed_hint: 'Útil para reproduzir o mesmo resultado em modelos com múltiplas soluções ótimas.',
+      opt_reset: 'Restaurar padrões',
+      opt_cancel: 'Cancelar',
+      btn_generic_save: 'Salvar',
+
+      about_modal_title: 'ℹ️ Sobre este projeto',
+      about_me_heading: 'Sobre mim',
+      about_me_bio: 'Sou professor do curso de Engenharia de Produção da Universidade Federal do Paraná (UFPR), e ministro a disciplina de programação linear. Desenvolvi esse aplicativo baseado no programa GUSEK (desenvolvido pelo professor Leandro Magatão e Luiz Betoni) para visualização de modelos de otimização. A ideia principal é usar em aulas, porém pode ser usado para resolver problemas reais (respeitando a limitação de memória do navegador).',
+      about_project_heading: 'Sobre o projeto',
+      about_project_text: 'WebHIGHS é um editor e resolvedor de modelos de Programação Linear (PL) e Programação Linear Inteira (PLI), no formato CPLEX LP, que roda inteiramente no navegador — sem precisar instalar nada ou enviar o modelo para um servidor.',
+      about_tech_heading: 'Tecnologias e referências',
+      about_tech_gusek: 'IDE para GLPK (GNU Linear Programming Kit), com editor de modelos e visualização de resultados. Foi a inspiração para a criação deste aplicativo.',
+      about_tech_highs: 'solver de otimização linear, inteira-mista e de programação quadrática, de código aberto, que faz toda a resolução dos modelos.',
+      about_tech_highsjs: 'compilação do HiGHS para WebAssembly, o que permite rodar o solver inteiro dentro do navegador.',
+      about_tech_codemirror: 'editor de texto com numeração de linhas, destaque de sintaxe e temas de cores.',
+      about_tech_claude: 'assistente de IA muito usado no desenvolvimento deste aplicativo...na verdade mesmo, trabalhei como um gerente geral do Claude.',
+      btn_close_generic: 'Fechar',
+
+      editor_panel_header: 'Modelo LP (CPLEX format)',
+      tt_editor_theme: 'Tema de cores do editor',
+      theme_light_default: 'Claro (padrão)',
+      tt_font_dec: 'Diminuir fonte (Ctrl+-)',
+      tt_font_inc: 'Aumentar fonte (Ctrl++)',
+
+      results_panel_header: 'Resultados',
+      tt_export: 'Exportar solução para arquivo',
+      btn_export: '💾 Exportar',
+      tt_result_font_dec: 'Diminuir tamanho do texto',
+      tt_result_font_inc: 'Aumentar tamanho do texto',
+
+      placeholder_line1_html: 'Escreva ou carregue um modelo, depois clique<br><strong>▶ Resolver</strong> ou pressione <kbd>Ctrl</kbd>+<kbd>Enter</kbd>',
+      placeholder_solver_info_html: 'Solver: <strong style="color:var(--accent)">HiGHS 1.8</strong> via WebAssembly · Suporta LP e PLI',
+
+      status_loading: 'Carregando HiGHS WebAssembly…',
+      status_highs_version: 'HiGHS 1.8 · WebAssembly',
+      status_ctrl_enter_hint_html: '<kbd>Ctrl+Enter</kbd> resolve',
+
+      status_ready: 'HiGHS pronto ✓',
+      status_load_error_prefix: 'Erro ao carregar HiGHS: ',
+      prompt_tab_rename: 'Nome da aba:',
+      tab_title_suffix: ' (duplo clique para renomear)',
+      tt_tab_close: 'Fechar aba',
+      tt_tab_add: 'Nova aba',
+      default_tab_name: 'Sem título',
+      warn_large_model: 'Modelo grande — pode deixar o editor lento e aumentar o uso de memória do navegador',
+      confirm_large_file: (name, mb) => `O arquivo "${name}" tem ${mb} MB.\n\nArquivos grandes podem deixar o editor lento e usar bastante memória do navegador (o editor de texto e o solver duplicam o conteúdo internamente várias vezes). Em casos extremos, a aba do navegador pode até travar.\n\nDeseja carregar mesmo assim?`,
+      confirm_clear_tab: 'Limpar o conteúdo desta aba?',
+      filetype_lp_model: 'Modelo LP',
+      filetype_solution_report: 'Relatório de Solução',
+      status_solving: 'Resolvendo…',
+
+      report_title: 'WebHIGHS — Relatório de Solução',
+      report_model_label: 'Modelo:',
+      report_generated_label: 'Gerado em:',
+      report_status_label: 'Status:',
+      report_objvalue_label: 'Valor Objetivo:',
+      report_variables_heading: 'Variáveis',
+      report_col_name: 'Nome',
+      report_col_value: 'Valor',
+      report_col_reducedcost: 'C.Reduzido',
+      report_col_status: 'Status',
+      report_col_inf: 'Inf.',
+      report_col_sup: 'Sup.',
+      report_col_type: 'Tipo',
+      report_no_variables: '(sem variáveis)',
+      report_constraints_heading: 'Restrições',
+      report_col_lhs: 'LHS',
+      report_col_dualvalue: 'Valor Dual',
+      report_col_rhsinf: 'RHS inf.',
+      report_col_rhssup: 'RHS sup.',
+      report_no_constraints: '(sem restrições)',
+
+      err_fatal_badge: '💥 Erro crítico do solver',
+      err_fatal_subtitle: 'O solver foi reiniciado automaticamente',
+      err_fatal_whathappened_heading: 'O que provavelmente aconteceu:',
+      err_fatal_whathappened_text: 'O modelo era grande/complexo demais e o solver (que roda em WebAssembly, com um limite de memória próprio) ficou sem memória durante a resolução. Isso não tem relação com a sintaxe do modelo.',
+      err_fatal_whattotry_heading: 'O que tentar:',
+      err_fatal_tip1: 'Reduza o tamanho do modelo (menos variáveis/restrições), se possível',
+      err_fatal_tip2_html: 'Em "⚙️ Opções", defina um <em>tempo máximo de resolução</em> — evita que o PLI explore uma árvore de busca enorme até estourar a memória',
+      err_fatal_tip3_html: 'Aumente o <em>gap relativo aceitável</em>, para o solver parar mais perto do início, próximo do ótimo, em vez de continuar refinando indefinidamente',
+      status_fatal_error: 'Erro crítico — solver reiniciado, já pode tentar de novo',
+
+      err_badge: '✗ Erro',
+      err_subtitle: 'Verifique a sintaxe do modelo',
+      err_line_highlighted: (n) => `↑ linha ${n} destacada no editor`,
+      err_tips_heading: 'Dicas comuns:',
+      err_tip1_html: 'RHS deve ser constante — <code style="color:var(--red)">x &lt;= 2 y</code> é inválido; use <code style="color:var(--green)">x - 2 y &lt;= 0</code>',
+      err_tip2_html: 'Cada restrição precisa de um único operador (<code>&lt;=</code>, <code>&gt;=</code> ou <code>=</code>)',
+      err_tip3_html: 'Seções obrigatórias: objetivo + <code>Subject To</code> + <code>End</code>',
+      err_lp_reference_link: '📖 Referência do formato LP (CPLEX)',
+      err_solver_output_label: (n) => `Output do solver (${n} linha(s)):`,
+      btn_copy: '📋 Copiar',
+      status_solve_error: 'Erro ao resolver — verifique o modelo',
+
+      status_optimal: '✓ Ótimo',
+      status_infeasible: '✗ Inviável',
+      status_unbounded: '∞ Ilimitado',
+      obj_value_label: 'Valor Objetivo',
+      tab_variables: 'Variáveis',
+      tab_constraints: 'Restrições',
+      tab_log: 'Log',
+      tab_json: 'JSON',
+      th_variable: 'Variável',
+      th_value: 'Valor',
+      th_reducedcost: 'C. Reduzido',
+      th_reducedcost_title: 'Custo Reduzido',
+      th_status: 'Status',
+      th_inf: 'Inf.',
+      th_sup: 'Sup.',
+      th_type: 'Tipo',
+      legend_var_status: 'BS = básica (ativa) · LB = no limite inferior · UB = no limite superior',
+      no_variables_msg: 'Sem variáveis',
+      th_constraint: 'Restrição',
+      th_lhs: 'LHS',
+      th_dualvalue: 'Valor Dual',
+      th_dualvalue_title: 'Valor Dual (multiplicador da restrição)',
+      th_rhsinf: 'RHS inf.',
+      th_rhssup: 'RHS sup.',
+      legend_dual_value: 'Valor dual: variação no objetivo por unidade de folga da restrição',
+      no_constraints_msg: 'Sem restrições',
+      log_lines_count: (n) => `${n} linha(s) de output`,
+      btn_copied: '✓ Copiado!',
+      status_var_abbrev: 'var',
+      status_constr_abbrev: 'restrições',
+      status_solved_summary_parts: (p) => `${p.badgeText} · ${p.nvars} var · ${p.nrows} restrições · obj = ${p.obj}`,
+
+      tag_basic: 'Básica',
+      tag_lb: 'Inf',
+      tag_ub: 'Sup',
+      tag_nonbasic: 'Não-básica',
+
+      log_no_output: 'Nenhum output capturado. O HiGHS pode estar em modo silencioso.',
+      err_line_title: (n) => `Erro na linha ${n}`,
+      live_badge_solving: '⏳ Resolvendo…',
+      log_live_label: 'Output do solver (ao vivo):',
+      too_large_to_persist: '⌐ Este modelo era grande demais para ser salvo automaticamente.\n⌐ Abra o arquivo novamente em 📂 Abrir.',
+      line_count_singular: 'linha',
+      line_count_plural: 'linhas',
+      export_filename_suffix: '-solucao.txt',
+    },
+
+    en: {
+      page_title: 'WebHIGHS — Linear Programming',
+
+      tt_examples: 'Load example model',
+      opt_examples_placeholder: 'Examples…',
+      ex_producao: 'Production (LP)',
+      ex_transporte: 'Transportation (LP)',
+      ex_mochila: 'Knapsack (MILP)',
+      ex_dieta: 'Diet (LP)',
+      ex_mix: 'Product Mix (MILP)',
+
+      tt_open: 'Open .lp file',
+      btn_open: '📂 Open',
+      tt_save: 'Save as .lp',
+      btn_save: '💾 Save',
+      tt_about: 'About this project',
+      btn_about: 'ℹ️ About',
+      tt_options: 'HiGHS solver options',
+      btn_options: '⚙️ Options',
+      theme_switch_to_light: 'Switch to light theme',
+      theme_switch_to_dark: 'Switch to dark theme',
+      tt_lang_select: 'Idioma / Language',
+      tt_clear: 'Clear editor',
+      btn_clear: '✕ Clear',
+      btn_solve: '▶ Solve',
+      btn_solving: '⏳ Solving…',
+
+      opt_modal_title: '⚙️ Solver Options (HiGHS)',
+      tt_close: 'Close',
+      opt_time_limit_label: 'Maximum solve time (seconds)',
+      opt_time_limit_hint: 'Empty = no limit. When the time is reached, HiGHS returns the best solution found so far.',
+      opt_time_limit_placeholder: 'no limit',
+      opt_mip_rel_gap_label: 'Acceptable relative gap — MILP (%)',
+      opt_mip_rel_gap_hint: 'Stops once it gets within this margin of the optimum. HiGHS default: 0.01%.',
+      opt_mip_rel_gap_placeholder: '0.01 (default)',
+      opt_mip_abs_gap_label: 'Acceptable absolute gap — MILP',
+      opt_mip_abs_gap_hint: 'Same idea as the relative gap, but in objective-value units.',
+      opt_mip_abs_gap_placeholder: '0.000001 (default)',
+      opt_heuristic_effort_label: 'Heuristics effort — MILP (0 to 1)',
+      opt_heuristic_effort_hint: 'Fraction of time spent on heuristics to find integer solutions quickly. Default: 0.05.',
+      opt_heuristic_effort_placeholder: '0.05 (default)',
+      opt_presolve_label: 'Presolve',
+      opt_auto: 'Automatic',
+      opt_on: 'On',
+      opt_off: 'Off',
+      opt_solver_label: 'Algorithm (LP)',
+      opt_simplex: 'Simplex',
+      opt_ipm: 'Interior Point',
+      opt_parallel_label: 'Parallelism',
+      opt_threads_label: 'Number of threads',
+      opt_auto_placeholder: 'automatic',
+      opt_random_seed_label: 'Random seed',
+      opt_random_seed_hint: 'Useful to reproduce the same result on models with multiple optimal solutions.',
+      opt_reset: 'Restore defaults',
+      opt_cancel: 'Cancel',
+      btn_generic_save: 'Save',
+
+      about_modal_title: 'ℹ️ About this project',
+      about_me_heading: 'About me',
+      about_me_bio: 'I am a professor in the Production Engineering program at the Federal University of Paraná (UFPR), where I teach linear programming. I built this app based on the GUSEK program (developed by professor Leandro Magatão and Luiz Betoni) for visualizing optimization models. The main idea is to use it in class, but it can also be used to solve real problems (within the browser\'s memory limits).',
+      about_project_heading: 'About the project',
+      about_project_text: 'WebHIGHS is an editor and solver for Linear Programming (LP) and Mixed-Integer Linear Programming (MILP) models, in CPLEX LP format, that runs entirely in the browser — no installation and no model sent to a server.',
+      about_tech_heading: 'Technologies and references',
+      about_tech_gusek: 'IDE for GLPK (GNU Linear Programming Kit), with a model editor and results visualization. The inspiration for building this app.',
+      about_tech_highs: 'open-source solver for linear, mixed-integer and quadratic programming, which does all the actual model solving.',
+      about_tech_highsjs: 'compilation of HiGHS to WebAssembly, which makes it possible to run the whole solver inside the browser.',
+      about_tech_codemirror: 'text editor with line numbering, syntax highlighting and color themes.',
+      about_tech_claude: 'AI assistant heavily used in the development of this app... actually, I worked as Claude\'s general manager.',
+      btn_close_generic: 'Close',
+
+      editor_panel_header: 'LP Model (CPLEX format)',
+      tt_editor_theme: 'Editor color theme',
+      theme_light_default: 'Light (default)',
+      tt_font_dec: 'Decrease font (Ctrl+-)',
+      tt_font_inc: 'Increase font (Ctrl++)',
+
+      results_panel_header: 'Results',
+      tt_export: 'Export solution to file',
+      btn_export: '💾 Export',
+      tt_result_font_dec: 'Decrease text size',
+      tt_result_font_inc: 'Increase text size',
+
+      placeholder_line1_html: 'Write or load a model, then click<br><strong>▶ Solve</strong> or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd>',
+      placeholder_solver_info_html: 'Solver: <strong style="color:var(--accent)">HiGHS 1.8</strong> via WebAssembly · Supports LP and MILP',
+
+      status_loading: 'Loading HiGHS WebAssembly…',
+      status_highs_version: 'HiGHS 1.8 · WebAssembly',
+      status_ctrl_enter_hint_html: '<kbd>Ctrl+Enter</kbd> solves',
+
+      status_ready: 'HiGHS ready ✓',
+      status_load_error_prefix: 'Error loading HiGHS: ',
+      prompt_tab_rename: 'Tab name:',
+      tab_title_suffix: ' (double-click to rename)',
+      tt_tab_close: 'Close tab',
+      tt_tab_add: 'New tab',
+      default_tab_name: 'Untitled',
+      warn_large_model: 'Large model — may slow down the editor and increase browser memory usage',
+      confirm_large_file: (name, mb) => `The file "${name}" is ${mb} MB.\n\nLarge files can slow down the editor and use a lot of browser memory (the text editor and the solver both duplicate the content internally several times). In extreme cases, the browser tab can even freeze.\n\nLoad it anyway?`,
+      confirm_clear_tab: 'Clear the contents of this tab?',
+      filetype_lp_model: 'LP Model',
+      filetype_solution_report: 'Solution Report',
+      status_solving: 'Solving…',
+
+      report_title: 'WebHIGHS — Solution Report',
+      report_model_label: 'Model:',
+      report_generated_label: 'Generated on:',
+      report_status_label: 'Status:',
+      report_objvalue_label: 'Objective Value:',
+      report_variables_heading: 'Variables',
+      report_col_name: 'Name',
+      report_col_value: 'Value',
+      report_col_reducedcost: 'RedCost',
+      report_col_status: 'Status',
+      report_col_inf: 'Lower',
+      report_col_sup: 'Upper',
+      report_col_type: 'Type',
+      report_no_variables: '(no variables)',
+      report_constraints_heading: 'Constraints',
+      report_col_lhs: 'LHS',
+      report_col_dualvalue: 'Dual Value',
+      report_col_rhsinf: 'RHS lower',
+      report_col_rhssup: 'RHS upper',
+      report_no_constraints: '(no constraints)',
+
+      err_fatal_badge: '💥 Critical solver error',
+      err_fatal_subtitle: 'The solver was automatically restarted',
+      err_fatal_whathappened_heading: 'What probably happened:',
+      err_fatal_whathappened_text: 'The model was too large/complex and the solver (which runs in WebAssembly, with its own memory limit) ran out of memory while solving. This is unrelated to the model\'s syntax.',
+      err_fatal_whattotry_heading: 'What to try:',
+      err_fatal_tip1: 'Reduce the size of the model (fewer variables/constraints), if possible',
+      err_fatal_tip2_html: 'In "⚙️ Options", set a <em>maximum solve time</em> — this stops the MILP from exploring a huge search tree until it runs out of memory',
+      err_fatal_tip3_html: 'Increase the <em>acceptable relative gap</em>, so the solver stops earlier, close to the optimum, instead of refining indefinitely',
+      status_fatal_error: 'Critical error — solver restarted, you can try again',
+
+      err_badge: '✗ Error',
+      err_subtitle: 'Check the model syntax',
+      err_line_highlighted: (n) => `↑ line ${n} highlighted in the editor`,
+      err_tips_heading: 'Common tips:',
+      err_tip1_html: 'RHS must be a constant — <code style="color:var(--red)">x &lt;= 2 y</code> is invalid; use <code style="color:var(--green)">x - 2 y &lt;= 0</code>',
+      err_tip2_html: 'Each constraint needs a single operator (<code>&lt;=</code>, <code>&gt;=</code> or <code>=</code>)',
+      err_tip3_html: 'Required sections: objective + <code>Subject To</code> + <code>End</code>',
+      err_lp_reference_link: '📖 LP format reference (CPLEX)',
+      err_solver_output_label: (n) => `Solver output (${n} line(s)):`,
+      btn_copy: '📋 Copy',
+      status_solve_error: 'Error solving — check the model',
+
+      status_optimal: '✓ Optimal',
+      status_infeasible: '✗ Infeasible',
+      status_unbounded: '∞ Unbounded',
+      obj_value_label: 'Objective Value',
+      tab_variables: 'Variables',
+      tab_constraints: 'Constraints',
+      tab_log: 'Log',
+      tab_json: 'JSON',
+      th_variable: 'Variable',
+      th_value: 'Value',
+      th_reducedcost: 'Red. Cost',
+      th_reducedcost_title: 'Reduced Cost',
+      th_status: 'Status',
+      th_inf: 'Lower',
+      th_sup: 'Upper',
+      th_type: 'Type',
+      legend_var_status: 'BS = basic (active) · LB = at lower bound · UB = at upper bound',
+      no_variables_msg: 'No variables',
+      th_constraint: 'Constraint',
+      th_lhs: 'LHS',
+      th_dualvalue: 'Dual Value',
+      th_dualvalue_title: 'Dual Value (constraint multiplier)',
+      th_rhsinf: 'RHS lower',
+      th_rhssup: 'RHS upper',
+      legend_dual_value: 'Dual value: change in the objective per unit of constraint slack',
+      no_constraints_msg: 'No constraints',
+      log_lines_count: (n) => `${n} line(s) of output`,
+      btn_copied: '✓ Copied!',
+      status_var_abbrev: 'var',
+      status_constr_abbrev: 'constraints',
+      status_solved_summary_parts: (p) => `${p.badgeText} · ${p.nvars} var · ${p.nrows} constraints · obj = ${p.obj}`,
+
+      tag_basic: 'Basic',
+      tag_lb: 'Lower',
+      tag_ub: 'Upper',
+      tag_nonbasic: 'Non-basic',
+
+      log_no_output: 'No output captured. HiGHS may be running in silent mode.',
+      err_line_title: (n) => `Error on line ${n}`,
+      live_badge_solving: '⏳ Solving…',
+      log_live_label: 'Solver output (live):',
+      too_large_to_persist: '⌐ This model was too large to be saved automatically.\n⌐ Open the file again with 📂 Open.',
+      line_count_singular: 'line',
+      line_count_plural: 'lines',
+      export_filename_suffix: '-solution.txt',
+    },
+  };
+
+  function detectInitialLang() {
+    try {
+      const saved = localStorage.getItem(LANG_KEY);
+      if (saved === 'pt' || saved === 'en') return saved;
+    } catch (_) {}
+    const nav = ((navigator.language || navigator.userLanguage || '') + '').toLowerCase();
+    return nav.startsWith('pt') ? 'pt' : 'en';
+  }
+
+  let currentLang = detectInitialLang();
+
+  // t(key) or t(key, arg) — if the dictionary value is a function, call it with arg(s)
+  function t(key, ...args) {
+    const dict = I18N[currentLang] || I18N.pt;
+    const fallback = I18N.pt;
+    let entry = (key in dict) ? dict[key] : fallback[key];
+    if (entry === undefined) return key;
+    return (typeof entry === 'function') ? entry(...args) : entry;
+  }
+
+  function applyTranslations() {
+    document.documentElement.lang = (currentLang === 'pt') ? 'pt-BR' : 'en';
+    document.title = t('page_title');
+
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+
+    const langSel = document.getElementById('lang-select');
+    if (langSel) langSel.value = currentLang;
+  }
+
+  applyTranslations();
+
   /* ════════════════════════════════════════════════════════════════════
      1. LP Syntax Mode for CodeMirror
   ════════════════════════════════════════════════════════════════════ */
@@ -1087,7 +1562,7 @@ End`
   function makeTab(name, content, id) {
     return {
       id: id || ('tab-' + (++tabSeq) + '-' + Date.now().toString(36)),
-      name: name || 'Sem título',
+      name: name || t('default_tab_name'),
       doc: new CodeMirror.Doc(content || '', 'lp'),
       errorLine: -1
     };
@@ -1105,13 +1580,13 @@ End`
       const saved = JSON.parse(raw);
       if (saved && Array.isArray(saved.tabs) && saved.tabs.length) {
         tabSeq = saved.tabSeq || 0;
-        saved.tabs.forEach(t => {
-          if (t.tooLargeToPersist) {
+        saved.tabs.forEach(savedTab => {
+          if (savedTab.tooLargeToPersist) {
             // The model was too big to keep in localStorage between sessions —
             // restore an empty placeholder tab instead of silently losing it.
-            tabs.push(makeTab(t.name, '⌐ Este modelo era grande demais para ser salvo automaticamente.\n⌐ Abra o arquivo novamente em 📂 Abrir.', t.id));
+            tabs.push(makeTab(savedTab.name, t('too_large_to_persist'), savedTab.id));
           } else {
-            tabs.push(makeTab(t.name, t.content, t.id));
+            tabs.push(makeTab(savedTab.name, savedTab.content, savedTab.id));
           }
         });
         if (saved.activeTabId && tabs.some(t => t.id === saved.activeTabId)) {
@@ -1122,7 +1597,7 @@ End`
   })();
 
   if (!tabs.length) {
-    tabs.push(makeTab('Produção (PL)', EXAMPLES.producao));
+    tabs.push(makeTab(t('ex_producao'), EXAMPLES.producao));
   }
   if (!activeTabId || !tabs.some(t => t.id === activeTabId)) {
     activeTabId = tabs[0].id;
@@ -1167,7 +1642,7 @@ End`
     tabs.forEach(tab => {
       const el = document.createElement('div');
       el.className = 'tab' + (tab.id === activeTabId ? ' active' : '');
-      el.title = tab.name + ' (duplo clique para renomear)';
+      el.title = tab.name + t('tab_title_suffix');
 
       const nameSpan = document.createElement('span');
       nameSpan.className = 'tab-name';
@@ -1176,7 +1651,7 @@ End`
       const closeBtn = document.createElement('span');
       closeBtn.className = 'tab-close';
       closeBtn.textContent = '×';
-      closeBtn.title = 'Fechar aba';
+      closeBtn.title = t('tt_tab_close');
 
       el.appendChild(nameSpan);
       el.appendChild(closeBtn);
@@ -1199,7 +1674,7 @@ End`
 
     const addBtn = document.createElement('div');
     addBtn.className = 'tab-add';
-    addBtn.title = 'Nova aba';
+    addBtn.title = t('tt_tab_add');
     addBtn.textContent = '+';
     addBtn.addEventListener('click', () => newTab());
     bar.appendChild(addBtn);
@@ -1225,7 +1700,7 @@ End`
     tabs.splice(idx, 1);
 
     if (!tabs.length) {
-      tabs.push(makeTab('Sem título', ''));
+      tabs.push(makeTab(t('default_tab_name'), ''));
     }
 
     if (wasActive) {
@@ -1249,7 +1724,7 @@ End`
   function renameTab(id) {
     const tab = tabs.find(t => t.id === id);
     if (!tab) return;
-    const newName = prompt('Nome da aba:', tab.name);
+    const newName = prompt(t('prompt_tab_rename'), tab.name);
     if (newName && newName.trim()) {
       tab.name = newName.trim();
       renderTabBar();
@@ -1280,9 +1755,9 @@ End`
   function updateLineCount() {
     const n = editor.lineCount();
     const el = document.getElementById('line-count');
-    el.textContent = n + ' linha' + (n !== 1 ? 's' : '');
+    el.textContent = n + ' ' + t(n !== 1 ? 'line_count_plural' : 'line_count_singular');
     el.title = (n > LARGE_MODEL_WARN_LINES)
-      ? 'Modelo grande — pode deixar o editor lento e aumentar o uso de memória do navegador'
+      ? t('warn_large_model')
       : '';
     el.style.color = (n > LARGE_MODEL_WARN_LINES) ? 'var(--orange)' : '';
     el.textContent = (n > LARGE_MODEL_WARN_LINES ? '⚠️ ' : '') + el.textContent;
@@ -1339,13 +1814,7 @@ End`
     files.forEach(file => {
       if (file.size > LARGE_FILE_WARN_BYTES) {
         const mb = (file.size / (1024 * 1024)).toFixed(1);
-        const proceed = confirm(
-          `O arquivo "${file.name}" tem ${mb} MB.\n\n` +
-          'Arquivos grandes podem deixar o editor lento e usar bastante memória do navegador ' +
-          '(o editor de texto e o solver duplicam o conteúdo internamente várias vezes). ' +
-          'Em casos extremos, a aba do navegador pode até travar.\n\n' +
-          'Deseja carregar mesmo assim?'
-        );
+        const proceed = confirm(t('confirm_large_file', file.name, mb));
         if (!proceed) return;
       }
       const reader = new FileReader();
@@ -1368,7 +1837,7 @@ End`
       try {
         const handle = await window.showSaveFilePicker({
           suggestedName: suggested,
-          types: [{ description: 'Modelo LP', accept: { 'text/plain': ['.lp'] } }]
+          types: [{ description: t('filetype_lp_model'), accept: { 'text/plain': ['.lp'] } }]
         });
         const writable = await handle.createWritable();
         await writable.write(content);
@@ -1382,7 +1851,7 @@ End`
       } catch (err) {
         // Usuário cancelou o diálogo — não faz nada
         if (err.name !== 'AbortError') {
-          console.error('Erro ao salvar:', err);
+          console.error(currentLang === 'pt' ? 'Erro ao salvar:' : 'Error saving:', err);
           downloadFallback(content, suggested);
         }
       }
@@ -1402,7 +1871,7 @@ End`
     URL.revokeObjectURL(a.href);
   }
   document.getElementById('btn-clear').addEventListener('click', () => {
-    if (confirm('Limpar o conteúdo desta aba?')) {
+    if (confirm(t('confirm_clear_tab'))) {
       editor.setValue('');
       editor.focus();
       setPlaceholder();
@@ -1429,47 +1898,47 @@ End`
     const vars = Object.values(sol.Columns || {});
     const rows = sol.Rows || [];
     const sep  = '─'.repeat(64);
-    const now  = new Date().toLocaleString('pt-BR');
+    const now  = new Date().toLocaleString(currentLang === 'pt' ? 'pt-BR' : 'en-US');
 
     const pad = (s, n) => String(s).padEnd(n);
 
     let out = '';
     out += '═'.repeat(64) + '\n';
-    out += ' WebHIGHS — Relatório de Solução\n';
+    out += ' ' + t('report_title') + '\n';
     out += '═'.repeat(64) + '\n';
-    out += `Modelo:          ${modelName}\n`;
-    out += `Gerado em:       ${now}\n`;
-    out += `Status:          ${sol.Status}\n`;
+    out += `${t('report_model_label')}  ${modelName}\n`;
+    out += `${t('report_generated_label')}  ${now}\n`;
+    out += `${t('report_status_label')}  ${sol.Status}\n`;
     if (sol.Status === 'Optimal') {
-      out += `Valor Objetivo:  ${fmt(sol.ObjectiveValue)}\n`;
+      out += `${t('report_objvalue_label')}  ${fmt(sol.ObjectiveValue)}\n`;
     }
     out += '\n';
 
     out += sep + '\n';
-    out += ` Variáveis (${vars.length})\n`;
+    out += ` ${t('report_variables_heading')} (${vars.length})\n`;
     out += sep + '\n';
     if (vars.length) {
-      out += pad('Nome', 16) + pad('Valor', 14) + pad('C.Reduzido', 14) + pad('Status', 8) + pad('Inf.', 12) + pad('Sup.', 12) + 'Tipo\n';
+      out += pad(t('report_col_name'), 16) + pad(t('report_col_value'), 14) + pad(t('report_col_reducedcost'), 14) + pad(t('report_col_status'), 8) + pad(t('report_col_inf'), 12) + pad(t('report_col_sup'), 12) + t('report_col_type') + '\n';
       vars.forEach(v => {
         out += pad(v.Name, 16) + pad(fmt(v.Primal), 14) + pad(fmt(v.Dual), 14) + pad(v.Status || '—', 8) +
                pad(fmt(v.Lower), 12) + pad(fmt(v.Upper), 12) + (v.Type || '—') + '\n';
       });
     } else {
-      out += '(sem variáveis)\n';
+      out += t('report_no_variables') + '\n';
     }
     out += '\n';
 
     out += sep + '\n';
-    out += ` Restrições (${rows.length})\n`;
+    out += ` ${t('report_constraints_heading')} (${rows.length})\n`;
     out += sep + '\n';
     if (rows.length) {
-      out += pad('Nome', 16) + pad('LHS', 14) + pad('Valor Dual', 14) + pad('Status', 8) + pad('RHS inf.', 12) + 'RHS sup.\n';
+      out += pad(t('report_col_name'), 16) + pad(t('report_col_lhs'), 14) + pad(t('report_col_dualvalue'), 14) + pad(t('report_col_status'), 8) + pad(t('report_col_rhsinf'), 12) + t('report_col_rhssup') + '\n';
       rows.forEach(r => {
         out += pad(r.Name || ('r' + r.Index), 16) + pad(fmt(r.Primal), 14) + pad(fmt(r.Dual), 14) + pad(r.Status || '—', 8) +
                pad(fmt(r.Lower), 12) + fmt(r.Upper) + '\n';
       });
     } else {
-      out += '(sem restrições)\n';
+      out += t('report_no_constraints') + '\n';
     }
 
     return out;
@@ -1480,20 +1949,20 @@ End`
     const tab = getActiveTab();
     const modelName = tab ? tab.name : 'modelo';
     const content = buildSolutionReport(lastSolution, modelName);
-    const suggested = sanitizeFileName(modelName) + '-solucao.txt';
+    const suggested = sanitizeFileName(modelName) + t('export_filename_suffix');
 
     if (window.showSaveFilePicker) {
       try {
         const handle = await window.showSaveFilePicker({
           suggestedName: suggested,
-          types: [{ description: 'Relatório de Solução', accept: { 'text/plain': ['.txt'] } }]
+          types: [{ description: t('filetype_solution_report'), accept: { 'text/plain': ['.txt'] } }]
         });
         const writable = await handle.createWritable();
         await writable.write(content);
         await writable.close();
       } catch (err) {
         if (err.name !== 'AbortError') {
-          console.error('Erro ao exportar solução:', err);
+          console.error(currentLang === 'pt' ? 'Erro ao exportar solução:' : 'Error exporting solution:', err);
           downloadFallback(content, suggested);
         }
       }
@@ -1581,6 +2050,9 @@ onmessage = async function({ data }) {
   let solving = false;
   let logLines = [];   // { line, isErr } – accumulated for current/last solve
   let lastSolution = null;   // last solved result, kept for the export button
+  let lastErrorMessage = null;   // last solve error, kept to re-render on language change
+  let lastFatalMessage = null;   // last fatal worker error, kept to re-render on language change
+  let lastMsgFn = null;   // closure that re-computes the current status-bar message in the active language
 
   function spawnWorker() {
     const blob = new Blob([workerSrc], { type: 'application/javascript' });
@@ -1591,14 +2063,15 @@ onmessage = async function({ data }) {
         case 'ready':
           solverReady = true;
           setDot('ok');
-          setMsg('HiGHS pronto ✓');
+          setMsgKey('status_ready');
           document.getElementById('btn-solve').disabled = false;
-          document.getElementById('btn-solve').textContent = '▶ Resolver';
+          document.getElementById('btn-solve').textContent = t('btn_solve');
           break;
 
         case 'init_error':
           setDot('error');
-          setMsg('Erro ao carregar HiGHS: ' + data.message);
+          lastMsgFn = () => t('status_load_error_prefix') + data.message;
+          setMsg(lastMsgFn());
           break;
 
         case 'log': {
@@ -1664,31 +2137,29 @@ onmessage = async function({ data }) {
 
   function renderFatalError(message) {
     lastSolution = null;
+    lastErrorMessage = null;
+    lastFatalMessage = message;
     const exportBtn = document.getElementById('btn-export-solution');
     if (exportBtn) exportBtn.disabled = true;
 
     document.getElementById('results').innerHTML = `
       <div class="status-card" style="border-color:rgba(255,85,85,.4)">
-        <div class="status-badge badge-error">💥 Erro crítico do solver</div>
-        <div style="margin-left:8px;color:var(--muted);font-size:12px">O solver foi reiniciado automaticamente</div>
+        <div class="status-badge badge-error">${t('err_fatal_badge')}</div>
+        <div style="margin-left:8px;color:var(--muted);font-size:12px">${t('err_fatal_subtitle')}</div>
       </div>
       <div class="error-msg">${escHtml(message)}</div>
       <div style="margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.7">
-        <strong style="color:var(--text)">O que provavelmente aconteceu:</strong><br>
-        O modelo era grande/complexo demais e o solver (que roda em WebAssembly, com um limite
-        de memória próprio) ficou sem memória durante a resolução. Isso não tem relação com a
-        sintaxe do modelo.
+        <strong style="color:var(--text)">${t('err_fatal_whathappened_heading')}</strong><br>
+        ${t('err_fatal_whathappened_text')}
       </div>
       <div style="margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.7">
-        <strong style="color:var(--text)">O que tentar:</strong><br>
-        • Reduza o tamanho do modelo (menos variáveis/restrições), se possível<br>
-        • Em "⚙️ Opções", defina um <em>tempo máximo de resolução</em> — evita que o PLI explore
-        uma árvore de busca enorme até estourar a memória<br>
-        • Aumente o <em>gap relativo aceitável</em>, para o solver parar mais perto do início,
-        próximo do ótimo, em vez de continuar refinando indefinidamente
+        <strong style="color:var(--text)">${t('err_fatal_whattotry_heading')}</strong><br>
+        • ${t('err_fatal_tip1')}<br>
+        • ${t('err_fatal_tip2_html')}<br>
+        • ${t('err_fatal_tip3_html')}
       </div>`;
 
-    setMsg('Erro crítico — solver reiniciado, já pode tentar de novo');
+    setMsgKey('status_fatal_error');
   }
 
   worker = spawnWorker();
@@ -1820,13 +2291,15 @@ onmessage = async function({ data }) {
     solving = true;
     logLines = [];
     lastSolution = null;
+    lastErrorMessage = null;
+    lastFatalMessage = null;
     const exportBtn = document.getElementById('btn-export-solution');
     if (exportBtn) exportBtn.disabled = true;
     clearErrorMarkers();    // remove previous error highlights
     showSolvingView();
     setSolveBtn(true);
     setDot('loading');
-    setMsg('Resolvendo…');
+    setMsgKey('status_solving');
     worker.postMessage({ lp, options: getSolverOptions() });
   }
 
@@ -1924,7 +2397,7 @@ onmessage = async function({ data }) {
     const marker = document.createElement('span');
     marker.className = 'cm-error-gutter';
     marker.textContent = '▶';
-    marker.title = `Erro na linha ${lineNum}`;
+    marker.title = t('err_line_title', lineNum);
     editor.setGutterMarker(idx, 'CodeMirror-linenumbers', marker);
     editor.scrollIntoView({ line: idx, ch: 0 }, 80);
     editor.setCursor({ line: idx, ch: 0 });
@@ -1943,11 +2416,11 @@ onmessage = async function({ data }) {
   function showSolvingView() {
     document.getElementById('results').innerHTML = `
       <div class="status-card" id="live-status-card">
-        <div class="status-badge badge-pending" id="live-badge">⏳ Resolvendo…</div>
+        <div class="status-badge badge-pending" id="live-badge">${t('live_badge_solving')}</div>
         <div id="live-stats" style="margin-left:auto;text-align:right;font-size:11px;color:var(--muted)"></div>
       </div>
       <div class="log-toolbar">
-        <span>Output do solver (ao vivo):</span>
+        <span>${t('log_live_label')}</span>
       </div>
       <div id="log-live" class="log-pane" style="flex:1;max-height:calc(100vh - 200px)"></div>`;
   }
@@ -1969,7 +2442,7 @@ onmessage = async function({ data }) {
     const btn = document.getElementById('btn-solve');
     btn.disabled = running;
     btn.className = 'btn primary' + (running ? ' solving' : '');
-    btn.textContent = running ? '⏳ Resolvendo…' : '▶ Resolver';
+    btn.textContent = running ? t('btn_solving') : t('btn_solve');
   }
 
   /* ════════════════════════════════════════════════════════════════════
@@ -2011,7 +2484,7 @@ onmessage = async function({ data }) {
 
   // Build HTML for the full log from the logLines buffer
   function buildLogHTML(lines) {
-    if (!lines.length) return '<div class="ll-normal" style="color:var(--muted)">Nenhum output capturado. O HiGHS pode estar em modo silencioso.</div>';
+    if (!lines.length) return `<div class="ll-normal" style="color:var(--muted)">${t('log_no_output')}</div>`;
     return lines.map(({ line, isErr }) => {
       const cls = logLineClass(line, isErr);
       return `<div class="${cls}">${escHtml(line) || '&nbsp;'}</div>`;
@@ -2034,7 +2507,7 @@ onmessage = async function({ data }) {
 
   function statusTag(s) {
     if (!s) return '<span class="tag-nb">—</span>';
-    const map = { BS: ['BS','tag-bs','Básica'], LB: ['LB','tag-lb','Inf'], UB: ['UB','tag-ub','Sup'], NB: ['NB','tag-nb','Não-básica'] };
+    const map = { BS: ['BS','tag-bs',t('tag_basic')], LB: ['LB','tag-lb',t('tag_lb')], UB: ['UB','tag-ub',t('tag_ub')], NB: ['NB','tag-nb',t('tag_nonbasic')] };
     const [label, cls, title] = map[s.toUpperCase()] || [s, '', ''];
     return `<span class="${cls}" title="${title}">${label}</span>`;
   }
@@ -2046,6 +2519,8 @@ onmessage = async function({ data }) {
 
   function renderSolution(sol) {
     lastSolution = sol;
+    lastErrorMessage = null;
+    lastFatalMessage = null;
     const exportBtn = document.getElementById('btn-export-solution');
     if (exportBtn) exportBtn.disabled = false;
 
@@ -2057,7 +2532,7 @@ onmessage = async function({ data }) {
     const isUnb = sol.Status === 'Unbounded';
 
     const badgeClass = isOpt ? 'badge-optimal' : isInf ? 'badge-infeasible' : isUnb ? 'badge-unbounded' : 'badge-pending';
-    const badgeText  = isOpt ? '✓ Ótimo' : isInf ? '✗ Inviável' : isUnb ? '∞ Ilimitado' : sol.Status;
+    const badgeText  = isOpt ? t('status_optimal') : isInf ? t('status_infeasible') : isUnb ? t('status_unbounded') : sol.Status;
 
     const varRows = vars.map(v => `
       <tr class="${rowClass(v.Status)}">
@@ -2087,22 +2562,22 @@ onmessage = async function({ data }) {
         </div>
         ${isOpt ? `
           <div class="obj-block">
-            <div class="obj-label">Valor Objetivo</div>
+            <div class="obj-label">${t('obj_value_label')}</div>
             <div class="obj-value">${fmt(sol.ObjectiveValue)}</div>
           </div>` : ''}
       </div>
 
       <div class="tabs" id="result-tabs">
         <button class="tab active" data-tab="vars">
-          Variáveis&nbsp;<span style="color:var(--muted);font-size:11px">(${vars.length})</span>
+          ${t('tab_variables')}&nbsp;<span style="color:var(--muted);font-size:11px">(${vars.length})</span>
         </button>
         <button class="tab" data-tab="constrs">
-          Restrições&nbsp;<span style="color:var(--muted);font-size:11px">(${rows.length})</span>
+          ${t('tab_constraints')}&nbsp;<span style="color:var(--muted);font-size:11px">(${rows.length})</span>
         </button>
         <button class="tab" data-tab="log">
-          Log&nbsp;<span style="color:var(--muted);font-size:11px">(${logLines.length})</span>
+          ${t('tab_log')}&nbsp;<span style="color:var(--muted);font-size:11px">(${logLines.length})</span>
         </button>
-        <button class="tab" data-tab="raw">JSON</button>
+        <button class="tab" data-tab="raw">${t('tab_json')}</button>
       </div>
 
       <div id="tab-vars">
@@ -2110,15 +2585,15 @@ onmessage = async function({ data }) {
         <div class="table-wrap">
           <table class="result">
             <thead><tr>
-              <th>Variável</th><th>Valor</th><th title="Custo Reduzido">C. Reduzido</th>
-              <th>Status</th><th>Inf.</th><th>Sup.</th><th>Tipo</th>
+              <th>${t('th_variable')}</th><th>${t('th_value')}</th><th title="${t('th_reducedcost_title')}">${t('th_reducedcost')}</th>
+              <th>${t('th_status')}</th><th>${t('th_inf')}</th><th>${t('th_sup')}</th><th>${t('th_type')}</th>
             </tr></thead>
             <tbody>${varRows}</tbody>
           </table>
         </div>
         <div style="margin-top:8px;font-size:10.5px;color:var(--muted)">
-          BS = básica (ativa) · LB = no limite inferior · UB = no limite superior
-        </div>` : '<div style="color:var(--muted);font-size:12px;padding:8px">Sem variáveis</div>'}
+          ${t('legend_var_status')}
+        </div>` : `<div style="color:var(--muted);font-size:12px;padding:8px">${t('no_variables_msg')}</div>`}
       </div>
 
       <div id="tab-constrs" style="display:none">
@@ -2126,21 +2601,21 @@ onmessage = async function({ data }) {
         <div class="table-wrap">
           <table class="result">
             <thead><tr>
-              <th>Restrição</th><th>LHS</th><th title="Valor Dual (multiplicador da restrição)">Valor Dual</th>
-              <th>Status</th><th>RHS inf.</th><th>RHS sup.</th>
+              <th>${t('th_constraint')}</th><th>${t('th_lhs')}</th><th title="${t('th_dualvalue_title')}">${t('th_dualvalue')}</th>
+              <th>${t('th_status')}</th><th>${t('th_rhsinf')}</th><th>${t('th_rhssup')}</th>
             </tr></thead>
             <tbody>${constrRows}</tbody>
           </table>
         </div>
         <div style="margin-top:8px;font-size:10.5px;color:var(--muted)">
-          Valor dual: variação no objetivo por unidade de folga da restrição
-        </div>` : '<div style="color:var(--muted);font-size:12px;padding:8px">Sem restrições</div>'}
+          ${t('legend_dual_value')}
+        </div>` : `<div style="color:var(--muted);font-size:12px;padding:8px">${t('no_constraints_msg')}</div>`}
       </div>
 
       <div id="tab-log" style="display:none">
         <div class="log-toolbar">
-          <span>${logLines.length} linha(s) de output</span>
-          <button class="log-copy-btn" id="log-copy-btn">📋 Copiar</button>
+          <span>${t('log_lines_count', logLines.length)}</span>
+          <button class="log-copy-btn" id="log-copy-btn">${t('btn_copy')}</button>
         </div>
         <div class="log-pane" id="log-pane-final" style="max-height:calc(100vh - 260px)">${buildLogHTML(logLines)}</div>
       </div>
@@ -2155,7 +2630,7 @@ onmessage = async function({ data }) {
     document.getElementById('result-tabs').addEventListener('click', e => {
       const btn = e.target.closest('.tab');
       if (!btn) return;
-      document.querySelectorAll('#result-tabs .tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('#result-tabs .tab').forEach(tabEl => tabEl.classList.remove('active'));
       btn.classList.add('active');
       ALL_TABS.forEach(id => {
         document.getElementById('tab-' + id).style.display = btn.dataset.tab === id ? '' : 'none';
@@ -2172,16 +2647,18 @@ onmessage = async function({ data }) {
       const text = logLines.map(l => l.line).join('\n');
       navigator.clipboard.writeText(text).then(() => {
         const btn = document.getElementById('log-copy-btn');
-        btn.textContent = '✓ Copiado!';
-        setTimeout(() => { btn.textContent = '📋 Copiar'; }, 1500);
+        btn.textContent = t('btn_copied');
+        setTimeout(() => { btn.textContent = t('btn_copy'); }, 1500);
       });
     });
 
-    setMsg(`${badgeText} · ${vars.length} var · ${rows.length} restrições · obj = ${fmt(sol.ObjectiveValue)}`);
+    setMsgKey('status_solved_summary_parts', { badgeText, nvars: vars.length, nrows: rows.length, obj: fmt(sol.ObjectiveValue) });
   }
 
   function renderError(msg) {
     lastSolution = null;
+    lastErrorMessage = msg;
+    lastFatalMessage = null;
     const exportBtn = document.getElementById('btn-export-solution');
     if (exportBtn) exportBtn.disabled = true;
 
@@ -2189,30 +2666,30 @@ onmessage = async function({ data }) {
     if (errLine) markErrorLine(errLine);
 
     const lineHint = errLine
-      ? `<span style="color:var(--red);font-size:12px;margin-left:auto">↑ linha ${errLine} destacada no editor</span>`
+      ? `<span style="color:var(--red);font-size:12px;margin-left:auto">${t('err_line_highlighted', errLine)}</span>`
       : '';
 
     document.getElementById('results').innerHTML = `
       <div class="status-card" style="border-color:rgba(255,85,85,.4)">
-        <div class="status-badge badge-error">✗ Erro</div>
-        <div style="margin-left:8px;color:var(--muted);font-size:12px">Verifique a sintaxe do modelo</div>
+        <div class="status-badge badge-error">${t('err_badge')}</div>
+        <div style="margin-left:8px;color:var(--muted);font-size:12px">${t('err_subtitle')}</div>
         ${lineHint}
       </div>
       <div class="error-msg">${escHtml(msg)}</div>
       <div style="margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.7">
-        <strong style="color:var(--text)">Dicas comuns:</strong><br>
-        • RHS deve ser constante — <code style="color:var(--red)">x &lt;= 2 y</code> é inválido; use <code style="color:var(--green)">x - 2 y &lt;= 0</code><br>
-        • Cada restrição precisa de um único operador (<code>&lt;=</code>, <code>&gt;=</code> ou <code>=</code>)<br>
-        • Seções obrigatórias: objetivo + <code>Subject To</code> + <code>End</code>
+        <strong style="color:var(--text)">${t('err_tips_heading')}</strong><br>
+        • ${t('err_tip1_html')}<br>
+        • ${t('err_tip2_html')}<br>
+        • ${t('err_tip3_html')}
       </div>
       <a class="hint-link" href="http://lim.univ-reunion.fr/staff/fred/Enseignement/Optim/doc/CPLEX-LP/CPLEX-LP-file-format.html" target="_blank">
-        📖 Referência do formato LP (CPLEX)
+        ${t('err_lp_reference_link')}
       </a>
       ${logLines.length ? `
       <div style="margin-top:14px">
         <div class="log-toolbar">
-          <span>Output do solver (${logLines.length} linha(s)):</span>
-          <button class="log-copy-btn" id="err-log-copy-btn">📋 Copiar</button>
+          <span>${t('err_solver_output_label', logLines.length)}</span>
+          <button class="log-copy-btn" id="err-log-copy-btn">${t('btn_copy')}</button>
         </div>
         <div class="log-pane" id="err-log-pane" style="max-height:300px">${buildLogHTML(logLines)}</div>
       </div>` : ''}`;
@@ -2224,12 +2701,14 @@ onmessage = async function({ data }) {
         navigator.clipboard.writeText(logLines.map(l => l.line).join('\n'));
       });
     }
-    setMsg('Erro ao resolver — verifique o modelo');
+    setMsgKey('status_solve_error');
   }
 
   function setPlaceholder() {
     document.getElementById('results').innerHTML = document.getElementById('placeholder')?.outerHTML || '';
     lastSolution = null;
+    lastErrorMessage = null;
+    lastFatalMessage = null;
     const exportBtn = document.getElementById('btn-export-solution');
     if (exportBtn) exportBtn.disabled = true;
   }
@@ -2239,6 +2718,10 @@ onmessage = async function({ data }) {
     d.className = 'dot' + (state === 'loading' ? ' loading' : state === 'error' ? ' error' : '');
   }
   function setMsg(m) { document.getElementById('solver-msg').textContent = m; }
+  function setMsgKey(key, ...args) {
+    lastMsgFn = () => t(key, ...args);
+    setMsg(lastMsgFn());
+  }
   function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   /* Initial loading state */
@@ -2247,27 +2730,25 @@ onmessage = async function({ data }) {
   /* ════════════════════════════════════════════════════════════════════
      Theme toggle
   ════════════════════════════════════════════════════════════════════ */
-  (function () {
-    const btn  = document.getElementById('btn-theme');
+  let currentThemeName = 'dark';
+
+  function applyTheme(name) {
+    currentThemeName = name;
+    const titleKey = (name === 'dark') ? 'theme_switch_to_light' : 'theme_switch_to_dark';
+    const checkbox = document.getElementById('btn-theme');
     const root = document.documentElement;
+    root.dataset.theme = name;
+    checkbox.checked   = (name === 'dark');
+    checkbox.title     = t(titleKey);
+    document.getElementById('theme-switch-label').title = t(titleKey);
+    try { localStorage.setItem('lp-theme', name); } catch (_) {}
+  }
 
-    // Map theme → { label, next-theme }  (editor color theme is now independent — see "Editor color theme selector")
-    const THEMES = {
-      dark:  { icon: '🌙', title: 'Mudar para tema claro',  next: 'light' },
-      light: { icon: '☀️', title: 'Mudar para tema escuro', next: 'dark'  },
-    };
+  (function () {
+    const checkbox = document.getElementById('btn-theme');
 
-    function applyTheme(name) {
-      const t = THEMES[name] || THEMES.dark;
-      root.dataset.theme = name;
-      btn.textContent    = t.icon;
-      btn.title          = t.title;
-      try { localStorage.setItem('lp-theme', name); } catch (_) {}
-    }
-
-    btn.addEventListener('click', () => {
-      const current = root.dataset.theme || 'dark';
-      applyTheme(THEMES[current]?.next || 'light');
+    checkbox.addEventListener('change', () => {
+      applyTheme(checkbox.checked ? 'dark' : 'light');
     });
 
     // Restore saved preference, or honour OS preference as fallback
@@ -2276,6 +2757,35 @@ onmessage = async function({ data }) {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(saved || (prefersDark ? 'dark' : 'light'));
   })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     Language selector
+  ════════════════════════════════════════════════════════════════════ */
+  function setLanguage(lang) {
+    if (lang !== 'pt' && lang !== 'en') return;
+    currentLang = lang;
+    try { localStorage.setItem(LANG_KEY, lang); } catch (_) {}
+
+    applyTranslations();
+    updateLineCount();
+    applyTheme(currentThemeName);
+    if (lastMsgFn) setMsg(lastMsgFn());
+
+    // Re-render whatever is currently shown in the results panel, in the new language
+    if (lastSolution) {
+      renderSolution(lastSolution);
+    } else if (lastErrorMessage) {
+      renderError(lastErrorMessage);
+    } else if (lastFatalMessage) {
+      renderFatalError(lastFatalMessage);
+    } else if (!solving) {
+      setPlaceholder();
+    }
+  }
+
+  document.getElementById('lang-select').addEventListener('change', function () {
+    setLanguage(this.value);
+  });
   </script>
 </body>
 </html>
