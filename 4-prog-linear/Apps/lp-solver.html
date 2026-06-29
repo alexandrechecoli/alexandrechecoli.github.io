@@ -198,6 +198,42 @@
       max-width: 130px;
     }
 
+    /* Model format selector (LP / MathProg) — same look as the editor theme select */
+    select.model-format-select {
+      font-size: 10.5px;
+      padding: 2px 5px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--bg3);
+      color: var(--muted);
+      font-family: inherit;
+      cursor: pointer;
+      transition: color .1s, border-color .1s;
+    }
+    select.model-format-select:hover { color: var(--text); border-color: var(--muted); }
+    select.model-format-select option { background-color: var(--bg); color: var(--text); }
+
+    /* Generated-model tab (MathProg -> LP translation preview) */
+    .generated-model-note {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    .generated-model-pre {
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: var(--text);
+      max-height: calc(100vh - 260px);
+      overflow: auto;
+    }
+
     /* ─── Editor tabs ───────────────────────────────────────────────── */
     .tab-bar {
       display: flex;
@@ -701,7 +737,7 @@
 
       /* iOS Safari zooms the page in when focusing a text input/select
          smaller than 16px — keep all form controls at/above that size */
-      .opt-input, select.btn, .editor-theme-select, select.lang-select { font-size: 16px; }
+      .opt-input, select.btn, .editor-theme-select, select.lang-select, select.model-format-select { font-size: 16px; }
     }
 
     @media (max-width: 420px) {
@@ -725,12 +761,13 @@
       <option value="mochila" data-i18n="ex_mochila">Mochila (PLI)</option>
       <option value="dieta" data-i18n="ex_dieta">Dieta (PL)</option>
       <option value="mix" data-i18n="ex_mix">Mix de Produtos (PLI)</option>
+      <option value="transporte_mp" data-i18n="ex_transporte_mp">Transporte (MathProg)</option>
     </select>
 
     <div class="sep"></div>
     <button class="btn" id="btn-open" data-i18n-title="tt_open" title="Abrir arquivo .lp" data-i18n="btn_open">📂 Abrir</button>
     <button class="btn" id="btn-save" data-i18n-title="tt_save" title="Salvar como .lp" data-i18n="btn_save">💾 Salvar</button>
-    <input type="file" id="file-input" accept=".lp,.txt" multiple style="display:none">
+    <input type="file" id="file-input" accept=".lp,.txt,.mod" multiple style="display:none">
 
     <div class="toolbar-right">
       <button class="btn" id="btn-about" data-i18n-title="tt_about" title="Sobre este projeto" data-i18n="btn_about">ℹ️ Sobre</button>
@@ -901,6 +938,11 @@
               <br><a href="https://codemirror.net/5/" target="_blank" rel="noopener">codemirror.net/5</a>
             </li>
             <li>
+              <strong>GLPK</strong> — <span data-i18n="about_tech_glpk">tradutor de modelos GNU MathProg (GMPL) para o formato LP,
+              usado neste app para dar suporte à linguagem de modelagem algébrica.</span>
+              <br><a href="https://www.gnu.org/software/glpk/" target="_blank" rel="noopener">gnu.org/software/glpk</a>
+            </li>
+            <li>
               <strong>Claude (Anthropic)</strong> — <span data-i18n="about_tech_claude">assistente de IA muito usado no
               desenvolvimento deste aplicativo...na verdade mesmo, trabalhei como um gerente geral do Claude.</span>
               <br><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>
@@ -925,6 +967,10 @@
       <div class="panel-header">
         <span data-i18n="editor_panel_header">Modelo LP (CPLEX format)</span>
         <span id="line-count"></span>
+        <select class="model-format-select" id="model-format-select" data-i18n-title="tt_model_format" title="Formato do modelo desta aba">
+          <option value="lp" data-i18n="format_lp">LP (CPLEX)</option>
+          <option value="mathprog" data-i18n="format_mathprog">MathProg (GLPK)</option>
+        </select>
         <select class="editor-theme-select" id="editor-theme-select" data-i18n-title="tt_editor_theme" title="Tema de cores do editor">
           <option value="dracula">Dracula</option>
           <option value="monokai">Monokai</option>
@@ -1181,6 +1227,22 @@
       line_count_singular: 'linha',
       line_count_plural: 'linhas',
       export_filename_suffix: '-solucao.txt',
+      tt_model_format: 'Formato do modelo desta aba',
+      format_lp: 'LP (CPLEX)',
+      format_mathprog: 'MathProg (GLPK)',
+      ex_transporte_mp: 'Transporte (MathProg)',
+      tab_generated: 'Modelo Gerado',
+      generated_model_note: 'Traduzido automaticamente do MathProg para LP pelo GLPK, antes de ser resolvido pelo HiGHS.',
+      status_loading_translator: 'Carregando tradutor MathProg (GLPK)…',
+      status_translating: 'Traduzindo MathProg…',
+      status_translate_error: 'Erro ao traduzir MathProg — verifique o modelo',
+      err_mathprog_badge: '✗ Erro de tradução (MathProg)',
+      err_mathprog_subtitle: 'Verifique a sintaxe do modelo MathProg',
+      err_mathprog_tip1_html: 'Toda seção de dados vem depois da palavra-chave <code>data;</code>',
+      err_mathprog_tip2_html: 'Cada instrução termina com <code>;</code>',
+      err_mathprog_tip3_html: 'O modelo precisa terminar com <code>end;</code>',
+      err_mathprog_reference_link: '📖 Referência da linguagem GNU MathProg',
+      about_tech_glpk: 'tradutor de modelos GNU MathProg (GMPL) para o formato LP, usado neste app para dar suporte à linguagem de modelagem algébrica.',
     },
 
     en: {
@@ -1374,6 +1436,22 @@
       line_count_singular: 'line',
       line_count_plural: 'lines',
       export_filename_suffix: '-solution.txt',
+      tt_model_format: 'Model format for this tab',
+      format_lp: 'LP (CPLEX)',
+      format_mathprog: 'MathProg (GLPK)',
+      ex_transporte_mp: 'Transportation (MathProg)',
+      tab_generated: 'Generated model',
+      generated_model_note: 'Automatically translated from MathProg to LP by GLPK, before being solved by HiGHS.',
+      status_loading_translator: 'Loading MathProg translator (GLPK)…',
+      status_translating: 'Translating MathProg…',
+      status_translate_error: 'Error translating MathProg — check the model',
+      err_mathprog_badge: '✗ Translation error (MathProg)',
+      err_mathprog_subtitle: 'Check the MathProg model syntax',
+      err_mathprog_tip1_html: 'Every data section comes after the <code>data;</code> keyword',
+      err_mathprog_tip2_html: 'Every statement ends with <code>;</code>',
+      err_mathprog_tip3_html: 'The model must end with <code>end;</code>',
+      err_mathprog_reference_link: '📖 GNU MathProg language reference',
+      about_tech_glpk: 'translator from GNU MathProg (GMPL) models to LP format, used in this app to support the algebraic modeling language.',
     },
   };
 
@@ -1444,6 +1522,56 @@
 
         // Identifiers (variables)
         if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_.']*/)) { return 'variable'; }
+
+        stream.next();
+        return null;
+      }
+    };
+  });
+
+  /* ════════════════════════════════════════════════════════════════════
+     1b. MathProg (GNU GMPL) Syntax Mode for CodeMirror
+  ════════════════════════════════════════════════════════════════════ */
+  CodeMirror.defineMode('mathprog', function () {
+    const kw = /^(set|param|var|arc|maximize|minimize|subject\s+to|s\.t\.|subj\s+to|data|end|integer|binary|free|for|in|if|then|else|while|repeat|until|printf|display|check|solve|table|param\s+default|default)\b/i;
+    const builtin = /^(abs|ceil|floor|exp|log|log10|sqrt|sin|cos|atan|round|trunc|card|sum|prod|min|max|exists|forall|length|substr|str2time|time2str|gmtime|Irand224|Uniform01|Uniform|Normal01|Normal)\b/i;
+
+    return {
+      startState: () => ({ inBlockComment: false }),
+      token(stream, state) {
+        if (state.inBlockComment) {
+          if (stream.match(/^[\s\S]*?\*\//)) { state.inBlockComment = false; }
+          else { stream.skipToEnd(); }
+          return 'comment';
+        }
+
+        if (stream.eatSpace()) return null;
+
+        // Block comments /* ... */
+        if (stream.match('/*')) {
+          if (!stream.match(/^[\s\S]*?\*\//)) { state.inBlockComment = true; stream.skipToEnd(); }
+          return 'comment';
+        }
+
+        // Line comments (some MathProg dialects use # too)
+        if (stream.match('#')) { stream.skipToEnd(); return 'comment'; }
+
+        // Strings
+        if (stream.match(/^"(?:[^"\\]|\\.)*"/)) return 'string';
+        if (stream.match(/^'(?:[^'\\]|\\.)*'/)) return 'string';
+
+        // Keywords / sections
+        if (stream.match(kw)) return 'keyword';
+        if (stream.match(builtin)) return 'builtin';
+
+        // Numbers
+        if (stream.match(/^\d+(\.\d+)?([eE][+-]?\d+)?/)) return 'number';
+
+        // Operators / punctuation
+        if (stream.match(/^(<=|>=|<>|==|!=|:=|\.\.|[+\-*\/^=<>,;:{}()\[\]])/)) return 'operator';
+
+        // Identifiers
+        if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_]*/)) return 'variable';
 
         stream.next();
         return null;
@@ -1600,6 +1728,44 @@ Generals
 End`
   };
 
+  // MathProg (GNU GMPL) example — same data as EXAMPLES.transporte above,
+  // written algebraically with sets/sums instead of one line per route.
+  const EXAMPLES_MATHPROG = {
+    transporte_mp: `/* Problema de Transporte — versão MathProg (GLPK) */
+/* Mesma instância do exemplo "Transporte (PL)", escrita de forma algébrica */
+
+set ORIGENS;
+set DESTINOS;
+
+param custo{ORIGENS, DESTINOS};
+param oferta{ORIGENS};
+param demanda{DESTINOS};
+
+var x{ORIGENS, DESTINOS} >= 0;
+
+minimize obj: sum{i in ORIGENS, j in DESTINOS} custo[i,j] * x[i,j];
+
+s.t. capacidade{i in ORIGENS}:
+  sum{j in DESTINOS} x[i,j] <= oferta[i];
+
+s.t. atendimento{j in DESTINOS}:
+  sum{i in ORIGENS} x[i,j] >= demanda[j];
+
+data;
+
+set ORIGENS := origem1 origem2;
+set DESTINOS := dest1 dest2 dest3;
+
+param custo : dest1 dest2 dest3 :=
+  origem1     2      3      1
+  origem2     5      4      8 ;
+
+param oferta := origem1 120  origem2 80;
+param demanda := dest1 50  dest2 70  dest3 60;
+
+end;`
+  };
+
   /* ════════════════════════════════════════════════════════════════════
      3. Tabs + CodeMirror setup
      Each tab keeps its own CodeMirror.Doc, which preserves undo history,
@@ -1613,11 +1779,13 @@ End`
   let activeTabId = null;
   let tabSeq = 0;
 
-  function makeTab(name, content, id) {
+  function makeTab(name, content, id, format) {
+    const fmt = (format === 'mathprog') ? 'mathprog' : 'lp';
     return {
       id: id || ('tab-' + (++tabSeq) + '-' + Date.now().toString(36)),
       name: name || t('default_tab_name'),
-      doc: new CodeMirror.Doc(content || '', 'lp'),
+      format: fmt,
+      doc: new CodeMirror.Doc(content || '', fmt),
       errorLine: -1
     };
   }
@@ -1638,9 +1806,9 @@ End`
           if (savedTab.tooLargeToPersist) {
             // The model was too big to keep in localStorage between sessions —
             // restore an empty placeholder tab instead of silently losing it.
-            tabs.push(makeTab(savedTab.name, t('too_large_to_persist'), savedTab.id));
+            tabs.push(makeTab(savedTab.name, t('too_large_to_persist'), savedTab.id, savedTab.format));
           } else {
-            tabs.push(makeTab(savedTab.name, savedTab.content, savedTab.id));
+            tabs.push(makeTab(savedTab.name, savedTab.content, savedTab.id, savedTab.format));
           }
         });
         if (saved.activeTabId && tabs.some(t => t.id === saved.activeTabId)) {
@@ -1675,9 +1843,9 @@ End`
             // has a small quota (a few MB) anyway. The tab stays open normally
             // in this session — it just won't be restored after a reload.
             if (content.length > PERSIST_MAX_CHARS) {
-              return { id: t.id, name: t.name, tooLargeToPersist: true };
+              return { id: t.id, name: t.name, format: t.format, tooLargeToPersist: true };
             }
-            return { id: t.id, name: t.name, content };
+            return { id: t.id, name: t.name, format: t.format, content };
           })
         }));
       } catch (_) {
@@ -1734,6 +1902,12 @@ End`
     bar.appendChild(addBtn);
   }
 
+  function syncModelFormatSelect() {
+    const sel = document.getElementById('model-format-select');
+    const tab = getActiveTab();
+    if (sel && tab) sel.value = tab.format || 'lp';
+  }
+
   function activateTab(id) {
     if (id === activeTabId) return;
     const tab = tabs.find(t => t.id === id);
@@ -1742,6 +1916,7 @@ End`
     editor.swapDoc(tab.doc);
     updateLineCount();
     renderTabBar();
+    syncModelFormatSelect();
     editor.refresh();
     editor.focus();
     persistTabs();
@@ -1768,8 +1943,8 @@ End`
     persistTabs();
   }
 
-  function newTab(name, content) {
-    const tab = makeTab(name, content);
+  function newTab(name, content, format) {
+    const tab = makeTab(name, content, null, format);
     tabs.push(tab);
     activateTab(tab.id);
     return tab;
@@ -1885,8 +2060,9 @@ End`
       }
       const reader = new FileReader();
       reader.onload = ev => {
-        const name = file.name.replace(/\.(lp|txt)$/i, '');
-        newTab(name, ev.target.result);
+        const isMathProg = /\.mod$/i.test(file.name);
+        const name = file.name.replace(/\.(lp|txt|mod)$/i, '');
+        newTab(name, ev.target.result, isMathProg ? 'mathprog' : 'lp');
       };
       reader.readAsText(file);
     });
@@ -1895,7 +2071,9 @@ End`
   document.getElementById('btn-save').addEventListener('click', async () => {
     const tab = getActiveTab();
     const content = editor.getValue();
-    const suggested = sanitizeFileName(tab ? tab.name : 'modelo') + '.lp';
+    const isMathProg = tab && tab.format === 'mathprog';
+    const ext = isMathProg ? '.mod' : '.lp';
+    const suggested = sanitizeFileName(tab ? tab.name : 'modelo') + ext;
 
     // Navegadores compatíveis (Chrome/Edge) abrem um diálogo nativo "Salvar como…"
     // que deixa escolher pasta e nome do arquivo.
@@ -1903,14 +2081,17 @@ End`
       try {
         const handle = await window.showSaveFilePicker({
           suggestedName: suggested,
-          types: [{ description: t('filetype_lp_model'), accept: { 'text/plain': ['.lp'] } }]
+          types: [{
+            description: isMathProg ? t('format_mathprog') : t('filetype_lp_model'),
+            accept: { 'text/plain': [ext] }
+          }]
         });
         const writable = await handle.createWritable();
         await writable.write(content);
         await writable.close();
         // Mantém o nome da aba sincronizado com o arquivo salvo
         if (tab && handle.name) {
-          tab.name = handle.name.replace(/\.(lp|txt)$/i, '');
+          tab.name = handle.name.replace(/\.(lp|txt|mod)$/i, '');
           renderTabBar();
           persistTabs();
         }
@@ -1948,10 +2129,12 @@ End`
      6. Examples selector
   ════════════════════════════════════════════════════════════════════ */
   document.getElementById('examples-select').addEventListener('change', function () {
-    const ex = EXAMPLES[this.value];
-    if (ex) {
-      const label = this.options[this.selectedIndex].textContent;
-      newTab(label, ex);
+    const label = this.options[this.selectedIndex].textContent;
+    if (EXAMPLES[this.value]) {
+      newTab(label, EXAMPLES[this.value], 'lp');
+      setPlaceholder();
+    } else if (EXAMPLES_MATHPROG[this.value]) {
+      newTab(label, EXAMPLES_MATHPROG[this.value], 'mathprog');
       setPlaceholder();
     }
     this.value = '';
@@ -2118,6 +2301,8 @@ onmessage = async function({ data }) {
   let lastSolution = null;   // last solved result, kept for the export button
   let lastErrorMessage = null;   // last solve error, kept to re-render on language change
   let lastFatalMessage = null;   // last fatal worker error, kept to re-render on language change
+  let lastMathProgError = null;  // last MathProg translation error, kept to re-render on language change
+  let lastGeneratedLp = null;    // last MathProg -> LP translation result, shown in the "Modelo Gerado" tab
   let lastMsgFn = null;   // closure that re-computes the current status-bar message in the active language
 
   function spawnWorker() {
@@ -2205,6 +2390,7 @@ onmessage = async function({ data }) {
     lastSolution = null;
     lastErrorMessage = null;
     lastFatalMessage = message;
+    lastMathProgError = null;
     const exportBtn = document.getElementById('btn-export-solution');
     if (exportBtn) exportBtn.disabled = true;
 
@@ -2350,23 +2536,289 @@ onmessage = async function({ data }) {
   ════════════════════════════════════════════════════════════════════ */
   document.getElementById('btn-solve').addEventListener('click', solve);
 
+  /* ════════════════════════════════════════════════════════════════════
+     MathProg (GLPK) translator — a separate worker, loaded on demand.
+     Ships as two extra files that must sit next to this HTML file:
+       glpsol.worker.js + glpsol.wasm
+     (see the "Sobre" modal for where this build comes from). This worker
+     only TRANSLATES a MathProg/.mod model into CPLEX LP text — HiGHS still
+     does all of the actual solving, exactly like for plain .lp tabs.
+  ════════════════════════════════════════════════════════════════════ */
+  let glpkWorker = null;
+  let glpkWorkerFailed = false;   // true if glpsol.worker.js itself couldn't be created
+  let glpkLinked = false;         // true once a callMain call has completed successfully at least once
+  let glpkBusy = false;
+  let glpkOutLines = [];
+  let glpkCurrentModelText = null;
+  let glpkCurrentResolve = null;
+  let glpkRetriesLeft = 0;
+  let glpkQueue = [];             // [{ modelText, resolve }] — requests waiting their turn
+  const GLPK_MAX_RETRIES = 8;     // each attempt spawns a fresh worker and waits ~900ms — ~7s worst case
+
+  // Tears down any existing worker and starts a brand-new one. Calling
+  // callMain on a worker where an earlier attempt failed too early seems to
+  // leave that *specific instance* permanently broken (this build sets a
+  // global ABORT flag once something goes wrong, with no reset) — resending
+  // messages to the same worker never recovers, so each bring-up retry gets
+  // a fresh instance instead.
+  function spawnGlpkWorker() {
+    if (glpkWorker) {
+      try { glpkWorker.terminate(); } catch (_) {}
+      glpkWorker = null;
+    }
+    try {
+      glpkWorker = new Worker('glpsol.worker.js');
+    } catch (e) {
+      glpkWorkerFailed = true;
+      return false;
+    }
+    glpkWorker.onerror = function (e) {
+      if (e.preventDefault) e.preventDefault();
+      handleGlpkAttemptFailure((e && e.message) || 'unknown worker error');
+    };
+    glpkWorker.onmessage = function (ev) {
+      const d = ev.data || {};
+      if (d.target === 'stdout' || d.target === 'stderr') {
+        glpkOutLines.push({ line: String(d.content), isErr: d.target === 'stderr' });
+      } else if (d.target === 'custom' && d.command === 'callMainComplete') {
+        glpkLinked = true;
+        finishGlpkRequest();
+      }
+    };
+    // This build registers TWO internal run-dependencies at startup, left
+    // over from its --proxy-to-worker / canvas-proxying origins, and BOTH
+    // block main() from ever running until released:
+    //   1) "gl-prefetch" — normally resolved by probing a real WebGL
+    //      context on the main thread; we have no canvas, so we send the
+    //      same "no WebGL support" fallback message the original page uses.
+    //   2) "worker-init" — canvas size/position handshake; the values are
+    //      unused since nothing is ever rendered, so placeholders are fine.
+    glpkWorker.postMessage({ target: 'gl', op: 'setPrefetched', preMain: true });
+    glpkWorker.postMessage({
+      target: 'worker-init',
+      width: 0,
+      height: 0,
+      boundingClientRect: { width: 0, height: 0, top: 0, left: 0 },
+      URL: location.href,
+      currentScriptUrl: 'glpsol.worker.js',
+      preMain: true
+    });
+    return true;
+  }
+
+  function postGlpkCustom(userData, preMain) {
+    glpkWorker.postMessage({ target: 'custom', userData: userData, preMain: !!preMain });
+  }
+
+  function sendGlpkTranslateMessages(modelText) {
+    postGlpkCustom({ command: 'FS_createDataFile', dir: '.', filename: 'input_file', content: modelText }, true);
+    postGlpkCustom({ command: 'callMain', arguments: ['--math', 'input_file', '--check', '--wlp', '/dev/stdout'] }, true);
+  }
+
+  function attemptGlpkRequest(modelText) {
+    if (glpkLinked && glpkWorker) {
+      // Known-good worker from an earlier successful translation in this
+      // session — reuse it directly, no need to recreate or wait.
+      sendGlpkTranslateMessages(modelText);
+      return;
+    }
+    // First call ever, or recovering after a failed bring-up attempt:
+    // always start from a brand-new worker, and give it a moment to
+    // actually fetch + link the ~1.1MB WASM before ever touching callMain.
+    if (!spawnGlpkWorker()) {
+      handleGlpkAttemptFailure('glpsol.worker.js / glpsol.wasm not found next to this page');
+      return;
+    }
+    setTimeout(() => sendGlpkTranslateMessages(modelText), 900);
+  }
+
+  function handleGlpkAttemptFailure(reason) {
+    if (!glpkBusy) return;   // stray/late error, nothing waiting on it
+    if (glpkLinked) {
+      // It has worked before — this is a genuine failure, not a startup race.
+      glpkOutLines.push({ line: String(reason), isErr: true });
+      finishGlpkRequest();
+      return;
+    }
+    if (glpkWorkerFailed) {
+      glpkOutLines.push({ line: String(reason), isErr: true });
+      finishGlpkRequest();
+      return;
+    }
+    glpkRetriesLeft--;
+    if (glpkRetriesLeft <= 0) {
+      glpkOutLines.push({ line: String(reason), isErr: true });
+      finishGlpkRequest();
+      return;
+    }
+    glpkOutLines = [];
+    attemptGlpkRequest(glpkCurrentModelText);
+  }
+
+  // Parses glpsol's combined stdout/stderr into either the translated LP
+  // text (between the "\* Problem: ... *\" comment and the "--- Problem
+  // Characteristics ---" footer that --check prints) or an error message
+  // with the original .mod line number, taken from lines shaped like
+  // "input_file:6: syntax error in constraint statement".
+  function parseGlpkOutput(lines) {
+    const allLines = lines.map(l => l.line);
+    const text = allLines.join('\n');
+    const hasFailure = /MathProg model processing error/i.test(text);
+
+    const startIdx = allLines.findIndex(l => /^\\\* Problem:/.test(l));
+    if (!hasFailure && startIdx !== -1) {
+      let endIdx = allLines.length;
+      for (let i = startIdx + 1; i < allLines.length; i++) {
+        if (/^---/.test(allLines[i])) { endIdx = i; break; }
+      }
+      const lp = allLines.slice(startIdx, endIdx).join('\n').replace(/\n+$/, '') + '\n';
+      return { ok: true, lp, log: allLines };
+    }
+
+    let errLine = null, errMsg = null, context = null;
+    for (let i = 0; i < allLines.length; i++) {
+      const m = allLines[i].match(/^([^\s:]+):(\d+):\s*(.*)$/);
+      if (m && !/^warning:/i.test(m[3])) {
+        errLine = parseInt(m[2], 10);
+        errMsg = m[3];
+        if (allLines[i + 1] && /^Context:/i.test(allLines[i + 1])) {
+          context = allLines[i + 1].replace(/^Context:\s*/i, '').trim();
+        }
+        break;
+      }
+    }
+    if (!errMsg) {
+      errMsg = [...allLines].reverse().find(l => l.trim().length) || 'unknown MathProg processing error';
+    }
+    return { ok: false, error: errMsg, line: errLine, context, log: allLines };
+  }
+
+  function finishGlpkRequest() {
+    glpkBusy = false;
+    const result = parseGlpkOutput(glpkOutLines);
+    const resolve = glpkCurrentResolve;
+    glpkCurrentResolve = null;
+    glpkOutLines = [];
+    if (resolve) resolve(result);
+    processGlpkQueue();
+  }
+
+  function processGlpkQueue() {
+    if (glpkBusy || !glpkQueue.length) return;
+    const next = glpkQueue.shift();
+    if (glpkWorkerFailed) {
+      next.resolve({ ok: false, error: t('status_load_error_prefix') + 'glpsol.worker.js / glpsol.wasm', line: null, log: [] });
+      processGlpkQueue();
+      return;
+    }
+    glpkBusy = true;
+    glpkCurrentResolve = next.resolve;
+    glpkCurrentModelText = next.modelText;
+    glpkRetriesLeft = GLPK_MAX_RETRIES;
+    glpkOutLines = [];
+    attemptGlpkRequest(next.modelText);
+  }
+
+  function translateMathProg(modelText) {
+    return new Promise(resolve => {
+      glpkQueue.push({ modelText, resolve });
+      processGlpkQueue();
+    });
+  }
+
+  function renderMathProgError(result) {
+    lastSolution = null;
+    lastFatalMessage = null;
+    lastErrorMessage = null;
+    lastMathProgError = result;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = true;
+
+    if (result.line) markErrorLine(result.line);
+    const lineHint = result.line
+      ? `<span style="color:var(--red);font-size:12px;margin-left:auto">${t('err_line_highlighted', result.line)}</span>`
+      : '';
+    const contextHtml = result.context ? `<div class="error-msg">${escHtml(result.context)}</div>` : '';
+    const logLinesObj = (result.log || []).map(l => ({ line: l, isErr: false }));
+
+    document.getElementById('results').innerHTML = `
+      <div class="status-card" style="border-color:rgba(255,85,85,.4)">
+        <div class="status-badge badge-error">${t('err_mathprog_badge')}</div>
+        <div style="margin-left:8px;color:var(--muted);font-size:12px">${t('err_mathprog_subtitle')}</div>
+        ${lineHint}
+      </div>
+      <div class="error-msg">${escHtml(result.error)}</div>
+      ${contextHtml}
+      <div style="margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--text)">${t('err_tips_heading')}</strong><br>
+        • ${t('err_mathprog_tip1_html')}<br>
+        • ${t('err_mathprog_tip2_html')}<br>
+        • ${t('err_mathprog_tip3_html')}
+      </div>
+      <a class="hint-link" href="https://en.wikibooks.org/wiki/GLPK/GMPL_(MathProg)" target="_blank">
+        ${t('err_mathprog_reference_link')}
+      </a>
+      ${logLinesObj.length ? `
+      <div style="margin-top:14px">
+        <div class="log-toolbar">
+          <span>${t('err_solver_output_label', logLinesObj.length)}</span>
+          <button class="log-copy-btn" id="mp-err-log-copy-btn">${t('btn_copy')}</button>
+        </div>
+        <div class="log-pane" style="max-height:300px">${buildLogHTML(logLinesObj)}</div>
+      </div>` : ''}`;
+
+    const copyBtn = document.getElementById('mp-err-log-copy-btn');
+    if (copyBtn) copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText((result.log || []).join('\n'));
+    });
+
+    setMsgKey('status_translate_error');
+  }
+
   function solve() {
     if (!solverReady || solving) return;
-    const lp = editor.getValue().trim();
-    if (!lp) return;
+    const tab = getActiveTab();
+    const source = editor.getValue().trim();
+    if (!source) return;
     solving = true;
-    logLines = [];
     lastSolution = null;
     lastErrorMessage = null;
     lastFatalMessage = null;
+    lastMathProgError = null;
+    lastGeneratedLp = null;
     const exportBtn = document.getElementById('btn-export-solution');
     if (exportBtn) exportBtn.disabled = true;
     clearErrorMarkers();    // remove previous error highlights
-    showSolvingView();
     setSolveBtn(true);
     setDot('loading');
+
+    if (tab && tab.format === 'mathprog') {
+      setMsgKey(glpkWorker ? 'status_translating' : 'status_loading_translator');
+      document.getElementById('results').innerHTML =
+        `<div class="status-card" id="live-status-card"><div class="status-badge badge-pending">${t('live_badge_solving')}</div></div>`;
+      translateMathProg(source).then(result => {
+        if (!solving) return;   // the user cleared/switched tabs while this was in flight
+        if (result.ok) {
+          lastGeneratedLp = result.lp;
+          sendToHighs(result.lp);
+        } else {
+          solving = false;
+          setSolveBtn(false);
+          renderMathProgError(result);
+        }
+      });
+      return;
+    }
+
+    sendToHighs(source);
+  }
+
+  function sendToHighs(lpText) {
+    logLines = [];
+    showSolvingView();
+    setDot('loading');
     setMsgKey('status_solving');
-    worker.postMessage({ lp, options: getSolverOptions() });
+    worker.postMessage({ lp: lpText, options: getSolverOptions() });
   }
 
   /* ════════════════════════════════════════════════════════════════════
@@ -2412,6 +2864,30 @@ onmessage = async function({ data }) {
       editor.setOption('theme', sel.value);
       editor.refresh();
       try { localStorage.setItem('lp-editor-theme', sel.value); } catch (_) {}
+    });
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     Model format selector (LP / MathProg) — per tab
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const sel = document.getElementById('model-format-select');
+    syncModelFormatSelect();
+    sel.addEventListener('change', () => {
+      const tab = getActiveTab();
+      if (!tab) return;
+      const newFormat = (sel.value === 'mathprog') ? 'mathprog' : 'lp';
+      if (tab.format === newFormat) return;
+      tab.format = newFormat;
+      // CodeMirror 5 ties the syntax mode to the Doc itself (modeOption);
+      // swap in a fresh Doc with the same content under the new mode so
+      // highlighting updates immediately, then re-mark it as the tab's doc.
+      const content = tab.doc.getValue();
+      tab.doc = new CodeMirror.Doc(content, newFormat);
+      editor.swapDoc(tab.doc);
+      editor.refresh();
+      setPlaceholder();
+      persistTabs();
     });
   })();
 
@@ -2587,6 +3063,7 @@ onmessage = async function({ data }) {
     lastSolution = sol;
     lastErrorMessage = null;
     lastFatalMessage = null;
+    lastMathProgError = null;
     const exportBtn = document.getElementById('btn-export-solution');
     if (exportBtn) exportBtn.disabled = false;
 
@@ -2596,6 +3073,7 @@ onmessage = async function({ data }) {
     const isOpt = sol.Status === 'Optimal';
     const isInf = sol.Status === 'Infeasible';
     const isUnb = sol.Status === 'Unbounded';
+    const hasGenerated = !!lastGeneratedLp;
 
     const badgeClass = isOpt ? 'badge-optimal' : isInf ? 'badge-infeasible' : isUnb ? 'badge-unbounded' : 'badge-pending';
     const badgeText  = isOpt ? t('status_optimal') : isInf ? t('status_infeasible') : isUnb ? t('status_unbounded') : sol.Status;
@@ -2644,6 +3122,7 @@ onmessage = async function({ data }) {
           ${t('tab_log')}&nbsp;<span style="color:var(--muted);font-size:11px">(${logLines.length})</span>
         </button>
         <button class="tab" data-tab="raw">${t('tab_json')}</button>
+        ${hasGenerated ? `<button class="tab" data-tab="generated">${t('tab_generated')}</button>` : ''}
       </div>
 
       <div id="tab-vars">
@@ -2688,9 +3167,19 @@ onmessage = async function({ data }) {
 
       <div id="tab-raw" style="display:none">
         <pre style="font-size:11px;color:var(--muted);white-space:pre-wrap;word-break:break-all;background:var(--bg3);padding:10px;border-radius:6px;border:1px solid var(--border);max-height:400px;overflow:auto">${JSON.stringify(sol, (k,v) => !isFinite(v) && typeof v==='number' ? (v>0?'+Inf':'-Inf') : v, 2)}</pre>
-      </div>`;
+      </div>
 
-    const ALL_TABS = ['vars','constrs','log','raw'];
+      ${hasGenerated ? `
+      <div id="tab-generated" style="display:none">
+        <div class="generated-model-note">${t('generated_model_note')}</div>
+        <div class="log-toolbar">
+          <span></span>
+          <button class="log-copy-btn" id="generated-copy-btn">${t('btn_copy')}</button>
+        </div>
+        <div class="generated-model-pre">${escHtml(lastGeneratedLp)}</div>
+      </div>` : ''}`;
+
+    const ALL_TABS = ['vars','constrs','log','raw'].concat(hasGenerated ? ['generated'] : []);
 
     // Tab logic
     document.getElementById('result-tabs').addEventListener('click', e => {
@@ -2718,6 +3207,17 @@ onmessage = async function({ data }) {
       });
     });
 
+    // Copy generated-LP button
+    const generatedCopyBtn = document.getElementById('generated-copy-btn');
+    if (generatedCopyBtn) {
+      generatedCopyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(lastGeneratedLp || '').then(() => {
+          generatedCopyBtn.textContent = t('btn_copied');
+          setTimeout(() => { generatedCopyBtn.textContent = t('btn_copy'); }, 1500);
+        });
+      });
+    }
+
     setMsgKey('status_solved_summary_parts', { badgeText, nvars: vars.length, nrows: rows.length, obj: fmt(sol.ObjectiveValue) });
   }
 
@@ -2725,10 +3225,17 @@ onmessage = async function({ data }) {
     lastSolution = null;
     lastErrorMessage = msg;
     lastFatalMessage = null;
+    lastMathProgError = null;
     const exportBtn = document.getElementById('btn-export-solution');
     if (exportBtn) exportBtn.disabled = true;
 
-    const errLine = extractErrorLine(msg);
+    // If this tab is in MathProg format, the LP that HiGHS actually saw was
+    // generated by GLPK — any line number in this message refers to that
+    // generated text, not to the MathProg source currently shown in the
+    // editor, so highlighting it here would point at the wrong line.
+    const tab = getActiveTab();
+    const isMathProgTab = !!(tab && tab.format === 'mathprog');
+    const errLine = isMathProgTab ? null : extractErrorLine(msg);
     if (errLine) markErrorLine(errLine);
 
     const lineHint = errLine
@@ -2775,6 +3282,8 @@ onmessage = async function({ data }) {
     lastSolution = null;
     lastErrorMessage = null;
     lastFatalMessage = null;
+    lastMathProgError = null;
+    lastGeneratedLp = null;
     const exportBtn = document.getElementById('btn-export-solution');
     if (exportBtn) exportBtn.disabled = true;
   }
@@ -2844,6 +3353,8 @@ onmessage = async function({ data }) {
       renderError(lastErrorMessage);
     } else if (lastFatalMessage) {
       renderFatalError(lastFatalMessage);
+    } else if (lastMathProgError) {
+      renderMathProgError(lastMathProgError);
     } else if (!solving) {
       setPlaceholder();
     }
