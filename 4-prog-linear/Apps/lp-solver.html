@@ -669,6 +669,73 @@
     .about-refs a { color: var(--accent); text-decoration: none; }
     .about-refs a:hover { text-decoration: underline; }
 
+    /* ─── Batch modal ────────────────────────────────────────────────── */
+    #batch-panel { width: 760px; max-width: 95vw; max-height: 88vh; }
+    .batch-pick-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .batch-pick-info { font-size: 12px; color: var(--muted); }
+    .batch-progress-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .batch-progress-wrap.show { display: flex; }
+    .batch-progress-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .batch-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width .15s ease;
+    }
+    .batch-progress-label { font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; }
+    .batch-table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: auto;
+      max-height: 42vh;
+      display: none;
+    }
+    .batch-table-wrap.show { display: block; }
+    table.batch-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    table.batch-table th, table.batch-table td {
+      padding: 6px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    table.batch-table th {
+      position: sticky; top: 0;
+      background: var(--bg3);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    table.batch-table td.batch-file { white-space: normal; word-break: break-all; max-width: 260px; }
+    table.batch-table td.batch-obj { font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; }
+    table.batch-table tr.batch-row-error td { color: var(--red); }
+    .batch-status-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .batch-status-pill.optimal    { background: rgba(80,250,123,.12);  color: var(--green); }
+    .batch-status-pill.infeasible { background: rgba(255,85,85,.12);   color: var(--red); }
+    .batch-status-pill.unbounded  { background: rgba(255,184,108,.12); color: var(--orange); }
+    .batch-status-pill.error      { background: rgba(255,85,85,.12);   color: var(--red); }
+    .batch-status-pill.pending    { background: rgba(98,114,164,.12);  color: var(--muted); }
+    .batch-status-pill.running    { background: rgba(139,233,253,.12); color: var(--cyan); }
+
     /* ─── Status bar ────────────────────────────────────────────────── */
     .statusbar {
       display: flex;
@@ -768,8 +835,10 @@
     <button class="btn" id="btn-open" data-i18n-title="tt_open" title="Abrir arquivo .lp" data-i18n="btn_open">📂 Abrir</button>
     <button class="btn" id="btn-save" data-i18n-title="tt_save" title="Salvar como .lp" data-i18n="btn_save">💾 Salvar</button>
     <input type="file" id="file-input" accept=".lp,.txt,.mod" multiple style="display:none">
+    <input type="file" id="batch-folder-input" webkitdirectory directory multiple style="display:none">
 
     <div class="toolbar-right">
+      <button class="btn" id="btn-batch" data-i18n-title="tt_batch" title="Resolver vários arquivos .lp/.mod de uma pasta" data-i18n="btn_batch">🗂️ Lote</button>
       <button class="btn" id="btn-about" data-i18n-title="tt_about" title="Sobre este projeto" data-i18n="btn_about">ℹ️ Sobre</button>
       <button class="btn" id="btn-options" data-i18n-title="tt_options" title="Opções do solver HiGHS" data-i18n="btn_options">⚙️ Opções</button>
       <label class="theme-switch" id="theme-switch-label" title="Alternar tema claro/escuro">
@@ -959,6 +1028,63 @@
     </div>
   </div>
 
+  <!-- ── Batch modal ──────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="batch-overlay">
+    <div class="modal-panel" id="batch-panel">
+      <div class="modal-header">
+        <span data-i18n="batch_modal_title">🗂️ Resolução em lote</span>
+        <button class="modal-close" id="batch-close" data-i18n-title="tt_close" title="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+
+        <p style="margin:0;font-size:12.5px;color:var(--muted);line-height:1.6" data-i18n="batch_intro">
+          Selecione uma pasta com arquivos .lp e/ou .mod. Cada arquivo é resolvido na ordem,
+          sem alterar suas abas abertas, e o resultado (status, valor objetivo e tempo) fica
+          numa tabela que pode ser exportada em CSV.
+        </p>
+
+        <div class="batch-pick-row">
+          <button class="btn" id="batch-pick-folder" data-i18n="batch_btn_pick_folder">📁 Selecionar pasta…</button>
+          <span class="batch-pick-info" id="batch-pick-info"></span>
+        </div>
+
+        <div class="batch-pick-row" id="batch-run-row" style="display:none">
+          <button class="btn primary" id="batch-start" data-i18n="batch_btn_start">▶ Iniciar resolução</button>
+          <button class="btn" id="batch-cancel" style="display:none" data-i18n="batch_btn_cancel">⏹ Cancelar</button>
+          <button class="btn" id="batch-export-csv" style="display:none" data-i18n="batch_btn_export_csv">💾 Exportar CSV</button>
+        </div>
+
+        <div class="batch-progress-wrap" id="batch-progress-wrap">
+          <div class="batch-progress-bar"><div class="batch-progress-fill" id="batch-progress-fill"></div></div>
+          <div class="batch-progress-label">
+            <span id="batch-progress-text"></span>
+            <span id="batch-progress-current"></span>
+          </div>
+        </div>
+
+        <div class="batch-table-wrap" id="batch-table-wrap">
+          <table class="batch-table">
+            <thead>
+              <tr>
+                <th data-i18n="batch_th_file">Arquivo</th>
+                <th data-i18n="batch_th_status">Status</th>
+                <th data-i18n="batch_th_objective">Valor objetivo</th>
+                <th data-i18n="batch_th_time">Tempo (s)</th>
+              </tr>
+            </thead>
+            <tbody id="batch-table-body"></tbody>
+          </table>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <div style="margin-left:auto">
+          <button class="btn primary" id="batch-ok" data-i18n="btn_close_generic">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Main ─────────────────────────────────────────────────────────── -->
   <div class="main" id="main">
 
@@ -1051,6 +1177,8 @@
       btn_open: '📂 Abrir',
       tt_save: 'Salvar como .lp',
       btn_save: '💾 Salvar',
+      tt_batch: 'Resolver vários arquivos .lp/.mod de uma pasta',
+      btn_batch: '🗂️ Lote',
       tt_about: 'Sobre este projeto',
       btn_about: 'ℹ️ Sobre',
       tt_options: 'Opções do solver HiGHS',
@@ -1105,6 +1233,27 @@
       about_tech_codemirror: 'editor de texto com numeração de linhas, destaque de sintaxe e temas de cores.',
       about_tech_claude: 'assistente de IA muito usado no desenvolvimento deste aplicativo...na verdade mesmo, trabalhei como um gerente geral do Claude.',
       btn_close_generic: 'Fechar',
+
+      batch_modal_title: '🗂️ Resolução em lote',
+      batch_intro: 'Selecione uma pasta com arquivos .lp e/ou .mod. Cada arquivo é resolvido na ordem, sem alterar suas abas abertas, e o resultado (status, valor objetivo e tempo) fica numa tabela que pode ser exportada em CSV.',
+      batch_btn_pick_folder: '📁 Selecionar pasta…',
+      batch_btn_pick_folder_again: '📁 Trocar pasta…',
+      batch_btn_start: '▶ Iniciar resolução',
+      batch_btn_cancel: '⏹ Cancelar',
+      batch_btn_export_csv: '💾 Exportar CSV',
+      batch_no_files: 'Nenhum arquivo .lp/.mod encontrado nessa pasta.',
+      batch_files_found: (n) => `${n} arquivo${n === 1 ? '' : 's'} (.lp/.mod) encontrado${n === 1 ? '' : 's'}.`,
+      batch_progress_text: (done, total) => `${done} de ${total} resolvidos`,
+      batch_status_pending: 'Pendente',
+      batch_status_running: 'Resolvendo…',
+      batch_status_optimal: 'Ótimo',
+      batch_status_infeasible: 'Infactível',
+      batch_status_unbounded: 'Ilimitado',
+      batch_status_error: 'Erro',
+      batch_status_other: 'Outro',
+      batch_cancelled_msg: 'Lote cancelado pelo usuário.',
+      batch_unsupported_folder: 'Seu navegador não suporta seleção de pasta nem de múltiplos arquivos. Tente o Chrome, Edge ou um navegador mais recente.',
+      batch_csv_filename: 'lote_resultados.csv',
 
       editor_panel_header: 'Modelo LP (CPLEX format)',
       tt_editor_theme: 'Tema de cores do editor',
@@ -1260,6 +1409,8 @@
       btn_open: '📂 Open',
       tt_save: 'Save as .lp',
       btn_save: '💾 Save',
+      tt_batch: 'Solve multiple .lp/.mod files from a folder',
+      btn_batch: '🗂️ Batch',
       tt_about: 'About this project',
       btn_about: 'ℹ️ About',
       tt_options: 'HiGHS solver options',
@@ -1314,6 +1465,27 @@
       about_tech_codemirror: 'text editor with line numbering, syntax highlighting and color themes.',
       about_tech_claude: 'AI assistant heavily used in the development of this app... actually, I worked as Claude\'s general manager.',
       btn_close_generic: 'Close',
+
+      batch_modal_title: '🗂️ Batch solving',
+      batch_intro: 'Select a folder with .lp and/or .mod files. Each file is solved in order, without touching your open tabs, and the result (status, objective value and time) goes into a table you can export as CSV.',
+      batch_btn_pick_folder: '📁 Select folder…',
+      batch_btn_pick_folder_again: '📁 Change folder…',
+      batch_btn_start: '▶ Start solving',
+      batch_btn_cancel: '⏹ Cancel',
+      batch_btn_export_csv: '💾 Export CSV',
+      batch_no_files: 'No .lp/.mod files found in that folder.',
+      batch_files_found: (n) => `${n} file${n === 1 ? '' : 's'} (.lp/.mod) found.`,
+      batch_progress_text: (done, total) => `${done} of ${total} solved`,
+      batch_status_pending: 'Pending',
+      batch_status_running: 'Solving…',
+      batch_status_optimal: 'Optimal',
+      batch_status_infeasible: 'Infeasible',
+      batch_status_unbounded: 'Unbounded',
+      batch_status_error: 'Error',
+      batch_status_other: 'Other',
+      batch_cancelled_msg: 'Batch cancelled by the user.',
+      batch_unsupported_folder: 'Your browser doesn\'t support folder or multiple-file selection. Try Chrome, Edge, or a more recent browser.',
+      batch_csv_filename: 'batch_results.csv',
 
       editor_panel_header: 'LP Model (CPLEX format)',
       tt_editor_theme: 'Editor color theme',
@@ -2532,6 +2704,348 @@ onmessage = async function({ data }) {
   })();
 
   /* ════════════════════════════════════════════════════════════════════
+     7d. Batch modal — solve every .lp/.mod file in a folder, one by one,
+     reporting only status / objective value / time per file. Runs against
+     a *dedicated* HiGHS worker (spawnWorker()) so it never touches the
+     interactive worker/editor state, and reuses the existing MathProg
+     translation queue (translateMathProg) for .mod files.
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const overlay      = document.getElementById('batch-overlay');
+    const btnOpenMain   = document.getElementById('btn-batch');
+    const btnClose      = document.getElementById('batch-close');
+    const btnOk         = document.getElementById('batch-ok');
+    const btnPickFolder = document.getElementById('batch-pick-folder');
+    const folderInput   = document.getElementById('batch-folder-input');
+    const pickInfo       = document.getElementById('batch-pick-info');
+    const runRow         = document.getElementById('batch-run-row');
+    const btnStart        = document.getElementById('batch-start');
+    const btnCancel       = document.getElementById('batch-cancel');
+    const btnExportCsv    = document.getElementById('batch-export-csv');
+    const progressWrap    = document.getElementById('batch-progress-wrap');
+    const progressFill    = document.getElementById('batch-progress-fill');
+    const progressText    = document.getElementById('batch-progress-text');
+    const progressCurrent = document.getElementById('batch-progress-current');
+    const tableWrap        = document.getElementById('batch-table-wrap');
+    const tableBody         = document.getElementById('batch-table-body');
+
+    const BATCH_FILE_RE = /\.(lp|mod)$/i;
+
+    let batchFiles = [];      // [{ name, relPath, file: File }]
+    let batchResults = [];    // [{ name, status, objective, time, error }] — same order as batchFiles
+    let batchWorker = null;   // dedicated HiGHS worker for this modal
+    let batchRunning = false;
+    let batchCancelled = false;
+
+    function openModal()  { overlay.classList.add('open'); }
+    function closeModal() {
+      if (batchRunning) {
+        const proceed = confirm(currentLang === 'pt'
+          ? 'A resolução em lote ainda está rodando. Cancelar e fechar?'
+          : 'The batch is still running. Cancel and close?');
+        if (!proceed) return;
+        cancelBatch();
+      }
+      overlay.classList.remove('open');
+    }
+
+    btnOpenMain.addEventListener('click', openModal);
+    btnClose.addEventListener('click', closeModal);
+    btnOk.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+
+    function resetBatchUI() {
+      batchResults = [];
+      tableBody.innerHTML = '';
+      tableWrap.classList.remove('show');
+      progressWrap.classList.remove('show');
+      btnExportCsv.style.display = 'none';
+      btnCancel.style.display = 'none';
+      btnStart.style.display = '';
+      btnStart.disabled = batchFiles.length === 0;
+    }
+
+    // ── Folder selection ────────────────────────────────────────────────
+    btnPickFolder.addEventListener('click', async () => {
+      if (window.showDirectoryPicker) {
+        try {
+          const dirHandle = await window.showDirectoryPicker();
+          const collected = [];
+          await collectFilesFromDirHandle(dirHandle, '', collected);
+          applyPickedFiles(collected);
+        } catch (err) {
+          if (err && err.name !== 'AbortError') {
+            // Some environments (e.g. sandboxed iframes) throw a generic
+            // SecurityError for showDirectoryPicker — fall back silently.
+            folderInput.click();
+          }
+        }
+        return;
+      }
+      if ('webkitdirectory' in folderInput) {
+        folderInput.click();
+        return;
+      }
+      alert(t('batch_unsupported_folder'));
+    });
+
+    async function collectFilesFromDirHandle(dirHandle, prefix, out) {
+      for await (const [name, handle] of dirHandle.entries()) {
+        if (handle.kind === 'file') {
+          if (BATCH_FILE_RE.test(name)) {
+            const file = await handle.getFile();
+            out.push({ name, relPath: prefix + name, file });
+          }
+        } else if (handle.kind === 'directory') {
+          await collectFilesFromDirHandle(handle, prefix + name + '/', out);
+        }
+      }
+    }
+
+    folderInput.addEventListener('change', function () {
+      const picked = Array.from(this.files || [])
+        .filter(f => BATCH_FILE_RE.test(f.name))
+        .map(f => ({ name: f.name, relPath: f.webkitRelativePath || f.name, file: f }));
+      applyPickedFiles(picked);
+      this.value = '';
+    });
+
+    function applyPickedFiles(list) {
+      // Sort by path so results read in a predictable order.
+      list.sort((a, b) => a.relPath.localeCompare(b.relPath, undefined, { numeric: true }));
+      batchFiles = list;
+      btnPickFolder.textContent = t('batch_btn_pick_folder_again');
+      pickInfo.textContent = batchFiles.length
+        ? t('batch_files_found', batchFiles.length)
+        : t('batch_no_files');
+      resetBatchUI();
+      runRow.style.display = batchFiles.length ? 'flex' : 'none';
+    }
+
+    // ── Table rendering ─────────────────────────────────────────────────
+    function statusPillClass(status) {
+      switch (status) {
+        case 'Optimal':    return 'optimal';
+        case 'Infeasible': return 'infeasible';
+        case 'Unbounded':  return 'unbounded';
+        case 'Error':      return 'error';
+        case 'Running':    return 'running';
+        case 'Pending':    return 'pending';
+        default:           return 'pending';
+      }
+    }
+    function statusLabel(status) {
+      switch (status) {
+        case 'Optimal':    return t('batch_status_optimal');
+        case 'Infeasible': return t('batch_status_infeasible');
+        case 'Unbounded':  return t('batch_status_unbounded');
+        case 'Error':      return t('batch_status_error');
+        case 'Running':    return t('batch_status_running');
+        case 'Pending':    return t('batch_status_pending');
+        default:           return status || t('batch_status_other');
+      }
+    }
+
+    function renderTableRows() {
+      tableBody.innerHTML = batchResults.map((r, i) => {
+        const objText = (r.objective !== null && r.objective !== undefined) ? fmt(r.objective) : '—';
+        const timeText = (r.time !== null && r.time !== undefined) ? r.time.toFixed(3) : '—';
+        const rowClass = r.status === 'Error' ? ' class="batch-row-error"' : '';
+        const title = r.error ? ` title="${escHtml(r.error)}"` : '';
+        return `<tr id="batch-row-${i}"${rowClass}${title}>
+          <td class="batch-file">${escHtml(r.name)}</td>
+          <td><span class="batch-status-pill ${statusPillClass(r.status)}">${statusLabel(r.status)}</span></td>
+          <td class="batch-obj">${objText}</td>
+          <td>${timeText}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function updateProgress(done, total) {
+      progressFill.style.width = total ? Math.round(done / total * 100) + '%' : '0%';
+      progressText.textContent = t('batch_progress_text', done, total);
+    }
+
+    // ── Dedicated HiGHS worker for the batch (never the interactive one) ─
+    function ensureBatchWorker() {
+      if (batchWorker) { try { batchWorker.terminate(); } catch (_) {} }
+      batchWorker = spawnWorker();
+      return batchWorker;
+    }
+
+    // Solves a single LP-text model on the batch worker, resolving with
+    // { status, objective } or rejecting with an Error on solve failure.
+    // A fresh listener is attached/detached per call since solves run
+    // strictly one at a time (no need for request correlation).
+    function solveLpOnBatchWorker(lpText) {
+      return new Promise((resolve, reject) => {
+        const onMessage = ({ data }) => {
+          if (data.type === 'solution') {
+            batchWorker.removeEventListener('message', onMessage);
+            resolve({ status: data.solution.Status, objective: data.solution.ObjectiveValue });
+          } else if (data.type === 'error') {
+            batchWorker.removeEventListener('message', onMessage);
+            reject(new Error(data.message));
+          } else if (data.type === 'fatal_error') {
+            batchWorker.removeEventListener('message', onMessage);
+            reject(new Error(data.message));
+          }
+          // 'log' / 'ready' messages are ignored here — no live log in the batch view.
+        };
+        batchWorker.addEventListener('message', onMessage);
+        batchWorker.postMessage({ lp: lpText, options: getSolverOptions() });
+      });
+    }
+
+    async function runBatch() {
+      batchRunning = true;
+      batchCancelled = false;
+      btnStart.style.display = 'none';
+      btnCancel.style.display = '';
+      btnExportCsv.style.display = 'none';
+      btnPickFolder.disabled = true;
+      progressWrap.classList.add('show');
+      tableWrap.classList.add('show');
+
+      batchResults = batchFiles.map(f => ({
+        name: f.relPath, status: 'Pending', objective: null, time: null, error: null
+      }));
+      renderTableRows();
+      updateProgress(0, batchFiles.length);
+
+      ensureBatchWorker();
+
+      for (let i = 0; i < batchFiles.length; i++) {
+        if (batchCancelled) break;
+
+        batchResults[i].status = 'Running';
+        renderTableRows();
+        progressCurrent.textContent = batchFiles[i].relPath;
+
+        const startedAt = performance.now();
+        try {
+          const text = await batchFiles[i].file.text();
+          const isMathProg = /\.mod$/i.test(batchFiles[i].name);
+          let lpText = text;
+
+          if (isMathProg) {
+            const translated = await translateMathProg(text);
+            if (batchCancelled) break;
+            if (!translated.ok) {
+              throw new Error(translated.error || 'MathProg translation error');
+            }
+            lpText = translated.lp;
+          }
+
+          const result = await solveLpOnBatchWorker(lpText);
+          if (batchCancelled) break;
+          batchResults[i].status = result.status || 'Other';
+          batchResults[i].objective = (result.status === 'Optimal') ? result.objective : null;
+        } catch (err) {
+          batchResults[i].status = 'Error';
+          batchResults[i].error = (err && err.message) ? err.message : String(err);
+          // A solve error can leave the dedicated worker mid-recovery on its
+          // own (it self-reports fatal errors); give it a fresh instance so
+          // one bad file never silently breaks the rest of the batch.
+          ensureBatchWorker();
+        }
+        batchResults[i].time = (performance.now() - startedAt) / 1000;
+        renderTableRows();
+        updateProgress(i + 1, batchFiles.length);
+      }
+
+      batchRunning = false;
+      btnCancel.style.display = 'none';
+      btnPickFolder.disabled = false;
+      btnExportCsv.style.display = batchResults.some(r => r.status !== 'Pending') ? '' : 'none';
+      btnStart.style.display = '';
+      btnStart.textContent = t('batch_btn_start');
+      btnStart.disabled = false;
+
+      if (batchCancelled) {
+        progressCurrent.textContent = t('batch_cancelled_msg');
+      } else {
+        progressCurrent.textContent = '';
+      }
+
+      if (batchWorker) { try { batchWorker.terminate(); } catch (_) {} batchWorker = null; }
+    }
+
+    function cancelBatch() {
+      batchCancelled = true;
+    }
+
+    btnStart.addEventListener('click', () => {
+      if (!batchFiles.length || batchRunning) return;
+      runBatch();
+    });
+    btnCancel.addEventListener('click', cancelBatch);
+
+    // Exposed so setLanguage() can refresh dynamic (non data-i18n) text
+    // such as the folder-info line and the results table on language switch.
+    window.__refreshBatchLabels = function () {
+      if (batchFiles.length) {
+        btnPickFolder.textContent = t('batch_btn_pick_folder_again');
+        pickInfo.textContent = batchFiles.length
+          ? t('batch_files_found', batchFiles.length)
+          : t('batch_no_files');
+      }
+      if (batchResults.length) {
+        renderTableRows();
+        updateProgress(batchResults.filter(r => r.status !== 'Pending' && r.status !== 'Running').length, batchFiles.length);
+      }
+      if (batchCancelled && !batchRunning) progressCurrent.textContent = t('batch_cancelled_msg');
+    };
+
+
+    // ── CSV export ───────────────────────────────────────────────────────
+    function csvEscape(s) {
+      s = String(s == null ? '' : s);
+      return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }
+    btnExportCsv.addEventListener('click', async () => {
+      const header = ['file', 'status', 'objective_value', 'time_seconds', 'error'];
+      const lines = [header.join(',')];
+      batchResults.forEach(r => {
+        lines.push([
+          csvEscape(r.name),
+          csvEscape(r.status),
+          r.objective !== null && r.objective !== undefined ? r.objective : '',
+          r.time !== null && r.time !== undefined ? r.time.toFixed(3) : '',
+          csvEscape(r.error || '')
+        ].join(','));
+      });
+      const csvText = lines.join('\n');
+      const suggested = t('batch_csv_filename');
+
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: suggested,
+            types: [{ description: 'CSV', accept: { 'text/csv': ['.csv'] } }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(csvText);
+          await writable.close();
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+          // fall through to the download fallback below
+        }
+      }
+      const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = suggested;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
      8. Solve trigger
   ════════════════════════════════════════════════════════════════════ */
   document.getElementById('btn-solve').addEventListener('click', solve);
@@ -3345,6 +3859,7 @@ onmessage = async function({ data }) {
     updateLineCount();
     applyTheme(currentThemeName);
     if (lastMsgFn) setMsg(lastMsgFn());
+    if (window.__refreshBatchLabels) window.__refreshBatchLabels();
 
     // Re-render whatever is currently shown in the results panel, in the new language
     if (lastSolution) {
