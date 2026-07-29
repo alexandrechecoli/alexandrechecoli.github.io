@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dracula">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MetaStat — Análise de desempenho de metaheurísticas</title>
+<style>
+  /* ── Tokens constantes (fontes, raio) ── */
+  :root{
+    --body:'Segoe UI',system-ui,-apple-system,sans-serif;
+    --mono:'Cascadia Code','Fira Code',Consolas,'Courier New',monospace;
+    --disp:'Segoe UI',system-ui,-apple-system,sans-serif;
+    --radius:6px; --rail:250px;
+  }
+
+  /* ── Temas nomeados (mesma coleção do WebHIGHS) ── */
+  html[data-theme="dracula"]{
+    --bg:#1e2029; --surface:#282a36; --surface-2:#21222c; --surface-3:#31333f;
+    --ink:#f8f8f2; --ink-2:#c8cad4; --ink-3:#6272a4; --line:#44475a; --line-2:#565a6e;
+    --accent:#bd93f9; --accent-2:#cba9fb; --accent-soft:rgba(189,147,249,.15); --accent-line:#5d4d80;
+    --teal:#50fa7b; --teal-soft:rgba(80,250,123,.13); --teal-line:#2f6444;
+    --amber:#ffb86c; --amber-soft:rgba(255,184,108,.13); --amber-line:#6f5433; --amber-ink:#ffcf9a;
+    --cyan:#8be9fd; --danger:#ff5555; --shadow:0 1px 3px rgba(0,0,0,.5);
+  }
+  html[data-theme="monokai"]{
+    --bg:#1d1e19; --surface:#272822; --surface-2:#20211b; --surface-3:#33342c;
+    --ink:#f8f8f2; --ink-2:#cfcfc2; --ink-3:#75715e; --line:#49483e; --line-2:#5c5b4d;
+    --accent:#ae81ff; --accent-2:#c4a2ff; --accent-soft:rgba(174,129,255,.15); --accent-line:#5b4a80;
+    --teal:#a6e22e; --teal-soft:rgba(166,226,46,.14); --teal-line:#5c6f1c;
+    --amber:#fd971f; --amber-soft:rgba(253,151,31,.13); --amber-line:#6f4a17; --amber-ink:#ffc27a;
+    --cyan:#66d9ef; --danger:#f92672; --shadow:0 1px 3px rgba(0,0,0,.5);
+  }
+  html[data-theme="material-darker"]{
+    --bg:#1a1a1a; --surface:#212121; --surface-2:#1c1c1c; --surface-3:#2f2f2f;
+    --ink:#eeffff; --ink-2:#b2c4c9; --ink-3:#616a71; --line:#333333; --line-2:#454545;
+    --accent:#c792ea; --accent-2:#d6adf0; --accent-soft:rgba(199,146,234,.15); --accent-line:#5f4a73;
+    --teal:#c3e88d; --teal-soft:rgba(195,232,141,.13); --teal-line:#5a6b3c;
+    --amber:#f78c6c; --amber-soft:rgba(247,140,108,.13); --amber-line:#6d4636; --amber-ink:#f9b39b;
+    --cyan:#89ddff; --danger:#ff5370; --shadow:0 1px 3px rgba(0,0,0,.5);
+  }
+  html[data-theme="nord"]{
+    --bg:#2b303b; --surface:#3b4252; --surface-2:#2e3440; --surface-3:#434c5e;
+    --ink:#eceff4; --ink-2:#d8dee9; --ink-3:#7b88a1; --line:#434c5e; --line-2:#4c566a;
+    --accent:#88c0d0; --accent-2:#8fbcbb; --accent-soft:rgba(136,192,208,.16); --accent-line:#4a5f6b;
+    --teal:#a3be8c; --teal-soft:rgba(163,190,140,.15); --teal-line:#55684a;
+    --amber:#d08770; --amber-soft:rgba(208,135,112,.15); --amber-line:#6b4d42; --amber-ink:#e0a892;
+    --cyan:#81a1c1; --danger:#bf616a; --shadow:0 1px 3px rgba(0,0,0,.45);
+  }
+  html[data-theme="eclipse"]{
+    --bg:#f4f4f4; --surface:#ffffff; --surface-2:#f0f0f0; --surface-3:#e4e4e4;
+    --ink:#1c1c1c; --ink-2:#404040; --ink-3:#7a7a7a; --line:#d4d4d4; --line-2:#c2c2c2;
+    --accent:#7f0055; --accent-2:#5f0040; --accent-soft:#f6e6f0; --accent-line:#d9a7c6;
+    --teal:#3f7f5f; --teal-soft:#e6f0ea; --teal-line:#a9cdb8;
+    --amber:#a0522d; --amber-soft:#f4e7de; --amber-line:#e0c3ac; --amber-ink:#6e3a20;
+    --cyan:#2a00ff; --danger:#c0392b; --shadow:0 1px 3px rgba(0,0,0,.12);
+  }
+  html[data-theme="claro"]{
+    --bg:#f3f4f8; --surface:#ffffff; --surface-2:#f3f4f8; --surface-3:#e8eaf2;
+    --ink:#111827; --ink-2:#374151; --ink-3:#6b7280; --line:#d1d5db; --line-2:#c0c4cc;
+    --accent:#7c3aed; --accent-2:#6d28d9; --accent-soft:#f1ecfd; --accent-line:#c9b8f0;
+    --teal:#15803d; --teal-soft:#e6f4ea; --teal-line:#a7d6b6;
+    --amber:#b45309; --amber-soft:#fbf0da; --amber-line:#ebd09a; --amber-ink:#7a4c12;
+    --cyan:#0369a1; --danger:#dc2626; --shadow:0 1px 3px rgba(0,0,0,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--accent-soft)}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  .app{display:grid;grid-template-columns:var(--rail) 1fr;min-height:100vh}
+
+  /* ---------- Rail ---------- */
+  .rail{background:var(--surface);border-right:1px solid var(--line);padding:18px 12px 28px;position:sticky;top:0;height:100vh;overflow-y:auto}
+  .brand{display:flex;align-items:baseline;gap:7px;padding:0 8px 3px}
+  .brand .mark{font-family:var(--disp);font-weight:700;font-size:19px;letter-spacing:-.01em;color:var(--ink)}
+  .brand .mark b{color:var(--accent)}
+  .brand .ver{font-family:var(--mono);font-size:10px;color:var(--ink-3)}
+  .brand-sub{font-size:12px;color:var(--ink-2);padding:0 8px 18px;line-height:1.45}
+
+  .navgroup{margin-bottom:15px}
+  .navgroup > .glabel{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding:0 8px 7px;display:block}
+  .navitem{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:var(--body);font-size:13px;color:var(--ink-2);padding:8px;border-radius:5px;margin-bottom:1px;line-height:1.25}
+  .navitem:hover{background:var(--surface-2);color:var(--ink)}
+  .navitem.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .navitem .idx{font-family:var(--mono);font-size:11px;width:19px;height:19px;flex:0 0 19px;display:grid;place-items:center;border:1px solid var(--line-2);border-radius:5px;color:var(--ink-3)}
+  .navitem.active .idx{border-color:var(--accent-line);color:var(--accent);background:var(--surface)}
+  .navitem.stub .tag{margin-left:auto;font-family:var(--mono);font-size:9px;letter-spacing:.04em;color:var(--amber);background:var(--amber-soft);border:1px solid var(--amber-line);padding:1px 5px;border-radius:20px;text-transform:uppercase}
+
+  /* ---------- Main ---------- */
+  .main{min-width:0}
+  .topbar{display:flex;align-items:center;gap:12px;padding:8px 24px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:5}
+  .stage-pill{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);padding:4px 10px;border-radius:5px}
+  .stage-pill b{color:var(--accent);font-weight:600}
+  .topbar .spacer{flex:1}
+  .iconbtn{font-family:var(--body);font-size:13px;cursor:pointer;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:5px 10px;display:inline-flex;align-items:center;gap:5px}
+  .iconbtn:hover{background:var(--surface-2)}
+  .theme-select{font-family:var(--body);font-size:12.5px;cursor:pointer;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:5px 8px;max-width:170px}
+  .theme-select:hover{border-color:var(--line-2)}
+  .theme-select option{background:var(--surface);color:var(--ink)}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:48px 16px;z-index:50;overflow-y:auto}
+  .modal-overlay[hidden]{display:none}
+  .modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);max-width:620px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--line)}
+  .modal-head .mt{font-family:var(--disp);font-weight:600;font-size:17px;color:var(--ink);display:flex;align-items:baseline;gap:8px}
+  .modal-head .mt b{color:var(--accent)}
+  .modal-close{background:none;border:none;color:var(--ink-3);font-size:18px;cursor:pointer;line-height:1;padding:4px 8px;border-radius:5px}
+  .modal-close:hover{background:var(--surface-2);color:var(--ink)}
+  .modal-body{padding:18px 22px 24px;font-size:13.5px;color:var(--ink-2);line-height:1.62}
+  .modal-body h4{font-family:var(--disp);font-weight:600;font-size:13px;color:var(--ink);margin:18px 0 8px;text-transform:uppercase;letter-spacing:.04em}
+  .modal-body h4:first-child{margin-top:0}
+  .modal-body p{margin:8px 0;max-width:none}
+  .modal-body ul{margin:6px 0;padding-left:20px}
+  .modal-body li{margin:4px 0}
+  .modal-body b{color:var(--ink)}
+  .modal-body code{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  .modal-body .refs{font-size:12.5px;color:var(--ink-3)}
+  .modal.wide{max-width:780px}
+  .modal-body ol{margin:6px 0;padding-left:20px}
+  .modal-body ol.bib{font-size:12px;color:var(--ink-3);line-height:1.55}
+  .modal-body ol.bib li{margin:7px 0}
+  .modal-body ol.bib li b{color:var(--ink-2)}
+  .help-test{border-left:2px solid var(--accent-line);padding:2px 0 2px 12px;margin:10px 0}
+  .help-test .ht{font-family:var(--disp);font-weight:600;font-size:13px;color:var(--ink)}
+  .help-test .hr{font-family:var(--mono);font-size:11px;color:var(--teal);display:block;margin-top:2px}
+  .protobadge{font-family:var(--mono);font-size:10px;color:var(--amber);background:var(--amber-soft);border:1px solid var(--amber-line);padding:4px 10px;border-radius:5px}
+  .wrap{padding:28px 24px 72px;max-width:1040px}
+
+  .panel{display:none;animation:fade .22s ease}
+  .panel.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .eyebrow::before{content:"";width:20px;height:1px;background:var(--accent-line)}
+  h1{font-family:var(--disp);font-weight:600;font-size:27px;letter-spacing:-.01em;margin:0 0 12px;line-height:1.14}
+  h2{font-family:var(--disp);font-weight:600;font-size:18px;margin:32px 0 13px}
+  h3{font-family:var(--disp);font-weight:600;font-size:15px;margin:20px 0 9px}
+  .lede{font-size:15px;color:var(--ink-2);max-width:66ch;line-height:1.6}
+  p{max-width:70ch}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+  .card + .card{margin-top:14px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+  .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+
+  .stub-banner{display:flex;gap:12px;align-items:flex-start;background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:var(--radius);padding:13px 16px;margin-bottom:20px}
+  .stub-banner .dot{width:8px;height:8px;border-radius:50%;background:var(--amber);margin-top:7px;flex:0 0 8px}
+  .stub-banner b{font-family:var(--disp);font-weight:600;color:var(--ink)}
+  .stub-banner p{margin:2px 0 0;font-size:13px;color:var(--amber-ink);max-width:none}
+
+  .placeholder{border:1.5px dashed var(--line-2);border-radius:var(--radius);padding:18px 20px;background:var(--surface-2)}
+  .placeholder .ptitle{font-family:var(--disp);font-weight:600;font-size:14px;display:flex;align-items:center;gap:9px;color:var(--ink)}
+  .placeholder .ptitle .n{font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:0 5px}
+  .placeholder p{font-size:13px;color:var(--ink-2);margin:8px 0 0}
+  .placeholder .ref{font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:9px}
+  .skeleton{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--surface-2),var(--surface-3),var(--surface-2));margin-top:12px}
+  .skel-chart{height:88px;border-radius:6px;background:var(--surface-3);margin-top:12px;position:relative;overflow:hidden}
+  .skel-chart::after{content:"pré-visualização do gráfico";position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+
+  label.fld{display:block;margin-bottom:15px}
+  label.fld > .lab{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:6px}
+  label.fld > .hint{font-size:12px;color:var(--ink-3);margin-top:5px;line-height:1.4}
+  select,input[type=text],input[type=number]{width:100%;font-family:var(--body);font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line-2);border-radius:5px;padding:8px 10px}
+  select:focus,input:focus,textarea:focus{outline:2px solid var(--accent-line);outline-offset:1px;border-color:var(--accent)}
+  textarea{width:100%;min-height:150px;font-family:var(--mono);font-size:12.5px;line-height:1.55;background:var(--surface-2);border:1px solid var(--line-2);border-radius:5px;padding:12px;resize:vertical;color:var(--ink)}
+  .btn{font-family:var(--body);font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--accent);border:1px solid var(--accent-line);border-radius:5px;padding:7px 14px;display:inline-flex;align-items:center;gap:6px;transition:background .12s,border-color .12s}
+  .btn:hover{background:var(--accent-soft);border-color:var(--accent)}
+  .btn.ghost{color:var(--ink);border-color:var(--line-2)}
+  .btn.ghost:hover{background:var(--surface-2)}
+  .btn.sm{padding:5px 11px;font-size:12.5px}
+  .btnrow{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+
+  .seg{display:inline-flex;background:var(--surface-2);border-radius:6px;padding:3px;gap:2px;border:1px solid var(--line)}
+  .seg button{font-family:var(--body);font-size:13px;border:none;background:none;cursor:pointer;color:var(--ink-2);padding:5px 12px;border-radius:4px}
+  .seg button.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:var(--shadow)}
+
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);margin-top:8px}
+  table.data{border-collapse:collapse;width:100%;font-size:13px}
+  table.data th,table.data td{padding:8px 13px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  table.data th{font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+  table.data td{font-family:var(--mono);color:var(--ink)}
+  table.data td.inst{font-family:var(--body);color:var(--ink-2);font-weight:600}
+  table.data td.algbest{color:var(--teal)}
+  .ctrlrow{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+  .ctrlrow label.fld{margin-bottom:0;min-width:150px}
+  .normline{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:13px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px}
+  .normline .mono{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+  .verdict{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:20px}
+  .verdict.sig{color:var(--teal);background:var(--teal-soft);border:1px solid var(--teal-line)}
+  .verdict.ns{color:var(--ink-2);background:var(--surface-3);border:1px solid var(--line)}
+  .testgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  .testcard{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;background:var(--surface-2)}
+  .testcard.rec{border-color:var(--teal-line);background:var(--teal-soft)}
+  .testcard .tname{font-family:var(--disp);font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;color:var(--ink)}
+  .testcard .recbadge{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.04em;color:var(--teal);border:1px solid var(--teal-line);border-radius:20px;padding:1px 6px}
+  .testcard dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:11px 0 0;font-size:12.5px}
+  .testcard dt{font-family:var(--mono);font-size:10px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.02em}
+  .testcard dd{margin:0;color:var(--ink);font-family:var(--mono);font-size:12.5px}
+  .conclusion{margin-top:13px;padding:12px 14px;border-radius:var(--radius);background:var(--accent-soft);border:1px solid var(--accent-line);font-size:13px;color:var(--ink)}
+  .conclusion b{color:var(--accent)}
+  .warn{margin-top:10px;font-size:12px;color:var(--amber-ink);background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:var(--radius);padding:8px 12px}
+  @media (max-width:900px){.testgrid{grid-template-columns:1fr}}
+  .rankbar-track{background:var(--surface-3);border-radius:4px;overflow:hidden;height:9px;min-width:60px;width:120px}
+  .rankbar{height:9px;background:var(--accent);border-radius:4px}
+  .rankbar.best{background:var(--teal)}
+  .statline{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-size:13px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);padding:11px 14px;margin-top:6px}
+  .statline .mono{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+  .statline .lbl{font-family:var(--mono);font-size:10px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.03em}
+  .pmatrix{border-collapse:collapse;font-size:12px;font-family:var(--mono);margin-top:4px}
+  .pmatrix th,.pmatrix td{border:1px solid var(--line);padding:5px 9px;text-align:center;white-space:nowrap}
+  .pmatrix th{background:var(--surface-2);color:var(--ink-2);font-size:10.5px;font-family:var(--mono)}
+  .pmatrix td.sig{background:var(--teal-soft);color:var(--teal);font-weight:600}
+  .pmatrix td.diag{background:var(--surface-3);color:var(--ink-3)}
+  .cdwrap{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;margin-top:4px;overflow-x:auto}
+  .cd-axis{stroke:var(--ink-2);stroke-width:1.2}
+  .cd-tick{stroke:var(--line-2);stroke-width:1}
+  .cd-conn{stroke:var(--ink-3);stroke-width:1}
+  .cd-clique{stroke:var(--teal);stroke-width:3.5;stroke-linecap:round}
+  .cd-cdbar{stroke:var(--accent);stroke-width:2}
+  .cd-label{font-family:var(--body);font-size:11px;fill:var(--ink)}
+  .cd-num{font-family:var(--mono);font-size:10px;fill:var(--ink-3)}
+  .cd-cap{font-family:var(--mono);font-size:10px;fill:var(--accent)}
+  .bxwrap{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-top:4px;overflow-x:auto}
+  .bx-axis{stroke:var(--line-2);stroke-width:1}
+  .bx-grid{stroke:var(--line);stroke-dasharray:2 3}
+  .bx-num{fill:var(--ink-3);font-family:var(--mono);font-size:10px}
+  .bx-name{fill:var(--ink);font-family:var(--body);font-size:11px}
+  .bx-whisk{stroke:var(--ink-2);stroke-width:1.2}
+  .bx-box{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.3}
+  .bx-med{stroke:var(--teal);stroke-width:2.2}
+  .bx-out{fill:var(--ink-3)}
+  .to-grid{stroke:var(--line);stroke-dasharray:2 3}
+  .to-axis{stroke:var(--line-2);stroke-width:1}
+  .to-num{fill:var(--ink-3);font-family:var(--mono);font-size:10px}
+  .to-axlabel{fill:var(--ink-2);font-family:var(--body);font-size:11px}
+  .to-line{stroke:var(--teal);stroke-width:1.6;stroke-dasharray:5 4;fill:none}
+  .to-dot-par{fill:var(--teal);stroke:var(--surface);stroke-width:1.5}
+  .to-dot-dom{fill:var(--surface);stroke:var(--accent);stroke-width:1.6}
+  .to-name{fill:var(--ink);font-family:var(--body);font-size:11px}
+  .to-name-par{fill:var(--teal);font-weight:600}
+  .explain{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface-2);margin:12px 0;overflow:hidden}
+  .explain > summary{cursor:pointer;list-style:none;padding:10px 14px;font-family:var(--body);font-size:13px;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:8px;user-select:none}
+  .explain > summary::-webkit-details-marker{display:none}
+  .explain > summary::before{content:"\25B8";font-size:11px;transition:transform .2s;color:var(--accent)}
+  .explain[open] > summary::before{transform:rotate(90deg)}
+  .explain > summary:hover{background:var(--surface-3)}
+  .explain .ebody{padding:2px 16px 14px;font-size:13px;color:var(--ink-2);line-height:1.62}
+  .explain .ebody p{margin:9px 0;max-width:none}
+  .explain .ebody b{color:var(--ink)}
+  .explain .ebody code{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  .explain .ebody ul{margin:8px 0;padding-left:20px}
+  .explain .ebody li{margin:5px 0}
+  table.data tr:last-child td{border-bottom:none}
+  .emptydata{padding:32px;text-align:center;color:var(--ink-3);font-size:13px}
+  .datmeta{display:flex;gap:18px;flex-wrap:wrap;margin-top:11px;font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+  .datmeta b{color:var(--accent)}
+
+  .check{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+  .check:last-child{border-bottom:none}
+  .check input{margin-top:3px;width:16px;height:16px;accent-color:var(--accent);flex:0 0 auto;cursor:pointer}
+  .check .ctxt{font-size:13.5px;color:var(--ink)}
+  .check .ctxt .csub{display:block;font-size:12px;color:var(--ink-3);margin-top:2px}
+  .check.done .ctxt{color:var(--ink-3)}
+  .check.done .ctitle{text-decoration:line-through}
+  .progress{height:6px;background:var(--surface-2);border-radius:4px;overflow:hidden;margin:4px 0 2px}
+  .progress > i{display:block;height:100%;background:var(--teal);border-radius:4px;transition:width .3s}
+
+  .asst{display:grid;grid-template-columns:1fr 290px;gap:22px;align-items:start}
+  .qcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:13px}
+  .qcard .qn{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.04em}
+  .qcard .qq{font-family:var(--disp);font-weight:600;font-size:15px;margin:5px 0 13px;color:var(--ink)}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{text-align:left;font-family:var(--body);font-size:13.5px;cursor:pointer;background:var(--surface);border:1px solid var(--line-2);border-radius:5px;padding:10px 13px;color:var(--ink);display:flex;align-items:center;gap:10px}
+  .opt:hover{border-color:var(--accent-line);background:var(--accent-soft)}
+  .opt.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .opt .rk{font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:1px 6px}
+  .opt.sel .rk{color:var(--accent);border-color:var(--accent-line)}
+
+  .result{border:1px solid var(--teal-line);background:var(--teal-soft);border-radius:var(--radius);padding:18px 20px;margin-top:6px}
+  .result.para{border-color:var(--accent-line);background:var(--accent-soft)}
+  .result .rlabel{font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)}
+  .result.para .rlabel{color:var(--accent)}
+  .result h3{margin:4px 0 4px;font-family:var(--disp);font-weight:700;font-size:21px;color:var(--ink)}
+  .result dl{display:grid;grid-template-columns:auto 1fr;gap:6px 15px;margin:13px 0 0;font-size:13px}
+  .result dt{font-family:var(--mono);font-size:10.5px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.03em;padding-top:2px}
+  .result dd{margin:0;color:var(--ink)}
+  .result .ext{margin-top:13px;padding-top:12px;border-top:1px dashed var(--amber-line);font-size:12.5px;color:var(--amber-ink)}
+  .result .ext b{color:var(--amber)}
+
+  .treebox{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px;position:sticky;top:64px}
+  .treebox .tlabel{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+  .tnode rect{transition:fill .25s,stroke .25s}
+  .tnode text{font-family:var(--body);font-size:11px;fill:var(--ink-2)}
+  .tnode.dim{opacity:.3}
+  .tedge{stroke:var(--line-2);stroke-width:1;fill:none;transition:stroke .25s,opacity .25s}
+  .tedge.dim{opacity:.26}
+  .tedge.lit{stroke:var(--teal);stroke-width:2}
+  .tlegend{display:flex;gap:13px;margin-top:10px;font-size:11px;color:var(--ink-2);flex-wrap:wrap}
+  .tlegend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+  .reflist{font-size:13px;color:var(--ink-2);line-height:1.7}
+  .reflist code{font-family:var(--mono);font-size:12px;color:var(--ink)}
+
+  .footnote{margin-top:38px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3);max-width:74ch}
+
+  @media (max-width:900px){
+    .app{grid-template-columns:1fr}
+    .rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+    .brand,.brand-sub{width:100%}
+    .brand-sub{padding-bottom:6px}
+    .navgroup{margin-bottom:0}
+    .navgroup > .glabel{display:none}
+    .navitem{width:auto;padding:6px 10px}
+    .navitem .idx{display:none}
+    .topbar,.wrap{padding-left:16px;padding-right:16px}
+    .asst{grid-template-columns:1fr}
+    .grid2,.grid3{grid-template-columns:1fr}
+    .treebox{position:static}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ================= RAIL ================= -->
+  <aside class="rail">
+    <div class="brand"><span class="mark">📊 Meta<b>Stat</b></span><span class="ver">v0</span></div>
+    <div class="brand-sub">Análise de desempenho de metaheurísticas — do resultado bruto ao teste estatístico correto.</div>
+
+    <nav>
+      <div class="navgroup">
+        <button class="navitem active" data-panel="inicio"><span class="idx">·</span><span>Início</span></button>
+      </div>
+      <div class="navgroup">
+        <span class="glabel">Talbi · Desenho</span>
+        <button class="navitem" data-panel="design"><span class="idx">1</span><span>Desenho experimental</span></button>
+      </div>
+      <div class="navgroup">
+        <span class="glabel">Talbi · Medição</span>
+        <button class="navitem" data-panel="dados"><span class="idx">2</span><span>Dados &amp; medição</span></button>
+        <button class="navitem" data-panel="assistente"><span class="idx">3</span><span>Assistente de decisão</span></button>
+        <button class="navitem" data-panel="analise"><span class="idx">4</span><span>Análise estatística</span></button>
+      </div>
+      <div class="navgroup">
+        <span class="glabel">Talbi · Reporte</span>
+        <button class="navitem" data-panel="reporte"><span class="idx">5</span><span>Reporte &amp; visualização</span></button>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
+    <div class="topbar">
+      <span class="stage-pill" id="stagePill">Estágio <b>—</b></span>
+      <div class="spacer"></div>
+      <button class="iconbtn" id="helpBtn" title="Ajuda">❔ Ajuda</button>
+      <button class="iconbtn" id="aboutBtn" title="Sobre">ℹ️ Sobre</button>
+      <select class="theme-select" id="themeSelect" title="Tema" aria-label="Tema">
+        <option value="dracula">🎨 Dracula</option>
+        <option value="monokai">🎨 Monokai</option>
+        <option value="material-darker">🎨 Material Darker</option>
+        <option value="nord">🎨 Nord</option>
+        <option value="eclipse">🎨 Eclipse</option>
+        <option value="claro">🎨 Claro</option>
+      </select>
+    </div>
+
+    <div class="wrap">
+
+      <!-- ---------- INÍCIO ---------- -->
+      <section class="panel show" id="p-inicio">
+        <div class="eyebrow">Visão geral</div>
+        <h1>Compare metaheurísticas com rigor estatístico.</h1>
+        <p class="lede">Você rodou uma batelada de instâncias com dois ou mais algoritmos e coletou os valores da função objetivo. Este ambiente conduz você pelas três etapas do Talbi — desenho experimental, medição e reporte — e recomenda qual teste aplicar sem que você precise decidir sozinho.</p>
+
+        <div class="grid3" style="margin-top:24px">
+          <div class="card"><div class="kicker">Etapa 1</div><h3 style="margin-top:6px">Desenho</h3><p style="font-size:13px;color:var(--ink-2)">Defina objetivos, separe instâncias de calibração e avaliação, garanta parâmetros únicos.</p></div>
+          <div class="card"><div class="kicker">Etapa 2</div><h3 style="margin-top:6px">Medição</h3><p style="font-size:13px;color:var(--ink-2)">Carregue os resultados, escolha a referência do gap e deixe o assistente indicar o teste.</p></div>
+          <div class="card"><div class="kicker">Etapa 3</div><h3 style="margin-top:6px">Reporte</h3><p style="font-size:13px;color:var(--ink-2)">Boxplots, diagrama CD, TTT plots e análise ordinal para apresentar os resultados.</p></div>
+        </div>
+
+        <h2>Como usar</h2>
+        <p style="color:var(--ink-2)">Comece pela aba <b>Dados</b> (há dois exemplos prontos, com e sem tempo), passe pelo <b>assistente de decisão</b> se tiver dúvida sobre qual teste usar, e veja os resultados em <b>Análise estatística</b> e <b>Reporte</b>. Cada análise tem um botão explicativo, e o card <b>Exportar</b> gera as tabelas e o resumo prontos para o relatório.</p>
+        <div class="btnrow" style="margin-top:16px">
+          <button class="btn" data-goto="dados">Começar pelos dados</button>
+          <button class="btn ghost" data-goto="assistente">Ir ao assistente</button>
+        </div>
+
+        <h2>Base conceitual</h2>
+        <div class="reflist">
+          Talbi, E-G. <i>Metaheuristics: From Design to Implementation</i>, seção 1.7 — estrutura de três etapas, referências de gap, análise ordinal (Borda, Copeland), TTT plots.<br>
+          Derrac et al. (2011) — testes não-paramétricos e procedimentos pós-hoc para comparar algoritmos.<br>
+          Demšar (2006) — comparação de classificadores sobre múltiplas bases; diagrama de diferença crítica.
+        </div>
+
+        <div class="footnote">Ferramenta genérica para comparação estatística de algoritmos estocásticos sobre uma batelada de instâncias.</div>
+      </section>
+
+      <!-- ---------- DESENHO ---------- -->
+      <section class="panel" id="p-design">
+        <div class="eyebrow">Etapa 1 · Desenho experimental</div>
+        <h1>Checklist antes de coletar.</h1>
+        <p class="lede">Antes de qualquer teste, o Talbi lembra que o experimento precisa ser justo. Marque cada item conforme garantir a condição — o resultado estatístico só é confiável se o desenho for.</p>
+
+        <div class="card" style="margin-top:20px">
+          <div class="progress"><i id="clBar" style="width:0%"></i></div>
+          <div class="kicker" id="clCount" style="margin-bottom:6px">0 de 6 confirmados</div>
+          <div id="checklist"></div>
+        </div>
+
+        <div class="btnrow" style="margin-top:18px"><button class="btn" data-goto="dados">Prosseguir para os dados</button></div>
+      </section>
+
+      <!-- ---------- DADOS ---------- -->
+      <section class="panel" id="p-dados">
+        <div class="eyebrow">Etapa 2 · Medição</div>
+        <h1>Dados &amp; medição.</h1>
+        <p class="lede">Cole os resultados direto de uma planilha ou carregue um CSV. Linhas são instâncias; colunas são algoritmos. Defina o sentido do objetivo e como as execuções estocásticas são resumidas.</p>
+
+        <div class="grid2" style="margin-top:20px;align-items:start">
+          <div class="card">
+            <h3 style="margin-top:0">Entrada</h3>
+            <label class="fld">
+              <span class="lab">Colar da planilha (tab, vírgula ou ponto-e-vírgula)</span>
+              <textarea id="rawInput" placeholder="instancia,GRASP,GRASP_time,ILS,ILS_time&#10;eil51,432,0.85,428,1.12&#10;berlin52,7621,0.91,7544,1.20"></textarea>
+            </label>
+            <div class="btnrow">
+              <button class="btn" id="parseBtn">▶ Carregar dados</button>
+              <label class="btn ghost sm" style="cursor:pointer">📂 CSV<input type="file" id="fileInput" accept=".csv,.tsv,.txt" style="display:none"></label>
+              <button class="btn ghost sm" id="sampleBtn">⚡ Exemplo (sem tempo)</button>
+              <button class="btn ghost sm" id="sampleTimeBtn">⚡ Exemplo (com tempo)</button>
+              <button class="btn ghost sm" id="exportCsvBtn">⬇ Exportar CSV</button>
+              <button class="btn ghost sm" id="clearBtn">✕ Limpar</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-top:0">Configuração da medição</h3>
+            <label class="fld">
+              <span class="lab">Métrica ativa</span>
+              <div class="seg" id="metricSeg"><button class="on" data-v="quality">Qualidade</button><button data-v="time">Tempo (s)</button></div>
+              <span class="hint" id="metricHint">Colunas com sufixo <code>_time</code> são pareadas ao algoritmo de mesmo nome. Tempo é analisado como minimização.</span>
+            </label>
+            <label class="fld">
+              <span class="lab">Sentido do objetivo (qualidade)</span>
+              <div class="seg" id="senseSeg"><button class="on" data-v="min">Minimização</button><button data-v="max">Maximização</button></div>
+            </label>
+            <label class="fld">
+              <span class="lab">Coluna de referência (BKS / ótimo)</span>
+              <select id="refColSel"><option value="-1">Nenhuma — usar o melhor da linha</option></select>
+              <span class="hint">Se você tem o ótimo/BKS por instância, selecione a coluna: ela sai da lista de algoritmos e vira a referência do gap (qualidade). Para tempo, o gap usa sempre o melhor da linha.</span>
+            </label>
+          </div>
+        </div>
+
+        <h2>Pré-visualização</h2>
+        <div class="tablewrap" id="tableWrap"><div class="emptydata">Nenhum dado carregado ainda. Cole valores acima ou use o exemplo.</div></div>
+        <div class="datmeta" id="dataMeta" style="display:none"></div>
+
+        <div class="btnrow" style="margin-top:18px"><button class="btn" data-goto="assistente">Escolher o teste</button></div>
+      </section>
+
+      <!-- ---------- ASSISTENTE ---------- -->
+      <section class="panel" id="p-assistente">
+        <div class="eyebrow">Etapa 2 · Medição · Assistente</div>
+        <h1>Qual teste usar?</h1>
+        <p class="lede">Responda às perguntas. O caminho acende na árvore ao lado, reconciliando a figura 1.28 do Talbi com o procedimento pós-hoc moderno.</p>
+
+        <div class="asst" style="margin-top:20px">
+          <div>
+            <div id="questions"></div>
+            <div id="recommendation"></div>
+            <div class="btnrow" style="margin-top:16px"><button class="btn ghost sm" id="resetAsst">↺ Recomeçar</button></div>
+          </div>
+
+          <div class="treebox">
+            <div class="tlabel">Árvore de decisão</div>
+            <svg viewBox="0 0 260 300" width="100%" id="tree" role="img" aria-label="Árvore de decisão de testes estatísticos">
+              <path class="tedge" id="e-root"  d="M130 34 V54"/>
+              <path class="tedge" id="e-nl"    d="M130 78 H60 V96"/>
+              <path class="tedge" id="e-nr"    d="M130 78 H200 V96"/>
+              <path class="tedge" id="e-fpost" d="M200 168 V186"/>
+              <g class="tnode" id="n-root"><rect x="86" y="14" width="88" height="20" rx="5" fill="var(--surface-2)" stroke="var(--line-2)"/><text x="130" y="28" text-anchor="middle">normalidade?</text></g>
+              <g class="tnode" id="n-para"><rect x="18" y="96" width="84" height="46" rx="6" fill="var(--surface-2)" stroke="var(--line-2)"/><text x="60" y="115" text-anchor="middle">paramétrico</text><text x="60" y="130" text-anchor="middle">t · ANOVA</text></g>
+              <g class="tnode" id="n-nonpara"><rect x="158" y="96" width="84" height="46" rx="6" fill="var(--surface-2)" stroke="var(--line-2)"/><text x="200" y="115" text-anchor="middle">não-param.</text><text x="200" y="130" text-anchor="middle">Wilcoxon</text></g>
+              <g class="tnode" id="n-friedman"><rect x="158" y="146" width="84" height="22" rx="6" fill="var(--surface-2)" stroke="var(--line-2)"/><text x="200" y="161" text-anchor="middle">Friedman (3+)</text></g>
+              <g class="tnode" id="n-post"><rect x="150" y="186" width="100" height="40" rx="6" fill="var(--amber-soft)" stroke="var(--amber-line)" stroke-dasharray="4 3"/><text x="200" y="204" text-anchor="middle">pós-hoc + CD</text><text x="200" y="218" text-anchor="middle" style="fill:var(--amber)">além do Talbi</text></g>
+            </svg>
+            <div class="tlegend">
+              <span><i style="background:var(--teal)"></i>caminho ativo</span>
+              <span><i style="background:var(--amber-soft);border:1px solid var(--amber-line)"></i>extensão</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- ANÁLISE (STUB) ---------- -->
+      <section class="panel" id="p-analise">
+        <div class="eyebrow">Etapa 2 · Medição · Análise</div>
+        <h1>Análise estatística.</h1>
+        <p class="lede" style="margin-bottom:22px">Descritiva com normalização, teste par a par, Friedman, pós-hoc com diagrama de diferença crítica, análise ordinal e taxa de sucesso — tudo calculado a partir dos seus dados, respeitando a métrica ativa.</p>
+
+        <div class="card" id="descCard">
+          <div class="ptitle" style="font-family:var(--disp);font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px;color:var(--ink);margin-bottom:4px"><span class="n" style="font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:0 5px">A</span> Estatística descritiva</div>
+          <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:8px">Por algoritmo, sobre o conjunto de instâncias. IC de 95% pela aproximação normal (m ± 1,96·σ/√n). "Melhor" e "pior" seguem o sentido do objetivo.</div>
+          <details class="explain">
+            <summary>O que esta tabela mostra? (e por que normalizar)</summary>
+            <div class="ebody">
+              <p>Esta é uma <b>análise descritiva</b>: resume os resultados de cada algoritmo sobre todas as instâncias. Ela ainda <b>não</b> diz se uma diferença é significativa — isso é papel dos testes mais abaixo.</p>
+              <p><b>Por que existem dois modos.</b> As instâncias costumam ter escalas muito diferentes (uma na ordem de 10, outra de 10 000). Se agregarmos os valores <b>brutos</b>, a média e o desvio-padrão ficam dominados pelas instâncias grandes — a média vira quase só o valor da maior instância, e a comparação perde sentido. Por isso o padrão é o modo <b>Gap %</b>.</p>
+              <ul>
+                <li><b>Gap %</b> (recomendado): para cada instância, mede o quanto o algoritmo ficou <b>acima da referência</b>, em porcentagem — <code>(valor − ref)/|ref| × 100</code> em minimização (invertido em maximização). Assim toda instância entra na mesma escala (0% = referência), e o gap médio é comparável. É a ideia da seção 1.7.2.1 do Talbi.</li>
+                <li><b>Bruto</b>: agrega os valores originais. Só use quando as instâncias têm <b>escala parecida</b>; caso contrário aparece um aviso.</li>
+              </ul>
+              <p><b>De onde vem a referência</b> (definida na aba Dados):</p>
+              <ul>
+                <li><b>Melhor da linha</b> (padrão, sem dado externo): a referência de cada instância é o melhor resultado <b>entre os algoritmos</b> naquela linha. O vencedor de cada instância fica com 0%; os demais mostram quanto ficaram atrás.</li>
+                <li><b>Coluna BKS/ótimo</b>: se você informar a coluna com a melhor solução conhecida ou o ótimo, o gap é medido em relação a ela — a interpretação clássica de "% acima do ótimo".</li>
+              </ul>
+              <p><b>Colunas da tabela.</b> Média/mediana do gap (valor típico; a mediana é robusta a outliers), desvio-padrão (dispersão → robustez, Talbi 1.7.2.3), melhor/pior e o IC 95% <code>m ± 1,96·σ/√n</code>. O <b>★</b> marca o menor gap médio — um indício, não uma prova; a significância vem no teste.</p>
+              <p>Vale lembrar: os <b>testes</b> (Wilcoxon, Friedman) já são livres de escala, pois comparam dentro de cada instância — a normalização aqui é só para a leitura descritiva.</p>
+            </div>
+          </details>
+          <div class="ctrlrow" style="margin:6px 0 12px">
+            <label class="fld"><span class="lab">Modo</span>
+              <div class="seg" id="descModeSeg"><button class="on" data-v="gap">Gap %</button><button data-v="raw">Bruto</button></div>
+            </label>
+            <div id="refIndicator" style="font-size:12px;color:var(--ink-3);align-self:center"></div>
+          </div>
+          <div id="descBody"></div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:10px">Talbi 1.7.2 · qualidade &amp; robustez</div>
+        </div>
+
+        <div class="card" id="pairCard" style="margin-top:14px">
+          <div class="ptitle" style="font-family:var(--disp);font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px;color:var(--ink);margin-bottom:4px"><span class="n" style="font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:0 5px">B·C</span> Teste par a par (2 algoritmos)</div>
+          <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:12px">Escolha dois algoritmos. O app testa a normalidade das diferenças (Shapiro-Wilk) e roda o teste t pareado e o Wilcoxon signed-rank, destacando o apropriado — exatamente o ramo de 2 algoritmos da figura 1.28.</div>
+          <details class="explain">
+            <summary>Como esta comparação funciona?</summary>
+            <div class="ebody">
+              <p>Como os dois algoritmos rodaram nas <b>mesmas instâncias</b>, os dados são <b>pareados</b>: para cada instância calculamos a diferença A − B. A pergunta é se essa diferença é sistemática ou fruto do acaso.</p>
+              <p><b>1. Shapiro-Wilk (normalidade).</b> Antes de escolher o teste, verificamos se as diferenças têm distribuição aproximadamente normal. Se <code>p ≥ α</code>, são compatíveis com normal e o teste paramétrico vale; se <code>p &lt; α</code>, não são normais e o caminho seguro é o não-paramétrico. É a primeira decisão da figura 1.28 do Talbi.</p>
+              <p><b>2. Os dois testes.</b></p>
+              <ul>
+                <li><b>t pareado</b> compara a <b>média</b> das diferenças. Mais potente quando os dados são normais, porém sensível a outliers. Tamanho de efeito: <b>d de Cohen</b>.</li>
+                <li><b>Wilcoxon signed-rank</b> compara os <b>postos</b> das diferenças, sem supor normalidade — o mais usado em benchmarks de metaheurística. Tamanho de efeito: correlação <b>rank-biserial</b>.</li>
+              </ul>
+              <p><b>3. Lendo o p-valor.</b> A hipótese nula (H₀) é "não há diferença". Se <code>p &lt; α</code> (por padrão 0,05), rejeitamos H₀: a diferença é <b>significativa</b>. Se <code>p ≥ α</code>, não há evidência suficiente de diferença.</p>
+              <p><b>Atenção:</b> significância não é magnitude. Um p pequeno com efeito minúsculo pode não ter valor prático — olhe também o tamanho de efeito e as médias da tabela A.</p>
+            </div>
+          </details>
+          <div class="ctrlrow">
+            <label class="fld"><span class="lab">Algoritmo A</span><select id="pairA"></select></label>
+            <label class="fld"><span class="lab">Algoritmo B</span><select id="pairB"></select></label>
+            <label class="fld" style="min-width:100px;max-width:110px"><span class="lab">α (nível)</span><input type="number" id="alphaInput" value="0.05" step="0.01" min="0.001" max="0.2"></label>
+          </div>
+          <div id="pairBody" style="margin-top:14px"></div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:12px">Talbi fig. 1.28 · Shapiro-Wilk (Royston 1992) · Wilcoxon &amp; t pareado</div>
+        </div>
+
+        <div class="card" id="friedmanCard" style="margin-top:14px">
+          <div class="ptitle" style="font-family:var(--disp);font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px;color:var(--ink);margin-bottom:4px"><span class="n" style="font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:0 5px">D</span> 3+ algoritmos: teste de Friedman</div>
+          <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:12px">Compara todos os algoritmos de uma vez por postos dentro de cada instância. Livre de escala — não depende da normalização. O ranking médio aqui alimenta o pós-hoc e o diagrama CD.</div>
+          <details class="explain">
+            <summary>Como o Friedman funciona?</summary>
+            <div class="ebody">
+              <p>Com <b>três ou mais</b> algoritmos, comparar par a par multiplicaria os testes e inflaria o erro. O Friedman resolve com um teste único.</p>
+              <p><b>1. Postos por instância.</b> Em cada instância (bloco), os algoritmos são ordenados: posto 1 para o melhor, 2 para o segundo, e assim por diante (empates recebem posto médio). Como isso é feito <b>dentro</b> de cada instância, a diferença de escala entre instâncias desaparece — por isso o teste é livre de escala.</p>
+              <p><b>2. Posto médio.</b> Cada algoritmo recebe a média dos seus postos ao longo das instâncias. Menor posto médio = melhor desempenho geral.</p>
+              <p><b>3. O teste.</b> A hipótese nula (H₀) é "todos têm o mesmo posto médio". A estatística de Friedman segue uma distribuição qui-quadrado com <code>k−1</code> graus de liberdade (k = nº de algoritmos). Se <code>p &lt; α</code>, rejeitamos H₀: <b>pelo menos um</b> algoritmo difere — mas o teste não diz quais. Para isso vem o pós-hoc (próxima parte). Mostramos também o <b>Iman-Davenport</b>, uma correção menos conservadora baseada na distribuição F.</p>
+              <p>Só instâncias com valor para <b>todos</b> os algoritmos entram (blocos completos). A coluna de referência, se houver, é excluída.</p>
+            </div>
+          </details>
+          <label class="fld" style="max-width:120px;margin-top:8px"><span class="lab">α (nível)</span><input type="number" id="alphaF" value="0.05" step="0.01" min="0.001" max="0.2"></label>
+          <div id="friedmanBody" style="margin-top:8px"></div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:12px">Talbi fig. 1.28 · Friedman + Iman-Davenport · qui-quadrado</div>
+        </div>
+
+        <div class="card" id="posthocCard" style="margin-top:14px">
+          <div class="ptitle" style="font-family:var(--disp);font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px;color:var(--ink);margin-bottom:4px"><span class="n" style="font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:0 5px">E</span> Pós-hoc &amp; diagrama de diferença crítica</div>
+          <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:12px">Quando o Friedman rejeita H₀, o pós-hoc diz <b>quais pares</b> de algoritmos diferem. O diagrama CD (Demšar) resume tudo visualmente; a matriz mostra os p-valores corrigidos.</div>
+          <details class="explain">
+            <summary>O que o pós-hoc faz?</summary>
+            <div class="ebody">
+              <p>O Friedman só diz que <b>existe</b> alguma diferença. Para saber <b>entre quem</b>, comparamos os pares — mas fazer vários testes infla a chance de um falso positivo, então é preciso corrigir.</p>
+              <p><b>Diagrama de diferença crítica (Nemenyi).</b> Calcula uma <b>diferença crítica</b> <code>CD = q<sub>α</sub>·√(k(k+1)/6n)</code>. No eixo de postos médios, algoritmos cuja distância é <b>menor que o CD</b> não são distinguíveis e ficam unidos por uma barra grossa. É o padrão visual para comparar muitos algoritmos em muitas instâncias (Demšar 2006).</p>
+              <p><b>Matriz de p-valores (Holm/Bonferroni).</b> Para cada par, um teste sobre a diferença de postos médios, com os p-valores <b>ajustados</b> para múltiplas comparações. Holm é menos conservador que Bonferroni e recomendado por Derrac et al. (2011). Células em destaque = diferença significativa ao nível α.</p>
+              <p>Nemenyi (o diagrama) é mais conservador; Holm (a matriz) costuma detectar mais diferenças. Ver os dois lado a lado ajuda a interpretar o resultado.</p>
+            </div>
+          </details>
+          <div class="ctrlrow" style="margin-top:8px">
+            <label class="fld" style="min-width:130px"><span class="lab">α (CD / pós-hoc)</span>
+              <select id="alphaPost"><option value="0.05">0,05</option><option value="0.10">0,10</option></select>
+            </label>
+            <label class="fld" style="min-width:150px"><span class="lab">Correção da matriz</span>
+              <select id="postMethod"><option value="holm">Holm</option><option value="bonferroni">Bonferroni</option><option value="none">Sem correção</option></select>
+            </label>
+          </div>
+          <div id="posthocBody" style="margin-top:8px"></div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:12px">Demšar 2006 · Derrac et al. 2011 · extensão ao Talbi</div>
+        </div>
+
+        <div class="card" id="ordinalCard" style="margin-top:14px">
+          <div class="ptitle" style="font-family:var(--disp);font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px;color:var(--ink);margin-bottom:4px"><span class="n" style="font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:0 5px">F</span> Análise ordinal (Borda &amp; Copeland)</div>
+          <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:12px">Agrega as ordens de todas as instâncias numa classificação única, por dois métodos clássicos. Livre de escala — usa só as posições.</div>
+          <details class="explain">
+            <summary>O que é a análise ordinal?</summary>
+            <div class="ebody">
+              <p>Em vez de agregar valores, agrega <b>posições</b>. Dois métodos, como no Talbi 1.7.2.5:</p>
+              <ul>
+                <li><b>Contagem de Borda.</b> Em cada instância, um algoritmo com posto <code>o</code> ganha <code>o</code> pontos (posto 1 = melhor). Somando os pontos de todas as instâncias, o <b>menor total é o melhor</b>. É a mesma ordenação do posto médio do Friedman.</li>
+                <li><b>Índice de Copeland.</b> Baseado em <b>duelos</b>: para cada par, conta em quantas instâncias um algoritmo vence o outro. O índice de cada algoritmo é o total de vitórias menos derrotas contra todos os demais. <b>Maior é melhor.</b></li>
+              </ul>
+              <p>Borda soma posições; Copeland conta confrontos. Costumam concordar — quando discordam, é sinal de perfis diferentes (um algoritmo consistente vs. um que ganha por muito em poucas instâncias).</p>
+            </div>
+          </details>
+          <div id="ordinalBody" style="margin-top:8px"></div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:12px">Talbi 1.7.2.5 · Borda &amp; Copeland</div>
+        </div>
+
+        <div class="card" id="successCard" style="margin-top:14px">
+          <div class="ptitle" style="font-family:var(--disp);font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px;color:var(--ink);margin-bottom:4px"><span class="n" style="font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:0 5px">G</span> Taxa de sucesso</div>
+          <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:12px">Fração de instâncias em que o algoritmo atingiu a referência, dentro de uma tolerância. Usa a referência definida na aba Dados (BKS/ótimo ou melhor da linha).</div>
+          <details class="explain">
+            <summary>Como a taxa de sucesso é calculada?</summary>
+            <div class="ebody">
+              <p><b>Taxa de sucesso</b> = execuções bem-sucedidas / total (Talbi 1.7.2.4). Uma execução é "sucesso" quando atinge a solução de referência (ótimo, BKS ou um alvo dado).</p>
+              <p>Como aqui há um valor por instância, ela vira a <b>fração de instâncias resolvidas</b> dentro de <b>ε%</b> da referência. Com <code>ε = 0</code> exige atingir exatamente a referência — e, se a referência for "melhor da linha", isso equivale a <b>quantas vezes o algoritmo venceu</b> a instância.</p>
+              <p>O Talbi define ainda a <b>taxa de desempenho</b>, que divide pelo número de avaliações da função objetivo — ela entra quando o módulo de tempo/avaliações existir.</p>
+            </div>
+          </details>
+          <label class="fld" style="max-width:150px;margin-top:8px"><span class="lab">Tolerância ε (%)</span><input type="number" id="epsInput" value="0" step="0.5" min="0" max="100"></label>
+          <div id="successBody" style="margin-top:8px"></div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:12px">Talbi 1.7.2.4 · taxa de sucesso</div>
+        </div>
+      </section>
+
+      <!-- ---------- REPORTE (STUB) ---------- -->
+      <section class="panel" id="p-reporte">
+        <div class="eyebrow">Etapa 3 · Reporte</div>
+        <h1>Reporte &amp; visualização.</h1>
+        <p class="lede" style="margin-bottom:22px">Boxplots por algoritmo e o trade-off qualidade × tempo, mais a exportação das tabelas e do resumo para o seu relatório.</p>
+
+        <div class="card" id="boxCard">
+          <div class="ptitle" style="font-family:var(--disp);font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px;color:var(--ink);margin-bottom:4px"><span class="n" style="font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:0 5px">A</span> Boxplots por algoritmo</div>
+          <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:10px">Distribuição dos resultados de cada algoritmo pelo resumo de cinco números, sem supor distribuição. Como as escalas variam entre instâncias, o padrão é o modo Gap %.</div>
+          <details class="explain">
+            <summary>Como ler um boxplot?</summary>
+            <div class="ebody">
+              <p>O boxplot (Tukey, citado no Talbi fig. 1.30) resume a distribuição sem supor normalidade:</p>
+              <ul>
+                <li>A <b>caixa</b> vai do 1º quartil (Q1) ao 3º (Q3) — os 50% centrais dos dados.</li>
+                <li>A linha em <b>verde</b> é a <b>mediana</b>.</li>
+                <li>Os <b>bigodes</b> alcançam o dado mais distante dentro de 1,5×IQR; pontos além deles são <b>outliers</b>.</li>
+              </ul>
+              <p>A altura da caixa mostra a <b>dispersão</b> (robustez); assimetria aparece quando a mediana não fica no centro. Em <b>Gap %</b>, cada instância entra normalizada pela referência, então as caixas são comparáveis entre algoritmos; em <b>Bruto</b>, use só com instâncias de escala parecida.</p>
+            </div>
+          </details>
+          <div class="ctrlrow" style="margin:8px 0 4px">
+            <label class="fld"><span class="lab">Modo</span>
+              <div class="seg" id="boxModeSeg"><button class="on" data-v="gap">Gap %</button><button data-v="raw">Bruto</button></div>
+            </label>
+          </div>
+          <div id="boxBody"></div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:10px">Talbi fig. 1.30 · resumo de cinco números</div>
+        </div>
+
+        <div class="card" id="tradeoffCard" style="margin-top:14px">
+          <div class="ptitle" style="font-family:var(--disp);font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px;color:var(--ink);margin-bottom:4px"><span class="n" style="font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:0 5px">B</span> Trade-off qualidade × tempo</div>
+          <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:10px">Um ponto por algoritmo: qualidade média (gap %) contra tempo médio (s). O melhor fica no canto inferior esquerdo; a fronteira de Pareto liga os não-dominados.</div>
+          <details class="explain">
+            <summary>O que o trade-off mostra?</summary>
+            <div class="ebody">
+              <p>Qualidade e tempo quase sempre estão em <b>tensão</b>: um algoritmo que acha soluções melhores mas demora muito não é estritamente melhor. Testar cada métrica isolada não captura isso (Talbi fig. 1.29b).</p>
+              <p>Cada algoritmo vira um ponto: eixo horizontal = <b>gap médio de qualidade</b> (menor = melhor), eixo vertical = <b>tempo médio</b> em segundos (menor = melhor). Logo, o <b>canto inferior esquerdo</b> é o ideal.</p>
+              <p>Um algoritmo <b>domina</b> outro se é melhor (ou igual) em <b>ambos</b> os eixos. Os que ninguém domina formam a <b>fronteira de Pareto</b> (em verde): são as escolhas racionais — cada um troca um pouco de qualidade por um pouco de tempo. Os pontos fora da fronteira são dominados: existe outro algoritmo melhor nos dois quesitos.</p>
+              <p>A qualidade usa gap % (a referência da aba Dados) para ser comparável entre instâncias; o tempo, segundos.</p>
+            </div>
+          </details>
+          <div id="tradeoffBody" style="margin-top:8px"></div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:10px">Talbi fig. 1.29b · fronteira de Pareto</div>
+        </div>
+
+        <div class="card" id="exportCard" style="margin-top:14px">
+          <div class="ptitle" style="font-family:var(--disp);font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px;color:var(--ink);margin-bottom:4px"><span class="n" style="font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:0 5px">C</span> Exportar resultados</div>
+          <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:10px">Gera tabelas prontas para o relatório e um resumo textual das conclusões, refletindo a métrica e o modo ativos. Copie e cole no seu documento.</div>
+          <details class="explain">
+            <summary>O que é exportado?</summary>
+            <div class="ebody">
+              <p>O bloco reúne, no formato escolhido: a <b>tabela descritiva</b> (métrica e modo atuais), o <b>ranking médio do Friedman</b> com a estatística e o p-valor, os <b>pares significativos</b> do pós-hoc, e um <b>resumo em texto</b> que costura tudo — incluindo a fronteira de Pareto quando há tempo.</p>
+              <p><b>LaTeX</b> usa <code>booktabs</code> (\toprule/\midrule/\bottomrule) e escapa caracteres especiais; <b>Markdown</b> gera tabelas com <code>|</code>. Reproduzibilidade é uma recomendação explícita do Talbi (1.7.3).</p>
+            </div>
+          </details>
+          <div class="ctrlrow" style="margin:8px 0">
+            <label class="fld"><span class="lab">Formato</span>
+              <div class="seg" id="expFmtSeg"><button class="on" data-v="markdown">Markdown</button><button data-v="latex">LaTeX</button></div>
+            </label>
+            <button class="btn sm" id="expCopyBtn" style="align-self:flex-end">⧉ Copiar</button>
+          </div>
+          <textarea id="expOut" readonly style="min-height:240px;width:100%"></textarea>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:10px">Talbi 1.7.3 · reprodutibilidade</div>
+        </div>
+
+        <h2 style="font-size:16px;margin:28px 0 12px">Próximas visualizações</h2>
+        <div class="grid2" style="align-items:start">
+          <div class="placeholder"><div class="ptitle"><span class="n">D</span> Diagrama de diferença crítica</div><p>Já implementado — está na aba <b>Análise estatística</b>, no card de pós-hoc (E), junto da matriz de p-valores.</p><div class="ref">Demšar 2006 · ver aba Análise</div></div>
+          <div class="placeholder"><div class="ptitle"><span class="n">E</span> Time-to-target (TTT) plot</div><p>Distribuição empírica do tempo até atingir um alvo: ordena os tempos e plota (tᵢ, pᵢ) com pᵢ = (i − ½)/n. Pede várias execuções cronometradas por instância.</p><div class="skel-chart"></div><div class="ref">Talbi 1.7.3 · Aiex-Resende-Ribeiro</div></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="aboutModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Sobre o MetaStat">
+    <div class="modal-head">
+      <span class="mt">📊 Sobre o Meta<b>Stat</b></span>
+      <button class="modal-close" id="aboutClose" title="Fechar" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Ferramenta de análise estatística para comparar metaheurísticas. Conduz do resultado bruto ao teste correto, seguindo as três etapas do Talbi (desenho, medição, reporte).</p>
+
+      <h4>Métodos estatísticos</h4>
+      <ul>
+        <li>Estatística descritiva com normalização por gap e intervalo de confiança (m ± 1,96·σ/√n).</li>
+        <li>Normalidade: <b>Shapiro-Wilk</b> (aproximação de Royston, 1992).</li>
+        <li>Duas amostras pareadas: <b>teste t pareado</b> e <b>Wilcoxon signed-rank</b> (com correção de empates e continuidade).</li>
+        <li>Três ou mais: <b>teste de Friedman</b> (com correção de empates) e <b>Iman-Davenport</b>.</li>
+        <li>Pós-hoc: <b>Nemenyi</b> com diagrama de diferença crítica e matriz par a par com correção de <b>Holm/Bonferroni</b>.</li>
+        <li>Análise ordinal: contagem de <b>Borda</b> e índice de <b>Copeland</b>.</li>
+        <li>Taxa de sucesso, boxplots (Tukey) e trade-off qualidade × tempo com fronteira de Pareto.</li>
+      </ul>
+
+      <h4>Referências</h4>
+      <p class="refs">Talbi, E-G. <i>Metaheuristics: From Design to Implementation</i> (seção 1.7) · Derrac et al. (2011), testes não-paramétricos e pós-hoc · Demšar (2006), diagrama de diferença crítica.</p>
+
+      <h4>Tecnologia</h4>
+      <p>Arquivo <code>.html</code> único, em <b>HTML, CSS e JavaScript puro</b>, sem bibliotecas nem dependências externas — roda offline e hospeda direto no GitHub Pages. As distribuições estatísticas (normal, t de Student, qui-quadrado, F, beta e gama incompletas) foram implementadas do zero por aproximações numéricas; os resultados foram conferidos contra <b>SciPy</b> e <b>scikit-posthocs</b>. Gráficos desenhados em <b>SVG</b> nativo.</p>
+
+      <p class="refs" style="margin-top:16px">Feito com auxílio de Claude (Anthropic).</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="helpModal" hidden>
+  <div class="modal wide" role="dialog" aria-modal="true" aria-label="Ajuda do MetaStat">
+    <div class="modal-head">
+      <span class="mt">❔ Guia do Meta<b>Stat</b></span>
+      <button class="modal-close" title="Fechar" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>O MetaStat compara o desempenho de metaheurísticas — ou de qualquer conjunto de algoritmos estocásticos — de forma estatisticamente rigorosa. Organiza a avaliação nas três etapas de Talbi (2009): <b>desenho experimental</b>, <b>medição</b> e <b>reporte</b>. Este guia percorre tudo o que a ferramenta faz; as referências de cada método estão listadas ao final, para citação.</p>
+
+      <h4>Fluxo de uso</h4>
+      <ol>
+        <li><b>Desenho experimental</b> — um checklist de boas práticas (instâncias diversas, calibração separada da avaliação, parâmetros únicos, execuções suficientes, reprodutibilidade).</li>
+        <li><b>Dados &amp; medição</b> — cole ou carregue seus resultados, defina o sentido do objetivo, a métrica e a referência.</li>
+        <li><b>Assistente de decisão</b> — responda a perguntas simples e a ferramenta indica qual teste usar.</li>
+        <li><b>Análise estatística</b> — todos os testes calculados sobre seus dados.</li>
+        <li><b>Reporte</b> — gráficos e exportação das tabelas e do resumo.</li>
+      </ol>
+
+      <h4>Entrada de dados</h4>
+      <p>Linhas são <b>instâncias</b>; colunas são <b>algoritmos</b>. O delimitador (<code>,</code>, <code>;</code> ou tabulação) é detectado automaticamente, e vírgula decimal é aceita. Convenções:</p>
+      <ul>
+        <li>Coluna com sufixo <code>_time</code> guarda o <b>tempo</b> (s) do algoritmo de mesmo nome (ex.: <code>ILS</code> e <code>ILS_time</code>).</li>
+        <li>Uma coluna pode ser marcada como <b>referência</b> (BKS/ótimo); ela sai da lista de algoritmos e passa a ser a base do gap.</li>
+        <li>Os botões de <b>exemplo</b> geram dados prontos; o <b>Exportar CSV</b> baixa a tabela atual como template para preencher.</li>
+      </ul>
+
+      <h4>Métrica ativa e normalização</h4>
+      <p>O toggle <b>Qualidade / Tempo</b> faz toda a análise rodar sobre a função objetivo ou sobre o tempo (minimização). Como as instâncias têm escalas diferentes, o modo padrão é o <b>gap %</b>: para cada instância, <code>(valor − ref)/|ref| × 100</code>, deixando tudo comparável (Talbi, 2009, §1.7.2.1). A referência é o BKS/ótimo informado ou o melhor algoritmo de cada linha.</p>
+
+      <h4>Assistente de decisão</h4>
+      <p>Reconstrói a árvore de decisão de testes de Talbi (2009, fig. 1.28) — normalidade primeiro, depois número de algoritmos e pareamento — estendida com o procedimento pós-hoc moderno de Derrac et al. (2011).</p>
+
+      <h4>Análises estatísticas</h4>
+
+      <div class="help-test"><span class="ht">Estatística descritiva</span>
+      Média, mediana, desvio-padrão, melhor/pior e intervalo de confiança de 95% (m ± 1,96·σ/√n), em valores brutos ou gap %.
+      <span class="hr">Talbi (2009), §1.7.2</span></div>
+
+      <div class="help-test"><span class="ht">Teste de normalidade — Shapiro-Wilk</span>
+      Verifica se as diferenças seguem distribuição normal, decidindo entre o ramo paramétrico e o não-paramétrico.
+      <span class="hr">Shapiro &amp; Wilk (1965); aproximação de Royston (1992)</span></div>
+
+      <div class="help-test"><span class="ht">Duas amostras pareadas — t pareado &amp; Wilcoxon</span>
+      Comparam dois algoritmos nas mesmas instâncias: o t pareado pela média das diferenças (efeito d de Cohen), o Wilcoxon pelos postos, sem supor normalidade (efeito rank-biserial).
+      <span class="hr">Student (1908); Wilcoxon (1945); Cohen (1988); Kerby (2014)</span></div>
+
+      <div class="help-test"><span class="ht">Três ou mais algoritmos — Friedman &amp; Iman-Davenport</span>
+      Comparação simultânea por postos dentro de cada instância, com o ranking médio. O Iman-Davenport é a variante baseada na distribuição F, menos conservadora.
+      <span class="hr">Friedman (1937); Iman &amp; Davenport (1980)</span></div>
+
+      <div class="help-test"><span class="ht">Pós-hoc — Nemenyi (diagrama CD) &amp; Holm/Bonferroni</span>
+      Após o Friedman, identifica quais pares diferem: o diagrama de diferença crítica de Nemenyi e a matriz de p-valores com correção para múltiplas comparações.
+      <span class="hr">Nemenyi (1963); Demšar (2006); Holm (1979); Dunn (1961)</span></div>
+
+      <div class="help-test"><span class="ht">Análise ordinal — Borda &amp; Copeland</span>
+      Agrega as ordens de todas as instâncias numa classificação única, por soma de postos (Borda) e por duelos par a par (Copeland).
+      <span class="hr">Borda (1781); Copeland (1951); Talbi (2009), §1.7.2.5</span></div>
+
+      <div class="help-test"><span class="ht">Taxa de sucesso</span>
+      Fração de instâncias resolvidas dentro de uma tolerância ε% da referência.
+      <span class="hr">Talbi (2009), §1.7.2.4</span></div>
+
+      <h4>Reporte</h4>
+      <div class="help-test"><span class="ht">Boxplots</span>
+      Distribuição por algoritmo pelo resumo de cinco números, com outliers.
+      <span class="hr">Tukey (1977)</span></div>
+      <div class="help-test"><span class="ht">Trade-off qualidade × tempo</span>
+      Um ponto por algoritmo, com a fronteira de Pareto dos não-dominados.
+      <span class="hr">Talbi (2009), fig. 1.29b</span></div>
+      <p style="margin-top:10px"><b>Exportar</b> gera as tabelas (Markdown ou LaTeX com <code>booktabs</code>) e um resumo textual das conclusões, prontos para o relatório.</p>
+
+      <h4>Enquadramento metodológico</h4>
+      <p class="refs">Para o uso de testes não-paramétricos na comparação de algoritmos, ver os tutoriais de Derrac et al. (2011) e García et al. (2010), além de Demšar (2006).</p>
+
+      <h4>Referências (para citação)</h4>
+      <ol class="bib">
+        <li><b>Borda, J. C. de</b> (1781). Mémoire sur les élections au scrutin. <i>Histoire de l'Académie Royale des Sciences</i>.</li>
+        <li><b>Cohen, J.</b> (1988). <i>Statistical Power Analysis for the Behavioral Sciences</i> (2ª ed.). Lawrence Erlbaum.</li>
+        <li><b>Copeland, A. H.</b> (1951). A reasonable social welfare function. <i>Seminar on Applications of Mathematics to the Social Sciences</i>, University of Michigan.</li>
+        <li><b>Demšar, J.</b> (2006). Statistical comparisons of classifiers over multiple data sets. <i>Journal of Machine Learning Research</i>, 7, 1–30.</li>
+        <li><b>Derrac, J., García, S., Molina, D., &amp; Herrera, F.</b> (2011). A practical tutorial on the use of nonparametric statistical tests as a methodology for comparing evolutionary and swarm intelligence algorithms. <i>Swarm and Evolutionary Computation</i>, 1(1), 3–18.</li>
+        <li><b>Dunn, O. J.</b> (1961). Multiple comparisons among means. <i>Journal of the American Statistical Association</i>, 56(293), 52–64.</li>
+        <li><b>Friedman, M.</b> (1937). The use of ranks to avoid the assumption of normality implicit in the analysis of variance. <i>Journal of the American Statistical Association</i>, 32(200), 675–701.</li>
+        <li><b>García, S., Fernández, A., Luengo, J., &amp; Herrera, F.</b> (2010). Advanced nonparametric tests for multiple comparisons in the design of experiments in computational intelligence and data mining. <i>Information Sciences</i>, 180(10), 2044–2064.</li>
+        <li><b>Holm, S.</b> (1979). A simple sequentially rejective multiple test procedure. <i>Scandinavian Journal of Statistics</i>, 6(2), 65–70.</li>
+        <li><b>Iman, R. L., &amp; Davenport, J. M.</b> (1980). Approximations of the critical region of the Friedman statistic. <i>Communications in Statistics — Theory and Methods</i>, 9(6), 571–595.</li>
+        <li><b>Kerby, D. S.</b> (2014). The simple difference formula: an approach to teaching nonparametric correlation. <i>Comprehensive Psychology</i>, 3, 11.IT.3.1.</li>
+        <li><b>Nemenyi, P. B.</b> (1963). <i>Distribution-free Multiple Comparisons</i>. Tese de doutorado, Princeton University.</li>
+        <li><b>Royston, P.</b> (1992). Approximating the Shapiro-Wilk W-test for non-normality. <i>Statistics and Computing</i>, 2(3), 117–119.</li>
+        <li><b>Shapiro, S. S., &amp; Wilk, M. B.</b> (1965). An analysis of variance test for normality (complete samples). <i>Biometrika</i>, 52(3–4), 591–611.</li>
+        <li><b>Student</b> [Gosset, W. S.] (1908). The probable error of a mean. <i>Biometrika</i>, 6(1), 1–25.</li>
+        <li><b>Talbi, E-G.</b> (2009). <i>Metaheuristics: From Design to Implementation</i>. John Wiley &amp; Sons.</li>
+        <li><b>Tukey, J. W.</b> (1977). <i>Exploratory Data Analysis</i>. Addison-Wesley.</li>
+        <li><b>Wilcoxon, F.</b> (1945). Individual comparisons by ranking methods. <i>Biometrics Bulletin</i>, 1(6), 80–83.</li>
+      </ol>
+      <p class="refs">O plot time-to-target (TTT), previsto para uma versão futura, segue Aiex, Resende &amp; Ribeiro (2007), <i>Optimization Letters</i>, 1(4), 355–366.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const state = {
+    sense:"min", agg:"mean", refCol:null, descMode:"gap", boxMode:"gap", metric:"quality", expFmt:"markdown",
+    headers:[], rows:[], checklist:[false,false,false,false,false,false],
+    asst:{ nalg:null, paired:null, normal:null, runs:null }
+  };
+
+  const $ = (s,r=document) => r.querySelector(s);
+  const $$ = (s,r=document) => [...r.querySelectorAll(s)];
+
+  /* ---------- theme ---------- */
+  const THEMES = ["dracula","monokai","material-darker","nord","eclipse","claro"];
+  const themeSel = $("#themeSelect");
+  function applyTheme(t){
+    if(!THEMES.includes(t)) t = "dracula";
+    document.documentElement.dataset.theme = t;
+    themeSel.value = t;
+    try{ localStorage.setItem("metastat-theme", t); }catch(e){}
+  }
+  themeSel.addEventListener("change", e => applyTheme(e.target.value));
+  (function(){ let t="dracula"; try{ t = localStorage.getItem("metastat-theme") || "dracula"; }catch(e){} applyTheme(t); })();
+
+  /* ---------- modals (ajuda / sobre) ---------- */
+  const MODALS = ["helpModal","aboutModal"].map(id=>$("#"+id)).filter(Boolean);
+  function closeModals(){ MODALS.forEach(m=>{ m.hidden=true; }); }
+  function openModal(el){ closeModals(); if(el) el.hidden=false; }
+  $("#helpBtn").addEventListener("click", () => openModal($("#helpModal")));
+  $("#aboutBtn").addEventListener("click", () => openModal($("#aboutModal")));
+  $$(".modal-close").forEach(b => b.addEventListener("click", closeModals));
+  MODALS.forEach(m => m.addEventListener("click", e => { if(e.target===m) closeModals(); }));
+  document.addEventListener("keydown", e => { if(e.key==="Escape") closeModals(); });
+
+  /* ---------- navigation ---------- */
+  const stageOf = { inicio:"—", design:"1 · Desenho", dados:"2 · Medição", assistente:"2 · Medição", analise:"2 · Medição", reporte:"3 · Reporte" };
+  function show(panel){
+    $$(".panel").forEach(p => p.classList.remove("show"));
+    $("#p-"+panel).classList.add("show");
+    $$(".navitem").forEach(b => b.classList.toggle("active", b.dataset.panel===panel));
+    $("#stagePill").innerHTML = "Estágio <b>"+stageOf[panel]+"</b>";
+    if(panel==="analise") refreshAnalysis();
+    if(panel==="reporte"){ renderBoxplot(); renderTradeoff(); renderExport(); }
+    window.scrollTo({top:0,behavior:"instant"});
+  }
+  $$(".navitem").forEach(b => b.addEventListener("click", () => show(b.dataset.panel)));
+  $$("[data-goto]").forEach(b => b.addEventListener("click", () => show(b.dataset.goto)));
+
+  /* ---------- checklist ---------- */
+  const CHECKS = [
+    ["Objetivos definidos","O que a comparação quer mostrar: qualidade, tempo, robustez, escalabilidade?"],
+    ["Instâncias diversas","Variedade de tamanho, dificuldade e estrutura; evitar instâncias aleatórias triviais."],
+    ["Calibração separada da avaliação","Um subconjunto para ajustar parâmetros, outro para medir — sem overfitting."],
+    ["Parâmetros únicos","O mesmo conjunto de parâmetros resolve todas as instâncias (salvo ajuste automático)."],
+    ["Execuções suficientes","Pelo menos 10 execuções por instância para algoritmos estocásticos (≥ 100 se possível)."],
+    ["Ambiente reprodutível","Hardware, critério de parada e sementes documentados."]
+  ];
+  function renderChecklist(){
+    const box = $("#checklist"); box.innerHTML = "";
+    CHECKS.forEach((c,i) => {
+      const done = state.checklist[i];
+      const row = document.createElement("label");
+      row.className = "check" + (done?" done":"");
+      row.innerHTML = '<input type="checkbox" '+(done?"checked":"")+'>'+
+        '<span class="ctxt"><span class="ctitle">'+c[0]+'</span><span class="csub">'+c[1]+'</span></span>';
+      row.querySelector("input").addEventListener("change", e => { state.checklist[i]=e.target.checked; renderChecklist(); });
+      box.appendChild(row);
+    });
+    const n = state.checklist.filter(Boolean).length;
+    $("#clBar").style.width = (n/CHECKS.length*100)+"%";
+    $("#clCount").textContent = n+" de "+CHECKS.length+" confirmados";
+  }
+
+  /* ---------- data parsing (no statistics) ---------- */
+  function detectDelim(text){
+    const line = (text.split(/\r?\n/).find(l => l.trim()) || "");
+    if(line.includes("\t")) return "\t";
+    if(line.includes(";")) return ";";
+    return ",";
+  }
+  function parse(text){
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if(!lines.length){ state.headers=[]; state.rows=[]; syncRefColSelect(); syncMetricToggle(); renderTable(); return; }
+    const d = detectDelim(text);
+    const cells = lines.map(l => l.split(d).map(c => c.trim()));
+    state.headers = cells[0]; state.rows = cells.slice(1); syncRefColSelect(); syncMetricToggle(); renderTable();
+  }
+  function renderTable(){
+    const wrap = $("#tableWrap"), meta = $("#dataMeta");
+    if(!state.headers.length){
+      wrap.innerHTML = '<div class="emptydata">Nenhum dado carregado ainda. Cole valores acima ou use o exemplo.</div>';
+      meta.style.display = "none"; refreshAnalysis(); return;
+    }
+    let html = '<table class="data"><thead><tr>';
+    state.headers.forEach((h,i) => html += "<th>"+esc(h)+"</th>");
+    html += "</tr></thead><tbody>";
+    state.rows.slice(0,50).forEach(r => {
+      html += "<tr>";
+      r.forEach((c,i) => html += (i===0 ? '<td class="inst">'+esc(c)+"</td>" : "<td>"+esc(c)+"</td>"));
+      html += "</tr>";
+    });
+    html += "</tbody></table>"; wrap.innerHTML = html;
+    const algs = algorithmCols().length;
+    meta.style.display = "flex";
+    meta.innerHTML = 'instâncias <b>'+state.rows.length+'</b>'+
+      '· algoritmos <b>'+algs+'</b>'+
+      '· métrica <b>'+(state.metric==="time"?"tempo (s)":"qualidade")+'</b>'+
+      '· sentido <b>'+(activeSense()==="min"?"min":"max")+'</b>'+
+      (state.metric!=="time" && state.refCol!=null ? '· referência <b>'+esc(state.headers[state.refCol])+'</b>' : '· referência <b>melhor da linha</b>');
+    if(state.rows.length>50) meta.innerHTML += '· <span style="color:var(--ink-3)">mostrando 50 de '+state.rows.length+'</span>';
+    refreshAnalysis();
+  }
+  function esc(s){ return String(s).replace(/[<>&]/g, m => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[m])); }
+  function aggLabel(a){ return {mean:"média",median:"mediana",best:"melhor",none:"—"}[a]; }
+
+  $("#parseBtn").addEventListener("click", () => parse($("#rawInput").value));
+  $("#clearBtn").addEventListener("click", () => { $("#rawInput").value=""; parse(""); });
+  $("#exportCsvBtn").addEventListener("click", () => {
+    const btn=$("#exportCsvBtn");
+    if(!state.headers.length){ const t=btn.textContent; btn.textContent="Carregue dados primeiro"; setTimeout(()=>{btn.textContent=t;},1500); return; }
+    const esc=v=>{ v=String(v); return /["\n;]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; };
+    const lines=[state.headers.map(esc).join(";")];
+    state.rows.forEach(r=> lines.push(r.map(esc).join(";")));
+    const blob=new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url; a.download="metastat-dados.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+    const t=btn.textContent; btn.textContent="✓ Exportado"; setTimeout(()=>{btn.textContent=t;},1500);
+  });
+  $("#sampleBtn").addEventListener("click", () => {
+    $("#rawInput").value =
+      "instancia;GRASP;ILS;Genetico\n"+
+      "eil51;432;428;431\n"+
+      "berlin52;7621;7544;7698\n"+
+      "st70;682;676;689\n"+
+      "eil76;559;548;561\n"+
+      "kroA100;21389;21282;21455\n"+
+      "ch130;6165;6110;6221";
+    parse($("#rawInput").value);
+  });
+  $("#sampleTimeBtn").addEventListener("click", () => {
+    $("#rawInput").value =
+      "instancia;GRASP;GRASP_time;ILS;ILS_time;Genetico;Genetico_time\n"+
+      "eil51;432;0,85;428;1,12;431;0,40\n"+
+      "berlin52;7621;0,91;7544;1,20;7698;0,45\n"+
+      "st70;682;0,78;676;1,05;689;0,38\n"+
+      "eil76;559;0,88;548;1,30;561;0,42\n"+
+      "kroA100;21389;1,10;21282;1,55;21455;0,60\n"+
+      "ch130;6165;1,02;6110;1,48;6221;0,55";
+    parse($("#rawInput").value);
+  });
+  $("#fileInput").addEventListener("change", e => {
+    const f = e.target.files[0]; if(!f) return;
+    const rd = new FileReader();
+    rd.onload = () => { $("#rawInput").value = rd.result; parse(rd.result); };
+    rd.readAsText(f);
+  });
+
+  $("#senseSeg").addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    $$("#senseSeg button").forEach(x => x.classList.remove("on"));
+    b.classList.add("on"); state.sense = b.dataset.v; if(state.headers.length) renderTable();
+  });
+  $("#metricSeg").addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b || b.disabled) return;
+    if(b.dataset.v==="time" && !hasTimeColumns()) return;
+    $$("#metricSeg button").forEach(x => x.classList.remove("on"));
+    b.classList.add("on"); state.metric = b.dataset.v; updateSenseState();
+    if(state.headers.length) renderTable();
+  });
+  $("#refColSel").addEventListener("change", e => {
+    state.refCol = e.target.value==="-1" ? null : +e.target.value;
+    renderTable();
+  });
+  function syncRefColSelect(){
+    const sel=$("#refColSel"); if(!sel) return;
+    let html='<option value="-1">Nenhuma — usar o melhor da linha</option>';
+    state.headers.forEach((h,i)=>{ if(i>=1 && !isTimeHeader(h)) html+='<option value="'+i+'">'+esc(h)+'</option>'; });
+    sel.innerHTML=html; sel.value="-1"; state.refCol=null; state.metric="quality";
+  }
+  function updateSenseState(){
+    const ss=$("#senseSeg"); if(!ss) return;
+    const t=state.metric==="time";
+    ss.style.opacity=t?"0.45":"1"; ss.style.pointerEvents=t?"none":"auto";
+  }
+  function syncMetricToggle(){
+    const seg=$("#metricSeg"); if(!seg) return;
+    const timeBtn=seg.querySelector('[data-v="time"]'), has=hasTimeColumns();
+    timeBtn.disabled=!has; timeBtn.style.opacity=has?"1":"0.4"; timeBtn.style.cursor=has?"pointer":"not-allowed";
+    if(!has) state.metric="quality";
+    seg.querySelectorAll("button").forEach(x=>x.classList.toggle("on", x.dataset.v===state.metric));
+    const hint=$("#metricHint");
+    if(hint) hint.innerHTML = has
+      ? 'Colunas com sufixo <code>_time</code> pareadas ao algoritmo de mesmo nome. Tempo é analisado como minimização.'
+      : 'Nenhuma coluna <code>_time</code> detectada. Adicione colunas como <code>ILS_time</code> para habilitar a métrica de tempo.';
+    updateSenseState();
+  }
+
+  /* ---------- Parte 1: estatística descritiva ---------- */
+  function toNum(x){
+    if(x==null) return NaN;
+    return parseFloat(String(x).replace(/\s/g,"").replace(",","."));
+  }
+  function colValues(colIdx){
+    const out = [];
+    state.rows.forEach(r => { const v = toNum(r[colIdx]); if(!isNaN(v)) out.push(v); });
+    return out;
+  }
+  const mean = a => a.reduce((s,x)=>s+x,0)/a.length;
+  function median(a){ const s=[...a].sort((x,y)=>x-y), n=s.length, m=Math.floor(n/2); return n%2 ? s[m] : (s[m-1]+s[m])/2; }
+  function stdev(a){ if(a.length<2) return 0; const m=mean(a); return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/(a.length-1)); }
+  function fmt(x){
+    if(!isFinite(x)) return "—";
+    const a=Math.abs(x);
+    if(a!==0 && (a<1e-3 || a>=1e6)) return x.toExponential(2);
+    return (Math.round(x*100)/100).toLocaleString("pt-BR",{maximumFractionDigits:2});
+  }
+  function activeSense(){ return state.metric==="time" ? "min" : state.sense; }
+  const isTimeHeader = h => /_time$/i.test(String(h));
+  const baseName = h => String(h).replace(/_time$/i,"");
+  function hasTimeColumns(){ return state.headers.some((h,i)=>i>=1 && isTimeHeader(h)); }
+  function algorithmDefs(){
+    const timeMap={};
+    state.headers.forEach((h,i)=>{ if(i>=1 && isTimeHeader(h)) timeMap[baseName(h).toLowerCase()]=i; });
+    const defs=[];
+    state.headers.forEach((h,i)=>{
+      if(i<1 || i===state.refCol || isTimeHeader(h)) return;
+      const t=timeMap[String(h).toLowerCase()];
+      defs.push({name:h, qIdx:i, tIdx:t!=null?t:null});
+    });
+    return defs;
+  }
+  function algorithmCols(){
+    const defs=algorithmDefs();
+    if(state.metric==="time") return defs.filter(d=>d.tIdx!=null).map(d=>({name:d.name, idx:d.tIdx}));
+    return defs.map(d=>({name:d.name, idx:d.qIdx}));
+  }
+  function rowReference(row, algCols){
+    if(state.metric!=="time" && state.refCol!=null){ const rv=toNum(row[state.refCol]); return isNaN(rv)?null:rv; }
+    const vals=algCols.map(c=>toNum(row[c.idx])).filter(x=>!isNaN(x));
+    if(!vals.length) return null;
+    return activeSense()==="min" ? Math.min(...vals) : Math.max(...vals);
+  }
+  function gapValue(v, r){
+    if(r==null || isNaN(v) || Math.abs(r)<1e-12) return NaN;
+    return activeSense()==="min" ? (v-r)/Math.abs(r)*100 : (r-v)/Math.abs(r)*100;
+  }
+  function magnitudeWarning(){
+    const algCols=algorithmCols(), mags=[];
+    state.rows.forEach(row=>{
+      const vals=algCols.map(c=>Math.abs(toNum(row[c.idx]))).filter(x=>!isNaN(x)&&x>0);
+      if(vals.length) mags.push(mean(vals));
+    });
+    if(mags.length<2) return false;
+    const mx=Math.max(...mags), mn=Math.min(...mags);
+    return mn>0 && mx/mn>100;
+  }
+  function computeDescriptive(){
+    const mode=state.descMode, algCols=algorithmCols();
+    return algCols.map(c => {
+      const vals=[];
+      state.rows.forEach(row => {
+        const v=toNum(row[c.idx]); if(isNaN(v)) return;
+        if(mode==="gap"){ const g=gapValue(v, rowReference(row,algCols)); if(!isNaN(g)) vals.push(g); }
+        else vals.push(v);
+      });
+      if(!vals.length) return {name:c.name, n:0};
+      const m=mean(vals), sd=stdev(vals), n=vals.length;
+      let best, worst;
+      if(mode==="gap"){ best=Math.min(...vals); worst=Math.max(...vals); }
+      else { best=activeSense()==="min"?Math.min(...vals):Math.max(...vals); worst=activeSense()==="min"?Math.max(...vals):Math.min(...vals); }
+      return { name:c.name, n, mean:m, median:median(vals), sd, best, worst, ci:1.96*sd/Math.sqrt(n) };
+    });
+  }
+  function renderDescriptive(){
+    const body = $("#descBody"); if(!body) return;
+    const gap = state.descMode==="gap";
+    const ind = $("#refIndicator");
+    if(ind) ind.textContent = gap
+      ? (state.refCol!=null ? 'Referência: coluna «'+state.headers[state.refCol]+'»' : 'Referência: melhor da linha (vencedor = 0%)')
+      : 'Valores brutos, sem normalização';
+    if(!state.headers.length || !state.rows.length){
+      body.innerHTML = '<div class="emptydata">Carregue dados na aba <b>Dados &amp; medição</b> para calcular.</div>';
+      return;
+    }
+    const rows = computeDescriptive();
+    const valid = rows.filter(r => r.n>0);
+    let bestName = null;
+    if(valid.length) bestName = valid.reduce((b,r) =>
+      !b ? r : ((gap ? r.mean<b.mean : (activeSense()==="min" ? r.mean<b.mean : r.mean>b.mean)) ? r : b), null).name;
+    const suf = gap ? "%" : "";
+    let html = '<div class="tablewrap"><table class="data"><thead><tr>'+
+      '<th>Algoritmo</th><th>n</th><th>'+(gap?'Gap médio':'Média')+'</th><th>'+(gap?'Gap mediano':'Mediana')+'</th><th>Desv. padrão</th>'+
+      '<th>Melhor</th><th>Pior</th><th>IC 95%</th></tr></thead><tbody>';
+    rows.forEach(r => {
+      if(!r.n){ html += '<tr><td class="inst">'+esc(r.name)+'</td><td colspan="7" style="color:var(--ink-3)">sem valores numéricos</td></tr>'; return; }
+      const isBest = r.name===bestName;
+      html += '<tr>'+
+        '<td class="inst'+(isBest?' algbest':'')+'">'+esc(r.name)+(isBest?' ★':'')+'</td>'+
+        '<td>'+r.n+'</td><td>'+fmt(r.mean)+suf+'</td><td>'+fmt(r.median)+suf+'</td><td>'+fmt(r.sd)+suf+'</td>'+
+        '<td>'+fmt(r.best)+suf+'</td><td>'+fmt(r.worst)+suf+'</td><td>±'+fmt(r.ci)+suf+'</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    if(bestName) html += '<div style="font-size:12px;color:var(--ink-3);margin-top:8px">★ '+(gap?'menor gap médio':'melhor média ('+(activeSense()==="min"?"menor":"maior")+')')+' — comparação apenas descritiva; a significância vem no teste estatístico.</div>';
+    if(gap && state.refCol==null) html += '<div style="font-size:12px;color:var(--ink-3);margin-top:4px">Referência = melhor algoritmo de cada linha; por isso o melhor de cada instância contribui com 0%.</div>';
+    if(!gap && magnitudeWarning()) html += '<div class="warn">As instâncias variam em mais de duas ordens de magnitude. A média/desvio brutos ficam dominados pelas instâncias grandes — considere o modo <b>Gap %</b>.</div>';
+    body.innerHTML = html;
+  }
+
+  /* ---------- Parte 2: funções especiais (JS puro) ---------- */
+  function erf(x){
+    const s = x<0?-1:1; x=Math.abs(x);
+    const t = 1/(1+0.3275911*x);
+    const y = 1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);
+    return s*y;
+  }
+  function pnorm(z){ return 0.5*(1+erf(z/Math.SQRT2)); }
+  function qnorm(p){
+    if(p<=0) return -Infinity; if(p>=1) return Infinity;
+    const a=[-3.969683028665376e+01,2.209460984245205e+02,-2.759285104469687e+02,1.383577518672690e+02,-3.066479806614716e+01,2.506628277459239e+00];
+    const b=[-5.447609879822406e+01,1.615858368580409e+02,-1.556989798598866e+02,6.680131188771972e+01,-1.328068155288572e+01];
+    const c=[-7.784894002430293e-03,-3.223964580411365e-01,-2.400758277161838e+00,-2.549732539343734e+00,4.374664141464968e+00,2.938163982698783e+00];
+    const d=[7.784695709041462e-03,3.224671290700398e-01,2.445134137142996e+00,3.754408661907416e+00];
+    const pl=0.02425, ph=1-pl; let q,r;
+    if(p<pl){ q=Math.sqrt(-2*Math.log(p)); return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+    if(p<=ph){ q=p-0.5; r=q*q; return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1); }
+    q=Math.sqrt(-2*Math.log(1-p)); return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+  }
+  function gammaln(x){
+    const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+    let y=x, tmp=x+5.5; tmp-=(x+0.5)*Math.log(tmp); let ser=1.000000000190015;
+    for(let j=0;j<6;j++){ y++; ser+=c[j]/y; }
+    return -tmp+Math.log(2.5066282746310005*ser/x);
+  }
+  function betacf(a,b,x){
+    const MAXIT=200, EPS=3e-12, FPMIN=1e-300;
+    let qab=a+b, qap=a+1, qam=a-1, c=1, d=1-qab*x/qap;
+    if(Math.abs(d)<FPMIN) d=FPMIN; d=1/d; let h=d;
+    for(let m=1;m<=MAXIT;m++){
+      let m2=2*m, aa=m*(b-m)*x/((qam+m2)*(a+m2));
+      d=1+aa*d; if(Math.abs(d)<FPMIN)d=FPMIN; c=1+aa/c; if(Math.abs(c)<FPMIN)c=FPMIN; d=1/d; h*=d*c;
+      aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+      d=1+aa*d; if(Math.abs(d)<FPMIN)d=FPMIN; c=1+aa/c; if(Math.abs(c)<FPMIN)c=FPMIN; d=1/d;
+      let del=d*c; h*=del; if(Math.abs(del-1)<EPS) break;
+    }
+    return h;
+  }
+  function betai(a,b,x){
+    if(x<=0) return 0; if(x>=1) return 1;
+    const bt=Math.exp(gammaln(a+b)-gammaln(a)-gammaln(b)+a*Math.log(x)+b*Math.log(1-x));
+    return x<(a+1)/(a+b+2) ? bt*betacf(a,b,x)/a : 1-bt*betacf(b,a,1-x)/b;
+  }
+  /* two-sided p-value P(|T_df| >= |t|) */
+  function tTest2p(t,df){ return betai(df/2, 0.5, df/(df+t*t)); }
+
+  /* Shapiro-Wilk (Royston 1992, AS R94), 3 <= n <= 5000 */
+  function shapiroWilk(xRaw){
+    const x=[...xRaw].sort((p,q)=>p-q), n=x.length;
+    if(n<3) return null;
+    const m=[]; for(let i=1;i<=n;i++) m.push(qnorm((i-0.375)/(n+0.25)));
+    const ssm=m.reduce((s,v)=>s+v*v,0), sqrtssm=Math.sqrt(ssm), rsn=1/Math.sqrt(n);
+    const poly=(cc,xv)=>{ let r=0; for(let k=cc.length-1;k>=0;k--) r=r*xv+cc[k]; return r; };
+    const c1=[0,0.221157,-0.147981,-2.071190,4.434685,-2.706056];
+    const c2=[0,0.042981,-0.293762,-1.752461,5.682633,-3.582633];
+    const a=new Array(n).fill(0);
+    const an=poly(c1,rsn)+m[n-1]/sqrtssm, an1=poly(c2,rsn)+m[n-2]/sqrtssm;
+    let phi, i0;
+    if(n>5){ a[n-1]=an; a[0]=-an; a[n-2]=an1; a[1]=-an1; phi=(ssm-2*m[n-1]*m[n-1]-2*m[n-2]*m[n-2])/(1-2*an*an-2*an1*an1); i0=2; }
+    else   { a[n-1]=an; a[0]=-an; phi=(ssm-2*m[n-1]*m[n-1])/(1-2*an*an); i0=1; }
+    const sqphi=Math.sqrt(phi);
+    for(let i=i0;i<n-i0;i++) a[i]=m[i]/sqphi;
+    const xbar=x.reduce((s,v)=>s+v,0)/n;
+    let num=0, den=0;
+    for(let i=0;i<n;i++){ num+=a[i]*x[i]; den+=(x[i]-xbar)*(x[i]-xbar); }
+    if(den===0) return {W:1,p:1,n};
+    const W=num*num/den;
+    let p;
+    if(n===3){ p=(6/Math.PI)*(Math.asin(Math.sqrt(W))-Math.asin(Math.sqrt(0.75))); }
+    else if(n<=11){
+      const g=-2.273+0.459*n, w1=-Math.log(g-Math.log(1-W));
+      const mu=0.5440-0.39978*n+0.025054*n*n-0.0006714*n*n*n;
+      const sg=Math.exp(1.3822-0.77857*n+0.062767*n*n-0.0020322*n*n*n);
+      p=1-pnorm((w1-mu)/sg);
+    } else {
+      const ln=Math.log(n), w1=Math.log(1-W);
+      const mu=-1.5861-0.31082*ln-0.083751*ln*ln+0.0038915*ln*ln*ln;
+      const sg=Math.exp(-0.4803-0.082676*ln+0.0030302*ln*ln);
+      p=1-pnorm((w1-mu)/sg);
+    }
+    return {W, p:Math.max(0,Math.min(1,p)), n};
+  }
+
+  /* paired t-test */
+  function pairedT(a,b){
+    const d=a.map((v,i)=>v-b[i]), n=d.length; if(n<2) return null;
+    const md=mean(d), sd=stdev(d);
+    if(sd===0) return {t:md===0?0:Infinity, df:n-1, p:md===0?1:0, dz:0, md, sd, n};
+    const t=md/(sd/Math.sqrt(n));
+    return {t, df:n-1, p:tTest2p(Math.abs(t),n-1), dz:md/sd, md, sd, n};
+  }
+
+  /* Wilcoxon signed-rank (normal approximation with tie & continuity correction) */
+  function wilcoxon(a,b){
+    let d=a.map((v,i)=>v-b[i]).filter(x=>x!==0);
+    const nz=d.length; if(nz<1) return null;
+    const idx=d.map((v,i)=>[Math.abs(v),i]).sort((p,q)=>p[0]-q[0]);
+    const ranks=new Array(nz); let i=0, tieCorr=0;
+    while(i<nz){
+      let j=i; while(j+1<nz && idx[j+1][0]===idx[i][0]) j++;
+      const avg=(i+j+2)/2;
+      for(let k=i;k<=j;k++) ranks[idx[k][1]]=avg;
+      const t=j-i+1; if(t>1) tieCorr+=t*t*t-t;
+      i=j+1;
+    }
+    let Tp=0, Tm=0;
+    for(let k=0;k<nz;k++){ if(d[k]>0) Tp+=ranks[k]; else Tm+=ranks[k]; }
+    const mu=nz*(nz+1)/4, varT=nz*(nz+1)*(2*nz+1)/24 - tieCorr/48;
+    const W=Math.min(Tp,Tm);
+    let z=0, p=1;
+    if(varT>0){ const cc=Math.sign(Tp-mu)*0.5; z=(Tp-mu-cc)/Math.sqrt(varT); p=Math.min(1,2*(1-pnorm(Math.abs(z)))); }
+    const rbc=(Tp+Tm)>0 ? (Tp-Tm)/(Tp+Tm) : 0;
+    return {W, Tp, Tm, z, p, nz, rbc};
+  }
+
+  /* ---------- Parte 2: pair selectors + render ---------- */
+  function syncPairSelects(){
+    const algs=algorithmCols();
+    const selA=$("#pairA"), selB=$("#pairB"); if(!selA||!selB) return;
+    const prevA=selA.value, prevB=selB.value;
+    const opts=algs.map(c=>'<option value="'+c.idx+'">'+esc(c.name)+'</option>').join("");
+    selA.innerHTML=opts; selB.innerHTML=opts;
+    if(algs.length){
+      const idxs=algs.map(c=>String(c.idx));
+      selA.value = idxs.includes(prevA)?prevA:idxs[0];
+      const bDefault = idxs.find(x=>x!==selA.value) || idxs[0];
+      selB.value = (idxs.includes(prevB)&&prevB!==selA.value)?prevB:bDefault;
+    }
+  }
+  function pairedArrays(iA,iB){
+    const a=[], b=[];
+    state.rows.forEach(r=>{ const x=toNum(r[iA]), y=toNum(r[iB]); if(!isNaN(x)&&!isNaN(y)){ a.push(x); b.push(y); } });
+    return {a,b};
+  }
+  function renderPair(){
+    const body=$("#pairBody"); if(!body) return;
+    const algs=algorithmCols();
+    if(algs.length<2){ body.innerHTML='<div class="emptydata">Carregue dados com pelo menos 2 algoritmos.</div>'; return; }
+    const iA=+$("#pairA").value, iB=+$("#pairB").value;
+    if(iA===iB){ body.innerHTML='<div class="emptydata">Escolha dois algoritmos diferentes.</div>'; return; }
+    const nameA=state.headers[iA], nameB=state.headers[iB];
+    const {a,b}=pairedArrays(iA,iB), n=a.length;
+    if(n<3){ body.innerHTML='<div class="emptydata">Poucas instâncias pareadas com valores numéricos (n = '+n+'). São necessárias pelo menos 3.</div>'; return; }
+    let alpha=parseFloat($("#alphaInput").value); if(!(alpha>0&&alpha<1)) alpha=0.05;
+
+    const diffs=a.map((v,i)=>v-b[i]);
+    const sw=shapiroWilk(diffs);
+    const normal = sw ? sw.p>=alpha : true;
+    const pt=pairedT(a,b), wx=wilcoxon(a,b);
+
+    // direction: for minimization, smaller mean is better
+    const mA=mean(a), mB=mean(b);
+    const betterName = (activeSense()==="min" ? mA<mB : mA>mB) ? nameA : nameB;
+
+    let html='';
+    // normality line
+    html+='<div class="normline"><span class="mono">Shapiro-Wilk das diferenças (A−B):</span>'+
+      '<span class="mono">W = '+fmt(sw.W)+'</span><span class="mono">p = '+fmtP(sw.p)+'</span>'+
+      '<span class="verdict '+(normal?'ns':'sig')+'">'+(normal?'compatível com normal':'não-normal')+' (α='+alpha+')</span></div>';
+    html+='<div style="font-size:12px;color:var(--ink-3);margin-top:6px">'+
+      (normal ? 'Diferenças compatíveis com normalidade → o ramo paramétrico (t pareado) é válido, mas o Wilcoxon continua seguro.'
+              : 'Diferenças não-normais → o ramo não-paramétrico (Wilcoxon) é o indicado, como na figura 1.28.')+'</div>';
+
+    // two test cards
+    const recW=!normal, recT=normal;
+    html+='<div class="testgrid">';
+    // t pareado
+    const tSig=pt.p<alpha;
+    html+='<div class="testcard'+(recT?' rec':'')+'"><div class="tname">Teste t pareado'+(recT?'<span class="recbadge">recomendado</span>':'')+'</div>'+
+      '<dl><dt>t</dt><dd>'+fmt(pt.t)+'</dd><dt>gl</dt><dd>'+pt.df+'</dd><dt>p</dt><dd>'+fmtP(pt.p)+'</dd>'+
+      '<dt>d de Cohen</dt><dd>'+fmt(pt.dz)+'</dd><dt>H₀</dt><dd>'+(tSig?'rejeitada':'não rejeitada')+'</dd></dl></div>';
+    // wilcoxon
+    const wSig=wx.p<alpha;
+    html+='<div class="testcard'+(recW?' rec':'')+'"><div class="tname">Wilcoxon signed-rank'+(recW?'<span class="recbadge">recomendado</span>':'')+'</div>'+
+      '<dl><dt>W</dt><dd>'+fmt(wx.W)+'</dd><dt>T+ / T−</dt><dd>'+fmt(wx.Tp)+' / '+fmt(wx.Tm)+'</dd><dt>z</dt><dd>'+fmt(wx.z)+'</dd>'+
+      '<dt>p</dt><dd>'+fmtP(wx.p)+'</dd><dt>r (rank-bis.)</dt><dd>'+fmt(wx.rbc)+'</dd><dt>H₀</dt><dd>'+(wSig?'rejeitada':'não rejeitada')+'</dd></dl></div>';
+    html+='</div>';
+
+    // conclusion (recommended test)
+    const rec = recW ? {name:'Wilcoxon', p:wx.p, sig:wSig} : {name:'t pareado', p:pt.p, sig:tSig};
+    html+='<div class="conclusion">Pelo teste <b>'+rec.name+'</b> (p = '+fmtP(rec.p)+'), '+
+      (rec.sig
+        ? 'há diferença estatisticamente significativa entre <b>'+esc(nameA)+'</b> e <b>'+esc(nameB)+'</b> ao nível α = '+alpha+'. Descritivamente, <b>'+esc(betterName)+'</b> tem a melhor média.'
+        : 'não se detecta diferença significativa entre <b>'+esc(nameA)+'</b> e <b>'+esc(nameB)+'</b> ao nível α = '+alpha+'.')+'</div>';
+
+    if(wx.nz<20 || n<20) html+='<div class="warn">Amostra pequena (n = '+n+'): o Wilcoxon usa aproximação normal e o t é sensível à normalidade. Com poucas instâncias, interprete com cautela — o teste exato entra numa próxima fatia.</div>';
+    if(sw.n<3) html+='';
+
+    body.innerHTML=html;
+  }
+  function fmtP(p){
+    if(p==null||isNaN(p)) return "—";
+    if(p<0.0001) return "< 0,0001";
+    return p.toLocaleString("pt-BR",{minimumFractionDigits:4,maximumFractionDigits:4});
+  }
+
+  /* ---------- Parte 3: qui-quadrado, F e teste de Friedman ---------- */
+  function gammaincP(a,x){
+    if(x<0||a<=0) return NaN; if(x===0) return 0;
+    if(x < a+1){
+      let ap=a, sum=1/a, del=1/a;
+      for(let i=0;i<300;i++){ ap++; del*=x/ap; sum+=del; if(Math.abs(del)<Math.abs(sum)*1e-15) break; }
+      return sum*Math.exp(-x+a*Math.log(x)-gammaln(a));
+    } else {
+      const FPMIN=1e-300; let b=x+1-a, c=1/FPMIN, d=1/b, h=d;
+      for(let i=1;i<=300;i++){ const an=-i*(i-a); b+=2; d=an*d+b; if(Math.abs(d)<FPMIN)d=FPMIN; c=b+an/c; if(Math.abs(c)<FPMIN)c=FPMIN; d=1/d; const del=d*c; h*=del; if(Math.abs(del-1)<1e-15) break; }
+      return 1 - Math.exp(-x+a*Math.log(x)-gammaln(a))*h;
+    }
+  }
+  function chiSqSf(x,df){ if(x<=0) return 1; return Math.max(0,Math.min(1,1-gammaincP(df/2, x/2))); }
+  function fSf(f,d1,d2){ if(f<=0) return 1; return Math.max(0,Math.min(1, betai(d2/2, d1/2, d2/(d2+d1*f)))); }
+
+  function friedmanTest(){
+    const algCols=algorithmCols(), k=algCols.length;
+    if(k<3) return {k, insufficient:true};
+    const blocks=[];
+    state.rows.forEach(row=>{
+      const vals=algCols.map(c=>toNum(row[c.idx]));
+      if(vals.every(v=>!isNaN(v))) blocks.push(vals);
+    });
+    const n=blocks.length;
+    if(n<2) return {k, n, few:true};
+    const Rsum=new Array(k).fill(0); let tieTerm=0;
+    const dir = activeSense()==="min" ? 1 : -1;   // rank 1 = best
+    blocks.forEach(vals=>{
+      const arr=vals.map((v,j)=>({v,j})).sort((a,b)=>dir*(a.v-b.v));
+      const ranks=new Array(k); let i=0;
+      while(i<k){
+        let jj=i; while(jj+1<k && arr[jj+1].v===arr[i].v) jj++;
+        const avg=(i+jj+2)/2;
+        for(let t=i;t<=jj;t++) ranks[arr[t].j]=avg;
+        const tt=jj-i+1; if(tt>1) tieTerm += tt*tt*tt - tt;
+        i=jj+1;
+      }
+      for(let j=0;j<k;j++) Rsum[j]+=ranks[j];
+    });
+    const Ravg=Rsum.map(s=>s/n);
+    let chi = (12.0/(n*k*(k+1)))*Rsum.reduce((s,r)=>s+r*r,0) - 3*n*(k+1);
+    const c = 1 - tieTerm/(n*k*(k*k-1));
+    if(c>0) chi/=c;
+    const df=k-1, pChi=chiSqSf(chi, df);
+    let Fstat=null, pF=null; const df1=df, df2=(k-1)*(n-1), denom=n*(k-1)-chi;
+    if(denom>0 && df2>0){ Fstat=(n-1)*chi/denom; pF=fSf(Fstat, df1, df2); }
+    const ranking=algCols.map((c2,j)=>({name:c2.name, avg:Ravg[j], sum:Rsum[j]})).sort((a,b)=>a.avg-b.avg);
+    return {k, n, chi, df, pChi, Fstat, pF, df1, df2, ranking};
+  }
+
+  function renderFriedman(){
+    const body=$("#friedmanBody"); if(!body) return;
+    if(!state.headers.length || !state.rows.length){ body.innerHTML='<div class="emptydata">Carregue dados na aba <b>Dados &amp; medição</b>.</div>'; return; }
+    const r=friedmanTest();
+    if(r.insufficient){ body.innerHTML='<div class="emptydata">O Friedman precisa de <b>3 ou mais algoritmos</b>. Com 2, use o teste par a par acima.</div>'; return; }
+    if(r.few){ body.innerHTML='<div class="emptydata">Poucas instâncias com blocos completos (n = '+(r.n||0)+').</div>'; return; }
+    let alpha=parseFloat($("#alphaF").value); if(!(alpha>0&&alpha<1)) alpha=0.05;
+    const sig=r.pChi<alpha;
+    let html='<div class="tablewrap"><table class="data"><thead><tr><th>#</th><th>Algoritmo</th><th>Posto médio</th><th>Desempenho relativo</th></tr></thead><tbody>';
+    r.ranking.forEach((x,i)=>{
+      const isBest=i===0, w=Math.max(3,Math.min(100,Math.round((r.k-x.avg)/(r.k-1)*100)));
+      html+='<tr><td>'+(i+1)+'</td>'+
+        '<td class="inst'+(isBest?' algbest':'')+'">'+esc(x.name)+(isBest?' ★':'')+'</td>'+
+        '<td>'+fmt(x.avg)+'</td>'+
+        '<td><div class="rankbar-track"><div class="rankbar'+(isBest?' best':'')+'" style="width:'+w+'%"></div></div></td></tr>';
+    });
+    html+='</tbody></table></div>';
+    html+='<div class="statline">'+
+      '<span><span class="lbl">χ²_F</span> <span class="mono">'+fmt(r.chi)+'</span></span>'+
+      '<span><span class="lbl">gl</span> <span class="mono">'+r.df+'</span></span>'+
+      '<span><span class="lbl">p (χ²)</span> <span class="mono">'+fmtP(r.pChi)+'</span></span>'+
+      (r.Fstat!=null?'<span><span class="lbl">Iman-Davenport F</span> <span class="mono">'+fmt(r.Fstat)+'</span></span><span><span class="lbl">p (F)</span> <span class="mono">'+fmtP(r.pF)+'</span></span>':'')+
+      '<span><span class="lbl">n</span> <span class="mono">'+r.n+'</span></span>'+
+      '<span class="verdict '+(sig?'sig':'ns')+'">H₀ '+(sig?'rejeitada':'não rejeitada')+' (α='+alpha+')</span></div>';
+    html+='<div class="conclusion">'+
+      (sig
+        ? 'O Friedman detecta diferença significativa entre os algoritmos (p = '+fmtP(r.pChi)+' &lt; α). O de <b>menor posto médio</b> é <b>'+esc(r.ranking[0].name)+'</b> ('+fmt(r.ranking[0].avg)+'). O teste não diz <b>quais pares</b> diferem — isso é o pós-hoc (próxima parte).'
+        : 'O Friedman não detecta diferença significativa entre os algoritmos (p = '+fmtP(r.pChi)+' ≥ α). O ranking abaixo é apenas descritivo.')+'</div>';
+    body.innerHTML=html;
+  }
+
+  /* ---------- Parte 4: pós-hoc (Nemenyi/CD + Holm) ---------- */
+  // valores críticos de Nemenyi q_alpha (studentized range / √2), k = 2..10
+  const NEMENYI = {
+    "0.05":[null,null,1.960,2.343,2.569,2.728,2.850,2.949,3.031,3.102,3.164],
+    "0.10":[null,null,1.645,2.052,2.291,2.459,2.589,2.693,2.780,2.855,2.920]
+  };
+  function adjustP(pairs, method){
+    const m=pairs.length, order=[...pairs].sort((a,b)=>a.p-b.p);
+    if(method==="bonferroni") order.forEach(o=>o.adj=Math.min(1,o.p*m));
+    else if(method==="holm"){ let prev=0; order.forEach((o,i)=>{ let v=Math.min(1,Math.max(prev,(m-i)*o.p)); o.adj=v; prev=v; }); }
+    else order.forEach(o=>o.adj=Math.min(1,o.p));
+    return order;
+  }
+  function buildCD(ranking, CD, k){
+    const m=ranking.length, W=540, padL=60, padR=60, axisY=58, topBar=20;
+    const rmax=Math.max(k, Math.ceil(ranking[m-1].avg));
+    const X=r=> padL + (r-1)/(rmax-1)*(W-padL-padR);
+    // cliques
+    const cds=[];
+    for(let i=0;i<m;i++){ let j=i; while(j+1<m && (ranking[j+1].avg-ranking[i].avg)<=CD) j++; if(j>i) cds.push([i,j]); }
+    const bars=cds.filter((b,i)=> !cds.some((c,k2)=> k2!==i && c[0]<=b[0] && c[1]>=b[1]));
+    const labelY=[axisY+26, axisY+44], H=axisY+58;
+    let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Diagrama de diferença crítica">';
+    // CD reference bar
+    s+='<line class="cd-cdbar" x1="'+X(1)+'" y1="'+topBar+'" x2="'+X(1+CD)+'" y2="'+topBar+'"/>';
+    s+='<line class="cd-tick" x1="'+X(1)+'" y1="'+(topBar-4)+'" x2="'+X(1)+'" y2="'+(topBar+4)+'"/>';
+    s+='<line class="cd-tick" x1="'+X(1+CD)+'" y1="'+(topBar-4)+'" x2="'+X(1+CD)+'" y2="'+(topBar+4)+'"/>';
+    s+='<text class="cd-cap" x="'+((X(1)+X(1+CD))/2)+'" y="'+(topBar-7)+'" text-anchor="middle">CD = '+fmt(CD)+'</text>';
+    // axis + ticks
+    s+='<line class="cd-axis" x1="'+X(1)+'" y1="'+axisY+'" x2="'+X(rmax)+'" y2="'+axisY+'"/>';
+    for(let r=1;r<=rmax;r++){ s+='<line class="cd-tick" x1="'+X(r)+'" y1="'+axisY+'" x2="'+X(r)+'" y2="'+(axisY-5)+'"/><text class="cd-num" x="'+X(r)+'" y="'+(axisY-8)+'" text-anchor="middle">'+r+'</text>'; }
+    s+='<text class="cd-num" x="'+X(1)+'" y="'+(axisY+14)+'" text-anchor="middle">melhor</text>';
+    s+='<text class="cd-num" x="'+X(rmax)+'" y="'+(axisY+14)+'" text-anchor="middle">pior</text>';
+    // clique bars
+    bars.forEach((b,i)=>{ const y=axisY-9-i*6; s+='<line class="cd-clique" x1="'+(X(ranking[b[0]].avg)-3)+'" y1="'+y+'" x2="'+(X(ranking[b[1]].avg)+3)+'" y2="'+y+'"/>'; });
+    // algorithm connectors + labels (alternating rows)
+    ranking.forEach((a,i)=>{ const x=X(a.avg), ly=labelY[i%2];
+      s+='<line class="cd-conn" x1="'+x+'" y1="'+axisY+'" x2="'+x+'" y2="'+(ly-9)+'"/>';
+      s+='<text class="cd-label" x="'+x+'" y="'+ly+'" text-anchor="middle">'+esc(a.name)+'</text>';
+    });
+    return s+'</svg>';
+  }
+  function renderPosthoc(){
+    const body=$("#posthocBody"); if(!body) return;
+    if(!state.headers.length || !state.rows.length){ body.innerHTML='<div class="emptydata">Carregue dados na aba <b>Dados &amp; medição</b>.</div>'; return; }
+    const fr=friedmanTest();
+    if(fr.insufficient){ body.innerHTML='<div class="emptydata">O pós-hoc se aplica a <b>3 ou mais algoritmos</b>.</div>'; return; }
+    if(fr.few){ body.innerHTML='<div class="emptydata">Poucas instâncias com blocos completos.</div>'; return; }
+    const k=fr.k, n=fr.n, rank=fr.ranking;
+    const aKey=$("#alphaPost").value==="0.10"?"0.10":"0.05", alpha=parseFloat(aKey);
+    const method=$("#postMethod").value;
+    const SE=Math.sqrt(k*(k+1)/(6*n));
+    let html='';
+    if(fr.pChi>=alpha) html+='<div class="warn">O Friedman não rejeitou H₀ a α = '+alpha+' (p = '+fmtP(fr.pChi)+'). O pós-hoc abaixo é mostrado para referência, mas formalmente só faz sentido após rejeição.</div>';
+
+    // CD diagram
+    if(NEMENYI[aKey][k]!=null){
+      const q=NEMENYI[aKey][k], CD=q*SE;
+      html+='<div style="font-size:12.5px;color:var(--ink-2);margin:6px 0 2px">Diagrama de diferença crítica (Nemenyi) — barras unem algoritmos <b>sem diferença</b> significativa:</div>';
+      html+='<div class="cdwrap">'+buildCD(rank, CD, k)+'</div>';
+    } else {
+      html+='<div class="warn">Diagrama CD tabelado para 3–10 algoritmos; com k = '+k+', use a matriz corrigida abaixo.</div>';
+    }
+
+    // pairwise matrix (Holm/Bonferroni)
+    const pairs=[];
+    for(let i=0;i<k;i++) for(let j=i+1;j<k;j++){
+      const z=Math.abs(rank[i].avg-rank[j].avg)/SE, p=Math.min(1,2*(1-pnorm(z)));
+      pairs.push({i,j,p});
+    }
+    adjustP(pairs, method);
+    const adj={}; pairs.forEach(o=>{ adj[o.i+"-"+o.j]=o.adj; adj[o.j+"-"+o.i]=o.adj; });
+    html+='<div style="font-size:12.5px;color:var(--ink-2);margin:14px 0 2px">Matriz de p-valores '+(method==="none"?"(sem correção)":"("+(method==="holm"?"Holm":"Bonferroni")+")")+' — destaque = diferença significativa (α = '+alpha+'):</div>';
+    html+='<div style="overflow-x:auto"><table class="pmatrix"><thead><tr><th></th>';
+    rank.forEach(a=>html+='<th>'+esc(a.name)+'</th>'); html+='</tr></thead><tbody>';
+    rank.forEach((a,ri)=>{
+      html+='<tr><th>'+esc(a.name)+'</th>';
+      rank.forEach((b,ci)=>{
+        if(ri===ci){ html+='<td class="diag">—</td>'; return; }
+        const p=adj[ri+"-"+ci];
+        html+='<td class="'+(p<alpha?'sig':'')+'">'+fmtP(p)+'</td>';
+      });
+      html+='</tr>';
+    });
+    html+='</tbody></table></div>';
+
+    // conclusion: list significant pairs
+    const sigPairs=pairs.filter(o=>o.adj<alpha).map(o=>rank[o.i].name+' ≠ '+rank[o.j].name);
+    html+='<div class="conclusion">'+
+      (sigPairs.length
+        ? 'Diferenças significativas ('+(method==="none"?"sem correção":method)+', α = '+alpha+'): <b>'+sigPairs.map(esc).join('; ')+'</b>. Os demais pares não são distinguíveis.'
+        : 'Nenhum par atinge significância após correção ao nível α = '+alpha+'. O ranking sugere ordem, mas as diferenças não são conclusivas.')+'</div>';
+    body.innerHTML=html;
+  }
+
+  /* ---------- Parte 5: análise ordinal (Borda/Copeland) + taxa de sucesso ---------- */
+  function ordinalAnalysis(){
+    const algCols=algorithmCols(), k=algCols.length;
+    if(k<2) return {k, insufficient:true};
+    const blocks=[];
+    state.rows.forEach(row=>{ const vals=algCols.map(c=>toNum(row[c.idx])); if(vals.every(v=>!isNaN(v))) blocks.push(vals); });
+    const n=blocks.length; if(n<1) return {k, n, few:true};
+    const dir=activeSense()==="min"?1:-1;
+    const borda=new Array(k).fill(0);
+    const wins=Array.from({length:k},()=>new Array(k).fill(0));
+    blocks.forEach(vals=>{
+      const arr=vals.map((v,j)=>({v,j})).sort((a,b)=>dir*(a.v-b.v));
+      const ranks=new Array(k); let i=0;
+      while(i<k){ let jj=i; while(jj+1<k && arr[jj+1].v===arr[i].v) jj++; const avg=(i+jj+2)/2; for(let t=i;t<=jj;t++) ranks[arr[t].j]=avg; i=jj+1; }
+      for(let j=0;j<k;j++) borda[j]+=ranks[j];
+      for(let x=0;x<k;x++) for(let y=0;y<k;y++){ if(x===y) continue; const better = dir===1 ? vals[x]<vals[y] : vals[x]>vals[y]; if(better) wins[x][y]++; }
+    });
+    const copeland=new Array(k).fill(0);
+    for(let x=0;x<k;x++) for(let y=0;y<k;y++){ if(x!==y) copeland[x]+=wins[x][y]-wins[y][x]; }
+    const rows=algCols.map((c,j)=>({name:c.name, borda:borda[j], avg:borda[j]/n, copeland:copeland[j]}));
+    const byBorda=[...rows].sort((a,b)=>a.borda-b.borda);
+    const byCope=[...rows].sort((a,b)=>b.copeland-a.copeland);
+    return {k, n, byBorda, byCope};
+  }
+  function renderOrdinal(){
+    const body=$("#ordinalBody"); if(!body) return;
+    if(!state.headers.length || !state.rows.length){ body.innerHTML='<div class="emptydata">Carregue dados na aba <b>Dados &amp; medição</b>.</div>'; return; }
+    const r=ordinalAnalysis();
+    if(r.insufficient){ body.innerHTML='<div class="emptydata">A análise ordinal precisa de <b>2 ou mais algoritmos</b>.</div>'; return; }
+    if(r.few){ body.innerHTML='<div class="emptydata">Poucas instâncias com blocos completos.</div>'; return; }
+    const copeRank={}; r.byCope.forEach((x,i)=>copeRank[x.name]=i+1);
+    let html='<div class="tablewrap"><table class="data"><thead><tr><th>#</th><th>Algoritmo</th><th>Borda (Σ postos)</th><th>Posto médio</th><th>Copeland</th><th>Pos. Copeland</th></tr></thead><tbody>';
+    r.byBorda.forEach((x,i)=>{
+      const isBest=i===0;
+      html+='<tr><td>'+(i+1)+'</td>'+
+        '<td class="inst'+(isBest?' algbest':'')+'">'+esc(x.name)+(isBest?' ★':'')+'</td>'+
+        '<td>'+fmt(x.borda)+'</td><td>'+fmt(x.avg)+'</td>'+
+        '<td>'+(x.copeland>0?'+':'')+fmt(x.copeland)+'</td><td>'+copeRank[x.name]+'º</td></tr>';
+    });
+    html+='</tbody></table></div>';
+    const topB=r.byBorda[0].name, topC=r.byCope[0].name;
+    html+='<div class="conclusion">'+
+      (topB===topC
+        ? 'Borda e Copeland concordam: <b>'+esc(topB)+'</b> lidera a classificação ordinal por ambos os critérios.'
+        : 'Os dois critérios discordam no topo — Borda aponta <b>'+esc(topB)+'</b>, Copeland aponta <b>'+esc(topC)+'</b>. Isso sugere perfis diferentes (consistência × margem de vitória); vale olhar o diagrama CD e a descritiva.')+'</div>';
+    body.innerHTML=html;
+  }
+
+  function successRates(eps){
+    const algCols=algorithmCols(), k=algCols.length;
+    if(k<1) return {k, insufficient:true};
+    const res=algCols.map(c=>({name:c.name, succ:0, tot:0}));
+    state.rows.forEach(row=>{
+      const ref=rowReference(row, algCols); if(ref==null) return;
+      algCols.forEach((c,j)=>{
+        const v=toNum(row[c.idx]); if(isNaN(v)) return;
+        const g=gapValue(v, ref); if(isNaN(g)) return;
+        res[j].tot++; if(g<=eps+1e-9) res[j].succ++;
+      });
+    });
+    return {k, res};
+  }
+  function renderSuccess(){
+    const body=$("#successBody"); if(!body) return;
+    if(!state.headers.length || !state.rows.length){ body.innerHTML='<div class="emptydata">Carregue dados na aba <b>Dados &amp; medição</b>.</div>'; return; }
+    let eps=parseFloat($("#epsInput").value); if(!(eps>=0)) eps=0;
+    const r=successRates(eps);
+    if(r.insufficient){ body.innerHTML='<div class="emptydata">Carregue ao menos 1 algoritmo.</div>'; return; }
+    const refTxt = state.refCol!=null ? 'coluna «'+esc(state.headers[state.refCol])+'»' : 'melhor da linha';
+    const rows=r.res.map(x=>({name:x.name, rate:x.tot?x.succ/x.tot*100:0, succ:x.succ, tot:x.tot})).sort((a,b)=>b.rate-a.rate);
+    let html='<div style="font-size:12px;color:var(--ink-3);margin-bottom:6px">Referência: '+refTxt+' · sucesso = gap ≤ '+fmt(eps)+'%</div>';
+    html+='<div class="tablewrap"><table class="data"><thead><tr><th>#</th><th>Algoritmo</th><th>Sucessos</th><th>Taxa</th><th></th></tr></thead><tbody>';
+    rows.forEach((x,i)=>{
+      const isBest=i===0 && x.rate>0, w=Math.max(0,Math.min(100,Math.round(x.rate)));
+      html+='<tr><td>'+(i+1)+'</td>'+
+        '<td class="inst'+(isBest?' algbest':'')+'">'+esc(x.name)+(isBest?' ★':'')+'</td>'+
+        '<td>'+x.succ+' / '+x.tot+'</td><td>'+fmt(x.rate)+'%</td>'+
+        '<td><div class="rankbar-track"><div class="rankbar'+(isBest?' best':'')+'" style="width:'+w+'%"></div></div></td></tr>';
+    });
+    html+='</tbody></table></div>';
+    html+='<div style="font-size:12px;color:var(--ink-3);margin-top:8px">Com ε = 0 e referência "melhor da linha", a taxa é a fração de instâncias em que o algoritmo foi o melhor (empates contam para todos).</div>';
+    body.innerHTML=html;
+  }
+
+  /* ---------- Parte 6: boxplots por algoritmo ---------- */
+  function seriesValues(mode){
+    const algCols=algorithmCols();
+    return algCols.map(c=>{
+      const vals=[];
+      state.rows.forEach(row=>{
+        const v=toNum(row[c.idx]); if(isNaN(v)) return;
+        if(mode==="gap"){ const g=gapValue(v, rowReference(row, algCols)); if(!isNaN(g)) vals.push(g); }
+        else vals.push(v);
+      });
+      return {name:c.name, vals};
+    });
+  }
+  function quantile(s,q){ const n=s.length; if(n===1) return s[0]; const pos=(n-1)*q, base=Math.floor(pos), rest=pos-base, next=(base+1<n)?s[base+1]:s[base]; return s[base]+rest*(next-s[base]); }
+  function boxStats(values){
+    const s=[...values].sort((a,b)=>a-b);
+    const q1=quantile(s,0.25), med=quantile(s,0.5), q3=quantile(s,0.75), iqr=q3-q1;
+    const loF=q1-1.5*iqr, hiF=q3+1.5*iqr;
+    const whiskLo=s.find(v=>v>=loF); let whiskHi=s[0];
+    for(let i=s.length-1;i>=0;i--){ if(s[i]<=hiF){ whiskHi=s[i]; break; } }
+    return {min:s[0], max:s[s.length-1], q1, med, q3, whiskLo, whiskHi, outliers:s.filter(v=>v<loF||v>hiF), n:s.length};
+  }
+  function buildBoxplot(series, gap){
+    const withData=series.filter(s=>s.vals.length>=1);
+    if(!withData.length) return '<div class="emptydata">Sem valores numéricos.</div>';
+    const stats=withData.map(s=>Object.assign({name:s.name}, boxStats(s.vals)));
+    let lo=Math.min(...stats.map(s=>s.min)), hi=Math.max(...stats.map(s=>s.max));
+    if(lo===hi){ hi=lo+1; lo=lo-1; }
+    const pad=(hi-lo)*0.08; lo-=pad; hi+=pad;
+    const k=stats.length, W=Math.max(360, 96*k+70), H=300, padL=56, padR=16, padT=16, padB=44;
+    const plotW=W-padL-padR, plotH=H-padT-padB, slot=plotW/k, bw=Math.min(46, slot*0.5);
+    const Y=v=> padT + (hi-v)/(hi-lo)*plotH, suf=gap?'%':'';
+    let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="min-width:'+W+'px" role="img" aria-label="Boxplots por algoritmo">';
+    for(let t=0;t<=4;t++){ const val=lo+(hi-lo)*t/4, y=Y(val);
+      s+='<line class="bx-grid" x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'"/>';
+      s+='<text class="bx-num" x="'+(padL-6)+'" y="'+(y+3)+'" text-anchor="end">'+fmt(val)+suf+'</text>';
+    }
+    s+='<line class="bx-axis" x1="'+padL+'" y1="'+padT+'" x2="'+padL+'" y2="'+(padT+plotH)+'"/>';
+    stats.forEach((b,i)=>{
+      const cx=padL+slot*i+slot/2;
+      s+='<line class="bx-whisk" x1="'+cx+'" y1="'+Y(b.whiskHi)+'" x2="'+cx+'" y2="'+Y(b.q3)+'"/>';
+      s+='<line class="bx-whisk" x1="'+cx+'" y1="'+Y(b.whiskLo)+'" x2="'+cx+'" y2="'+Y(b.q1)+'"/>';
+      s+='<line class="bx-whisk" x1="'+(cx-bw/4)+'" y1="'+Y(b.whiskHi)+'" x2="'+(cx+bw/4)+'" y2="'+Y(b.whiskHi)+'"/>';
+      s+='<line class="bx-whisk" x1="'+(cx-bw/4)+'" y1="'+Y(b.whiskLo)+'" x2="'+(cx+bw/4)+'" y2="'+Y(b.whiskLo)+'"/>';
+      s+='<rect class="bx-box" x="'+(cx-bw/2)+'" y="'+Y(b.q3)+'" width="'+bw+'" height="'+Math.max(1,Y(b.q1)-Y(b.q3))+'"/>';
+      s+='<line class="bx-med" x1="'+(cx-bw/2)+'" y1="'+Y(b.med)+'" x2="'+(cx+bw/2)+'" y2="'+Y(b.med)+'"/>';
+      b.outliers.forEach(o=> s+='<circle class="bx-out" cx="'+cx+'" cy="'+Y(o)+'" r="2.2"/>');
+      s+='<text class="bx-name" x="'+cx+'" y="'+(padT+plotH+16)+'" text-anchor="middle">'+esc(b.name)+'</text>';
+      s+='<text class="bx-num" x="'+cx+'" y="'+(padT+plotH+30)+'" text-anchor="middle">n='+b.n+'</text>';
+    });
+    return s+'</svg>';
+  }
+  function renderBoxplot(){
+    const body=$("#boxBody"); if(!body) return;
+    if(!state.headers.length || !state.rows.length){ body.innerHTML='<div class="emptydata">Carregue dados na aba <b>Dados &amp; medição</b>.</div>'; return; }
+    const gap=state.boxMode==="gap";
+    const refTxt = gap ? (state.refCol!=null?'Referência: coluna «'+esc(state.headers[state.refCol])+'»':'Referência: melhor da linha') : 'Valores brutos, sem normalização';
+    let html='<div style="font-size:12px;color:var(--ink-3);margin-bottom:4px">'+refTxt+'</div>';
+    html+='<div class="bxwrap">'+buildBoxplot(seriesValues(state.boxMode), gap)+'</div>';
+    if(!gap && magnitudeWarning()) html+='<div class="warn">As instâncias variam em ordens de magnitude — no modo Bruto as caixas ficam achatadas pelas instâncias grandes. Prefira <b>Gap %</b>.</div>';
+    body.innerHTML=html;
+  }
+
+  /* ---------- Parte 7: trade-off qualidade × tempo ---------- */
+  function qualityRowRef(row, qCols){
+    if(state.refCol!=null){ const rv=toNum(row[state.refCol]); return isNaN(rv)?null:rv; }
+    const vals=qCols.map(c=>toNum(row[c.idx])).filter(x=>!isNaN(x));
+    if(!vals.length) return null;
+    return state.sense==="min"?Math.min(...vals):Math.max(...vals);
+  }
+  function qualityGap(v,r){
+    if(r==null||isNaN(v)||Math.abs(r)<1e-12) return NaN;
+    return state.sense==="min"?(v-r)/Math.abs(r)*100:(r-v)/Math.abs(r)*100;
+  }
+  function tradeoffData(){
+    const defs=algorithmDefs().filter(d=>d.tIdx!=null);
+    if(defs.length<1) return {none:true};
+    const qCols=defs.map(d=>({name:d.name, idx:d.qIdx}));
+    const pts=defs.map(d=>{
+      const q=[], t=[];
+      state.rows.forEach(row=>{
+        const qv=toNum(row[d.qIdx]);
+        if(!isNaN(qv)){ const g=qualityGap(qv, qualityRowRef(row,qCols)); if(!isNaN(g)) q.push(g); }
+        const tv=toNum(row[d.tIdx]); if(!isNaN(tv)) t.push(tv);
+      });
+      return {name:d.name, q:q.length?mean(q):NaN, t:t.length?mean(t):NaN};
+    }).filter(p=>!isNaN(p.q)&&!isNaN(p.t));
+    pts.forEach(p=>{ p.par = !pts.some(o=> o!==p && o.q<=p.q && o.t<=p.t && (o.q<p.q || o.t<p.t)); });
+    return {pts};
+  }
+  function buildTradeoff(pts){
+    if(pts.length<1) return '<div class="emptydata">Sem pontos com qualidade e tempo.</div>';
+    let qmin=Math.min(...pts.map(p=>p.q)), qmax=Math.max(...pts.map(p=>p.q));
+    let tmin=Math.min(...pts.map(p=>p.t)), tmax=Math.max(...pts.map(p=>p.t));
+    if(qmin===qmax){ qmax=qmin+1; qmin=qmin-1; }
+    if(tmin===tmax){ tmax=tmin+1; tmin=tmin-1; }
+    const qp=(qmax-qmin)*0.12, tp=(tmax-tmin)*0.12; qmin-=qp; qmax+=qp; tmin-=tp; tmax+=tp;
+    const W=540,H=340,padL=58,padR=24,padT=18,padB=48,plotW=W-padL-padR,plotH=H-padT-padB;
+    const X=q=>padL+(q-qmin)/(qmax-qmin)*plotW, Y=t=>padT+(tmax-t)/(tmax-tmin)*plotH;
+    let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="min-width:440px" role="img" aria-label="Trade-off qualidade x tempo">';
+    for(let i=0;i<=4;i++){
+      const qv=qmin+(qmax-qmin)*i/4, x=X(qv);
+      s+='<line class="to-grid" x1="'+x+'" y1="'+padT+'" x2="'+x+'" y2="'+(padT+plotH)+'"/>';
+      s+='<text class="to-num" x="'+x+'" y="'+(padT+plotH+14)+'" text-anchor="middle">'+fmt(qv)+'%</text>';
+      const tv=tmin+(tmax-tmin)*i/4, y=Y(tv);
+      s+='<line class="to-grid" x1="'+padL+'" y1="'+y+'" x2="'+(padL+plotW)+'" y2="'+y+'"/>';
+      s+='<text class="to-num" x="'+(padL-6)+'" y="'+(y+3)+'" text-anchor="end">'+fmt(tv)+'</text>';
+    }
+    s+='<line class="to-axis" x1="'+padL+'" y1="'+padT+'" x2="'+padL+'" y2="'+(padT+plotH)+'"/>';
+    s+='<line class="to-axis" x1="'+padL+'" y1="'+(padT+plotH)+'" x2="'+(padL+plotW)+'" y2="'+(padT+plotH)+'"/>';
+    s+='<text class="to-axlabel" x="'+(padL+plotW/2)+'" y="'+(H-6)+'" text-anchor="middle">Qualidade — gap médio (%) · ← melhor</text>';
+    s+='<text class="to-axlabel" transform="translate(14,'+(padT+plotH/2)+') rotate(-90)" text-anchor="middle">Tempo médio (s) · ↓ melhor</text>';
+    const par=pts.filter(p=>p.par).sort((a,b)=>a.q-b.q);
+    if(par.length>1){ let d='M'+X(par[0].q)+' '+Y(par[0].t); for(let i=1;i<par.length;i++) d+=' L'+X(par[i].q)+' '+Y(par[i].t); s+='<path class="to-line" d="'+d+'"/>'; }
+    pts.forEach(p=>{ const x=X(p.q), y=Y(p.t);
+      s+='<circle class="'+(p.par?'to-dot-par':'to-dot-dom')+'" cx="'+x+'" cy="'+y+'" r="5.5"/>';
+      s+='<text class="to-name'+(p.par?' to-name-par':'')+'" x="'+(x+9)+'" y="'+(y+3)+'">'+esc(p.name)+'</text>';
+    });
+    return s+'</svg>';
+  }
+  function renderTradeoff(){
+    const body=$("#tradeoffBody"); if(!body) return;
+    if(!state.headers.length||!state.rows.length){ body.innerHTML='<div class="emptydata">Carregue dados na aba <b>Dados &amp; medição</b>.</div>'; return; }
+    if(!hasTimeColumns()){ body.innerHTML='<div class="emptydata">Este gráfico precisa de colunas de <b>tempo</b> (sufixo <code>_time</code>). Carregue o <b>exemplo com tempo</b> na aba Dados.</div>'; return; }
+    const d=tradeoffData();
+    if(d.none || !d.pts.length){ body.innerHTML='<div class="emptydata">Sem algoritmos com qualidade e tempo pareados.</div>'; return; }
+    let html='<div class="bxwrap">'+buildTradeoff(d.pts)+'</div>';
+    const par=d.pts.filter(p=>p.par).map(p=>p.name), dom=d.pts.filter(p=>!p.par).map(p=>p.name);
+    html+='<div class="conclusion">Na fronteira de Pareto (não-dominados): <b>'+par.map(esc).join(', ')+'</b>'+
+      (dom.length? '. Dominados (há sempre alguém melhor em qualidade <b>e</b> tempo): '+dom.map(esc).join(', ')+'.' : '. Nenhum algoritmo é dominado.')+
+      ' Escolher entre os da fronteira é decidir quanto tempo vale a pena investir por qualidade.</div>';
+    body.innerHTML=html;
+  }
+
+  /* ---------- Parte 8: exportação (LaTeX / Markdown + resumo) ---------- */
+  function fmtX(x){ return isFinite(x) ? (Math.round(x*100)/100).toString() : "--"; }
+  function pExport(p){ if(p==null||isNaN(p)) return "--"; return p<0.0001 ? "<0.0001" : p.toFixed(4); }
+  function escCell(s, fmt){ s=String(s); return fmt==="latex" ? s.replace(/([_%&#$])/g,"\\$1") : s.replace(/\|/g,"\\|"); }
+  function tableBlock(head, rows, caption, fmt){
+    const H=head.map(h=>escCell(h,fmt)), R=rows.map(r=>r.map(c=>escCell(c,fmt)));
+    if(fmt==="latex"){
+      const cols="l"+"r".repeat(H.length-1);
+      let s="\\begin{table}[ht]\n\\centering\n\\caption{"+caption+"}\n\\begin{tabular}{"+cols+"}\n\\toprule\n";
+      s+=H.join(" & ")+" \\\\\n\\midrule\n";
+      R.forEach(r=> s+=r.join(" & ")+" \\\\\n");
+      return s+"\\bottomrule\n\\end{tabular}\n\\end{table}\n";
+    }
+    let s="**"+caption+"**\n\n| "+H.join(" | ")+" |\n|"+H.map(()=>" --- ").join("|")+"|\n";
+    R.forEach(r=> s+="| "+r.join(" | ")+" |\n");
+    return s+"\n";
+  }
+  function buildExport(fmt){
+    const metricLabel = state.metric==="time" ? "tempo (s)" : "qualidade";
+    const gap = state.descMode==="gap", pm = fmt==="latex" ? "$\\pm$" : "±";
+    let alpha=parseFloat(($("#alphaF")||{}).value); if(!(alpha>0&&alpha<1)) alpha=0.05;
+    const method=($("#postMethod")||{}).value||"holm";
+    let out = (fmt==="latex" ? "% MetaStat — resultados ("+metricLabel+")\n\n" : "# MetaStat — resultados ("+metricLabel+")\n\n");
+
+    // descriptive
+    const desc=computeDescriptive();
+    const dHead=["Algoritmo","n", gap?"Gap médio (%)":"Média", gap?"Gap mediano (%)":"Mediana", "Desvio", "Melhor","Pior","IC 95%"];
+    const dRows=desc.map(r=> r.n
+      ? [r.name, r.n, fmtX(r.mean), fmtX(r.median), fmtX(r.sd), fmtX(r.best), fmtX(r.worst), pm+fmtX(r.ci)]
+      : [r.name, "0","--","--","--","--","--","--"]);
+    out+=tableBlock(dHead,dRows,"Estatística descritiva — "+metricLabel+(gap?" (gap %)":""),fmt)+"\n";
+
+    // best descriptive
+    const valid=desc.filter(r=>r.n>0);
+    const bestName = valid.length ? valid.reduce((b,r)=> !b?r:((gap? r.mean<b.mean : (activeSense()==="min"? r.mean<b.mean : r.mean>b.mean))?r:b), null).name : "—";
+
+    // friedman + posthoc
+    const fr=friedmanTest(); let sig=[];
+    if(!fr.insufficient && !fr.few){
+      out+=tableBlock(["#","Algoritmo","Posto médio"], fr.ranking.map((x,i)=>[i+1,x.name,fmtX(x.avg)]), "Ranking médio (Friedman)", fmt)+"\n";
+      out+="Friedman: chi2 = "+fmtX(fr.chi)+", gl = "+fr.df+", p = "+pExport(fr.pChi)+(fr.pChi<alpha?" (rejeita H0 a alpha="+alpha+")":" (nao rejeita H0)")+"\n\n";
+      const SE=Math.sqrt(fr.k*(fr.k+1)/(6*fr.n)), pairs=[];
+      for(let i=0;i<fr.k;i++) for(let j=i+1;j<fr.k;j++){ const z=Math.abs(fr.ranking[i].avg-fr.ranking[j].avg)/SE; pairs.push({i,j,p:Math.min(1,2*(1-pnorm(z)))}); }
+      adjustP(pairs, method);
+      sig=pairs.filter(o=>o.adj<alpha).map(o=>fr.ranking[o.i].name+" vs "+fr.ranking[o.j].name);
+    }
+
+    // summary
+    out += (fmt==="latex" ? "% Resumo\n" : "## Resumo\n");
+    let sum="Na métrica "+metricLabel+", o algoritmo com melhor "+(gap?"gap médio":"média")+" foi "+bestName+". ";
+    if(!fr.insufficient && !fr.few){
+      sum += "O teste de Friedman "+(fr.pChi<alpha?"rejeitou":"não rejeitou")+" a hipótese de igualdade dos algoritmos (chi2 = "+fmtX(fr.chi)+", gl = "+fr.df+", p = "+pExport(fr.pChi)+"). ";
+      if(fr.pChi<alpha) sum += sig.length ? ("O pós-hoc ("+method+") apontou diferença significativa entre: "+sig.join("; ")+". ") : "Nenhum par atingiu significância no pós-hoc após correção. ";
+    } else if(fr.insufficient){
+      sum += "Com 2 algoritmos, use o teste par a par (Wilcoxon / t pareado). ";
+    }
+    if(hasTimeColumns()){
+      const td=tradeoffData();
+      if(!td.none && td.pts.length){ const par=td.pts.filter(p=>p.par).map(p=>p.name); sum += "Na fronteira de Pareto (qualidade × tempo): "+par.join(", ")+"."; }
+    }
+    return out + sum + "\n";
+  }
+  function renderExport(){
+    const out=$("#expOut"); if(!out) return;
+    if(!state.headers.length || !state.rows.length){ out.value="Carregue dados na aba Dados & medição para gerar a exportação."; return; }
+    out.value=buildExport(state.expFmt);
+  }
+  function copyExport(){
+    const out=$("#expOut"), btn=$("#expCopyBtn"); if(!out) return;
+    const done=()=>{ if(btn){ const t=btn.textContent; btn.textContent="✓ Copiado!"; setTimeout(()=>{btn.textContent=t;},1500); } };
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(out.value).then(done, ()=>{ out.select(); document.execCommand("copy"); done(); });
+      else { out.select(); document.execCommand("copy"); done(); }
+    }catch(e){ out.select(); try{ document.execCommand("copy"); }catch(_){} done(); }
+  }
+
+  function refreshAnalysis(){ renderDescriptive(); syncPairSelects(); renderPair(); renderFriedman(); renderPosthoc(); renderOrdinal(); renderSuccess(); renderBoxplot(); renderTradeoff(); renderExport(); }
+
+  /* ---------- decision assistant (logic only, no statistics) ---------- */
+  const QUESTIONS = [
+    { key:"nalg", q:"Quantos algoritmos você está comparando?", opts:[["2 algoritmos","two"],["3 ou mais","many"]] },
+    { key:"paired", q:"Os dados são pareados (as mesmas instâncias para todos)?", opts:[["Sim, pareado","yes"],["Não, amostras independentes","no"]], when: s => s.nalg==="two" },
+    { key:"normal", q:"As diferenças seguem distribuição normal?", opts:[["Sim (ou n > 30)","yes"],["Não / desconhecido","no"]], note:"Teste com Shapiro-Wilk (n pequeno) ou Kolmogorov-Smirnov / Qui² (n grande)." },
+    { key:"runs", q:"Como estão organizadas as execuções?", opts:[["Um valor agregado por instância","agg"],["Muitas execuções na mesma instância","dist"]] }
+  ];
+  function activeQuestions(){ return QUESTIONS.filter(q => !q.when || q.when(state.asst)); }
+
+  function renderQuestions(){
+    const box = $("#questions"); box.innerHTML = "";
+    const qs = activeQuestions(); let stop = false;
+    qs.forEach((q,i) => {
+      if(stop) return;
+      const card = document.createElement("div"); card.className = "qcard";
+      let opts = q.opts.map(o => '<button class="opt'+(state.asst[q.key]===o[1]?" sel":"")+'" data-key="'+q.key+'" data-v="'+o[1]+'">'+
+        '<span class="rk">'+String.fromCharCode(65+q.opts.indexOf(o))+'</span>'+o[0]+'</button>').join("");
+      card.innerHTML = '<div class="qn">Pergunta '+(i+1)+'</div><div class="qq">'+q.q+'</div>'+
+        (q.note?'<div class="hint" style="font-size:12px;color:var(--ink-3);margin-bottom:10px">'+q.note+'</div>':'')+
+        '<div class="opts">'+opts+'</div>';
+      box.appendChild(card);
+      if(state.asst[q.key]==null) stop = true;
+    });
+    box.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => {
+      state.asst[b.dataset.key] = b.dataset.v;
+      if(b.dataset.key==="nalg" && b.dataset.v==="many") state.asst.paired=null;
+      renderQuestions(); renderRecommendation(); lightTree();
+    }));
+  }
+
+  function decide(){
+    const a = state.asst;
+    if(a.nalg==null || a.normal==null) return null;
+    if(a.nalg==="two" && a.paired==null) return null;
+    const paired = a.paired!=="no";
+    if(a.nalg==="two"){
+      if(a.normal==="yes") return paired
+        ? {name:"Teste t pareado", kind:"para", what:"compara a média das diferenças entre os dois algoritmos nas mesmas instâncias.", h0:"as médias dos dois algoritmos são iguais.", assume:"diferenças aproximadamente normais.", path:["para"]}
+        : {name:"Teste t de Student", kind:"para", what:"compara as médias de duas amostras independentes.", h0:"as médias dos dois grupos são iguais.", assume:"normalidade e variâncias homogêneas (checar Levene).", path:["para"]};
+      return paired
+        ? {name:"Wilcoxon signed-rank", kind:"non", what:"compara os postos das diferenças pareadas, sem supor normalidade.", h0:"a mediana das diferenças é zero.", assume:"diferenças simétricas em torno da mediana.", path:["nonpara"]}
+        : {name:"Mann-Whitney U", kind:"non", what:"compara duas amostras independentes por postos.", h0:"as distribuições dos dois grupos são iguais.", assume:"amostras independentes; escala ao menos ordinal.", path:["nonpara"]};
+    }
+    if(a.normal==="yes") return {name:"ANOVA", kind:"para", what:"compara as médias de três ou mais algoritmos simultaneamente.", h0:"todas as médias são iguais.", assume:"normalidade e esfericidade (medidas repetidas).", path:["para"]};
+    return {name:"Teste de Friedman", kind:"non", ext:true, what:"compara três ou mais algoritmos por postos ao longo das instâncias.", h0:"os postos médios dos algoritmos são iguais.", assume:"blocos pareados (mesma instância para todos).", path:["nonpara","friedman","post"]};
+  }
+
+  function renderRecommendation(){
+    const box = $("#recommendation"); const r = decide();
+    if(!r){ box.innerHTML = ""; return; }
+    let dl = '<dl><dt>Testa</dt><dd>'+r.what+'</dd><dt>H₀</dt><dd>'+r.h0+'</dd><dt>Supõe</dt><dd>'+r.assume+'</dd></dl>';
+    let ext = r.ext ? '<div class="ext"><b>Próximo passo (além do Talbi):</b> se Friedman rejeitar H₀, aplicar pós-hoc com correção de Holm/Nemenyi e apresentar o diagrama de diferença crítica.</div>' : "";
+    box.innerHTML = '<div class="result '+(r.kind==="para"?"para":"")+'"><div class="rlabel">Teste recomendado</div><h3>'+r.name+'</h3>'+dl+ext+
+      '<div class="btnrow" style="margin-top:16px"><button class="btn sm" data-goto="analise">Ver a análise →</button></div></div>';
+    box.querySelector("[data-goto]").addEventListener("click", () => show("analise"));
+  }
+
+  function lightTree(){
+    const r = decide();
+    const nodes = ["n-root","n-para","n-nonpara","n-friedman","n-post"];
+    const edges = ["e-root","e-nl","e-nr","e-fpost"];
+    nodes.forEach(id => $("#"+id).classList.remove("dim"));
+    edges.forEach(id => { const e=$("#"+id); e.classList.remove("lit"); e.classList.remove("dim"); });
+    if(!r) return;
+    const lit = new Set(["n-root", ...r.path.map(p => "n-"+p)]);
+    nodes.forEach(id => { if(!lit.has(id)) $("#"+id).classList.add("dim"); });
+    $("#e-root").classList.add("lit");
+    if(r.kind==="para"){ $("#e-nl").classList.add("lit"); $("#e-nr").classList.add("dim"); $("#e-fpost").classList.add("dim"); }
+    else {
+      $("#e-nr").classList.add("lit"); $("#e-nl").classList.add("dim");
+      if(r.path.includes("post")) $("#e-fpost").classList.add("lit"); else $("#e-fpost").classList.add("dim");
+    }
+  }
+
+  $("#resetAsst").addEventListener("click", () => {
+    state.asst = { nalg:null, paired:null, normal:null, runs:null };
+    renderQuestions(); renderRecommendation();
+    ["n-root","n-para","n-nonpara","n-friedman","n-post"].forEach(id => $("#"+id).classList.remove("dim"));
+    ["e-root","e-nl","e-nr","e-fpost"].forEach(id => { const e=$("#"+id); e.classList.remove("lit","dim"); });
+  });
+
+  $("#descModeSeg").addEventListener("click", e => {
+    const b=e.target.closest("button"); if(!b) return;
+    $$("#descModeSeg button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); state.descMode=b.dataset.v; renderDescriptive();
+  });
+  renderChecklist();
+  renderQuestions();
+  refreshAnalysis();
+  ["pairA","pairB","alphaInput"].forEach(id => { const el=document.getElementById(id); if(el) el.addEventListener(id==="alphaInput"?"input":"change", renderPair); });
+  { const af=document.getElementById("alphaF"); if(af) af.addEventListener("input", renderFriedman); }
+  ["alphaPost","postMethod"].forEach(id => { const el=document.getElementById(id); if(el) el.addEventListener("change", renderPosthoc); });
+  { const ep=document.getElementById("epsInput"); if(ep) ep.addEventListener("input", renderSuccess); }
+  { const seg=document.getElementById("boxModeSeg"); if(seg) seg.addEventListener("click", e => { const b=e.target.closest("button"); if(!b) return; seg.querySelectorAll("button").forEach(x=>x.classList.remove("on")); b.classList.add("on"); state.boxMode=b.dataset.v; renderBoxplot(); }); }
+  { const seg=document.getElementById("expFmtSeg"); if(seg) seg.addEventListener("click", e => { const b=e.target.closest("button"); if(!b) return; seg.querySelectorAll("button").forEach(x=>x.classList.remove("on")); b.classList.add("on"); state.expFmt=b.dataset.v; renderExport(); }); }
+  { const cb=document.getElementById("expCopyBtn"); if(cb) cb.addEventListener("click", copyExport); }
+})();
+</script>
+</body>
+</html>
