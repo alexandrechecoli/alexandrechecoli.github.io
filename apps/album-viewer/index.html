@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Álbum</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Tela inicial: escolher a pasta -->
+  <section id="welcome" class="welcome">
+    <div class="film" aria-hidden="true">
+      <span class="snap snap-1"></span>
+      <span class="snap snap-2"></span>
+      <span class="snap snap-3"></span>
+      <span class="snap snap-4"></span>
+    </div>
+    <div class="welcome-card">
+      <p class="eyebrow">Álbum de memórias</p>
+      <h1>Suas fotos, com a história de cada dia.</h1>
+      <p class="lede">Escolha a pasta onde ficam as fotos e os vídeos. Tudo é lido direto do
+        seu computador — nada é enviado para lugar nenhum. As histórias que você escrever
+        ficam salvas num arquivo <code>album.json</code> dentro da própria pasta.</p>
+      <div class="welcome-actions">
+        <button id="pick-folder" class="btn btn-primary">Escolher pasta</button>
+        <button id="reopen-folder" class="btn btn-ghost" hidden></button>
+      </div>
+      <p id="welcome-hint" class="hint"></p>
+    </div>
+  </section>
+
+  <!-- App -->
+  <header id="topbar" class="topbar" hidden>
+    <div class="topbar-row">
+      <div class="brand">
+        <span class="brand-mark">◫</span>
+        <span class="brand-name" id="folder-name">Álbum</span>
+      </div>
+      <div class="topbar-tools">
+        <span id="save-state" class="save-state" aria-live="polite"></span>
+        <button id="change-folder" class="btn btn-ghost btn-sm">Trocar pasta</button>
+      </div>
+    </div>
+    <div class="topbar-row filters">
+      <select id="filter-year" class="control" aria-label="Ano"></select>
+      <select id="filter-month" class="control" aria-label="Mês"></select>
+      <select id="filter-tag" class="control" aria-label="Marcador"></select>
+      <input id="filter-search" class="control control-search" type="search"
+             placeholder="Buscar nas histórias…" aria-label="Buscar" />
+      <select id="filter-sort" class="control" aria-label="Ordenar">
+        <option value="desc">Mais recentes</option>
+        <option value="asc">Mais antigas</option>
+      </select>
+      <span id="count" class="count"></span>
+    </div>
+  </header>
+
+  <main id="gallery" class="gallery" hidden></main>
+
+  <div id="empty" class="empty" hidden>
+    <p>Nenhum item com esses filtros. Ajuste o ano, o mês ou a busca.</p>
+  </div>
+
+  <!-- Lightbox / painel de história -->
+  <div id="lightbox" class="lightbox" hidden>
+    <button id="lb-close" class="lb-close" aria-label="Fechar">✕</button>
+    <button id="lb-prev" class="lb-nav lb-prev" aria-label="Anterior">‹</button>
+    <button id="lb-next" class="lb-nav lb-next" aria-label="Próxima">›</button>
+
+    <div class="lb-inner">
+      <div class="lb-stage" id="lb-stage"></div>
+
+      <aside class="lb-panel">
+        <p class="lb-date" id="lb-date"></p>
+        <input id="edit-caption" class="edit-caption" placeholder="Um título curto…" />
+        <div class="lb-story">
+          <label class="field-label" for="edit-note">História do dia</label>
+          <textarea id="edit-note" class="edit-note"
+                    placeholder="O que aconteceu nesse dia?"></textarea>
+        </div>
+        <div class="lb-meta">
+          <div class="field">
+            <label class="field-label" for="edit-date">Data</label>
+            <input id="edit-date" class="edit-date" type="date" />
+            <span id="date-source" class="date-source"></span>
+          </div>
+          <div class="field">
+            <label class="field-label" for="edit-tags">Marcadores</label>
+            <input id="edit-tags" class="edit-tags"
+                   placeholder="marco, casa, viagem…" />
+          </div>
+        </div>
+        <p class="lb-filename" id="lb-filename"></p>
+      </aside>
+    </div>
+  </div>
+
+  <script src="lib/exifr.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

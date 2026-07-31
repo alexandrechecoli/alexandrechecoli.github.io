@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apps</title>
+  <style>
+    :root {
+      --paper:    #F5F3EE;
+      --paper-2:  #EDEAE2;
+      --ink:      #26231F;
+      --ink-soft: #6B655C;
+      --line:     #DEDACF;
+      --accent:   #4F7A6F;
+      --accent-ink:#365951;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+      --radius: 14px;
+      --shadow: 0 1px 2px rgba(38,35,31,.06), 0 8px 24px rgba(38,35,31,.07);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 960px; margin: 0 auto; padding: clamp(2.5rem, 7vw, 5rem) 1.5rem 4rem; }
+
+    /* ---------- Cabeçalho (edite o título e o subtítulo à vontade) ---------- */
+    header { margin-bottom: 2.5rem; }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: .16em;
+      font-size: .72rem; font-weight: 600; color: var(--accent);
+      margin: 0 0 .8rem;
+    }
+    h1 {
+      font-family: var(--serif); font-weight: 500;
+      font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1;
+      letter-spacing: -.01em; margin: 0 0 .7rem;
+    }
+    .subtitle { color: var(--ink-soft); font-size: 1.05rem; line-height: 1.6; margin: 0; max-width: 40rem; }
+
+    /* ---------- Grade de cartões ---------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+      gap: 1.1rem;
+    }
+
+    .card {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.25rem;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-decoration: none; color: inherit;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+      animation: rise .6s ease both;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(38,35,31,.08), 0 16px 36px rgba(38,35,31,.12);
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+    }
+    .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .card-icon {
+      flex-shrink: 0;
+      width: 3rem; height: 3rem; border-radius: 11px;
+      display: grid; place-items: center;
+      font-size: 1.5rem; line-height: 1;
+      background: color-mix(in srgb, var(--accent) 12%, #fff);
+      color: var(--accent-ink);
+    }
+    .card-body { display: flex; flex-direction: column; gap: .2rem; min-width: 0; }
+    .card-title { font-weight: 600; font-size: 1.02rem; letter-spacing: -.01em; }
+    .card-desc {
+      font-size: .85rem; color: var(--ink-soft); line-height: 1.4;
+      overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    }
+    .card-go { margin-left: auto; color: var(--ink-soft); font-size: 1.1rem; transition: transform .16s ease, color .16s ease; }
+    .card:hover .card-go { transform: translateX(3px); color: var(--accent); }
+
+    /* Variante opcional "em breve": adicione class="card soon" e use href="#" */
+    .card.soon { opacity: .6; pointer-events: none; }
+    .card.soon .card-go::after { content: "em breve"; font-size: .7rem; }
+    .card.soon .card-go { font-size: 0; }
+
+    footer { margin-top: 3rem; color: var(--ink-soft); font-size: .8rem; }
+    footer a { color: var(--accent-ink); }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .card:nth-child(2) { animation-delay: .06s; }
+    .card:nth-child(3) { animation-delay: .12s; }
+    .card:nth-child(4) { animation-delay: .18s; }
+    .card:nth-child(5) { animation-delay: .24s; }
+    .card:nth-child(6) { animation-delay: .30s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <!-- Edite estes três textos como quiser -->
+      <p class="eyebrow">Alexandre Checoli</p>
+      <h1>Apps</h1>
+      <p class="subtitle">Pequenos aplicativos que rodam direto no navegador. Clique para abrir.</p>
+    </header>
+
+    <main class="grid">
+
+      <!-- ============================================================
+           CARTÃO DE APP
+           Para adicionar um novo app: copie um bloco <a class="card"> ... </a>
+           inteiro, troque o href, o ícone, o título e a descrição.
+           O href é relativo a esta pasta (Apps/). Ex.: ./album/  ou  ./album/index.html
+           ============================================================ -->
+
+      <!-- App de fotos (troque o href pelo caminho real, ex.: ./album/) -->
+      <a class="card" href="./album-viewer/index.html">
+        <span class="card-icon">◫</span>
+        <span class="card-body">
+          <span class="card-title">Álbum de fotos</span>
+          <span class="card-desc">Visualiza e organiza fotos e vídeos de uma pasta, com legendas e histórias.</span>
+        </span>
+        <span class="card-go" aria-hidden="true">→</span>
+      </a>
+
+      <!-- Placeholder — duplique e edite -->
+      <a class="card" href="#">
+        <span class="card-icon">✦</span>
+        <span class="card-body">
+          <span class="card-title">Novo app</span>
+          <span class="card-desc">Descrição curta do que este app faz.</span>
+        </span>
+        <span class="card-go" aria-hidden="true">→</span>
+      </a>
+
+      <!-- Placeholder — duplique e edite -->
+      <a class="card" href="#">
+        <span class="card-icon">▦</span>
+        <span class="card-body">
+          <span class="card-title">Novo app</span>
+          <span class="card-desc">Descrição curta do que este app faz.</span>
+        </span>
+        <span class="card-go" aria-hidden="true">→</span>
+      </a>
+
+      <!-- Exemplo da variante "em breve" (não clicável). Remova se não usar. -->
+      <a class="card soon" href="#">
+        <span class="card-icon">◷</span>
+        <span class="card-body">
+          <span class="card-title">Em construção</span>
+          <span class="card-desc">Um app que ainda está sendo preparado.</span>
+        </span>
+        <span class="card-go" aria-hidden="true">→</span>
+      </a>
+
+    </main>
+
+    <footer>
+      <!-- Opcional: link de volta para o site principal -->
+      <a href="../">← Voltar ao site</a>
+    </footer>
+  </div>
+</body>
+</html>
