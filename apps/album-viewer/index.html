@@ -38,10 +38,15 @@
       </div>
       <div class="topbar-tools">
         <span id="save-state" class="save-state" aria-live="polite"></span>
+        <button id="present-btn" class="btn btn-ghost btn-sm">Apresentar</button>
+        <button id="export-btn" class="btn btn-ghost btn-sm">Exportar</button>
+        <button id="select-toggle" class="btn btn-ghost btn-sm">Selecionar</button>
         <button id="change-folder" class="btn btn-ghost btn-sm">Trocar pasta</button>
       </div>
     </div>
     <div class="topbar-row filters">
+      <button id="filter-today" class="filter-chip" type="button">Neste dia</button>
+      <button id="filter-fav" class="filter-chip" type="button">★ Favoritas</button>
       <select id="filter-year" class="control" aria-label="Ano"></select>
       <select id="filter-month" class="control" aria-label="Mês"></select>
       <select id="filter-tag" class="control" aria-label="Marcador"></select>
@@ -71,7 +76,10 @@
       <div class="lb-stage" id="lb-stage"></div>
 
       <aside class="lb-panel">
-        <p class="lb-date" id="lb-date"></p>
+        <div class="lb-top">
+          <p class="lb-date" id="lb-date"></p>
+          <button id="fav-toggle" class="fav-toggle" type="button" title="Favoritar" aria-pressed="false">☆</button>
+        </div>
         <input id="edit-caption" class="edit-caption" placeholder="Um título curto…" />
         <div class="lb-story">
           <label class="field-label" for="edit-note">História do dia</label>
@@ -86,13 +94,62 @@
           </div>
           <div class="field">
             <label class="field-label" for="edit-tags">Marcadores</label>
-            <input id="edit-tags" class="edit-tags"
+            <input id="edit-tags" class="edit-tags" list="all-tags"
                    placeholder="marco, casa, viagem…" />
           </div>
         </div>
         <p class="lb-filename" id="lb-filename"></p>
       </aside>
     </div>
+  </div>
+
+  <!-- Navegação rápida por ano (linha do tempo) -->
+  <aside id="year-nav" class="year-nav" hidden></aside>
+
+  <!-- Overlay durante a exportação -->
+  <div id="export-overlay" class="export-overlay" hidden>
+    <div class="export-box">
+      <p id="export-msg">Preparando…</p>
+    </div>
+  </div>
+
+  <!-- Modo apresentação (slideshow) -->
+  <div id="slideshow" class="slideshow" hidden>
+    <div class="ss-stage" id="ss-stage"></div>
+    <div class="ss-caption" id="ss-caption">
+      <p class="ss-date" id="ss-date"></p>
+      <h3 class="ss-title" id="ss-title"></h3>
+      <p class="ss-story" id="ss-story"></p>
+    </div>
+    <button id="ss-close" class="ss-close" type="button" aria-label="Fechar">✕</button>
+    <div class="ss-controls">
+      <button id="ss-prev" class="ss-btn" type="button" aria-label="Anterior">‹</button>
+      <button id="ss-play" class="ss-btn" type="button" aria-label="Pausar">⏸</button>
+      <button id="ss-next" class="ss-btn" type="button" aria-label="Próxima">›</button>
+      <button id="ss-speed" class="ss-btn ss-speed" type="button" aria-label="Velocidade">5s</button>
+      <button id="ss-full" class="ss-btn" type="button" aria-label="Tela cheia">⛶</button>
+      <span id="ss-progress" class="ss-progress"></span>
+    </div>
+  </div>
+
+  <!-- Lista de marcadores já usados (autocomplete) -->
+  <datalist id="all-tags"></datalist>
+
+  <!-- Barra de ações em lote (aparece ao selecionar fotos) -->
+  <div id="batch-bar" class="batch-bar" hidden>
+    <span id="batch-count" class="batch-count">0 selecionadas</span>
+    <span class="b-sep"></span>
+    <input id="batch-tag" list="all-tags" placeholder="marcador…" aria-label="Adicionar marcador" />
+    <button id="batch-add-tag" class="b-btn">Adicionar</button>
+    <select id="batch-untag" aria-label="Remover marcador">
+      <option value="">Remover marcador…</option>
+    </select>
+    <span class="b-sep"></span>
+    <input id="batch-date" type="date" aria-label="Definir data" />
+    <button id="batch-set-date" class="b-btn">Definir data</button>
+    <span class="b-sep"></span>
+    <button id="batch-clear" class="b-btn ghost">Limpar</button>
+    <button id="batch-done" class="b-btn ghost">Concluir</button>
   </div>
 
   <script src="lib/exifr.js"></script>
