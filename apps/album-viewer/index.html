@@ -49,6 +49,11 @@
       <button id="filter-fav" class="filter-chip" type="button">★ Favoritas</button>
       <select id="filter-year" class="control" aria-label="Ano"></select>
       <select id="filter-month" class="control" aria-label="Mês"></select>
+      <span class="range-filter">
+        <label class="range-lbl">De <input id="filter-from" class="control control-date" type="date" aria-label="Data inicial" /></label>
+        <label class="range-lbl">até <input id="filter-to" class="control control-date" type="date" aria-label="Data final" /></label>
+        <button id="filter-range-clear" class="range-clear" type="button" title="Limpar intervalo" hidden>✕</button>
+      </span>
       <select id="filter-tag" class="control" aria-label="Marcador"></select>
       <input id="filter-search" class="control control-search" type="search"
              placeholder="Buscar nas histórias…" aria-label="Buscar" />
@@ -99,6 +104,7 @@
           </div>
         </div>
         <p class="lb-filename" id="lb-filename"></p>
+        <button id="delete-btn" class="lb-delete" type="button">Excluir foto do computador</button>
       </aside>
     </div>
   </div>
@@ -148,6 +154,7 @@
     <input id="batch-date" type="date" aria-label="Definir data" />
     <button id="batch-set-date" class="b-btn">Definir data</button>
     <span class="b-sep"></span>
+    <button id="batch-delete" class="b-btn danger">Excluir</button>
     <button id="batch-clear" class="b-btn ghost">Limpar</button>
     <button id="batch-done" class="b-btn ghost">Concluir</button>
   </div>

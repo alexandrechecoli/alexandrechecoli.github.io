@@ -1,0 +1,49 @@
+ÁLBUM — visualizador local de fotos e vídeos
+=============================================
+
+IMPORTANTE: NÃO abra o index.html com dois cliques.
+O Chrome só libera o acesso a pastas quando o app roda por um
+servidor local (http://localhost) — e não quando aberto direto
+do disco (file://). Por isso use um dos atalhos abaixo.
+
+COMO USAR (com Python instalado)
+1. Descompacte esta pasta em qualquer lugar do computador.
+2. Dê dois cliques no atalho do seu sistema:
+     Windows ....... iniciar-windows.bat
+     macOS ......... iniciar-mac.command
+     Linux ......... iniciar-linux.sh
+   Ele sobe o servidor e abre o navegador em http://localhost:8000.
+   (Se abrir em outro navegador, copie esse endereço para o Chrome ou Edge.)
+3. Clique em "Escolher pasta" e selecione a pasta com suas fotos/vídeos.
+   Na primeira vez o navegador pede permissão de leitura/escrita — aceite.
+4. Navegue, filtre por ano/mês/marcador e clique numa foto para escrever
+   a legenda e a história do dia. Tudo é salvo automaticamente.
+
+Para parar o servidor: feche a janela preta (terminal) que abriu.
+
+ALTERNATIVA SEM OS ATALHOS
+- Abra um terminal DENTRO desta pasta e rode:  python -m http.server 8000
+  Depois acesse http://localhost:8000 no Chrome ou Edge.
+- Ou, no VS Code: instale a extensão "Live Server", clique com o botão
+  direito no index.html -> "Open with Live Server".
+
+ONDE FICAM AS HISTÓRIAS
+As legendas, histórias, datas e marcadores ficam num arquivo "album.json"
+criado DENTRO da pasta das suas fotos. Ele viaja junto com as fotos e é
+fácil de fazer backup. Nada sai do seu computador.
+
+DATAS AUTOMÁTICAS
+A data de cada foto é descoberta sozinha, nesta ordem:
+  1) EXIF (a data real gravada pela câmera/celular);
+  2) a data escrita no nome do arquivo (ex.: IMG_20240315...);
+  3) a data de modificação do arquivo.
+Você pode corrigir a data de qualquer item na tela de detalhe.
+
+LIMITAÇÕES DESTE PROTÓTIPO
+- Funciona no Chrome e no Edge (no computador). Firefox e Safari ainda não
+  permitem gravar arquivos na pasta.
+- Fotos em HEIC (padrão de alguns iPhones) aparecem como um aviso, porque o
+  navegador não exibe esse formato — mas a data e a história funcionam.
+  Para vê-las, converta para JPG.
+- Vídeos: a data vem do nome do arquivo ou da data de modificação (o EXIF
+  de data é lido só de fotos).

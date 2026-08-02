@@ -189,6 +189,16 @@ code {
 .control-search { flex: 1; min-width: 12rem; }
 .count { font-size: .8rem; color: var(--ink-soft); margin-left: auto; white-space: nowrap; }
 
+.range-filter { display: inline-flex; align-items: center; gap: .35rem; }
+.range-lbl { display: inline-flex; align-items: center; gap: .3rem; font-size: .78rem; color: var(--ink-soft); }
+.control-date { font-size: .82rem; padding: .38rem .45rem; color: var(--ink); }
+.range-clear {
+  font: inherit; font-size: .8rem; line-height: 1; cursor: pointer;
+  color: var(--ink-soft); background: none; border: 1px solid var(--line);
+  border-radius: 8px; width: 1.7rem; height: 1.7rem;
+}
+.range-clear:hover { background: var(--paper-2); color: var(--ink); }
+
 .filter-chip {
   font: inherit; font-size: .85rem; color: var(--ink);
   background: #fff; border: 1px solid var(--line); border-radius: 8px;
@@ -202,56 +212,55 @@ code {
 /* ---------- Galeria ---------- */
 .gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.1rem;
-  padding: 1.5rem 1.25rem 4rem;
-  max-width: 1400px; margin: 0 auto;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 3px;
+  padding: 1.25rem 1.25rem 4rem;
+  max-width: 1500px; margin: 0 auto;
 }
-.card {
-  cursor: pointer;
-  display: flex; flex-direction: column; gap: .5rem;
-}
+.card { cursor: pointer; position: relative; }
 .card-frame {
   position: relative;
   aspect-ratio: 1 / 1;
-  border-radius: var(--radius);
+  border-radius: 3px;
   overflow: hidden;
   background: var(--paper-2);
-  box-shadow: var(--shadow);
-  transition: transform .16s ease, box-shadow .16s ease;
 }
-.card:hover .card-frame { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(38,35,31,.08), 0 14px 34px rgba(38,35,31,.13); }
 .card-frame img, .card-frame video {
   width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform .25s ease;
 }
+.card:hover .card-frame img, .card:hover .card-frame video { transform: scale(1.05); }
 .card-badge {
-  position: absolute; top: .5rem; left: .5rem;
+  position: absolute; top: .4rem; left: .4rem; z-index: 1;
   background: rgba(26,25,23,.7); color: #fff;
   font-size: .7rem; padding: .15rem .5rem; border-radius: 999px;
   display: flex; align-items: center; gap: .3rem;
 }
 .card-story-dot {
-  position: absolute; bottom: .5rem; right: .5rem;
-  width: 1.5rem; height: 1.5rem; border-radius: 50%;
+  position: absolute; bottom: .4rem; right: .4rem; z-index: 1;
+  width: 1.4rem; height: 1.4rem; border-radius: 50%;
   background: rgba(26,25,23,.62); color: #fff;
-  display: grid; place-items: center; font-family: var(--serif); font-size: .95rem;
+  display: grid; place-items: center; font-family: var(--serif); font-size: .9rem;
 }
 .card-fav {
-  position: absolute; top: .5rem; right: .5rem; z-index: 1;
-  color: var(--honey); font-size: 1.15rem; line-height: 1;
-  text-shadow: 0 1px 3px rgba(0,0,0,.45);
+  position: absolute; top: .4rem; right: .4rem; z-index: 1;
+  color: var(--honey); font-size: 1.1rem; line-height: 1;
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
 }
 .card-fallback {
   width: 100%; height: 100%;
   display: grid; place-items: center; text-align: center;
   color: var(--ink-soft); font-size: .78rem; padding: .5rem;
 }
-.card-caption {
-  font-size: .85rem; line-height: 1.35;
-  color: var(--ink);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+.card-cap {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 1.5rem .55rem .45rem;
+  font-size: .78rem; line-height: 1.25; color: #fff;
+  background: linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,0));
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  opacity: 0; transition: opacity .15s ease; pointer-events: none;
 }
-.card-caption.is-empty { color: var(--ink-soft); font-style: italic; }
+.card:hover .card-cap { opacity: 1; }
 
 .empty { text-align: center; color: var(--ink-soft); padding: 4rem 1rem; }
 
@@ -514,3 +523,16 @@ video.ss-media { animation: ssfade .5s ease both; }
 @media (prefers-reduced-motion: reduce) {
   img.ss-media.kb { animation: ssfade .01s both; transform: none; }
 }
+
+/* ---------- Botões de exclusão (ação destrutiva) ---------- */
+.lb-delete {
+  align-self: flex-start;
+  font: inherit; font-size: .8rem;
+  color: #B0483C; background: none;
+  border: 1px solid #E0C4BF; border-radius: 8px;
+  padding: .4rem .75rem; cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.lb-delete:hover { background: #B0483C; color: #fff; border-color: #B0483C; }
+.batch-bar .b-btn.danger { background: #B0483C; }
+.batch-bar .b-btn.danger:hover { background: #963d34; }

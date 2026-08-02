@@ -325,6 +325,12 @@ function applyFilters() {
   const sort = $("#filter-sort").value;
   const todayMD = onThisDay ? isoMonthDay(new Date()) : null;
 
+  // Intervalo De…Até (aceita invertido; ignorado no modo "Neste dia")
+  let from = $("#filter-from").value, to = $("#filter-to").value;
+  if (from && to && from > to) { const t = from; from = to; to = t; }
+  const hasRange = !onThisDay && (from || to);
+  $("#filter-range-clear").hidden = !(from || to);
+
   filtered = items.filter((it) => {
     const date = it.meta.date || "";
     if (onThisDay) {
@@ -332,6 +338,11 @@ function applyFilters() {
     } else {
       if (y && date.slice(0, 4) !== y) return false;
       if (mo && Number(date.slice(5, 7)) !== Number(mo)) return false;
+      if (hasRange) {
+        if (!date) return false;
+        if (from && date < from) return false;
+        if (to && date > to) return false;
+      }
     }
     if (favOnly && !it.meta.fav) return false;
     if (tag && !(it.meta.tags || []).includes(tag)) return false;
@@ -423,8 +434,8 @@ function renderGallery() {
         <span class="card-check" aria-hidden="true">✓</span>
         ${it.meta.fav ? `<span class="card-fav" title="Favorita">★</span>` : ""}
         ${hasStory ? `<span class="card-story-dot" title="Tem história">”</span>` : ""}
-      </div>
-      <div class="card-caption ${it.meta.caption ? "" : "is-empty"}">${escapeHtml(caption)}</div>`;
+        ${caption ? `<div class="card-cap">${escapeHtml(caption)}</div>` : ""}
+      </div>`;
     card.addEventListener("click", () => onCardClick(i));
     gal.appendChild(card);
     io.observe(card);
@@ -774,6 +785,65 @@ function batchSetDate() {
   buildFilters(); applyFilters(); scheduleSave();
 }
 
+/* ---------- Excluir arquivos (permanente) ---------- */
+async function deleteFileByPath(path) {
+  const segs = path.split("/");
+  const name = segs.pop();
+  let dir = dirHandle;
+  for (const s of segs) dir = await dir.getDirectoryHandle(s);   // navega até a subpasta
+  await dir.removeEntry(name);                                   // apaga o arquivo do disco
+}
+function removeItemsByPaths(paths) {
+  const set = paths instanceof Set ? paths : new Set(paths);
+  for (const p of set) {
+    const it = items.find((x) => x.path === p);
+    if (it && it.url) { try { URL.revokeObjectURL(it.url); } catch (_) {} }
+    delete data.items[p];
+  }
+  items = items.filter((x) => !set.has(x.path));
+}
+async function deleteCurrent() {
+  const it = currentIndex >= 0 ? filtered[currentIndex] : null;
+  if (!it) return;
+  if (!confirm(`Excluir PERMANENTEMENTE esta foto do computador?\n\n${it.path}\n\n` +
+               `O arquivo NÃO vai para a Lixeira e não há como desfazer.`)) return;
+  try {
+    await deleteFileByPath(it.path);
+  } catch (e) {
+    alert("Não foi possível excluir o arquivo:\n" + (e && e.message ? e.message : e));
+    return;
+  }
+  const oldIndex = currentIndex;
+  removeItemsByPaths([it.path]);
+  dirty = true; sessionEdited = true; await saveNow();
+  buildFilters(); applyFilters();
+  if (filtered.length) openLightbox(Math.min(oldIndex, filtered.length - 1));
+  else closeLightbox();
+}
+async function batchDelete() {
+  const paths = [...selected];
+  if (!paths.length) return;
+  if (!confirm(`Excluir PERMANENTEMENTE ${paths.length} ${paths.length === 1 ? "arquivo" : "arquivos"} do computador?\n\n` +
+               `Eles NÃO vão para a Lixeira e não há como desfazer.`)) return;
+
+  const ov = $("#export-overlay"); ov.hidden = false;
+  const setMsg = (m) => { $("#export-msg").textContent = m; };
+  const deleted = [];
+  let ok = 0, fail = 0, i = 0;
+  for (const p of paths) {
+    i++; setMsg(`Excluindo… ${i}/${paths.length}`);
+    try { await deleteFileByPath(p); deleted.push(p); ok++; }
+    catch (e) { fail++; }
+  }
+  removeItemsByPaths(deleted);
+  for (const p of deleted) selected.delete(p);
+  dirty = true; sessionEdited = true; await saveNow();
+  ov.hidden = true;
+  buildFilters(); applyFilters(); updateBatchBar();
+  if (fail) alert(`${ok} excluída(s). ${fail} não puderam ser excluída(s).`);
+  if (selected.size === 0) setSelectMode(false);
+}
+
 function escapeHtml(s) {
   return (s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 }
@@ -917,6 +987,11 @@ async function init() {
   ["filter-year", "filter-month", "filter-tag", "filter-sort"].forEach((id) =>
     $("#" + id).addEventListener("change", applyFilters));
   $("#filter-search").addEventListener("input", debounce(applyFilters, 200));
+  $("#filter-from").addEventListener("change", applyFilters);
+  $("#filter-to").addEventListener("change", applyFilters);
+  $("#filter-range-clear").addEventListener("click", () => {
+    $("#filter-from").value = ""; $("#filter-to").value = ""; applyFilters();
+  });
 
   // Favoritas e "Neste dia"
   $("#filter-fav").addEventListener("click", () => {
@@ -929,9 +1004,13 @@ async function init() {
     $("#filter-today").classList.toggle("active", onThisDay);
     $("#filter-year").disabled = onThisDay;     // ano/mês não se aplicam nesse modo
     $("#filter-month").disabled = onThisDay;
+    $("#filter-from").disabled = onThisDay;
+    $("#filter-to").disabled = onThisDay;
     applyFilters();
   });
   $("#fav-toggle").addEventListener("click", toggleFav);
+  $("#delete-btn").addEventListener("click", deleteCurrent);
+  $("#batch-delete").addEventListener("click", batchDelete);
   $("#export-btn").addEventListener("click", exportAlbum);
   window.addEventListener("scroll", throttle(updateYearSpy, 150), { passive: true });
 
