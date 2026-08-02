@@ -441,6 +441,7 @@ function renderGallery() {
     io.observe(card);
   });
   buildYearNav();
+  if (selectMode) updateSelectAllLabel();
 }
 
 /* ---------- Navegação rápida por ano ---------- */
@@ -743,6 +744,7 @@ function toggleSelect(i) {
   const card = $(`#gallery .card[data-i="${i}"]`);
   if (card) card.classList.toggle("selected", selected.has(it.path));
   updateBatchBar();
+  updateSelectAllLabel();
 }
 function setSelectMode(on) {
   selectMode = on;
@@ -750,8 +752,21 @@ function setSelectMode(on) {
   const btn = $("#select-toggle");
   btn.textContent = on ? "Cancelar" : "Selecionar";
   btn.classList.toggle("active", on);
+  $("#select-all").hidden = !on;
   if (!on) { selected.clear(); renderGallery(); }
   updateBatchBar();
+  updateSelectAllLabel();
+}
+function selectAllFiltered() {
+  const allSelected = filtered.length > 0 && filtered.every((it) => selected.has(it.path));
+  filtered.forEach((it) => allSelected ? selected.delete(it.path) : selected.add(it.path));
+  renderGallery();          // reflete as marcações (e atualiza o rótulo do botão)
+  updateBatchBar();
+}
+function updateSelectAllLabel() {
+  const b = $("#select-all");
+  const all = filtered.length > 0 && filtered.every((it) => selected.has(it.path));
+  b.textContent = all ? "Limpar seleção" : "Selecionar todas";
 }
 function updateBatchBar() {
   const n = selected.size;
@@ -1028,6 +1043,7 @@ async function init() {
 
   // Seleção em lote
   $("#select-toggle").addEventListener("click", () => setSelectMode(!selectMode));
+  $("#select-all").addEventListener("click", selectAllFiltered);
   $("#batch-add-tag").addEventListener("click", batchAddTag);
   $("#batch-tag").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); batchAddTag(); } });
   $("#batch-untag").addEventListener("change", batchRemoveTag);
