@@ -761,11 +761,11 @@ function updateBatchBar() {
 function selectedItems() { return items.filter((it) => selected.has(it.path)); }
 
 function batchAddTag() {
-  const t = $("#batch-tag").value.trim();
-  if (!t) return;
+  const tags = $("#batch-tag").value.split(",").map((t) => t.trim()).filter(Boolean);
+  if (!tags.length) return;
   for (const it of selectedItems()) {
     it.meta.tags = it.meta.tags || [];
-    if (!it.meta.tags.includes(t)) it.meta.tags.push(t);
+    for (const t of tags) if (!it.meta.tags.includes(t)) it.meta.tags.push(t);
   }
   $("#batch-tag").value = "";
   buildFilters(); applyFilters(); scheduleSave();
