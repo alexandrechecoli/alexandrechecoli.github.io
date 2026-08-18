@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dracula">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fatorial — análise de experimentos (DOE)</title>
+<style>
+  :root{
+    --body:'Segoe UI',system-ui,-apple-system,sans-serif;
+    --mono:'Cascadia Code','Fira Code',Consolas,'Courier New',monospace;
+    --disp:'Segoe UI',system-ui,-apple-system,sans-serif;
+    --radius:6px; --rail:250px;
+  }
+  [data-theme="dracula"]{
+    --bg:#1e2029; --surface:#282a36; --surface-2:#21222c; --surface-3:#31333f;
+    --ink:#f8f8f2; --ink-2:#c8cad4; --ink-3:#6272a4; --line:#44475a; --line-2:#565a6e;
+    --accent:#bd93f9; --accent-2:#cba9fb; --accent-soft:rgba(189,147,249,.15); --accent-line:#5d4d80;
+    --teal:#50fa7b; --teal-soft:rgba(80,250,123,.13); --teal-line:#2f6444;
+    --amber:#ffb86c; --amber-soft:rgba(255,184,108,.13); --amber-line:#6f5433; --amber-ink:#ffcf9a;
+    --cyan:#8be9fd; --danger:#ff5555; --shadow:0 1px 3px rgba(0,0,0,.5);
+  }
+  [data-theme="monokai"]{
+    --bg:#1d1e19; --surface:#272822; --surface-2:#20211b; --surface-3:#33342c;
+    --ink:#f8f8f2; --ink-2:#cfcfc2; --ink-3:#75715e; --line:#49483e; --line-2:#5c5b4d;
+    --accent:#ae81ff; --accent-2:#c4a2ff; --accent-soft:rgba(174,129,255,.15); --accent-line:#5b4a80;
+    --teal:#a6e22e; --teal-soft:rgba(166,226,46,.14); --teal-line:#5c6f1c;
+    --amber:#fd971f; --amber-soft:rgba(253,151,31,.13); --amber-line:#6f4a17; --amber-ink:#ffc27a;
+    --cyan:#66d9ef; --danger:#f92672; --shadow:0 1px 3px rgba(0,0,0,.5);
+  }
+  [data-theme="material-darker"]{
+    --bg:#1a1a1a; --surface:#212121; --surface-2:#1c1c1c; --surface-3:#2f2f2f;
+    --ink:#eeffff; --ink-2:#b2c4c9; --ink-3:#616a71; --line:#333333; --line-2:#454545;
+    --accent:#c792ea; --accent-2:#d6adf0; --accent-soft:rgba(199,146,234,.15); --accent-line:#5f4a73;
+    --teal:#c3e88d; --teal-soft:rgba(195,232,141,.13); --teal-line:#5a6b3c;
+    --amber:#f78c6c; --amber-soft:rgba(247,140,108,.13); --amber-line:#6d4636; --amber-ink:#f9b39b;
+    --cyan:#89ddff; --danger:#ff5370; --shadow:0 1px 3px rgba(0,0,0,.5);
+  }
+  [data-theme="nord"]{
+    --bg:#2b303b; --surface:#3b4252; --surface-2:#2e3440; --surface-3:#434c5e;
+    --ink:#eceff4; --ink-2:#d8dee9; --ink-3:#7b88a1; --line:#434c5e; --line-2:#4c566a;
+    --accent:#88c0d0; --accent-2:#8fbcbb; --accent-soft:rgba(136,192,208,.16); --accent-line:#4a5f6b;
+    --teal:#a3be8c; --teal-soft:rgba(163,190,140,.15); --teal-line:#55684a;
+    --amber:#d08770; --amber-soft:rgba(208,135,112,.15); --amber-line:#6b4d42; --amber-ink:#e0a892;
+    --cyan:#81a1c1; --danger:#bf616a; --shadow:0 1px 3px rgba(0,0,0,.45);
+  }
+  [data-theme="eclipse"]{
+    --bg:#f4f4f4; --surface:#ffffff; --surface-2:#f0f0f0; --surface-3:#e4e4e4;
+    --ink:#1c1c1c; --ink-2:#404040; --ink-3:#7a7a7a; --line:#d4d4d4; --line-2:#c2c2c2;
+    --accent:#7f0055; --accent-2:#5f0040; --accent-soft:#f6e6f0; --accent-line:#d9a7c6;
+    --teal:#3f7f5f; --teal-soft:#e6f0ea; --teal-line:#a9cdb8;
+    --amber:#a0522d; --amber-soft:#f4e7de; --amber-line:#e0c3ac; --amber-ink:#6e3a20;
+    --cyan:#2a00ff; --danger:#c0392b; --shadow:0 1px 3px rgba(0,0,0,.12);
+  }
+  [data-theme="claro"]{
+    --bg:#f3f4f8; --surface:#ffffff; --surface-2:#f3f4f8; --surface-3:#e8eaf2;
+    --ink:#111827; --ink-2:#374151; --ink-3:#6b7280; --line:#d1d5db; --line-2:#c0c4cc;
+    --accent:#7c3aed; --accent-2:#6d28d9; --accent-soft:#f1ecfd; --accent-line:#c9b8f0;
+    --teal:#15803d; --teal-soft:#e6f4ea; --teal-line:#a7d6b6;
+    --amber:#b45309; --amber-soft:#fbf0da; --amber-line:#ebd09a; --amber-ink:#7a4c12;
+    --cyan:#0369a1; --danger:#dc2626; --shadow:0 1px 3px rgba(0,0,0,.12);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);font-size:14px;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+
+  .app{display:grid;grid-template-columns:var(--rail) 1fr;min-height:100vh}
+
+  /* ---- rail ---- */
+  .rail{background:var(--surface);border-right:1px solid var(--line);
+    padding:18px 14px 24px;position:sticky;top:0;height:100vh;overflow-y:auto}
+  .brand{display:flex;align-items:baseline;gap:7px}
+  .brand .mark{font-size:16px;font-weight:600;color:var(--ink)}
+  .brand .ver{font-family:var(--mono);font-size:11px;color:var(--ink-3);
+    border:1px solid var(--line-2);border-radius:4px;padding:1px 5px}
+  .brand-sub{font-size:12px;color:var(--ink-3);line-height:1.5;margin:6px 0 18px}
+  nav{display:flex;flex-direction:column}
+  .navgroup{margin-bottom:14px}
+  .glabel{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--ink-3);padding:0 8px;margin-bottom:5px;display:block}
+  .navitem{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;
+    border:none;cursor:pointer;font-family:var(--body);font-size:13px;color:var(--ink-2);
+    padding:7px 8px;border-radius:5px;margin-bottom:1px;line-height:1.25}
+  .navitem:hover{background:var(--surface-3)}
+  .navitem.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .navitem .idx{font-family:var(--mono);font-size:11px;width:19px;height:19px;flex:0 0 19px;
+    display:grid;place-items:center;border:1px solid var(--line-2);border-radius:5px;color:var(--ink-3)}
+  .navitem.active .idx{border-color:var(--accent-line);color:var(--accent);background:var(--surface)}
+  .navitem.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .credit{font-family:var(--mono);font-size:10px;color:var(--ink-3);line-height:1.6;
+    padding:14px 8px 0;border-top:1px solid var(--line);margin-top:6px}
+
+  /* ---- main ---- */
+  .main{padding:30px 34px 100px;max-width:1000px}
+  .lede{font-size:15px;line-height:1.65;max-width:66ch;color:var(--ink-2);margin:0 0 30px}
+  .lede b{color:var(--teal);font-weight:600}
+  .block{margin-bottom:34px;scroll-margin-top:20px}
+  .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:9px}
+  h2{font-family:var(--disp);font-weight:600;font-size:19px;margin:0 0 13px;color:var(--ink)}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;box-shadow:var(--shadow)}
+
+  /* ---- controls ---- */
+  .btn{font-family:var(--body);font-size:13px;font-weight:600;cursor:pointer;background:transparent;
+    color:var(--accent);border:1px solid var(--accent-line);border-radius:5px;padding:7px 14px;
+    display:inline-flex;align-items:center;gap:6px;transition:background .12s,border-color .12s}
+  .btn:hover{background:var(--accent-soft)}
+  .btn.primary{background:var(--accent-soft)}
+  .btn.ghost{color:var(--ink-2);border-color:var(--line-2)}
+  .btn.ghost:hover{background:var(--surface-3)}
+  .btn.quiet{border-color:transparent;color:var(--ink-3);padding:7px 8px}
+  .btn.quiet:hover{color:var(--ink);background:transparent}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:13px}
+  .sep{flex:1}
+  input[type=file]{display:none}
+  .filehint{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+
+  textarea#data{width:100%;min-height:120px;resize:vertical;font-family:var(--mono);font-size:12.5px;
+    line-height:1.55;padding:12px 13px;border:1px solid var(--line-2);border-radius:6px;
+    background:var(--surface-2);color:var(--ink);tab-size:4}
+  textarea#data:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+
+  .seg{display:inline-flex;background:var(--surface-2);border-radius:6px;padding:3px;gap:2px;
+    border:1px solid var(--line)}
+  .seg button{font-family:var(--body);font-size:12.5px;border:none;background:none;cursor:pointer;
+    color:var(--ink-2);padding:5px 12px;border-radius:4px}
+  .seg button.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:var(--shadow)}
+  .seg.mono button{font-family:var(--mono);font-size:12px}
+
+  /* ---- mapping ---- */
+  .map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(184px,1fr));gap:10px}
+  .col-card{border:1px solid var(--line);border-radius:6px;padding:10px 11px;background:var(--surface-2)}
+  .col-card .cn{font-family:var(--mono);font-size:12.5px;font-weight:600;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;color:var(--ink)}
+  .col-card .meta{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-bottom:8px}
+  .role{display:flex;gap:4px}
+  .role button{flex:1;font-family:var(--body);font-size:11px;font-weight:600;padding:5px 4px;
+    border-radius:5px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink-3);cursor:pointer}
+  .role button.on[data-r=factor]{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent)}
+  .role button.on[data-r=response]{background:var(--amber-soft);border-color:var(--amber-line);color:var(--amber-ink)}
+  .role button.on[data-r=ignore]{background:var(--surface-3);border-color:var(--line-2);color:var(--ink-2)}
+
+  .opts{display:flex;gap:26px;flex-wrap:wrap;margin-top:16px;padding-top:15px;
+    border-top:1px solid var(--line);align-items:center}
+  .opt{display:flex;align-items:center;gap:9px}
+  .opt .lbl{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.02em}
+
+  /* ---- verdict ---- */
+  .verdict{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--teal);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:17px 20px;margin-bottom:26px}
+  .verdict .headline{font-size:18px;line-height:1.5;margin:6px 0 0;color:var(--ink)}
+  .verdict .headline .sig{color:var(--teal);font-weight:600}
+  .verdict .headline .non{color:var(--ink-3)}
+  .verdict .headline i{color:var(--amber-ink);font-style:normal;font-family:var(--mono);font-size:.92em}
+  .verdict .meta{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:9px}
+
+  /* ---- factor cards ---- */
+  .factor-list{display:grid;gap:11px}
+  .factor{display:grid;grid-template-columns:1fr 190px;gap:18px;align-items:center;
+    border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);
+    box-shadow:var(--shadow);padding:15px 17px;border-left-width:3px}
+  .factor.sig{border-left-color:var(--teal)}
+  .factor.nsig{border-left-color:var(--line-2)}
+  .factor .fname{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--ink);
+    display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.05em;padding:2px 7px;
+    border-radius:99px;text-transform:uppercase}
+  .tag.sig{background:var(--teal-soft);color:var(--teal)}
+  .tag.nsig{background:var(--surface-3);color:var(--ink-3)}
+  .factor .levels{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:3px}
+  .stat-row{display:flex;gap:20px;margin-top:11px;flex-wrap:wrap}
+  .stat{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+  .stat b{color:var(--ink);font-weight:600}
+  .stat .p.hit{color:var(--teal);font-weight:600}
+  .spark{width:190px;height:96px}
+
+  /* ---- two-way ---- */
+  .tw-controls{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  select.fsel{font-family:var(--mono);font-size:12.5px;padding:7px 9px;border:1px solid var(--line-2);
+    border-radius:6px;background:var(--surface-2);color:var(--ink)}
+  select.fsel:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .tw-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:start}
+  table.anova{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+  table.anova th{text-align:right;font-weight:600;color:var(--ink-3);font-size:10px;letter-spacing:.05em;
+    text-transform:uppercase;padding:0 0 8px;border-bottom:1.5px solid var(--line-2)}
+  table.anova th:first-child{text-align:left}
+  table.anova td{text-align:right;padding:9px 0;border-bottom:1px solid var(--line);color:var(--ink-2)}
+  table.anova td:first-child{text-align:left;font-weight:600;color:var(--ink)}
+  table.anova tr.hit td{color:var(--teal)}
+  table.anova tr.resid td{color:var(--ink-3);border-bottom:none}
+  .plot-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--ink-3);margin-bottom:6px}
+  .interplot{width:100%;height:290px}
+  .caption{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-top:10px;line-height:1.6}
+
+  /* ---- descriptive ---- */
+  details.desc summary{cursor:pointer;font-family:var(--body);font-weight:600;font-size:13.5px;
+    padding:4px 0;list-style:none;color:var(--ink-2)}
+  details.desc summary::-webkit-details-marker{display:none}
+  details.desc summary::before{content:"▸ ";color:var(--accent)}
+  details.desc[open] summary::before{content:"▾ "}
+  .desc-scroll{overflow-x:auto;margin-top:12px}
+  table.desc-t{border-collapse:collapse;font-family:var(--mono);font-size:11.5px;width:100%}
+  table.desc-t th{position:sticky;top:0;background:var(--surface-2);text-align:right;color:var(--ink-3);
+    font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:6px 12px 6px 0;
+    border-bottom:1.5px solid var(--line-2);white-space:nowrap}
+  table.desc-t td{text-align:right;padding:5px 12px 5px 0;border-bottom:1px solid var(--line);
+    white-space:nowrap;color:var(--ink-2)}
+  table.desc-t td.cfg,table.desc-t th.cfg{text-align:left;font-weight:600;color:var(--ink)}
+  table.desc-t tr.best td{background:var(--teal-soft);color:var(--ink)}
+
+  /* svg plot bits */
+  .gridline{stroke:var(--line);stroke-width:1}
+  .axis{stroke:var(--line-2);stroke-width:1}
+  .whisker{stroke:var(--ink-3);stroke-width:1.2}
+  .ticklbl{font-family:var(--mono);font-size:9px;fill:var(--ink-3)}
+  .axlbl{font-family:var(--mono);font-size:10px;fill:var(--ink-3)}
+
+  .err{background:var(--surface-2);border:1px solid var(--danger);color:var(--danger);
+    font-family:var(--mono);font-size:12.5px;padding:11px 14px;border-radius:6px;margin-top:12px}
+  .note{background:var(--amber-soft);border:1px solid var(--amber-line);color:var(--amber-ink);
+    font-family:var(--mono);font-size:11.5px;padding:10px 13px;border-radius:6px;margin-top:12px;line-height:1.55}
+
+  /* ---- topbar ---- */
+  .content{min-width:0;display:flex;flex-direction:column}
+  .topbar{display:flex;align-items:center;gap:10px;padding:8px 24px;flex-wrap:wrap;
+    border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:5}
+  .topbar .spacer{flex:1}
+  .stage-pill{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);padding:4px 10px;border-radius:5px}
+  .stage-pill b{color:var(--accent);font-weight:600}
+  .iconbtn{font-family:var(--body);font-size:13px;cursor:pointer;background:transparent;color:var(--ink);
+    border:1px solid var(--line);border-radius:5px;padding:5px 10px;display:inline-flex;align-items:center;gap:5px}
+  .iconbtn:hover{background:var(--surface-2)}
+  .iconbtn:focus-visible,.theme-select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .theme-select{font-family:var(--body);font-size:12.5px;cursor:pointer;background:transparent;color:var(--ink);
+    border:1px solid var(--line);border-radius:5px;padding:5px 8px;max-width:180px}
+  .theme-select:hover{border-color:var(--line-2)}
+  .theme-select option{background:var(--surface);color:var(--ink)}
+
+  /* ---- modal ---- */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;
+    justify-content:center;padding:48px 16px;z-index:50;overflow-y:auto}
+  .modal-overlay[hidden]{display:none}
+  .modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    max-width:620px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+  .modal.wide{max-width:780px}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;
+    border-bottom:1px solid var(--line)}
+  .modal-head .mt{font-family:var(--disp);font-weight:600;font-size:17px;color:var(--ink);
+    display:flex;align-items:baseline;gap:8px}
+  .modal-head .mt b{color:var(--accent)}
+  .modal-close{background:none;border:none;color:var(--ink-3);font-size:18px;cursor:pointer;
+    line-height:1;padding:4px 8px;border-radius:5px}
+  .modal-close:hover{background:var(--surface-2);color:var(--ink)}
+  .modal-body{padding:18px 22px 24px;font-size:13.5px;color:var(--ink-2);line-height:1.62}
+  .modal-body h4{font-family:var(--disp);font-weight:600;font-size:12px;color:var(--ink);margin:18px 0 8px;
+    text-transform:uppercase;letter-spacing:.04em}
+  .modal-body h4:first-child{margin-top:0}
+  .modal-body p{margin:8px 0}
+  .modal-body ul,.modal-body ol{margin:6px 0;padding-left:20px}
+  .modal-body li{margin:4px 0}
+  .modal-body b{color:var(--ink)}
+  .modal-body code{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--surface-2);
+    border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  .modal-body .refs{color:var(--ink-3)}
+  .modal-body ol.bib{font-size:12px;color:var(--ink-3);line-height:1.55}
+  .modal-body ol.bib li{margin:7px 0}
+  .modal-body ol.bib li b{color:var(--ink-2)}
+
+  /* ---- decision tree ---- */
+  .tree-wrap{overflow-x:auto}
+  .tree-svg{width:100%;min-width:580px;height:auto;display:block}
+  .tree-summary{margin-top:16px;font-size:13.5px;color:var(--ink-2);line-height:1.6;
+    border-top:1px solid var(--line);padding-top:14px}
+  .tree-summary b{color:var(--ink)}
+  .tree-summary .rec{color:var(--accent);font-weight:600}
+  .tree-summary .sig{color:var(--teal);font-weight:600}
+  .tree-summary .non{color:var(--ink-3)}
+
+  /* ---- sanfonas explicativas ---- */
+  .explain{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface-2);margin:0 0 14px;overflow:hidden}
+  .explain > summary{cursor:pointer;list-style:none;padding:10px 14px;font-family:var(--body);font-size:13px;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:8px;user-select:none}
+  .explain > summary::-webkit-details-marker{display:none}
+  .explain > summary::before{content:"\25B8";font-size:11px;transition:transform .2s;color:var(--accent)}
+  .explain[open] > summary::before{transform:rotate(90deg)}
+  .explain > summary:hover{background:var(--surface-3)}
+  .explain .ebody{padding:2px 16px 14px;font-size:13px;color:var(--ink-2);line-height:1.62}
+  .explain .ebody p{margin:9px 0}
+  .explain .ebody b{color:var(--ink)}
+  .explain .ebody code{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  .explain .ebody ul{margin:8px 0;padding-left:20px}
+  .explain .ebody li{margin:5px 0}
+  .explain .ebody .tag{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:99px}
+  .explain .ebody .tag.sig{background:var(--teal-soft);color:var(--teal)}
+
+  /* ---- RSM optimization ---- */
+  .rsm-headline{font-size:15px;color:var(--ink-2);line-height:1.6;margin-bottom:14px}
+  .rsm-headline b{color:var(--ink)}
+  .rsm-headline .best{color:var(--teal);font-weight:600}
+  .opt-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:6px}
+  .opt-card{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:6px;
+    padding:10px 12px;background:var(--surface-2)}
+  .opt-card .fn{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink)}
+  .opt-card .val{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--teal);margin:3px 0}
+  .opt-card .rng{font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
+  .rsm-note{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin:12px 0}
+  .rsm-note b{color:var(--ink-2)}
+  .rsm-grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:16px}
+  .heat-controls{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .heat-wrap{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap}
+  .heat{flex:1;min-width:280px;height:auto}
+  .heat-legend{display:flex;flex-direction:column;justify-content:space-between;font-family:var(--mono);
+    font-size:9.5px;color:var(--ink-3);padding:6px 0}
+  .heat-bar{width:12px;flex:1;border-radius:3px;border:1px solid var(--line);margin:4px auto}
+  details.coefs summary{cursor:pointer;font-family:var(--body);font-weight:600;font-size:13px;color:var(--accent);
+    list-style:none;padding:6px 0}
+  details.coefs summary::-webkit-details-marker{display:none}
+  details.coefs summary::before{content:"\25B8";font-size:11px;color:var(--accent);margin-right:6px;display:inline-block;transition:transform .2s}
+  details.coefs[open] summary::before{transform:rotate(90deg)}
+
+  #map-panel,#results{display:none}
+
+  @media(max-width:840px){
+    .app{grid-template-columns:1fr}
+    .rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line);
+      padding:12px 14px}
+    nav{flex-direction:row;flex-wrap:wrap;gap:4px}
+    .navgroup{margin:0}
+    .glabel{display:none}
+    .navitem{width:auto;padding:6px 10px}
+    .navitem span:not(.idx){display:none}
+    .navitem .idx{margin:0}
+    .credit{display:none}
+    .topbar{padding:8px 16px}
+    .main{padding:22px 16px 80px}
+    .factor{grid-template-columns:1fr}
+    .spark{width:100%}
+    .tw-grid{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+  html{scroll-behavior:smooth}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="rail">
+    <div class="brand"><span class="mark">🧪 Fato<b>rial</b></span><span class="ver">v0</span></div>
+    <div class="brand-sub">Análise de planejamento de experimentos — quais parâmetros afetam o desempenho.</div>
+    <nav id="nav">
+      <div class="navgroup">
+        <button class="navitem active" data-target="top"><span class="idx">·</span><span>Início</span></button>
+      </div>
+      <div class="navgroup">
+        <span class="glabel">DOE · dados</span>
+        <button class="navitem" data-target="sec-dados"><span class="idx">1</span><span>Tabela de resultados</span></button>
+        <button class="navitem" data-target="sec-map"><span class="idx">2</span><span>Papéis das colunas</span></button>
+      </div>
+      <div class="navgroup">
+        <span class="glabel">DOE · análise</span>
+        <button class="navitem" data-target="sec-screen"><span class="idx">3</span><span>Triagem de fatores</span></button>
+        <button class="navitem" data-target="sec-tree"><span class="idx">4</span><span>Árvore de decisão</span></button>
+        <button class="navitem" data-target="sec-tw"><span class="idx">5</span><span>Dois fatores + interação</span></button>
+        <button class="navitem" data-target="sec-desc"><span class="idx">6</span><span>Por configuração</span></button>
+        <button class="navitem" data-target="sec-rsm"><span class="idx">7</span><span>Otimização</span></button>
+      </div>
+    </nav>
+    <div class="credit">HTML · CSS · JavaScript puro<br>estatística conferida vs. Montgomery<br>feito com auxílio de Claude</div>
+  </aside>
+
+  <div class="content">
+    <div class="topbar">
+      <span class="stage-pill" id="statusPill">sem dados</span>
+      <div class="spacer"></div>
+      <button class="iconbtn" id="helpBtn" title="Ajuda">❔ Ajuda</button>
+      <button class="iconbtn" id="aboutBtn" title="Sobre">ℹ️ Sobre</button>
+      <select class="theme-select" id="themeSelect" title="Tema" aria-label="Tema">
+        <option value="dracula">🎨 Dracula</option>
+        <option value="monokai">🎨 Monokai</option>
+        <option value="material-darker">🎨 Material Darker</option>
+        <option value="nord">🎨 Nord</option>
+        <option value="eclipse">🎨 Eclipse</option>
+        <option value="claro">🎨 Claro</option>
+      </select>
+    </div>
+
+  <main class="main" id="top">
+    <div class="eyebrow">Visão geral</div>
+    <h2 style="font-size:24px">Quais parâmetros de fato importam?</h2>
+    <p class="lede">
+      Você roda os experimentos com a sua metaheurística; este app cuida da estatística.
+      Cole a tabela de resultados, diga quais colunas são <b>fatores</b> e qual é a
+      <b>resposta</b>, e ele indica — com p-valor — quais parâmetros afetam o desempenho e
+      quais são apenas ruído. Genérico: serve para qualquer algoritmo ou experimento.
+    </p>
+
+    <!-- 1. DADOS -->
+    <section class="block" id="sec-dados">
+      <div class="eyebrow">Passo 1 · dados</div>
+      <h2>Tabela de resultados.</h2>
+      <details class="explain">
+        <summary>Como devem ser os meus dados?</summary>
+        <div class="ebody">
+          <p>Use o <b>formato longo</b>: cada linha é <b>uma execução</b> da sua metaheurística. As colunas são os <b>fatores</b> (os parâmetros que você variou) mais uma coluna de <b>resposta</b> (a métrica de desempenho: valor da função objetivo, tempo, gap…). Uma coluna opcional de execução/repetição pode existir e é ignorada na análise.</p>
+          <p>Exemplo: <code>mutation,crossover,pop_size,run,best_fitness</code> — três fatores, o número da execução e a resposta.</p>
+          <p><b>Repita cada configuração várias vezes.</b> Metaheurísticas são estocásticas: sem repetições não há como separar o efeito do parâmetro do simples acaso (a variabilidade entre execuções é justamente o que os testes usam como "régua"). O separador (vírgula, ponto-e-vírgula ou tabulação) é detectado sozinho, e vírgula decimal é aceita.</p>
+        </div>
+      </details>
+      <div class="card">
+        <textarea id="data" spellcheck="false" placeholder="mutation,crossover,pop_size,run,best_fitness&#10;0.01,0.6,50,1,164.8&#10;0.01,0.6,50,2,160.0&#10;..."></textarea>
+        <div class="controls">
+          <button class="btn primary" id="run">▶ Analisar</button>
+          <button class="btn ghost" id="example">⚡ Carregar exemplo</button>
+          <label class="btn ghost" for="file">📂 Abrir CSV…</label>
+          <input type="file" id="file" accept=".csv,.tsv,.txt">
+          <span class="sep"></span>
+          <span class="filehint" id="filehint"></span>
+          <button class="btn quiet" id="clear">✕ Limpar</button>
+        </div>
+        <div id="parse-err"></div>
+        <div class="caption">CSV ou TSV · uma execução por linha · o separador (vírgula, ponto-e-vírgula ou tabulação) é detectado automaticamente.</div>
+      </div>
+    </section>
+
+    <!-- 2. MAPPING -->
+    <section class="block" id="sec-map" style="display:none">
+      <div class="eyebrow">Passo 2 · <span id="rowcount"></span></div>
+      <h2>Papéis das colunas.</h2>
+      <details class="explain">
+        <summary>O que definir aqui (fator, resposta, α, objetivo)?</summary>
+        <div class="ebody">
+          <p>Cada coluna recebe um papel:</p>
+          <ul>
+            <li><b>Fator</b> — um parâmetro que você variou; seus valores distintos são os <b>níveis</b> (ex.: <code>mutation</code> com níveis 0,01 / 0,05 / 0,10).</li>
+            <li><b>Resposta</b> — a métrica de desempenho a ser explicada. É sempre numérica e só pode haver uma.</li>
+            <li><b>Ignorar</b> — colunas que não entram na análise, como o número da execução.</li>
+          </ul>
+          <p><b>α (nível de significância)</b> é o limiar do p-valor. Com α = 0,05 você aceita 5% de chance de apontar um efeito que na verdade não existe (falso positivo). Diminua para 0,01 se quiser ser mais conservador.</p>
+          <p><b>Objetivo (minimizar/maximizar)</b> não muda nenhum teste — serve apenas para destacar qual configuração é a "melhor" na tabela do passo 6.</p>
+        </div>
+      </details>
+      <div class="card">
+        <div class="map-grid" id="map-grid"></div>
+        <div class="opts">
+          <div class="opt">
+            <span class="lbl">significância α</span>
+            <div class="seg mono" id="alpha-seg">
+              <button data-a="0.01">0,01</button>
+              <button data-a="0.05" class="on">0,05</button>
+              <button data-a="0.10">0,10</button>
+            </div>
+          </div>
+          <div class="opt">
+            <span class="lbl">objetivo</span>
+            <div class="seg" id="obj-seg">
+              <button data-o="min" class="on">minimizar</button>
+              <button data-o="max">maximizar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="results">
+      <div class="verdict" id="verdict"></div>
+
+      <!-- 3. SCREENING -->
+      <section class="block" id="sec-screen">
+        <div class="eyebrow">Passo 3 · triagem</div>
+        <h2>Triagem de fatores.</h2>
+        <details class="explain">
+          <summary>Como ler a triagem?</summary>
+          <div class="ebody">
+            <p>Cada cartão testa <b>um fator isoladamente</b>: os valores da resposta são agrupados pelos níveis daquele fator e se pergunta se as médias/distribuições diferem entre os grupos.</p>
+            <ul>
+              <li><b>ANOVA (F)</b> — teste paramétrico, compara as médias entre os níveis.</li>
+              <li><b>Kruskal–Wallis (H)</b> — versão não-paramétrica, por postos; mais confiável quando os dados não são normais (comum em metaheurística). Se os dois concordam, ótimo; se divergem, confie no que respeita as suposições — é o que o passo 4 decide.</li>
+              <li><b>p &lt; α</b> ⇒ o fator <span class="tag sig">afeta</span> a resposta. O <b>η²</b> é o tamanho do efeito: a fração da variação explicada pelo fator (0 = nada, perto de 1 = domina).</li>
+            </ul>
+            <p>O mini-gráfico mostra a <b>média da resposta por nível</b> com barras de ±1 erro-padrão: uma linha bem inclinada indica efeito forte; quase plana, efeito fraco.</p>
+            <p><b>Dois cuidados.</b> (1) A triagem é <b>marginal</b> — não enxerga interações entre fatores; isso é o passo 5. (2) Significância não é o mesmo que importância: com muitas execuções, efeitos minúsculos ficam "significativos". Olhe o <b>η²</b> para julgar a relevância prática.</p>
+          </div>
+        </details>
+        <div class="factor-list" id="factor-list"></div>
+        <div class="caption">
+          Paramétrico: ANOVA de um fator (F). Não-paramétrico: Kruskal–Wallis (H, χ²), recomendado
+          quando os resultados não são normais — comum com metaheurísticas. Triagem <i>marginal</i>:
+          avalia cada fator isoladamente; interações vêm no passo 4.
+        </div>
+      </section>
+
+      <!-- 4. DECISION TREE -->
+      <section class="block" id="sec-tree">
+        <div class="eyebrow">Passo 4 · seleção de teste</div>
+        <h2>Árvore de decisão.</h2>
+        <details class="explain">
+          <summary>Por que uma árvore? Como o teste é escolhido?</summary>
+          <div class="ebody">
+            <p>A ANOVA e o teste t são <b>paramétricos</b>: só são válidos se os dados satisfazem duas suposições. A árvore testa essas suposições nos seus dados e desce até a folha com o teste <b>apropriado</b> — o caminho seguido fica aceso.</p>
+            <ul>
+              <li><b>Normalidade</b> (nó 1) — <code>Shapiro-Wilk</code> nos resíduos (valor − média do nível). Se p &gt; α, considera-se normal ✓.</li>
+              <li><b>Homoscedasticidade</b> (nó 2) — <code>Levene</code> (centrado na mediana) verifica se as variâncias dos grupos são parecidas. Só é avaliado quando há normalidade.</li>
+            </ul>
+            <p>As folhas:</p>
+            <ul>
+              <li><b>Paramétrico clássico</b> — normal e variâncias iguais → <b>ANOVA de um fator</b> (ou <b>t de Student</b> para 2 grupos).</li>
+              <li><b>Paramétrico robusto</b> — normal, mas variâncias diferentes → <b>Welch ANOVA</b> (ou <b>t de Welch</b>), que corrige a heterogeneidade.</li>
+              <li><b>Não-paramétrico</b> — normalidade rejeitada → <b>Kruskal–Wallis</b> (ou <b>Mann-Whitney</b>), que não depende de normalidade.</li>
+            </ul>
+            <p>A folha alcançada é executada e o resultado (estatística, p e veredito) aparece logo abaixo. Troque o fator no seletor para analisar outra comparação.</p>
+            <p><b>Nota:</b> com muitas observações o Shapiro-Wilk fica muito sensível e pode rejeitar a normalidade por desvios ínfimos — leve o resultado como um guia, não como um veredito absoluto.</p>
+          </div>
+        </details>
+        <div class="card">
+          <div class="tw-controls">
+            <div class="opt"><span class="lbl">comparar níveis de</span><select class="fsel" id="tree-factor"></select></div>
+          </div>
+          <div id="tree-out"></div>
+        </div>
+      </section>
+
+      <!-- 5. TWO-WAY -->
+      <section class="block" id="sec-tw">
+        <div class="eyebrow">Passo 5 · fatorial</div>
+        <h2>Dois fatores e interação.</h2>
+        <details class="explain">
+          <summary>O que é a interação e como ler o gráfico?</summary>
+          <div class="ebody">
+            <p>A ANOVA fatorial separa a variação da resposta em três partes: o <b>efeito principal de A</b>, o <b>efeito principal de B</b> e a <b>interação A×B</b>. Cada linha da tabela traz SS (soma de quadrados), gl (graus de liberdade), MS, F e p; se p &lt; α, aquela fonte é significativa.</p>
+            <p><b>Interação</b> significa que o efeito de um fator <b>depende do nível do outro</b>. Exemplo: uma taxa de mutação alta pode ajudar com população grande e atrapalhar com população pequena — o "melhor" de um parâmetro muda conforme o outro.</p>
+            <p>No <b>gráfico de interação</b>, cada linha é um nível de B ao longo dos níveis de A:</p>
+            <ul>
+              <li><b>Linhas paralelas</b> ⇒ sem interação: os fatores agem de forma independente.</li>
+              <li><b>Linhas que cruzam ou divergem</b> ⇒ interação: não dá para escolher o melhor nível de A sem saber o nível de B.</li>
+            </ul>
+            <p>Se houver interação forte, interprete os efeitos principais com cautela — o que importa é a <b>combinação</b> de níveis. Precisa de repetições por célula para estimar o erro; sem elas, a interação não é testável.</p>
+          </div>
+        </details>
+        <div class="card">
+          <div class="tw-controls">
+            <div class="opt"><span class="lbl">fator A</span><select class="fsel" id="fa"></select></div>
+            <div class="opt"><span class="lbl">fator B</span><select class="fsel" id="fb"></select></div>
+          </div>
+          <div id="tw-out"></div>
+        </div>
+      </section>
+
+      <!-- 6. DESCRIPTIVE -->
+      <section class="block" id="sec-desc">
+        <div class="eyebrow">Passo 6 · <span id="cfg-hint"></span></div>
+        <h2>Estatística por configuração.</h2>
+        <details class="explain">
+          <summary>O que a tabela descritiva mostra?</summary>
+          <div class="ebody">
+            <p>Aqui cada linha é uma <b>configuração</b> — uma combinação específica de níveis de todos os fatores — resumida sobre as suas repetições: <b>n</b> (execuções), <b>média</b>, <b>desvio-padrão</b>, <b>mediana</b> e <b>mín/máx</b>. A tabela é ordenada pelo objetivo e destaca a melhor configuração média.</p>
+            <p>É uma análise <b>descritiva</b>, não inferencial: ela mostra os números, mas <b>não</b> diz se a diferença entre duas configurações é estatisticamente significativa — isso é papel dos testes dos passos 3 a 5.</p>
+            <p><b>Não olhe só a média.</b> Uma configuração com a melhor média mas <b>desvio-padrão alto</b> é instável (às vezes ótima, às vezes ruim); às vezes uma média um pouco pior com desvio baixo é preferível. Compare média e desvio em conjunto, e use a mediana para reduzir a influência de execuções atípicas.</p>
+          </div>
+        </details>
+        <div class="card">
+          <details class="desc" id="desc-wrap">
+            <summary>Mostrar tabela descritiva (média, desvio, mediana, melhor/pior)</summary>
+            <div class="desc-scroll" id="desc-out"></div>
+          </details>
+        </div>
+      </section>
+
+      <!-- 7. OPTIMIZATION (RSM) -->
+      <section class="block" id="sec-rsm">
+        <div class="eyebrow">Passo 7 · superfície de resposta</div>
+        <h2>Otimização dos fatores.</h2>
+        <details class="explain">
+          <summary>O que é isto e como o ótimo é encontrado?</summary>
+          <div class="ebody">
+            <p>Os passos anteriores dizem <b>quais</b> fatores importam. Este vai além e busca <b>quais valores</b> deles otimizam a resposta — a Metodologia de Superfície de Resposta (RSM) do Montgomery.</p>
+            <p>Em vez de tratar os níveis como categorias, ajusta-se um <b>modelo quadrático</b> (regressão de segundo grau) à resposta em função dos fatores numéricos:</p>
+            <p><code>ŷ = β₀ + Σβᵢxᵢ + Σβᵢᵢxᵢ² + Σβᵢⱼxᵢxⱼ</code></p>
+            <p>Com a superfície ajustada, o app:</p>
+            <ul>
+              <li>encontra o <b>ponto estacionário</b> (onde o gradiente zera) e, pelos <b>autovalores</b>, classifica-o em <b>máximo</b>, <b>mínimo</b> ou <b>sela</b> (análise canônica);</li>
+              <li>faz uma <b>otimização dentro da faixa testada</b> (sem extrapolar) respeitando o objetivo min/max, e reporta os valores recomendados e a resposta prevista;</li>
+              <li>estima uma <b>faixa quase-ótima</b> por fator — o intervalo em que a resposta prevista fica perto do melhor.</li>
+            </ul>
+            <p>O <b>gráfico de contorno</b> mostra a superfície prevista para dois fatores (os demais fixados no ótimo), com o ponto ótimo marcado.</p>
+            <p><b>Cuidados:</b> só entram fatores <b>numéricos</b> com pelo menos 3 níveis (para estimar curvatura). O ótimo é uma <b>previsão do modelo</b> — confirme com execuções extras nas configurações sugeridas, e desconfie se o R² for baixo (o modelo quadrático pode não capturar bem a superfície).</p>
+          </div>
+        </details>
+        <div class="card">
+          <div id="rsm-out"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+  </div>
+</div>
+
+<!-- ===== Modais ===== -->
+<div class="modal-overlay" id="helpOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="modal-head">
+      <span class="mt" id="helpTitle">❔ <b>Ajuda</b> — como usar</span>
+      <button class="modal-close" data-close title="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>O fluxo em sete etapas</h4>
+      <p>Você já rodou os experimentos com a sua metaheurística e tem uma tabela de resultados. Este app faz a análise estatística completa dela.</p>
+      <ol>
+        <li><b>Dados</b> — clique em <b>Carregar exemplo</b> para ver funcionando, ou cole/abra o seu CSV (formato longo: uma execução por linha).</li>
+        <li><b>Papéis das colunas</b> — cada coluna vira <code>fator</code> (um parâmetro), <code>resposta</code> (a métrica) ou <code>ignorar</code>. Aqui também define <b>α</b> (significância) e o <b>objetivo</b> (minimizar/maximizar).</li>
+        <li><b>Triagem de fatores</b> — testa cada fator isoladamente (ANOVA + Kruskal-Wallis) e diz quais afetam a resposta.</li>
+        <li><b>Árvore de decisão</b> — testa as suposições (normalidade, variâncias) e recomenda o <b>teste estatisticamente válido</b> para cada fator.</li>
+        <li><b>Dois fatores + interação</b> — ANOVA fatorial completa, com o termo de interação e o gráfico correspondente.</li>
+        <li><b>Por configuração</b> — estatística descritiva de cada combinação de níveis, ranqueada.</li>
+        <li><b>Otimização</b> — ajusta uma superfície de resposta e encontra os <b>valores dos fatores</b> que minimizam/maximizam a resposta.</li>
+      </ol>
+      <p><b>Dica:</b> cada etapa tem uma sanfona <code>▸</code> que explica em detalhe o que fazer e como interpretar os resultados daquela seção.</p>
+      <h4>Formato da tabela</h4>
+      <p>Colunas para cada fator + uma coluna de resposta (+ opcional de execução/repetição). Separador vírgula, ponto-e-vírgula ou tabulação — detectado automaticamente; vírgula decimal é aceita. Exemplo:</p>
+      <p><code>mutation,crossover,pop_size,run,best_fitness</code><br><code>0.05,0.8,100,1,128.4</code></p>
+      <h4>Como ler os testes</h4>
+      <ul>
+        <li><b>ANOVA (F)</b> e <b>t de Student</b> — paramétricos; comparam médias (válidos sob normalidade e variâncias iguais).</li>
+        <li><b>Welch (ANOVA / t)</b> — paramétrico robusto, quando as variâncias diferem entre os grupos.</li>
+        <li><b>Kruskal–Wallis (H)</b> e <b>Mann-Whitney (U)</b> — não-paramétricos, por postos; usados quando a normalidade não vale. A <b>árvore</b> (etapa 4) escolhe qual se aplica.</li>
+        <li><b>p &lt; α</b> ⇒ o fator afeta a resposta. <b>η²</b> indica o tamanho do efeito (fração da variância explicada).</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="aboutOverlay" hidden>
+  <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+    <div class="modal-head">
+      <span class="mt" id="aboutTitle">🧪 <b>Fatorial</b> — sobre</span>
+      <button class="modal-close" data-close title="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Ferramenta de análise de planejamento de experimentos (DOE). A partir de uma tabela de resultados, identifica quais fatores (parâmetros) afetam uma resposta, escolhe o teste estatístico apropriado e otimiza os valores dos fatores — genérica para qualquer metaheurística ou experimento com fatores e níveis.</p>
+      <h4>Métodos estatísticos</h4>
+      <ul>
+        <li><b>Triagem</b> — ANOVA de um fator (F), Kruskal–Wallis (H, χ², com correção de empates) e <b>η²</b> como tamanho de efeito.</li>
+        <li><b>Seleção de teste (árvore de decisão)</b> — testa as suposições com <b>Shapiro-Wilk</b> (normalidade dos resíduos) e <b>Levene/Brown-Forsythe</b> (homoscedasticidade), e recomenda: <b>t de Student</b> ou <b>ANOVA</b> (clássico), <b>t/ANOVA de Welch</b> (robusto) ou <b>Mann-Whitney</b>/<b>Kruskal-Wallis</b> (não-paramétrico).</li>
+        <li><b>ANOVA fatorial de dois fatores</b> com termo de <b>interação</b> (SS, gl, MS, F, p) e gráfico de interação.</li>
+        <li><b>Estatística descritiva</b> por configuração: média, desvio, mediana, melhor/pior.</li>
+        <li><b>Otimização (superfície de resposta, RSM)</b> — regressão quadrática por mínimos quadrados em variáveis codificadas; <b>ponto estacionário</b> e análise canônica por <b>autovalores</b> (máximo/mínimo/sela); otimização dentro da região testada, faixas quase-ótimas e mapa de contorno.</li>
+      </ul>
+      <h4>Validação</h4>
+      <p>Todas as distribuições (F, χ², t e normal) e testes foram implementados do zero, sem bibliotecas, e conferidos contra referências:</p>
+      <ul>
+        <li>ANOVA de um e dois fatores — contra exemplos publicados no <b>Montgomery</b> (SS, F e p casa por casa).</li>
+        <li>Shapiro-Wilk, Levene, Welch (ANOVA/t) e Mann-Whitney — contra o <b>SciPy</b> / <b>pingouin</b>.</li>
+        <li>Regressão quadrática, ponto estacionário e autovalores (RSM) — contra o <b>NumPy</b>.</li>
+      </ul>
+      <h4>Tecnologia</h4>
+      <p>Arquivo <code>.html</code> único, em HTML, CSS e JavaScript puro, sem bibliotecas nem dependências externas — roda offline. Gráficos (efeitos, interação, árvore, contorno) desenhados em SVG nativo. Seis temas de editor (Dracula, Monokai, Material Darker, Nord, Eclipse, Claro).</p>
+      <h4 class="refs">Referências</h4>
+      <ol class="bib">
+        <li><b>Montgomery, D. C.</b> (2017). <i>Design and Analysis of Experiments</i>. Wiley (ANOVA fatorial e superfície de resposta).</li>
+        <li><b>Box, G. E. P., &amp; Wilson, K. B.</b> (1951). On the experimental attainment of optimum conditions. <i>JRSS B</i>, 13(1), 1–45.</li>
+        <li><b>Talbi, E-G.</b> (2009). <i>Metaheuristics: From Design to Implementation</i>. Wiley (seção 1.6, parameter tuning).</li>
+        <li><b>Shapiro, S. S., &amp; Wilk, M. B.</b> (1965); <b>Royston, P.</b> (1992, algoritmo AS R94). Teste de normalidade.</li>
+        <li><b>Brown, M. B., &amp; Forsythe, A. B.</b> (1974). Robust tests for the equality of variances. <i>JASA</i>, 69(346).</li>
+        <li><b>Welch, B. L.</b> (1951). On the comparison of several mean values. <i>Biometrika</i>, 38(3/4).</li>
+        <li><b>Mann, H. B., &amp; Whitney, D. R.</b> (1947); <b>Kruskal, W. H., &amp; Wallis, W. A.</b> (1952). Testes por postos.</li>
+        <li><b>Derrac, J., García, S., Molina, D., &amp; Herrera, F.</b> (2011). A practical tutorial on nonparametric statistical tests. <i>Swarm and Evolutionary Computation</i>, 1(1), 3–18.</li>
+      </ol>
+      <p class="refs">Feito com auxílio de Claude (Anthropic).</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==========================================================
+//  STATISTICS ENGINE (verified against Montgomery, DOE)
+// ==========================================================
+function logGamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,tmp=x+5.5;tmp-=(x+.5)*Math.log(tmp);let ser=1.000000000190015;for(let j=0;j<6;j++){y+=1;ser+=c[j]/y;}return -tmp+Math.log(2.5066282746310005*ser/x);}
+function betacf(x,a,b){const F=1e-30,qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<F)d=F;d=1/d;let h=d;for(let m=1;m<=200;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<F)d=F;c=1+aa/c;if(Math.abs(c)<F)c=F;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<F)d=F;c=1+aa/c;if(Math.abs(c)<F)c=F;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<3e-12)break;}return h;}
+function regIncBeta(x,a,b){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(logGamma(a+b)-logGamma(a)-logGamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(x,a,b)/a:1-bt*betacf(1-x,b,a)/b;}
+function fCDF(f,d1,d2){if(f<=0)return 0;return regIncBeta(d1*f/(d1*f+d2),d1/2,d2/2);}
+function fP(f,d1,d2){if(!isFinite(f)||f<=0)return 1;return 1-fCDF(f,d1,d2);}
+function lowerRegGamma(s,x){if(x<=0)return 0;const gln=logGamma(s);if(x<s+1){let ap=s,sum=1/s,del=sum;for(let n=0;n<200;n++){ap+=1;del*=x/ap;sum+=del;if(Math.abs(del)<Math.abs(sum)*1e-14)break;}return sum*Math.exp(-x+s*Math.log(x)-gln);}const F=1e-30;let b=x+1-s,c=1/F,d=1/b,h=d;for(let i=1;i<=200;i++){const an=-i*(i-s);b+=2;d=an*d+b;if(Math.abs(d)<F)d=F;c=b+an/c;if(Math.abs(c)<F)c=F;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<1e-14)break;}return 1-Math.exp(-x+s*Math.log(x)-gln)*h;}
+function chiP(x,k){if(!isFinite(x)||x<=0)return 1;return 1-lowerRegGamma(k/2,x/2);}
+function mean(a){return a.reduce((s,v)=>s+v,0)/a.length;}
+function variance(a){if(a.length<2)return 0;const m=mean(a);return a.reduce((s,v)=>s+(v-m)*(v-m),0)/(a.length-1);}
+function median(a){const s=[...a].sort((x,y)=>x-y),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;}
+function describe(a){const s=[...a].sort((x,y)=>x-y);return{n:a.length,mean:mean(a),sd:Math.sqrt(variance(a)),median:median(a),min:s[0],max:s[s.length-1]};}
+function oneWayANOVA(groups){groups=groups.filter(g=>g.length>0);const k=groups.length,all=groups.flat(),N=all.length;if(k<2||N<=k)return null;const grand=mean(all);let ssB=0,ssW=0;for(const g of groups){const gm=mean(g);ssB+=g.length*(gm-grand)*(gm-grand);for(const v of g)ssW+=(v-gm)*(v-gm);}const dfB=k-1,dfW=N-k,msB=ssB/dfB,msW=ssW/dfW,Fv=msW===0?Infinity:msB/msW,ssT=ssB+ssW;return{ssB,ssW,ssT,dfB,dfW,msB,msW,F:Fv,p:fP(Fv,dfB,dfW),etaSq:ssT===0?0:ssB/ssT};}
+function kruskalWallis(groups){groups=groups.filter(g=>g.length>0);const k=groups.length;if(k<2)return null;const t=[];groups.forEach((g,gi)=>g.forEach(v=>t.push({v,gi})));t.sort((a,b)=>a.v-b.v);const N=t.length,ranks=new Array(N);let tie=0,i=0;while(i<N){let j=i;while(j+1<N&&t[j+1].v===t[i].v)j++;const ar=(i+j)/2+1;for(let m=i;m<=j;m++)ranks[m]=ar;const tt=j-i+1;if(tt>1)tie+=tt*tt*tt-tt;i=j+1;}const rs={},ng={};t.forEach((r,idx)=>{rs[r.gi]=(rs[r.gi]||0)+ranks[idx];ng[r.gi]=(ng[r.gi]||0)+1;});let H=0;for(const gi in rs)H+=rs[gi]*rs[gi]/ng[gi];H=12/(N*(N+1))*H-3*(N+1);const corr=1-tie/(N*N*N-N);if(corr>0)H/=corr;const df=k-1;return{H,df,p:chiP(H,df)};}
+function twoWayANOVA(rows,fa,fb,resp){
+  const aL=[...new Set(rows.map(r=>String(r[fa])))],bL=[...new Set(rows.map(r=>String(r[fb])))];
+  const a=aL.length,b=bL.length,N=rows.length,y=rows.map(r=>+r[resp]),grand=mean(y);
+  const cell={};
+  for(const r of rows){const k=r[fa]+"|"+r[fb];(cell[k]||(cell[k]=[])).push(+r[resp]);}
+  const counts=[];for(const ai of aL)for(const bj of bL){const c=cell[ai+"|"+bj];counts.push(c?c.length:0);}
+  const balanced=counts.every(c=>c===counts[0]);
+  const cm={};for(const k in cell)cm[k]=mean(cell[k]);
+  const mA={};for(const ai of aL)mA[ai]=mean(bL.map(bj=>cm[ai+"|"+bj]).filter(x=>x!==undefined));
+  const mB={};for(const bj of bL)mB[bj]=mean(aL.map(ai=>cm[ai+"|"+bj]).filter(x=>x!==undefined));
+  const nPer=balanced?counts[0]:N/(a*b);
+  let ssA=0,ssB=0,ssAB=0,ssW=0;
+  for(const ai of aL)ssA+=(mA[ai]-grand)**2;ssA*=nPer*b;
+  for(const bj of bL)ssB+=(mB[bj]-grand)**2;ssB*=nPer*a;
+  for(const ai of aL)for(const bj of bL){const c=cm[ai+"|"+bj];if(c===undefined)continue;ssAB+=(c-mA[ai]-mB[bj]+grand)**2;}ssAB*=nPer;
+  for(const k in cell)for(const v of cell[k])ssW+=(v-cm[k])**2;
+  const dfA=a-1,dfB=b-1,dfAB=(a-1)*(b-1),dfW=N-a*b;
+  const res={balanced,a,b,N,aLevels:aL,bLevels:bL,cellMean:cm,mA,mB,factors:{}};
+  if(dfW<=0){res.error="no-rep";return res;}
+  const msW=ssW/dfW;
+  const mk=(ss,df,l)=>{const ms=ss/df,Fv=msW===0?Infinity:ms/msW;return{label:l,ss,df,ms,F:Fv,p:fP(Fv,df,dfW)};};
+  res.factors[fa]=mk(ssA,dfA,fa);res.factors[fb]=mk(ssB,dfB,fb);
+  res.factors["int"]=mk(ssAB,dfAB,fa+" × "+fb);
+  res.residual={ss:ssW,df:dfW,ms:msW};
+  return res;
+}
+
+// ---- assumption & leaf tests (validated vs SciPy/pingouin) ----
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;}
+function normalCDF(z){return 0.5*(1+erf(z/Math.SQRT2));}
+function invNorm(p){const a=[-3.969683028665376e+01,2.209460984245205e+02,-2.759285104469687e+02,1.383577518672690e+02,-3.066479806614716e+01,2.506628277459239e+00],b=[-5.447609879822406e+01,1.615858368580409e+02,-1.556989798598866e+02,6.680131188771972e+01,-1.328068155288572e+01],c=[-7.784894002430293e-03,-3.223964580411365e-01,-2.400758277161838e+00,-2.549732539343734e+00,4.374664141464968e+00,2.938163982698783e+00],d=[7.784695709041462e-03,3.224671290700398e-01,2.445134137142996e+00,3.754408661907416e+00],pl=0.02425,ph=1-pl;let q,r;if(p<pl){q=Math.sqrt(-2*Math.log(p));return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);}if(p<=ph){q=p-0.5;r=q*q;return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);}q=Math.sqrt(-2*Math.log(1-p));return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);}
+function tP2(t,df){if(!isFinite(t))return 0;return regIncBeta(df/(df+t*t),df/2,0.5);}
+function shapiroWilk(x){const n=x.length;if(n<3)return null;const xs=[...x].sort((a,b)=>a-b);const m=new Array(n);for(let i=0;i<n;i++)m[i]=invNorm((i+1-0.375)/(n+0.25));let mm=0;for(let i=0;i<n;i++)mm+=m[i]*m[i];const sq=Math.sqrt(mm),u=1/Math.sqrt(n),a=new Array(n);const an=m[n-1]/sq+0.221157*u-0.147981*u*u-2.071190*u*u*u+4.434685*u**4-2.706056*u**5;const an1=m[n-2]/sq+0.042981*u-0.293762*u*u-1.752461*u*u*u+5.682633*u**4-3.582633*u**5;let phi;if(n>5){phi=(mm-2*m[n-1]*m[n-1]-2*m[n-2]*m[n-2])/(1-2*an*an-2*an1*an1);a[n-1]=an;a[0]=-an;a[n-2]=an1;a[1]=-an1;for(let i=2;i<n-2;i++)a[i]=m[i]/Math.sqrt(phi);}else{phi=(mm-2*m[n-1]*m[n-1])/(1-2*an*an);a[n-1]=an;a[0]=-an;for(let i=1;i<n-1;i++)a[i]=m[i]/Math.sqrt(phi);}const xbar=mean(xs);let num=0,den=0;for(let i=0;i<n;i++){num+=a[i]*xs[i];den+=(xs[i]-xbar)*(xs[i]-xbar);}const W=num*num/den;let p;if(n===3){p=6/Math.PI*(Math.asin(Math.sqrt(W))-Math.asin(Math.sqrt(0.75)));return{W,p:Math.min(1,Math.max(0,p))};}let z;const w1=1-W;if(n<=11){const g=-2.273+0.459*n,mu=0.5440-0.39978*n+0.025054*n*n-0.0006714*n*n*n,sig=Math.exp(1.3822-0.77857*n+0.062767*n*n-0.0020322*n*n*n);z=(-Math.log(g-Math.log(w1))-mu)/sig;}else{const ln=Math.log(n),mu=-1.5861-0.31082*ln-0.083751*ln*ln+0.0038915*ln*ln*ln,sig=Math.exp(-0.4803-0.082676*ln+0.0030302*ln*ln);z=(Math.log(w1)-mu)/sig;}return{W,p:1-normalCDF(z),z};}
+function leveneTest(groups){groups=groups.filter(g=>g.length>0);const z=groups.map(g=>{const md=median(g);return g.map(v=>Math.abs(v-md));});const a=oneWayANOVA(z);if(!a)return null;return{W:a.F,df1:a.dfB,df2:a.dfW,p:a.p};}
+function welchANOVA(groups){groups=groups.filter(g=>g.length>1);const k=groups.length;if(k<2)return null;const n=groups.map(g=>g.length),mu=groups.map(mean),v=groups.map(variance),w=groups.map((g,j)=>n[j]/v[j]),W=w.reduce((s,x)=>s+x,0),xbar=groups.reduce((s,g,j)=>s+w[j]*mu[j],0)/W;let num=0;for(let j=0;j<k;j++)num+=w[j]*(mu[j]-xbar)**2;num/=(k-1);let A=0;for(let j=0;j<k;j++)A+=(1-w[j]/W)**2/(n[j]-1);const F=num/(1+(2*(k-2)/(k*k-1))*A),df1=k-1,df2=(k*k-1)/(3*A);return{F,df1,df2,p:fP(F,df1,df2)};}
+function studentT(a,b){const n1=a.length,n2=b.length,m1=mean(a),m2=mean(b),sp2=((n1-1)*variance(a)+(n2-1)*variance(b))/(n1+n2-2),t=(m1-m2)/Math.sqrt(sp2*(1/n1+1/n2)),df=n1+n2-2;return{t,df,p:tP2(t,df)};}
+function welchT(a,b){const n1=a.length,n2=b.length,v1=variance(a),v2=variance(b),t=(mean(a)-mean(b))/Math.sqrt(v1/n1+v2/n2),df=(v1/n1+v2/n2)**2/((v1/n1)**2/(n1-1)+(v2/n2)**2/(n2-1));return{t,df,p:tP2(t,df)};}
+function mannWhitneyU(a,b){const n1=a.length,n2=b.length,N=n1+n2,all=a.map(v=>({v,g:0})).concat(b.map(v=>({v,g:1})));all.sort((x,y)=>x.v-y.v);const ranks=new Array(N);let tie=0,i=0;while(i<N){let j=i;while(j+1<N&&all[j+1].v===all[i].v)j++;const ar=(i+j)/2+1;for(let k=i;k<=j;k++)ranks[k]=ar;const t=j-i+1;if(t>1)tie+=t*t*t-t;i=j+1;}let R1=0;all.forEach((o,idx)=>{if(o.g===0)R1+=ranks[idx];});const U1=R1-n1*(n1+1)/2,U=Math.min(U1,n1*n2-U1),mu=n1*n2/2,sig=Math.sqrt((n1*n2/12)*((N+1)-tie/(N*(N-1))));const p=2*normalCDF(-Math.abs((Math.abs(U-mu)-0.5)/sig));return{U,p:Math.min(1,p)};}
+
+// ---- Response Surface Methodology (RSM) engine ----
+function matT(A){const r=A.length,c=A[0].length,T=Array.from({length:c},()=>new Array(r));for(let i=0;i<r;i++)for(let j=0;j<c;j++)T[j][i]=A[i][j];return T;}
+function matMul(A,B){const r=A.length,n=A[0].length,c=B[0].length,M=Array.from({length:r},()=>new Array(c).fill(0));for(let i=0;i<r;i++)for(let k=0;k<n;k++){const a=A[i][k];for(let j=0;j<c;j++)M[i][j]+=a*B[k][j];}return M;}
+function matVec(A,v){return A.map(row=>row.reduce((s,a,j)=>s+a*v[j],0));}
+function invert(M){const n=M.length;const A=M.map((row,i)=>row.concat(Array.from({length:n},(_,j)=>i===j?1:0)));for(let col=0;col<n;col++){let piv=col;for(let r=col+1;r<n;r++)if(Math.abs(A[r][col])>Math.abs(A[piv][col]))piv=r;if(Math.abs(A[piv][col])<1e-12)return null;[A[col],A[piv]]=[A[piv],A[col]];const d=A[col][col];for(let j=0;j<2*n;j++)A[col][j]/=d;for(let r=0;r<n;r++){if(r===col)continue;const f=A[r][col];if(f!==0)for(let j=0;j<2*n;j++)A[r][j]-=f*A[col][j];}}return A.map(row=>row.slice(n));}
+function eigSym(M){const n=M.length;const A=M.map(r=>r.slice());for(let sweep=0;sweep<100;sweep++){let off=0;for(let p=0;p<n;p++)for(let q=p+1;q<n;q++)off+=A[p][q]*A[p][q];if(off<1e-20)break;for(let p=0;p<n;p++)for(let q=p+1;q<n;q++){if(Math.abs(A[p][q])<1e-18)continue;const theta=(A[q][q]-A[p][p])/(2*A[p][q]);const t=Math.sign(theta||1)/(Math.abs(theta)+Math.sqrt(theta*theta+1));const c=1/Math.sqrt(t*t+1),s=t*c;for(let kk=0;kk<n;kk++){const akp=A[kk][p],akq=A[kk][q];A[kk][p]=c*akp-s*akq;A[kk][q]=s*akp+c*akq;}for(let kk=0;kk<n;kk++){const apk=A[p][kk],aqk=A[q][kk];A[p][kk]=c*apk-s*aqk;A[q][kk]=s*apk+c*aqk;}}}const ev=[];for(let i=0;i<n;i++)ev.push(A[i][i]);return ev.sort((a,b)=>a-b);}
+function fitRSM(rows,factors,resp){
+  const k=factors.length;
+  const code=(x,f)=>f.max===f.min?0:2*(x-f.min)/(f.max-f.min)-1;
+  const terms=[{type:"int"}];
+  for(let i=0;i<k;i++)terms.push({type:"lin",i});
+  for(let i=0;i<k;i++)if(factors[i].nlevels>=3)terms.push({type:"quad",i});
+  for(let i=0;i<k;i++)for(let j=i+1;j<k;j++)terms.push({type:"int2",i,j});
+  const design=xc=>terms.map(t=>t.type==="int"?1:t.type==="lin"?xc[t.i]:t.type==="quad"?xc[t.i]*xc[t.i]:xc[t.i]*xc[t.j]);
+  const X=[],y=[];
+  for(const r of rows){const xc=factors.map(f=>code(+r[f.name],f));X.push(design(xc));y.push(+r[resp]);}
+  const n=X.length,p=terms.length;
+  const Xt=matT(X),XtXinv=invert(matMul(Xt,X));
+  if(!XtXinv)return {error:"singular"};
+  const beta=matVec(XtXinv,matVec(Xt,y));
+  const yhat=X.map(row=>row.reduce((s,a,j)=>s+a*beta[j],0));
+  const ybar=y.reduce((s,v)=>s+v,0)/n;let SSE=0,SST=0;for(let i=0;i<n;i++){SSE+=(y[i]-yhat[i])**2;SST+=(y[i]-ybar)**2;}
+  const R2=1-SSE/SST,adjR2=1-(SSE/(n-p))/(SST/(n-1)),s2=SSE/(n-p);
+  const se=terms.map((_,j)=>Math.sqrt(s2*XtXinv[j][j])),tval=beta.map((b,j)=>b/se[j]);
+  const coef={intercept:beta[0],lin:{},quad:{},int2:{}};
+  terms.forEach((t,j)=>{if(t.type==="lin")coef.lin[t.i]=beta[j];else if(t.type==="quad")coef.quad[t.i]=beta[j];else if(t.type==="int2")coef.int2[t.i+","+t.j]=beta[j];});
+  const b=new Array(k).fill(0),B=Array.from({length:k},()=>new Array(k).fill(0));
+  for(let i=0;i<k;i++){b[i]=coef.lin[i]||0;B[i][i]=coef.quad[i]||0;}
+  for(let i=0;i<k;i++)for(let j=i+1;j<k;j++){const v=(coef.int2[i+","+j]||0)/2;B[i][j]=v;B[j][i]=v;}
+  let xs=null,eig=null,nature=null;const Binv=invert(B.map(r=>r.slice()));
+  if(Binv){xs=matVec(Binv,b).map(v=>-0.5*v);eig=eigSym(B);const ap=eig.every(e=>e>1e-9),an=eig.every(e=>e<-1e-9);nature=ap?"min":an?"max":"saddle";}
+  return {k,terms,beta,coef,se,tval,R2,adjR2,n,p,b,B,xs,eig,nature,factors,
+    predict:xc=>design(xc).reduce((s,a,j)=>s+a*beta[j],0),
+    decode:xc=>factors.map((f,i)=>f.min+(xc[i]+1)/2*(f.max-f.min)),
+    code:(x,i)=>code(x,factors[i])};
+}
+function optimizeRSM(model,obj){
+  const k=model.k,sign=obj==="max"?1:-1;let best=null,bestX=null;
+  const evalAt=xc=>sign*model.predict(xc);
+  const coarse=k<=3?13:(k===4?7:5),stepC=2/(coarse-1);
+  const rec=(d,xc)=>{if(d===k){const v=evalAt(xc);if(best===null||v>best){best=v;bestX=xc.slice();}return;}for(let t=0;t<coarse;t++){xc[d]=-1+t*stepC;rec(d+1,xc);}};
+  if(Math.pow(coarse,k)<=200000)rec(0,new Array(k).fill(0));
+  else for(let it=0;it<80000;it++){const xc=Array.from({length:k},()=>Math.random()*2-1);const v=evalAt(xc);if(best===null||v>best){best=v;bestX=xc.slice();}}
+  let span=stepC;
+  for(let pass=0;pass<40;pass++){let improved=false;for(let i=0;i<k;i++)for(const dlt of[-span,span]){const xc=bestX.slice();xc[i]=Math.max(-1,Math.min(1,xc[i]+dlt));const v=evalAt(xc);if(v>best){best=v;bestX=xc;improved=true;}}if(!improved)span*=0.5;if(span<1e-4)break;}
+  return {xcoded:bestX,natural:model.decode(bestX),predicted:sign*best};
+}
+
+// ==========================================================
+//  APP STATE + PARSING
+// ==========================================================
+const $=s=>document.querySelector(s);
+const state={rows:[],cols:[],roles:{},alpha:0.05,obj:"min"};
+const PAL=["var(--accent)","var(--teal)","var(--amber)","var(--cyan)","var(--accent-2)","var(--danger)"];
+
+function detectDelim(text){
+  const line=text.split(/\r?\n/).find(l=>l.trim());
+  if(!line)return",";
+  const t=(line.match(/\t/g)||[]).length,c=(line.match(/,/g)||[]).length,s=(line.match(/;/g)||[]).length;
+  if(t>=c&&t>=s)return "\t"; if(s>c)return ";"; return ",";
+}
+function parseTable(text){
+  text=text.trim();
+  if(!text)throw "Cole ou carregue uma tabela primeiro.";
+  const d=detectDelim(text);
+  const lines=text.split(/\r?\n/).filter(l=>l.trim().length);
+  const split=l=>l.split(d).map(c=>c.trim().replace(/^"|"$/g,""));
+  const header=split(lines[0]);
+  const looksNumeric=header.every(h=>h!==""&&!isNaN(Number(h.replace(",","."))));
+  let cols,start;
+  if(looksNumeric){cols=header.map((_,i)=>"col"+(i+1));start=0;}
+  else{cols=header.map((h,i)=>h||("col"+(i+1)));start=1;}
+  const rows=[];
+  for(let i=start;i<lines.length;i++){
+    const parts=split(lines[i]);
+    if(parts.length===1&&parts[0]==="")continue;
+    const row={};cols.forEach((c,j)=>{let raw=parts[j]!==undefined?parts[j]:"";const num=Number(raw.replace(",","."));row[c]=(raw!==""&&!isNaN(num))?num:raw;});
+    rows.push(row);
+  }
+  if(!rows.length)throw "Nenhuma linha de dados encontrada.";
+  return {cols,rows};
+}
+function colInfo(col){
+  const vals=state.rows.map(r=>r[col]);
+  const uniq=[...new Set(vals.map(String))];
+  const numeric=vals.every(v=>typeof v==="number");
+  return {uniq,numeric,nLevels:uniq.length};
+}
+function guessRoles(){
+  state.roles={};
+  const infos=state.cols.map(c=>({c,...colInfo(c)}));
+  let resp=null,best=-1;
+  for(const i of infos){if(i.numeric&&i.nLevels>best){best=i.nLevels;resp=i.c;}}
+  for(const i of infos){
+    if(i.c===resp){state.roles[i.c]="response";continue;}
+    if(/^(run|rep|seed|trial|exec|execu|replic)/i.test(i.c)){state.roles[i.c]="ignore";continue;}
+    if(i.nLevels<=1||i.nLevels>=state.rows.length*0.9){state.roles[i.c]="ignore";continue;}
+    if(i.nLevels<=12){state.roles[i.c]="factor";continue;}
+    state.roles[i.c]="ignore";
+  }
+  if(resp)state.roles[resp]="response";
+}
+
+// ==========================================================
+//  UI RENDERING
+// ==========================================================
+function renderMapping(){
+  const grid=$("#map-grid");grid.innerHTML="";
+  $("#rowcount").textContent=state.rows.length+" linhas · "+state.cols.length+" colunas";
+  state.cols.forEach(c=>{
+    const info=colInfo(c);
+    const card=document.createElement("div");card.className="col-card";
+    card.innerHTML=`<div class="cn" title="${c}">${c}</div>
+      <div class="meta">${info.numeric?"num":"texto"} · ${info.nLevels} ${info.nLevels===1?"valor":"níveis"}</div>
+      <div class="role">
+        <button data-r="factor">fator</button>
+        <button data-r="response">resposta</button>
+        <button data-r="ignore">ignorar</button>
+      </div>`;
+    const btns=card.querySelectorAll(".role button");
+    const sync=()=>btns.forEach(b=>b.classList.toggle("on",b.dataset.r===state.roles[c]));
+    btns.forEach(b=>b.addEventListener("click",()=>{
+      if(b.dataset.r==="response"){for(const k in state.roles)if(state.roles[k]==="response")state.roles[k]="factor";}
+      state.roles[c]=b.dataset.r;renderMapping();analyze();
+    }));
+    sync();grid.appendChild(card);
+  });
+  $("#sec-map").style.display="block";
+}
+
+function fmtP(p){if(p<0.0001)return "< 0,0001";return p.toLocaleString("pt-BR",{minimumFractionDigits:4,maximumFractionDigits:4});}
+function fmtN(x,d=2){if(!isFinite(x))return "∞";return x.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});}
+
+function analyze(){
+  const factors=state.cols.filter(c=>state.roles[c]==="factor");
+  const resp=state.cols.find(c=>state.roles[c]==="response");
+  const errBox=$("#parse-err");errBox.innerHTML="";
+  if(!resp){errBox.innerHTML=`<div class="err">Defina uma coluna como <b>resposta</b> (a métrica de desempenho).</div>`;$("#results").style.display="none";return;}
+  if(!state.rows.every(r=>typeof r[resp]==="number")){errBox.innerHTML=`<div class="err">A coluna de resposta <b>${resp}</b> tem valores não numéricos.</div>`;$("#results").style.display="none";return;}
+  if(!factors.length){errBox.innerHTML=`<div class="err">Marque ao menos uma coluna como <b>fator</b>.</div>`;$("#results").style.display="none";return;}
+
+  const screen=factors.map(f=>{
+    const byLevel={};
+    for(const r of state.rows){const L=String(r[f]);(byLevel[L]||(byLevel[L]=[])).push(r[resp]);}
+    const levels=Object.keys(byLevel);
+    const groups=levels.map(L=>byLevel[L]);
+    const aov=oneWayANOVA(groups),kw=kruskalWallis(groups);
+    const levelMeans=levels.map(L=>({level:L,...describe(byLevel[L])}));
+    return {f,levels,levelMeans,aov,kw};
+  });
+  screen.sort((x,y)=>{
+    const sx=x.aov&&x.aov.p<state.alpha?1:0,sy=y.aov&&y.aov.p<state.alpha?1:0;
+    if(sx!==sy)return sy-sx;
+    return (y.aov?y.aov.F:0)-(x.aov?x.aov.F:0);
+  });
+
+  renderVerdict(screen,resp);
+  renderFactors(screen,resp);
+  setupTwoWay(factors,resp);
+  setupTree(factors,resp,screen[0]&&screen[0].f);
+  renderDescriptive(factors,resp);
+  renderRSM(factors,resp);
+
+  const nSig=screen.filter(s=>s.aov&&s.aov.p<state.alpha).length;
+  setStatus(state.rows.length+" execuções · <b>"+nSig+"</b>/"+screen.length+" fatores sig.");
+  $("#results").style.display="block";
+}
+
+function renderVerdict(screen,resp){
+  const sig=screen.filter(s=>s.aov&&s.aov.p<state.alpha).map(s=>s.f);
+  const non=screen.filter(s=>!(s.aov&&s.aov.p<state.alpha)).map(s=>s.f);
+  let hl;
+  if(sig.length===0)hl=`Nenhum fator mostrou efeito significativo sobre <i>${resp}</i>.`;
+  else hl=`Afetam <i>${resp}</i>: <span class="sig">${sig.join(", ")}</span>`+
+    (non.length?` &nbsp;·&nbsp; sem efeito detectável: <span class="non">${non.join(", ")}</span>`:"");
+  $("#verdict").innerHTML=`<div class="eyebrow">veredito · α = ${fmtN(state.alpha,2)}</div>
+    <div class="headline">${hl}</div>
+    <div class="meta">${state.rows.length} execuções · ${screen.length} fatores testados · ANOVA de um fator, significância se p &lt; ${fmtN(state.alpha,2)}</div>`;
+}
+
+function renderFactors(screen,resp){
+  const list=$("#factor-list");list.innerHTML="";
+  screen.forEach(s=>{
+    const sig=s.aov&&s.aov.p<state.alpha;
+    const el=document.createElement("div");
+    el.className="factor "+(sig?"sig":"nsig");
+    const pClass=sig?"p hit":"p";
+    el.innerHTML=`
+      <div>
+        <div class="fname">${s.f}
+          <span class="tag ${sig?"sig":"nsig"}">${sig?"significativo":"não signif."}</span>
+        </div>
+        <div class="levels">${s.levels.length} níveis · ${s.levels.slice(0,6).join(" · ")}${s.levels.length>6?" …":""}</div>
+        <div class="stat-row">
+          <span class="stat">ANOVA&nbsp; F(${s.aov?s.aov.dfB:"–"},${s.aov?s.aov.dfW:"–"}) = <b>${s.aov?fmtN(s.aov.F):"–"}</b>&nbsp; p = <span class="${pClass}">${s.aov?fmtP(s.aov.p):"–"}</span></span>
+          <span class="stat">Kruskal–Wallis&nbsp; H = <b>${s.kw?fmtN(s.kw.H):"–"}</b>&nbsp; p = <span class="${s.kw&&s.kw.p<state.alpha?"p hit":"p"}">${s.kw?fmtP(s.kw.p):"–"}</span></span>
+          <span class="stat">η² = <b>${s.aov?fmtN(s.aov.etaSq,3):"–"}</b></span>
+        </div>
+      </div>
+      <div class="sparkwrap"></div>`;
+    el.querySelector(".sparkwrap").appendChild(mainEffectsPlot(s,resp,sig));
+    list.appendChild(el);
+  });
+}
+
+// ---- SVG main-effects plot (means ± 1 SE) ----
+function mainEffectsPlot(s,resp,sig){
+  const W=190,H=96,ml=6,mr=6,mt=10,mb=16;
+  const pts=s.levelMeans;
+  const means=pts.map(p=>p.mean);
+  const ses=pts.map(p=>p.n>1?p.sd/Math.sqrt(p.n):0);
+  let lo=Math.min(...means.map((m,i)=>m-ses[i])),hi=Math.max(...means.map((m,i)=>m+ses[i]));
+  if(lo===hi){lo-=1;hi+=1;}
+  const pad=(hi-lo)*0.12;lo-=pad;hi+=pad;
+  const n=pts.length;
+  const x=i=>ml+(n===1?(W-ml-mr)/2:i*(W-ml-mr)/(n-1));
+  const y=v=>mt+(H-mt-mb)*(1-(v-lo)/(hi-lo));
+  const col=sig?"var(--teal)":"var(--ink-3)";
+  let svg=`<svg class="spark" viewBox="0 0 ${W} ${H}" role="img" aria-label="efeito de ${s.f}">`;
+  for(let g=0;g<=2;g++){const yy=mt+(H-mt-mb)*g/2;svg+=`<line class="gridline" x1="${ml}" y1="${yy}" x2="${W-mr}" y2="${yy}"/>`;}
+  pts.forEach((p,i)=>{if(ses[i]>0)svg+=`<line class="whisker" x1="${x(i)}" y1="${y(p.mean-ses[i])}" x2="${x(i)}" y2="${y(p.mean+ses[i])}"/>`;});
+  const path=pts.map((p,i)=>(i?"L":"M")+x(i)+" "+y(p.mean)).join(" ");
+  svg+=`<path d="${path}" fill="none" stroke="${col}" stroke-width="2"/>`;
+  pts.forEach((p,i)=>{svg+=`<circle cx="${x(i)}" cy="${y(p.mean)}" r="3" fill="${col}" stroke="var(--surface)" stroke-width="1.5"/>`;});
+  pts.forEach((p,i)=>{if(n<=6)svg+=`<text class="ticklbl" x="${x(i)}" y="${H-4}" text-anchor="middle">${String(p.level).slice(0,6)}</text>`;});
+  svg+=`</svg>`;
+  const wrap=document.createElement("div");wrap.innerHTML=svg;return wrap.firstChild;
+}
+
+// ---- two-way ----
+function setupTwoWay(factors,resp){
+  if(factors.length<2){$("#sec-tw").style.display="none";return;}
+  $("#sec-tw").style.display="block";
+  const fa=$("#fa"),fb=$("#fb");
+  const cur={a:fa.value,b:fb.value};
+  fa.innerHTML=factors.map(f=>`<option>${f}</option>`).join("");
+  fb.innerHTML=factors.map(f=>`<option>${f}</option>`).join("");
+  fa.value=factors.includes(cur.a)?cur.a:factors[0];
+  fb.value=factors.includes(cur.b)&&cur.b!==fa.value?cur.b:(factors.find(f=>f!==fa.value)||factors[1]);
+  fa.onchange=fb.onchange=()=>{if(fa.value===fb.value){fb.value=factors.find(f=>f!==fa.value);}renderTwoWay(resp);};
+  renderTwoWay(resp);
+}
+function renderTwoWay(resp){
+  const fa=$("#fa").value,fb=$("#fb").value,out=$("#tw-out");
+  const r=twoWayANOVA(state.rows,fa,fb,resp);
+  if(r.error==="no-rep"){
+    out.innerHTML=`<div class="note">Sem repetições nas células ${fa}×${fb}: não há graus de liberdade para estimar o erro, então a interação não pode ser testada. Rode múltiplas execuções por combinação de parâmetros.</div>`;
+    return;
+  }
+  const a=state.alpha;
+  const rowH=(f,name)=>{const hit=f.p<a;return `<tr class="${hit?"hit":""}"><td>${name}</td><td>${fmtN(f.ss)}</td><td>${f.df}</td><td>${fmtN(f.ms)}</td><td>${fmtN(f.F)}</td><td>${fmtP(f.p)}</td><td>${hit?"✓":"·"}</td></tr>`;};
+  const table=`<table class="anova">
+    <thead><tr><th>fonte</th><th>SS</th><th>gl</th><th>MS</th><th>F</th><th>p</th><th>sig</th></tr></thead>
+    <tbody>
+      ${rowH(r.factors[fa],fa)}
+      ${rowH(r.factors[fb],fb)}
+      ${rowH(r.factors["int"],fa+" × "+fb)}
+      <tr class="resid"><td>resíduo</td><td>${fmtN(r.residual.ss)}</td><td>${r.residual.df}</td><td>${fmtN(r.residual.ms)}</td><td></td><td></td><td></td></tr>
+    </tbody></table>
+    ${r.balanced?"":'<div class="note">Design desbalanceado (nº de execuções varia entre células): os SS usam o modelo de médias não ponderadas — trate os p-valores como aproximados.</div>'}`;
+  const interp=`<div class="plot-lbl">gráfico de interação</div>`+interactionPlot(r,fa,fb,resp)+`<div class="caption">Linhas paralelas ⇒ sem interação (fatores independentes). Linhas que cruzam ou divergem ⇒ o efeito de ${fa} depende do nível de ${fb}.</div>`;
+  out.innerHTML=`<div class="tw-grid"><div>${table}</div><div>${interp}</div></div>`;
+}
+function interactionPlot(r,fa,fb,resp){
+  const W=440,H=290,ml=48,mr=124,mt=14,mb=34;
+  const aL=r.aLevels,bL=r.bLevels;
+  const vals=[];for(const ai of aL)for(const bj of bL){const v=r.cellMean[ai+"|"+bj];if(v!==undefined)vals.push(v);}
+  let lo=Math.min(...vals),hi=Math.max(...vals);if(lo===hi){lo-=1;hi+=1;}const pad=(hi-lo)*0.1;lo-=pad;hi+=pad;
+  const n=aL.length;
+  const x=i=>ml+(n===1?(W-ml-mr)/2:i*(W-ml-mr)/(n-1));
+  const y=v=>mt+(H-mt-mb)*(1-(v-lo)/(hi-lo));
+  let svg=`<svg class="interplot" viewBox="0 0 ${W} ${H}" role="img" aria-label="interação ${fa} por ${fb}">`;
+  for(let g=0;g<=4;g++){const yy=mt+(H-mt-mb)*g/4;const val=hi-(hi-lo)*g/4;svg+=`<line class="gridline" x1="${ml}" y1="${yy}" x2="${W-mr}" y2="${yy}"/><text class="ticklbl" x="${ml-6}" y="${yy+3}" text-anchor="end">${fmtN(val,val>=100?0:1)}</text>`;}
+  svg+=`<line class="axis" x1="${ml}" y1="${H-mb}" x2="${W-mr}" y2="${H-mb}"/>`;
+  aL.forEach((ai,i)=>svg+=`<text class="axlbl" x="${x(i)}" y="${H-mb+16}" text-anchor="middle">${String(ai).slice(0,8)}</text>`);
+  svg+=`<text class="axlbl" x="${(ml+W-mr)/2}" y="${H-4}" text-anchor="middle">${fa}</text>`;
+  bL.forEach((bj,bi)=>{
+    const col=PAL[bi%PAL.length];
+    const path=aL.map((ai,i)=>{const v=r.cellMean[ai+"|"+bj];return v===undefined?"":((i?"L":"M")+x(i)+" "+y(v));}).filter(Boolean).join(" ");
+    svg+=`<path d="${path}" fill="none" stroke="${col}" stroke-width="2"/>`;
+    aL.forEach((ai,i)=>{const v=r.cellMean[ai+"|"+bj];if(v!==undefined)svg+=`<circle cx="${x(i)}" cy="${y(v)}" r="3.3" fill="${col}" stroke="var(--surface)" stroke-width="1.4"/>`;});
+    const ly=mt+14+bi*18;
+    svg+=`<line x1="${W-mr+10}" y1="${ly}" x2="${W-mr+26}" y2="${ly}" stroke="${col}" stroke-width="2.5"/><text class="axlbl" x="${W-mr+30}" y="${ly+3.5}">${String(bj).slice(0,11)}</text>`;
+  });
+  svg+=`<text class="axlbl" x="${W-mr+10}" y="${mt+2}" font-weight="600" fill="var(--ink-2)">${fb}</text>`;
+  svg+=`</svg>`;
+  return svg;
+}
+
+// ---- decision tree ----
+function setupTree(factors,resp,def){
+  const sel=$("#tree-factor");const cur=sel.value;
+  sel.innerHTML=factors.map(f=>`<option>${f}</option>`).join("");
+  sel.value=factors.includes(cur)?cur:(def||factors[0]);
+  sel.onchange=()=>renderTree(sel.value,resp);
+  renderTree(sel.value,resp);
+}
+function renderTree(factor,resp){
+  const out=$("#tree-out");
+  const by={};for(const r of state.rows){const L=String(r[factor]);(by[L]||(by[L]=[])).push(r[resp]);}
+  const groups=Object.keys(by).map(L=>by[L]),k=groups.length,alpha=state.alpha;
+  if(k<2){out.innerHTML='<div class="note">Este fator tem só um nível — não há comparação a fazer.</div>';return;}
+  const resid=[];groups.forEach(g=>{const m=mean(g);g.forEach(v=>resid.push(v-m));});
+  const sw=shapiroWilk(resid),lv=leveneTest(groups);
+  const normal=sw?sw.p>alpha:true,homo=lv?lv.p>alpha:true;
+  let branch,test;
+  if(!normal){branch="np";
+    if(k===2){const r=mannWhitneyU(groups[0],groups[1]);test={name:"Mann-Whitney U",stat:"U = "+fmtN(r.U),p:r.p};}
+    else{const r=kruskalWallis(groups);test={name:"Kruskal-Wallis",stat:"H = "+fmtN(r.H),p:r.p};}
+  }else if(!homo){branch="welch";
+    if(k===2){const r=welchT(groups[0],groups[1]);test={name:"t de Welch",stat:"t = "+fmtN(r.t),p:r.p};}
+    else{const r=welchANOVA(groups);test={name:"Welch ANOVA",stat:"F = "+fmtN(r.F),p:r.p};}
+  }else{branch="classic";
+    if(k===2){const r=studentT(groups[0],groups[1]);test={name:"t de Student",stat:"t = "+fmtN(r.t),p:r.p};}
+    else{const r=oneWayANOVA(groups);test={name:"ANOVA de um fator",stat:"F = "+fmtN(r.F),p:r.p};}
+  }
+  const sig=test.p<alpha;
+  out.innerHTML=`<div class="tree-wrap">${treeSVG({factor,resp,k,sw,lv,normal,homo,branch,test})}</div>`
+    +`<div class="tree-summary">Teste recomendado: <span class="rec">${test.name}</span> — ${test.stat}, p = ${fmtP(test.p)} ⇒ `
+    +(sig?`<span class="sig">${factor} afeta ${resp}</span>`:`<span class="non">sem efeito detectável de ${factor}</span>`)
+    +` <span class="non">(α = ${fmtN(alpha,2)})</span>.</div>`
+    +`<div class="caption">Portas de suposição no nível α: “normal” se Shapiro-Wilk p &gt; α (nos resíduos = valor − média do nível); “variâncias homogêneas” se Levene, centrado na mediana, p &gt; α. Se a normalidade é rejeitada, desce-se pelo ramo não-paramétrico e o Levene deixa de ser necessário.</div>`;
+}
+function treeSVG(d){
+  const W=720,H=420;
+  const AC="var(--accent)",TE="var(--teal)",DIM="var(--ink-3)",INK="var(--ink)",LINE="var(--line)";
+  const edge=(x1,y1,x2,y2,on)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${on?AC:DIM}" stroke-width="${on?2.6:1.3}" ${on?"":'stroke-dasharray="4 4"'} opacity="${on?1:.4}"/>`;
+  const lbl=(x,y,t,on)=>{const w=t.length*6.2+14;return `<g opacity="${on?1:.4}"><rect x="${x-w/2}" y="${y-9}" width="${w}" height="18" rx="9" fill="${on?"var(--accent-soft)":"var(--surface-3)"}" stroke="${on?"var(--accent-line)":LINE}"/><text x="${x}" y="${y+3.5}" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="${on?AC:DIM}">${t}</text></g>`;};
+  const box=(x,y,w,h,lines,o)=>{o=o||{};const op=o.op==null?1:o.op;let s=`<g opacity="${op}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${o.fill||"var(--surface-2)"}" stroke="${o.stroke||LINE}" stroke-width="${o.sw||1.4}"/>`;const cx=x+w/2;lines.forEach((ln,i)=>{s+=`<text x="${cx}" y="${y+17+i*14}" text-anchor="middle" font-family="${ln.m?"var(--mono)":"var(--body)"}" font-size="${ln.s||11}" font-weight="${ln.w||400}" fill="${ln.f||INK}">${ln.t}</text>`;});return s+"</g>";};
+
+  // node centers
+  const rt={x:360,y:14,w:300,h:46};
+  const sh={x:238,y:92,w:244,h:66};   // shapiro
+  const lv={x:378,y:214,w:244,h:66};  // levene, center 500
+  const leafW=176,leafH=58,ly=332;
+  const npL={x:47,y:ly,w:leafW,h:leafH};    // center 135
+  const weL={x:327,y:ly,w:leafW,h:leafH};   // center 415
+  const clL={x:512,y:ly,w:leafW,h:leafH};   // center 600
+  const cx=n=>n.x+n.w/2;
+
+  const npName=d.k===2?"Mann-Whitney U":"Kruskal-Wallis";
+  const weName=d.k===2?"t de Welch":"Welch ANOVA";
+  const clName=d.k===2?"t de Student":"ANOVA de um fator";
+  const activeNP=d.branch==="np",activeWE=d.branch==="welch",activeCL=d.branch==="classic";
+
+  let s=`<svg class="tree-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="árvore de decisão do teste">`;
+  // edges (drawn first)
+  s+=edge(360,rt.y+rt.h,360,sh.y,true);
+  s+=edge(cx(sh),sh.y+sh.h,cx(npL),npL.y,!d.normal);
+  s+=edge(cx(sh),sh.y+sh.h,cx(lv),lv.y,d.normal);
+  s+=edge(cx(lv),lv.y+lv.h,cx(weL),weL.y,d.normal&&!d.homo);
+  s+=edge(cx(lv),lv.y+lv.h,cx(clL),clL.y,d.normal&&d.homo);
+  // branch labels
+  s+=lbl(250,238,"não",!d.normal);
+  s+=lbl(455,180,"sim",d.normal);
+  s+=lbl(432,305,"não",d.normal&&!d.homo);
+  s+=lbl(560,305,"sim",d.normal&&d.homo);
+  // root
+  s+=box(rt.x-rt.w/2,rt.y,rt.w,rt.h,[
+    {t:`${d.factor} → ${d.resp}`,w:600,s:12},
+    {t:`${d.k} grupos · qual teste usar?`,m:1,s:9.5,f:DIM}
+  ],{stroke:AC,sw:1.6,fill:"var(--surface)"});
+  // shapiro node (always evaluated)
+  s+=box(sh.x,sh.y,sh.w,sh.h,[
+    {t:"Normalidade",w:600,s:11.5},
+    {t:`Shapiro-Wilk · W=${fmtN(d.sw?d.sw.W:0,3)} · p=${d.sw?fmtP(d.sw.p):"–"}`,m:1,s:9,f:DIM},
+    {t:d.normal?"normal ✓":"não normal ✗",m:1,s:10.5,w:600,f:d.normal?TE:"var(--amber-ink)"}
+  ],{stroke:AC,sw:1.7});
+  // levene node
+  s+=box(lv.x,lv.y,lv.w,lv.h,d.normal?[
+    {t:"Homoscedasticidade",w:600,s:11},
+    {t:`Levene (mediana) · p=${d.lv?fmtP(d.lv.p):"–"}`,m:1,s:9,f:DIM},
+    {t:d.homo?"variâncias iguais ✓":"variâncias diferentes ✗",m:1,s:10,w:600,f:d.homo?TE:"var(--amber-ink)"}
+  ]:[
+    {t:"Homoscedasticidade",w:600,s:11,f:DIM},
+    {t:"(não avaliado —",m:1,s:9.5,f:DIM},
+    {t:"normalidade rejeitada)",m:1,s:9.5,f:DIM}
+  ],{stroke:d.normal?AC:LINE,sw:d.normal?1.7:1.2,op:d.normal?1:.55});
+  // leaves
+  const leaf=(n,name,active)=>box(n.x,n.y,n.w,n.h,active?[
+    {t:name,w:600,s:11.5,f:INK},
+    {t:`${d.test.stat} · p=${fmtP(d.test.p)}`,m:1,s:9.5,f:"var(--teal)"}
+  ]:[
+    {t:name,w:600,s:11,f:DIM}
+  ],active?{stroke:TE,sw:2.4,fill:"var(--teal-soft)"}:{stroke:LINE,sw:1.2,op:.5});
+  s+=leaf(npL,npName,activeNP);
+  s+=leaf(weL,weName,activeWE);
+  s+=leaf(clL,clName,activeCL);
+  // leaf-type captions
+  s+=`<text x="${cx(npL)}" y="${ly+leafH+16}" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="${DIM}" opacity="${activeNP?1:.5}">não-paramétrico</text>`;
+  s+=`<text x="${cx(weL)}" y="${ly+leafH+16}" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="${DIM}" opacity="${activeWE?1:.5}">paramétrico robusto</text>`;
+  s+=`<text x="${cx(clL)}" y="${ly+leafH+16}" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="${DIM}" opacity="${activeCL?1:.5}">paramétrico clássico</text>`;
+  s+="</svg>";
+  return s;
+}
+
+// ---- RSM optimization section ----
+function viridis(t){const st=[[68,1,84],[59,82,139],[33,145,140],[94,201,98],[253,231,37]];t=Math.max(0,Math.min(1,t));const x=t*4,i=Math.min(3,Math.floor(x)),f=x-i;const a=st[i],b=st[i+1];return `rgb(${Math.round(a[0]+(b[0]-a[0])*f)},${Math.round(a[1]+(b[1]-a[1])*f)},${Math.round(a[2]+(b[2]-a[2])*f)})`;}
+let rsmModel=null,rsmMeta=null,rsmResp=null;
+function renderRSM(factors,resp){
+  const out=$("#rsm-out");
+  const numeric=factors.filter(f=>colInfo(f).numeric);
+  if(numeric.length<1){out.innerHTML='<div class="note">A otimização precisa de fatores <b>numéricos</b>. Os fatores atuais são categóricos — ela não se aplica.</div>';return;}
+  const meta=numeric.map(f=>{const info=colInfo(f);const vals=state.rows.map(r=>+r[f]);return {name:f,min:Math.min(...vals),max:Math.max(...vals),nlevels:info.nLevels};});
+  const model=fitRSM(state.rows,meta,resp);
+  if(model.error){out.innerHTML='<div class="note">Não foi possível ajustar a superfície (matriz singular) — verifique se há variação e repetições suficientes.</div>';return;}
+  rsmModel=model;rsmMeta=meta;rsmResp=resp;
+  const opt=optimizeRSM(model,state.obj);
+  const anyQuad=meta.some(f=>f.nlevels>=3);
+
+  // global predicted span (for a scale-aware tolerance)
+  let gMin=Infinity,gMax=-Infinity;
+  for(let s=0;s<3000;s++){const xc=Array.from({length:meta.length},()=>Math.random()*2-1);const v=model.predict(xc);if(v<gMin)gMin=v;if(v>gMax)gMax=v;}
+  const tol=0.05*(gMax-gMin||1);
+  // per-factor near-optimal ranges (others fixed at optimum)
+  const cards=meta.map((f,i)=>{
+    const N=101;let a=null,b=null;
+    for(let t=0;t<N;t++){const xc=opt.xcoded.slice();xc[i]=-1+2*t/(N-1);const v=model.predict(xc);
+      const good=state.obj==="max"?(v>=opt.predicted-tol):(v<=opt.predicted+tol);
+      if(good){const xv=f.min+(t/(N-1))*(f.max-f.min);if(a===null)a=xv;b=xv;}}
+    if(a===null){a=opt.natural[i];b=opt.natural[i];}
+    const full=(a<=f.min+1e-9*(f.max-f.min))&&(b>=f.max-1e-9*(f.max-f.min));
+    return {f,optVal:opt.natural[i],lo:Math.min(a,b),hi:Math.max(a,b),full};
+  });
+
+  const objTxt=state.obj==="max"?"maximizar":"minimizar";
+  let html=`<div class="rsm-headline">Para <b>${objTxt}</b> <i>${resp}</i>, o modelo de segundo grau recomenda a resposta prevista <span class="best">${fmtN(opt.predicted)}</span> em:</div>`;
+  html+=`<div class="opt-cards">`+cards.map(c=>`<div class="opt-card"><div class="fn">${c.f.name}</div><div class="val">${fmtN(c.optVal, Math.abs(c.optVal)<10?3:1)}</div><div class="rng">${c.full?"faixa ≈ todo o intervalo":"faixa ≈ "+fmtN(c.lo,Math.abs(c.lo)<10?3:0)+" – "+fmtN(c.hi,Math.abs(c.hi)<10?3:0)}</div></div>`).join("")+`</div>`;
+
+  // stationary point / nature
+  if(model.xs&&anyQuad){
+    const inside=model.xs.every(v=>v>=-1.0001&&v<=1.0001);
+    const nat=model.decode(model.xs);
+    const natureTxt={min:"mínimo",max:"máximo",saddle:"ponto de sela"}[model.nature];
+    const wanted=(state.obj==="min"&&model.nature==="min")||(state.obj==="max"&&model.nature==="max");
+    html+=`<div class="rsm-note">Ponto estacionário: <b>${natureTxt}</b> (autovalores ${model.eig.map(e=>fmtN(e,2)).join(", ")}) — `+
+      (inside?`dentro da região testada`:`<b>fora</b> da região testada`)+`. `+
+      (wanted&&inside?`É o ótimo do tipo procurado; os valores acima coincidem com ele.`:`Como não é um ${objTxt==="minimizar"?"mínimo":"máximo"} interior, o ótimo está na <b>fronteira</b> da faixa testada (valores acima).`)+`</div>`;
+  }
+
+  // coefficient table (collapsible)
+  const rowsC=[];
+  const nm=i=>meta[i].name;
+  model.terms.forEach((t,j)=>{
+    let label;if(t.type==="int")label="intercepto";else if(t.type==="lin")label=nm(t.i);else if(t.type==="quad")label=nm(t.i)+"²";else label=nm(t.i)+"·"+nm(t.j);
+    const p=tP2(model.tval[j],model.n-model.p);
+    rowsC.push(`<tr class="${p<state.alpha?"hit":""}"><td>${label}</td><td>${fmtN(model.beta[j],3)}</td><td>${fmtN(model.se[j],3)}</td><td>${fmtN(model.tval[j],2)}</td><td>${fmtP(p)}</td></tr>`);
+  });
+  html+=`<details class="coefs"><summary>Coeficientes do modelo · R² = ${fmtN(model.R2,3)} · R² ajust. = ${fmtN(model.adjR2,3)}</summary>`+
+    `<table class="anova" style="margin-top:10px"><thead><tr><th>termo</th><th>coef (cod.)</th><th>EP</th><th>t</th><th>p</th></tr></thead><tbody>${rowsC.join("")}</tbody></table>`+
+    `<div class="caption">Coeficientes em unidades codificadas [−1, +1]. Um termo quadrático (xᵢ²) negativo indica curvatura côncava (tende a máximo) naquele eixo; positivo, convexa (mínimo).</div></details>`;
+
+  // contour
+  if(meta.length>=2){
+    html+=`<div class="heat-controls"><div class="opt"><span class="lbl">eixo X</span><select class="fsel" id="heat-a"></select></div><div class="opt"><span class="lbl">eixo Y</span><select class="fsel" id="heat-b"></select></div></div><div id="heat-out"></div>`;
+  }else{
+    html+=`<div id="heat-out"></div>`;
+  }
+  out.innerHTML=html;
+
+  // wire contour selectors
+  if(meta.length>=2){
+    const inf=meta.map((f,i)=>({i,w:Math.abs(model.coef.lin[i]||0)})).sort((a,b)=>b.w-a.w);
+    const A=$("#heat-a"),B=$("#heat-b");
+    A.innerHTML=meta.map((f,i)=>`<option value="${i}">${f.name}</option>`).join("");
+    B.innerHTML=meta.map((f,i)=>`<option value="${i}">${f.name}</option>`).join("");
+    A.value=inf[0].i;B.value=inf[1].i;
+    A.onchange=B.onchange=()=>{if(A.value===B.value)B.value=meta.findIndex((_,i)=>String(i)!==A.value);renderHeat(+A.value,+B.value,opt);};
+    renderHeat(+A.value,+B.value,opt);
+  }else{
+    renderHeat1D(0,opt);
+  }
+}
+function renderHeat(iA,iB,opt){
+  const m=rsmModel,meta=rsmMeta;const G=40;
+  const fA=meta[iA],fB=meta[iB];
+  // predicted grid
+  const vals=[];let lo=Infinity,hi=-Infinity;
+  for(let yy=0;yy<G;yy++){vals.push([]);for(let xx=0;xx<G;xx++){const xc=opt.xcoded.slice();xc[iA]=-1+2*xx/(G-1);xc[iB]=-1+2*yy/(G-1);const v=m.predict(xc);vals[yy].push(v);if(v<lo)lo=v;if(v>hi)hi=v;}}
+  const W=420,H=300,ml=44,mr=14,mt=12,mb=34;
+  const cw=(W-ml-mr)/G,ch=(H-mt-mb)/G;
+  let svg=`<svg class="heat" viewBox="0 0 ${W} ${H}" role="img" aria-label="contorno ${fA.name} × ${fB.name}">`;
+  for(let yy=0;yy<G;yy++)for(let xx=0;xx<G;xx++){const t=(vals[yy][xx]-lo)/(hi-lo||1);const x=ml+xx*cw,y=mt+(G-1-yy)*ch;svg+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${cw+0.6}" height="${ch+0.6}" fill="${viridis(t)}"/>`;}
+  // optimum marker
+  const ox=ml+((opt.xcoded[iA]+1)/2)*(G-1)*cw+cw/2, oy=mt+(G-1-((opt.xcoded[iB]+1)/2)*(G-1))*ch+ch/2;
+  svg+=`<circle cx="${ox.toFixed(1)}" cy="${oy.toFixed(1)}" r="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="${ox.toFixed(1)}" cy="${oy.toFixed(1)}" r="2.2" fill="#fff"/>`;
+  // axes labels
+  svg+=`<line class="axis" x1="${ml}" y1="${H-mb}" x2="${W-mr}" y2="${H-mb}"/><line class="axis" x1="${ml}" y1="${mt}" x2="${ml}" y2="${H-mb}"/>`;
+  for(let t=0;t<=2;t++){const xv=fA.min+(fA.max-fA.min)*t/2;svg+=`<text class="ticklbl" x="${ml+(W-ml-mr)*t/2}" y="${H-mb+15}" text-anchor="middle">${fmtN(xv,Math.abs(xv)<10?2:0)}</text>`;const yv=fB.min+(fB.max-fB.min)*t/2;svg+=`<text class="ticklbl" x="${ml-6}" y="${H-mb-(H-mt-mb)*t/2+3}" text-anchor="end">${fmtN(yv,Math.abs(yv)<10?2:0)}</text>`;}
+  svg+=`<text class="axlbl" x="${(ml+W-mr)/2}" y="${H-3}" text-anchor="middle">${fA.name}</text>`;
+  svg+=`<text class="axlbl" transform="translate(11,${(mt+H-mb)/2}) rotate(-90)" text-anchor="middle">${fB.name}</text>`;
+  svg+=`</svg>`;
+  // legend
+  const stops=[0,.25,.5,.75,1].map(t=>`${viridis(t)} ${(1-t)*100}%`).join(",");
+  const better=state.obj==="max"?"↑ melhor":"↓ melhor";
+  const legend=`<div class="heat-legend"><span>${fmtN(hi)}</span><div class="heat-bar" style="background:linear-gradient(${stops})"></div><span>${fmtN(lo)}</span></div>`;
+  $("#heat-out").innerHTML=`<div class="heat-wrap">${svg}${legend}</div><div class="caption">Superfície prevista de <i>${rsmResp}</i> variando ${fA.name} e ${fB.name}; os demais fatores fixos no ótimo. ○ marca o ótimo. Escala: amarelo alto, roxo baixo (${better} para o objetivo atual).</div>`;
+}
+function renderHeat1D(i,opt){
+  const m=rsmModel,meta=rsmMeta,f=meta[i];const N=80;
+  const W=440,H=240,ml=48,mr=14,mt=14,mb=34;const pts=[];let lo=Infinity,hi=-Infinity;
+  for(let t=0;t<N;t++){const xc=opt.xcoded.slice();xc[i]=-1+2*t/(N-1);const v=m.predict(xc);pts.push(v);if(v<lo)lo=v;if(v>hi)hi=v;}
+  const x=t=>ml+(W-ml-mr)*t/(N-1),y=v=>mt+(H-mt-mb)*(1-(v-lo)/(hi-lo||1));
+  let svg=`<svg class="heat" viewBox="0 0 ${W} ${H}">`;
+  for(let g=0;g<=4;g++){const yy=mt+(H-mt-mb)*g/4;svg+=`<line class="gridline" x1="${ml}" y1="${yy}" x2="${W-mr}" y2="${yy}"/>`;}
+  svg+=`<path d="${pts.map((v,t)=>(t?"L":"M")+x(t)+" "+y(v)).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
+  const ox=x((opt.xcoded[i]+1)/2*(N-1));svg+=`<line x1="${ox}" y1="${mt}" x2="${ox}" y2="${H-mb}" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  for(let t=0;t<=2;t++){const xv=f.min+(f.max-f.min)*t/2;svg+=`<text class="ticklbl" x="${ml+(W-ml-mr)*t/2}" y="${H-mb+15}" text-anchor="middle">${fmtN(xv,2)}</text>`;}
+  svg+=`<text class="axlbl" x="${(ml+W-mr)/2}" y="${H-3}" text-anchor="middle">${f.name}</text></svg>`;
+  $("#heat-out").innerHTML=`<div class="heat-wrap">${svg}</div><div class="caption">Resposta prevista variando ${f.name}. A linha tracejada marca o valor ótimo.</div>`;
+}
+
+// ---- descriptive per configuration ----
+function renderDescriptive(factors,resp){
+  const groups={};
+  for(const r of state.rows){const key=factors.map(f=>r[f]).join(" · ");(groups[key]||(groups[key]=[])).push(r[resp]);}
+  const rows=Object.entries(groups).map(([cfg,vals])=>({cfg,...describe(vals)}));
+  const better=state.obj==="min"?Math.min(...rows.map(r=>r.mean)):Math.max(...rows.map(r=>r.mean));
+  rows.sort((x,y)=>state.obj==="min"?x.mean-y.mean:y.mean-x.mean);
+  $("#cfg-hint").textContent=rows.length+" configurações";
+  const head=`<tr><th class="cfg">${factors.join(" · ")}</th><th>n</th><th>média</th><th>desvio</th><th>mediana</th><th>mín</th><th>máx</th></tr>`;
+  const body=rows.map(r=>`<tr class="${r.mean===better?"best":""}"><td class="cfg">${r.cfg}</td><td>${r.n}</td><td>${fmtN(r.mean)}</td><td>${fmtN(r.sd)}</td><td>${fmtN(r.median)}</td><td>${fmtN(r.min)}</td><td>${fmtN(r.max)}</td></tr>`).join("");
+  $("#desc-out").innerHTML=`<table class="desc-t"><thead>${head}</thead><tbody>${body}</tbody></table>
+    <div class="caption" style="margin-top:8px">Destacada: melhor configuração média (objetivo = ${state.obj==="min"?"minimizar":"maximizar"}).</div>`;
+}
+
+// ==========================================================
+//  WIRING
+// ==========================================================
+function loadData(text){
+  try{
+    const {cols,rows}=parseTable(text);
+    state.cols=cols;state.rows=rows;
+    guessRoles();renderMapping();analyze();
+  }catch(e){
+    $("#parse-err").innerHTML=`<div class="err">${e}</div>`;
+    $("#sec-map").style.display="none";$("#results").style.display="none";
+  }
+}
+$("#run").addEventListener("click",()=>loadData($("#data").value));
+$("#clear").addEventListener("click",()=>{$("#data").value="";$("#filehint").textContent="";$("#parse-err").innerHTML="";$("#sec-map").style.display="none";$("#results").style.display="none";setStatus("sem dados");});
+$("#file").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{$("#data").value=rd.result;$("#filehint").textContent=f.name;loadData(rd.result);};rd.readAsText(f);
+});
+$("#alpha-seg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.alpha=+b.dataset.a;[...e.currentTarget.children].forEach(x=>x.classList.toggle("on",x===b));if(state.rows.length)analyze();});
+$("#obj-seg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.obj=b.dataset.o;[...e.currentTarget.children].forEach(x=>x.classList.toggle("on",x===b));if(state.rows.length)analyze();});
+
+// ---- theme switching (top dropdown) ----
+const themeSelect=$("#themeSelect");
+function setTheme(t){
+  document.documentElement.dataset.theme=t;
+  if(themeSelect)themeSelect.value=t;
+  try{localStorage.setItem("fatorial-theme",t);}catch(e){}
+}
+themeSelect.addEventListener("change",()=>setTheme(themeSelect.value));
+(function(){let t="dracula";try{t=localStorage.getItem("fatorial-theme")||"dracula";}catch(e){}setTheme(t);})();
+
+// ---- modals (Ajuda / Sobre) ----
+function openModal(o){o.hidden=false;const c=o.querySelector("[data-close]");if(c)c.focus();}
+function closeModals(){document.querySelectorAll(".modal-overlay").forEach(o=>o.hidden=true);}
+$("#helpBtn").addEventListener("click",()=>openModal($("#helpOverlay")));
+$("#aboutBtn").addEventListener("click",()=>openModal($("#aboutOverlay")));
+document.querySelectorAll(".modal-overlay").forEach(o=>{
+  o.addEventListener("click",e=>{if(e.target===o||e.target.hasAttribute("data-close"))closeModals();});
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModals();});
+
+// ---- status pill ----
+function setStatus(txt){const p=$("#statusPill");if(p)p.innerHTML=txt;}
+
+// ---- nav: scroll + spy ----
+document.querySelectorAll("#nav .navitem[data-target]").forEach(b=>{
+  b.addEventListener("click",()=>{const el=document.getElementById(b.dataset.target);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});});
+});
+const navBtns=[...document.querySelectorAll("#nav .navitem[data-target]")];
+const spy=new IntersectionObserver(es=>{
+  es.forEach(en=>{if(en.isIntersecting){const id=en.target.id;navBtns.forEach(b=>b.classList.toggle("active",b.dataset.target===id));}});
+},{rootMargin:"-20% 0px -70% 0px"});
+["top","sec-dados","sec-map","sec-screen","sec-tree","sec-tw","sec-desc","sec-rsm"].forEach(id=>{const el=document.getElementById(id);if(el)spy.observe(el);});
+
+// ---- example generator: synthetic GA-tuning results (long format) ----
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function makeExample(){
+  const rnd=mulberry32(20260730);
+  const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+  const mut=[0.01,0.05,0.10],cx=[0.6,0.8,0.9],pop=[50,100,200],reps=6;
+  const lines=["mutation,crossover,pop_size,run,best_fitness"];
+  // model (minimization, lower = better):
+  //   mutation  -> strong main effect (0.05 is best)
+  //   crossover -> mild main effect
+  //   pop_size  -> no effect at all (pure noise; reads as non-significant)
+  //   mutation x crossover -> real interaction
+  const mutEff={0.01:34,0.05:10,0.10:22};
+  const cxEff={0.6:6,0.8:2,0.9:0};
+  for(const m of mut)for(const c of cx)for(const p of pop){
+    let inter=0;if(m===0.05){if(c===0.9)inter=-7;else if(c===0.6)inter=6;}
+    if(m===0.10&&c===0.6)inter=-5;
+    const base=118+mutEff[m]+cxEff[c]+inter;
+    for(let r=1;r<=reps;r++){const val=Math.max(0,base+gauss()*6.5);lines.push(`${m},${c},${p},${r},${val.toFixed(1)}`);}
+  }
+  return lines.join("\n");
+}
+$("#example").addEventListener("click",()=>{const t=makeExample();$("#data").value=t;$("#filehint").textContent="exemplo: ajuste de AG (3×3×3, 6 execuções)";loadData(t);});
+</script>
+</body>
+</html>
