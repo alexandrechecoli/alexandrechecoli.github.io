@@ -828,6 +828,7 @@
       <option value="mochila" data-i18n="ex_mochila">Mochila (PLI)</option>
       <option value="dieta" data-i18n="ex_dieta">Dieta (PL)</option>
       <option value="mix" data-i18n="ex_mix">Mix de Produtos (PLI)</option>
+      <option value="inviavel" data-i18n="ex_inviavel">Produção Inviável (teste IIS)</option>
       <option value="transporte_mp" data-i18n="ex_transporte_mp">Transporte (MathProg)</option>
     </select>
 
@@ -1120,7 +1121,11 @@
     <div class="panel-results">
       <div class="panel-header">
         <span data-i18n="results_panel_header">Resultados</span>
-        <button class="font-btn" id="btn-export-solution" data-i18n-title="tt_export" title="Exportar solução para arquivo" disabled data-i18n="btn_export">💾 Exportar</button>
+        <select class="font-btn" id="btn-export-solution" data-i18n-title="tt_export" title="Exportar solução para arquivo" disabled>
+          <option value="" data-i18n="opt_export_placeholder">💾 Exportar como…</option>
+          <option value="report" data-i18n="opt_export_report">Relatório (.txt)</option>
+          <option value="sol" data-i18n="opt_export_sol">Solução HiGHS (.sol)</option>
+        </select>
         <div class="font-btns">
           <button class="font-btn" id="result-font-dec" data-i18n-title="tt_result_font_dec" title="Diminuir tamanho do texto">A−</button>
           <span id="result-font-size-display">100%</span>
@@ -1172,6 +1177,7 @@
       ex_mochila: 'Mochila (PLI)',
       ex_dieta: 'Dieta (PL)',
       ex_mix: 'Mix de Produtos (PLI)',
+      ex_inviavel: 'Produção Inviável (teste IIS)',
 
       tt_open: 'Abrir arquivo .lp',
       btn_open: '📂 Abrir',
@@ -1264,6 +1270,12 @@
       results_panel_header: 'Resultados',
       tt_export: 'Exportar solução para arquivo',
       btn_export: '💾 Exportar',
+      opt_export_placeholder: '💾 Exportar como…',
+      opt_export_report: 'Relatório (.txt)',
+      opt_export_sol: 'Solução HiGHS (.sol)',
+      filetype_sol: 'Solução HiGHS',
+      export_sol_filename_suffix: '-solucao.sol',
+      export_sol_error_prefix: 'Erro ao exportar .sol: ',
       tt_result_font_dec: 'Diminuir tamanho do texto',
       tt_result_font_inc: 'Aumentar tamanho do texto',
 
@@ -1357,6 +1369,41 @@
       th_rhssup: 'RHS sup.',
       legend_dual_value: 'Valor dual: variação no objetivo por unidade de folga da restrição',
       no_constraints_msg: 'Sem restrições',
+
+      iis_ask_title: 'Diagnosticar por que o modelo é inviável?',
+      iis_ask_text: 'É possível tentar isolar automaticamente o menor conjunto de restrições/limites que, juntos, tornam o modelo inviável (IIS — conjunto irredutível inviável).',
+      iis_ask_hint: 'Isso executa uma análise separada, sem limite de tempo (ignora o "Tempo máximo" configurado nas Opções) — em modelos grandes pode demorar bastante.',
+      iis_btn_run: '🔍 Diagnosticar inviabilidade',
+      iis_running_text: 'Diagnosticando inviabilidade… pode demorar bastante, sem tempo limite.',
+      iis_btn_cancel: 'Cancelar',
+      iis_result_heading: 'Conflito mínimo encontrado (IIS)',
+      iis_result_intro: 'Removendo qualquer um destes itens, o modelo deixa de ser inviável:',
+      iis_result_rows_heading: (n) => `Restrições envolvidas (${n})`,
+      iis_result_cols_heading: (n) => `Limites de variáveis envolvidos (${n})`,
+      iis_result_empty: 'Nenhum conflito específico foi isolado — o modelo pode ter deixado de ser inviável desde o último cálculo.',
+      iis_btn_retry: '🔍 Diagnosticar novamente',
+      iis_error_prefix: 'Erro ao diagnosticar inviabilidade: ',
+
+      tab_sensitivity: 'Sensibilidade',
+      sens_ask_title: 'Calcular análise de sensibilidade?',
+      sens_ask_text: 'Mostra, para cada variável, até onde o coeficiente de custo pode variar sem mudar a base ótima — e, para cada restrição, até onde o RHS pode variar mantendo o valor dual atual válido.',
+      sens_btn_run: '📊 Calcular análise de sensibilidade',
+      sens_running_text: 'Calculando análise de sensibilidade…',
+      sens_unavailable_mip: 'Análise de sensibilidade não está disponível para modelos com variáveis inteiras (PLI) — o HiGHS só calcula ranging a partir de uma base do simplex, que não existe após uma resolução por branch-and-bound.',
+      sens_result_vars_heading: 'Variáveis — faixa do coeficiente de custo',
+      sens_result_rows_heading: 'Restrições — faixa do RHS',
+      sens_th_cost: 'Custo atual',
+      sens_th_rhs: 'RHS atual',
+      sens_th_min: 'Mínimo permitido',
+      sens_th_max: 'Máximo permitido',
+      sens_th_obj_min: 'Objetivo no mínimo',
+      sens_th_obj_max: 'Objetivo no máximo',
+      sens_th_obj_min_title: 'Valor que o objetivo assumiria se o coeficiente/RHS fosse levado até o mínimo permitido',
+      sens_th_obj_max_title: 'Valor que o objetivo assumiria se o coeficiente/RHS fosse levado até o máximo permitido',
+      sens_legend: 'Faixa dentro da qual o coeficiente/RHS pode variar sem alterar a base ótima atual (mantendo válidos os valores duais e custos reduzidos já mostrados nas outras abas). As colunas "Objetivo no mínimo/máximo" mostram o valor que o objetivo assumiria nesses extremos.',
+      sens_btn_retry: '📊 Recalcular',
+      sens_error_prefix: 'Erro ao calcular a análise de sensibilidade: ',
+
       log_lines_count: (n) => `${n} linha(s) de output`,
       btn_copied: '✓ Copiado!',
       status_var_abbrev: 'var',
@@ -1404,6 +1451,7 @@
       ex_mochila: 'Knapsack (MILP)',
       ex_dieta: 'Diet (LP)',
       ex_mix: 'Product Mix (MILP)',
+      ex_inviavel: 'Infeasible Production (IIS test)',
 
       tt_open: 'Open .lp file',
       btn_open: '📂 Open',
@@ -1496,6 +1544,12 @@
       results_panel_header: 'Results',
       tt_export: 'Export solution to file',
       btn_export: '💾 Export',
+      opt_export_placeholder: '💾 Export as…',
+      opt_export_report: 'Report (.txt)',
+      opt_export_sol: 'HiGHS solution (.sol)',
+      filetype_sol: 'HiGHS Solution',
+      export_sol_filename_suffix: '-solution.sol',
+      export_sol_error_prefix: 'Error exporting .sol: ',
       tt_result_font_dec: 'Decrease text size',
       tt_result_font_inc: 'Increase text size',
 
@@ -1589,6 +1643,41 @@
       th_rhssup: 'RHS upper',
       legend_dual_value: 'Dual value: change in the objective per unit of constraint slack',
       no_constraints_msg: 'No constraints',
+
+      iis_ask_title: 'Diagnose why the model is infeasible?',
+      iis_ask_text: 'HiGHS can try to automatically isolate the smallest set of constraints/bounds that, together, make the model infeasible (IIS — irreducible infeasible subsystem).',
+      iis_ask_hint: 'This runs a separate analysis with no time limit (ignores the "Max time" set in Options) — can take a long time on large models.',
+      iis_btn_run: '🔍 Diagnose infeasibility',
+      iis_running_text: 'Diagnosing infeasibility… this can take a long time, with no time limit.',
+      iis_btn_cancel: 'Cancel',
+      iis_result_heading: 'Minimal conflicting subset found (IIS)',
+      iis_result_intro: 'Removing any one of these makes the model feasible again:',
+      iis_result_rows_heading: (n) => `Constraints involved (${n})`,
+      iis_result_cols_heading: (n) => `Variable bounds involved (${n})`,
+      iis_result_empty: 'No specific conflict could be isolated — the model may no longer be infeasible since the last solve.',
+      iis_btn_retry: '🔍 Diagnose again',
+      iis_error_prefix: 'Error diagnosing infeasibility: ',
+
+      tab_sensitivity: 'Sensitivity',
+      sens_ask_title: 'Compute sensitivity analysis?',
+      sens_ask_text: 'Shows, for each variable, how far the cost coefficient can move without changing the optimal basis — and, for each constraint, how far the RHS can move while the current dual value stays valid.',
+      sens_btn_run: '📊 Compute sensitivity analysis',
+      sens_running_text: 'Computing sensitivity analysis…',
+      sens_unavailable_mip: 'Sensitivity analysis is not available for models with integer variables (MILP) — HiGHS can only compute ranging from a simplex basis, which does not exist after a branch-and-bound solve.',
+      sens_result_vars_heading: 'Variables — cost coefficient range',
+      sens_result_rows_heading: 'Constraints — RHS range',
+      sens_th_cost: 'Current cost',
+      sens_th_rhs: 'Current RHS',
+      sens_th_min: 'Allowable minimum',
+      sens_th_max: 'Allowable maximum',
+      sens_th_obj_min: 'Objective at minimum',
+      sens_th_obj_max: 'Objective at maximum',
+      sens_th_obj_min_title: 'Objective value if the coefficient/RHS were pushed to the allowable minimum',
+      sens_th_obj_max_title: 'Objective value if the coefficient/RHS were pushed to the allowable maximum',
+      sens_legend: 'Range within which the coefficient/RHS can move without changing the current optimal basis (keeping the dual values and reduced costs shown in the other tabs valid). The "Objective at minimum/maximum" columns show what the objective would become at those extremes.',
+      sens_btn_retry: '📊 Recompute',
+      sens_error_prefix: 'Error computing sensitivity analysis: ',
+
       log_lines_count: (n) => `${n} line(s) of output`,
       btn_copied: '✓ Copied!',
       status_var_abbrev: 'var',
@@ -1896,6 +1985,25 @@ Bounds
 
 Generals
   m1 m2 m3
+
+End`,
+
+    inviavel: `\\ Produção Inviável — modelo de teste para o diagnóstico de IIS
+\\ O contrato de venda exige entregar pelo menos 100 unidades
+\\ (P1 + P2), mas a capacidade de máquina só permite produzir
+\\ até 60. As duas restrições, juntas, não têm solução.
+\\ Use "Resolver" e depois "🔍 Diagnosticar inviabilidade".
+
+Minimize
+  obj: 3 x1 + 5 x2
+
+Subject To
+  capacidade: x1 + x2 <= 60
+  contrato:   x1 + x2 >= 100
+
+Bounds
+  x1 >= 0
+  x2 >= 0
 
 End`
   };
@@ -2365,38 +2473,78 @@ end;`
     return out;
   }
 
-  document.getElementById('btn-export-solution').addEventListener('click', async () => {
-    if (!lastSolution) return;
-    const tab = getActiveTab();
-    const modelName = tab ? tab.name : 'modelo';
-    const content = buildSolutionReport(lastSolution, modelName);
-    const suggested = sanitizeFileName(modelName) + t('export_filename_suffix');
-
+  async function saveTextFile(content, suggestedName, typeDescription, mimeType, extensions) {
     if (window.showSaveFilePicker) {
       try {
         const handle = await window.showSaveFilePicker({
-          suggestedName: suggested,
-          types: [{ description: t('filetype_solution_report'), accept: { 'text/plain': ['.txt'] } }]
+          suggestedName,
+          types: [{ description: typeDescription, accept: { [mimeType]: extensions } }]
         });
         const writable = await handle.createWritable();
         await writable.write(content);
         await writable.close();
+        return;
       } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error(currentLang === 'pt' ? 'Erro ao exportar solução:' : 'Error exporting solution:', err);
-          downloadFallback(content, suggested);
-        }
+        if (err.name === 'AbortError') return;
+        console.error(currentLang === 'pt' ? 'Erro ao exportar arquivo:' : 'Error exporting file:', err);
       }
-      return;
     }
+    downloadFallback(content, suggestedName);
+  }
 
-    downloadFallback(content, suggested);
+  function exportSolutionReport() {
+    const tab = getActiveTab();
+    const modelName = tab ? tab.name : 'modelo';
+    const content = buildSolutionReport(lastSolution, modelName);
+    const suggested = sanitizeFileName(modelName) + t('export_filename_suffix');
+    saveTextFile(content, suggested, t('filetype_solution_report'), 'text/plain', ['.txt']);
+  }
+
+  function exportSolutionSolFile() {
+    if (!lastSolvedLpText) return;
+    const tab = getActiveTab();
+    const modelName = tab ? tab.name : 'modelo';
+    const suggested = sanitizeFileName(modelName) + t('export_sol_filename_suffix');
+
+    const w = spawnRawWorker();
+    w.onmessage = function ({ data }) {
+      switch (data.type) {
+        case 'ready':
+          w.postMessage({ action: 'export_sol', lp: lastSolvedLpText, options: getSolverOptions() });
+          break;
+        case 'export_sol_result':
+          saveTextFile(data.sol, suggested, t('filetype_sol'), 'text/plain', ['.sol']);
+          w.terminate();
+          break;
+        case 'export_sol_error':
+        case 'init_error':
+        case 'fatal_error':
+          alert(t('export_sol_error_prefix') + data.message);
+          w.terminate();
+          break;
+        // 'log' messages are ignored here — this worker has no live log pane
+      }
+    };
+    w.onerror = function (err) {
+      alert(t('export_sol_error_prefix') + ((err && err.message) || String(err)));
+      w.terminate();
+    };
+  }
+
+  document.getElementById('btn-export-solution').addEventListener('change', function () {
+    if (!lastSolution) { this.value = ''; return; }
+    if (this.value === 'report') exportSolutionReport();
+    else if (this.value === 'sol') exportSolutionSolFile();
+    this.value = '';
   });
 
   /* ════════════════════════════════════════════════════════════════════
      7. HiGHS Web Worker (inline blob)
   ════════════════════════════════════════════════════════════════════ */
-  const HIGHS_BASE = 'https://lovasoa.github.io/highs-js/';
+  // Resolved to an absolute URL (not a relative path) because the worker is
+  // spawned from a blob: URL, whose own origin would otherwise be used to
+  // resolve relative importScripts()/locateFile() lookups.
+  const HIGHS_BASE = new URL('.', location.href).href;
 
   const workerSrc = `
 importScripts('${HIGHS_BASE}highs.js');
@@ -2448,6 +2596,114 @@ onmessage = async function({ data }) {
       const t = setInterval(() => { if (highs) { clearInterval(t); res(); } }, 50);
     });
   }
+  // IIS (irreducible infeasible subsystem) diagnosis: a separate, on-demand
+  // analysis the user explicitly asked for after seeing an "Infeasible"
+  // result. It re-solves the model internally (needed to seed the search)
+  // and then runs HiGHS's own deletion/elastic-filter algorithm, which can
+  // require many re-solves of reduced versions of the model — so, unlike a
+  // normal solve, it deliberately ignores the user's configured time limit
+  // and is allowed to run for as long as it takes.
+  if (data.action === 'iis') {
+    let model = null;
+    try {
+      model = highs.createModel({ format: 'lp', data: data.lp });
+      // iis_strategy defaults to 0, which makes Highs_getIis() report
+      // "Unknown" and return nothing — a non-default strategy is required
+      // to actually run the deletion/elastic-filter search (verified
+      // empirically: 0 = no-op, 1 = errors on this build, 2/3 = work).
+      const opts = Object.assign({ output_flag: false, iis_strategy: 2 }, data.options || {});
+      delete opts.time_limit;
+      model.options.set(opts);
+      model.run();
+      const iis = model.getIis();
+      // rowIndex/colIndex are typed Int32Arrays — .map() on those coerces
+      // object results back to numbers, so convert to a plain array first.
+      const rows = Array.from(iis.rowIndex).map(idx => ({ index: idx, name: model.getRowName(idx) }));
+      const cols = Array.from(iis.colIndex).map(idx => ({ index: idx, name: model.getColName(idx) }));
+      postMessage({ type: 'iis_result', rows, cols });
+    } catch (err) {
+      if (isFatalWasmError(err)) {
+        dead = true;
+        postMessage({ type: 'fatal_error', message: err.toString() });
+      } else {
+        postMessage({ type: 'iis_error', message: err.toString() });
+      }
+    } finally {
+      if (model) { try { model.dispose(); } catch (_) {} }
+    }
+    return;
+  }
+
+  // Sensitivity/ranging analysis: cheap, closed-form post-optimal analysis
+  // from the final simplex basis (not an iterative search like IIS), so it
+  // runs with the same options/time limit as a normal solve. Only valid for
+  // pure LPs — HiGHS has no simplex basis to compute ranging from after a
+  // MIP's branch-and-bound, and getRanging() throws in that case.
+  if (data.action === 'ranging') {
+    let model = null;
+    try {
+      model = highs.createModel({ format: 'lp', data: data.lp });
+      const opts = Object.assign({ output_flag: false }, data.options || {});
+      model.options.set(opts);
+      model.run();
+      const rg = model.getRanging();
+      const dims = model.getDimensions();
+      const costs = dims.numCols > 0
+        ? model.getCols({ kind: 'range', from: 0, to: dims.numCols - 1 }).cost
+        : [];
+      const cols = Array.from(rg.colCostDown.value).map((down, i) => ({
+        name: model.getColName(i),
+        cost: costs[i],
+        min: down,
+        max: rg.colCostUp.value[i],
+        objAtMin: rg.colCostDown.objective[i],
+        objAtMax: rg.colCostUp.objective[i]
+      }));
+      const rows = Array.from(rg.rowBoundDown.value).map((down, i) => ({
+        name: model.getRowName(i),
+        min: down,
+        max: rg.rowBoundUp.value[i],
+        objAtMin: rg.rowBoundDown.objective[i],
+        objAtMax: rg.rowBoundUp.objective[i]
+      }));
+      postMessage({ type: 'ranging_result', cols, rows });
+    } catch (err) {
+      if (isFatalWasmError(err)) {
+        dead = true;
+        postMessage({ type: 'fatal_error', message: err.toString() });
+      } else {
+        postMessage({ type: 'ranging_error', message: err.toString() });
+      }
+    } finally {
+      if (model) { try { model.dispose(); } catch (_) {} }
+    }
+    return;
+  }
+
+  // Native HiGHS .sol export (raw/machine-readable style) — like ranging,
+  // a cheap post-solve export, so it uses the normal solve options/time limit.
+  if (data.action === 'export_sol') {
+    let model = null;
+    try {
+      model = highs.createModel({ format: 'lp', data: data.lp });
+      const opts = Object.assign({ output_flag: false }, data.options || {});
+      model.options.set(opts);
+      model.run();
+      const sol = model.exportSolution(false);
+      postMessage({ type: 'export_sol_result', sol });
+    } catch (err) {
+      if (isFatalWasmError(err)) {
+        dead = true;
+        postMessage({ type: 'fatal_error', message: err.toString() });
+      } else {
+        postMessage({ type: 'export_sol_error', message: err.toString() });
+      }
+    } finally {
+      if (model) { try { model.dispose(); } catch (_) {} }
+    }
+    return;
+  }
+
   try {
     // output_flag: true ensures HiGHS writes to stdout (captured by print above)
     // Extra options (time_limit, mip_rel_gap, presolve, etc.) come from the
@@ -2475,11 +2731,21 @@ onmessage = async function({ data }) {
   let lastFatalMessage = null;   // last fatal worker error, kept to re-render on language change
   let lastMathProgError = null;  // last MathProg translation error, kept to re-render on language change
   let lastGeneratedLp = null;    // last MathProg -> LP translation result, shown in the "Modelo Gerado" tab
+  let lastSolvedLpText = null;   // exact .lp text behind the last solve, used to (re)run the IIS diagnosis
   let lastMsgFn = null;   // closure that re-computes the current status-bar message in the active language
 
-  function spawnWorker() {
+  let iisWorker = null;
+  let iisRunning = false;
+  let sensWorker = null;
+  let sensRunning = false;
+
+  function spawnRawWorker() {
     const blob = new Blob([workerSrc], { type: 'application/javascript' });
-    const w = new Worker(URL.createObjectURL(blob));
+    return new Worker(URL.createObjectURL(blob));
+  }
+
+  function spawnWorker() {
+    const w = spawnRawWorker();
 
     w.onmessage = function ({ data }) {
       switch (data.type) {
@@ -3294,6 +3560,10 @@ onmessage = async function({ data }) {
     const tab = getActiveTab();
     const source = editor.getValue().trim();
     if (!source) return;
+    terminateIisWorker();
+    iisRunning = false;
+    terminateSensWorker();
+    sensRunning = false;
     solving = true;
     lastSolution = null;
     lastErrorMessage = null;
@@ -3329,6 +3599,7 @@ onmessage = async function({ data }) {
 
   function sendToHighs(lpText) {
     logLines = [];
+    lastSolvedLpText = lpText;
     showSolvingView();
     setDot('loading');
     setMsgKey('status_solving');
@@ -3625,6 +3896,8 @@ onmessage = async function({ data }) {
           </div>` : ''}
       </div>
 
+      ${isInf ? '<div id="iis-panel" style="margin-bottom:14px"></div>' : ''}
+
       <div class="tabs" id="result-tabs">
         <button class="tab active" data-tab="vars">
           ${t('tab_variables')}&nbsp;<span style="color:var(--muted);font-size:11px">(${vars.length})</span>
@@ -3632,6 +3905,7 @@ onmessage = async function({ data }) {
         <button class="tab" data-tab="constrs">
           ${t('tab_constraints')}&nbsp;<span style="color:var(--muted);font-size:11px">(${rows.length})</span>
         </button>
+        ${isOpt ? `<button class="tab" data-tab="sensitivity">${t('tab_sensitivity')}</button>` : ''}
         <button class="tab" data-tab="log">
           ${t('tab_log')}&nbsp;<span style="color:var(--muted);font-size:11px">(${logLines.length})</span>
         </button>
@@ -3671,6 +3945,11 @@ onmessage = async function({ data }) {
         </div>` : `<div style="color:var(--muted);font-size:12px;padding:8px">${t('no_constraints_msg')}</div>`}
       </div>
 
+      ${isOpt ? `
+      <div id="tab-sensitivity" style="display:none">
+        <div id="sensitivity-panel"></div>
+      </div>` : ''}
+
       <div id="tab-log" style="display:none">
         <div class="log-toolbar">
           <span>${t('log_lines_count', logLines.length)}</span>
@@ -3693,7 +3972,9 @@ onmessage = async function({ data }) {
         <div class="generated-model-pre">${escHtml(lastGeneratedLp)}</div>
       </div>` : ''}`;
 
-    const ALL_TABS = ['vars','constrs','log','raw'].concat(hasGenerated ? ['generated'] : []);
+    const ALL_TABS = ['vars','constrs','log','raw']
+      .concat(isOpt ? ['sensitivity'] : [])
+      .concat(hasGenerated ? ['generated'] : []);
 
     // Tab logic
     document.getElementById('result-tabs').addEventListener('click', e => {
@@ -3733,6 +4014,270 @@ onmessage = async function({ data }) {
     }
 
     setMsgKey('status_solved_summary_parts', { badgeText, nvars: vars.length, nrows: rows.length, obj: fmt(sol.ObjectiveValue) });
+
+    if (isInf) renderIisPanel('ask');
+
+    if (isOpt) {
+      const isMip = vars.some(v => v.Type && v.Type !== 'Continuous');
+      renderSensitivityPanel(isMip ? 'unavailable' : 'ask');
+    }
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     6c. IIS (infeasibility) diagnosis — on demand, no time limit
+  ════════════════════════════════════════════════════════════════════ */
+  function terminateIisWorker() {
+    if (iisWorker) { try { iisWorker.terminate(); } catch (_) {} iisWorker = null; }
+  }
+
+  function cancelIisDiagnosis() {
+    iisRunning = false;
+    terminateIisWorker();
+    renderIisPanel('ask');
+  }
+
+  function startIisDiagnosis() {
+    if (iisRunning || !lastSolvedLpText) return;
+    iisRunning = true;
+    renderIisPanel('running');
+
+    const w = spawnRawWorker();
+    iisWorker = w;
+
+    w.onmessage = function ({ data }) {
+      if (iisWorker !== w) return;   // a stale worker from a previous run/cancel
+      switch (data.type) {
+        case 'ready':
+          w.postMessage({ action: 'iis', lp: lastSolvedLpText, options: getSolverOptions() });
+          break;
+        case 'iis_result':
+          iisRunning = false;
+          renderIisPanel('result', { rows: data.rows, cols: data.cols });
+          terminateIisWorker();
+          break;
+        case 'iis_error':
+        case 'init_error':
+        case 'fatal_error':
+          iisRunning = false;
+          renderIisPanel('error', data.message);
+          terminateIisWorker();
+          break;
+        // 'log' messages are ignored here — this worker has no live log pane
+      }
+    };
+
+    w.onerror = function (err) {
+      if (iisWorker !== w) return;
+      iisRunning = false;
+      renderIisPanel('error', (err && err.message) || String(err));
+      terminateIisWorker();
+    };
+  }
+
+  function renderIisPanel(state, payload) {
+    const panel = document.getElementById('iis-panel');
+    if (!panel) return;   // the results view has since moved on (new solve, etc.)
+
+    if (state === 'ask') {
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(139,148,255,.06);border-color:var(--border)">
+          <div style="font-weight:600;margin-bottom:4px">${t('iis_ask_title')}</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">${t('iis_ask_text')}<br>${t('iis_ask_hint')}</div>
+          <button class="btn primary" id="iis-run-btn">${t('iis_btn_run')}</button>
+        </div>`;
+      document.getElementById('iis-run-btn').addEventListener('click', startIisDiagnosis);
+      return;
+    }
+
+    if (state === 'running') {
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(139,148,255,.06);border-color:var(--border);display:flex;align-items:center;gap:10px">
+          <span class="dot loading"></span>
+          <span style="font-size:12px">${t('iis_running_text')}</span>
+          <button class="btn" id="iis-cancel-btn" style="margin-left:auto">${t('iis_btn_cancel')}</button>
+        </div>`;
+      document.getElementById('iis-cancel-btn').addEventListener('click', cancelIisDiagnosis);
+      return;
+    }
+
+    if (state === 'error') {
+      panel.innerHTML = `
+        <div class="error-msg">${escHtml(t('iis_error_prefix') + payload)}</div>
+        <button class="btn" id="iis-retry-btn" style="margin-top:8px">${t('iis_btn_retry')}</button>`;
+      document.getElementById('iis-retry-btn').addEventListener('click', startIisDiagnosis);
+      return;
+    }
+
+    if (state === 'result') {
+      const rows = payload.rows || [];
+      const cols = payload.cols || [];
+      const rowsHtml = rows.length
+        ? `<ul style="margin:4px 0 0 18px;padding:0">${rows.map(r => `<li><code>${escHtml(r.name)}</code></li>`).join('')}</ul>`
+        : '';
+      const colsHtml = cols.length
+        ? `<ul style="margin:4px 0 0 18px;padding:0">${cols.map(c => `<li><code>${escHtml(c.name)}</code></li>`).join('')}</ul>`
+        : '';
+      const empty = (!rows.length && !cols.length)
+        ? `<div style="font-size:12px;color:var(--muted)">${t('iis_result_empty')}</div>`
+        : '';
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(255,184,108,.06);border-color:rgba(255,184,108,.35)">
+          <div style="font-weight:600;margin-bottom:4px">${t('iis_result_heading')}</div>
+          ${(rows.length || cols.length) ? `<div style="font-size:12px;color:var(--muted);margin-bottom:8px">${t('iis_result_intro')}</div>` : ''}
+          ${rows.length ? `<div style="font-size:12px;font-weight:600;margin-top:6px">${t('iis_result_rows_heading', rows.length)}</div>${rowsHtml}` : ''}
+          ${cols.length ? `<div style="font-size:12px;font-weight:600;margin-top:6px">${t('iis_result_cols_heading', cols.length)}</div>${colsHtml}` : ''}
+          ${empty}
+        </div>
+        <button class="btn" id="iis-retry-btn" style="margin-top:8px">${t('iis_btn_retry')}</button>`;
+      document.getElementById('iis-retry-btn').addEventListener('click', startIisDiagnosis);
+      return;
+    }
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     6d. Sensitivity / ranging analysis — on demand, LP only (no MIP)
+  ════════════════════════════════════════════════════════════════════ */
+  function terminateSensWorker() {
+    if (sensWorker) { try { sensWorker.terminate(); } catch (_) {} sensWorker = null; }
+  }
+
+  function startSensitivityAnalysis() {
+    if (sensRunning || !lastSolvedLpText) return;
+    sensRunning = true;
+    renderSensitivityPanel('running');
+
+    const w = spawnRawWorker();
+    sensWorker = w;
+
+    w.onmessage = function ({ data }) {
+      if (sensWorker !== w) return;   // a stale worker from a previous run
+      switch (data.type) {
+        case 'ready':
+          w.postMessage({ action: 'ranging', lp: lastSolvedLpText, options: getSolverOptions() });
+          break;
+        case 'ranging_result':
+          sensRunning = false;
+          renderSensitivityPanel('result', { cols: data.cols, rows: data.rows });
+          terminateSensWorker();
+          break;
+        case 'ranging_error':
+        case 'init_error':
+        case 'fatal_error':
+          sensRunning = false;
+          renderSensitivityPanel('error', data.message);
+          terminateSensWorker();
+          break;
+        // 'log' messages are ignored here — this worker has no live log pane
+      }
+    };
+
+    w.onerror = function (err) {
+      if (sensWorker !== w) return;
+      sensRunning = false;
+      renderSensitivityPanel('error', (err && err.message) || String(err));
+      terminateSensWorker();
+    };
+  }
+
+  function renderSensitivityPanel(state, payload) {
+    const panel = document.getElementById('sensitivity-panel');
+    if (!panel) return;   // the results view has since moved on (new solve, etc.)
+
+    if (state === 'unavailable') {
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(139,148,255,.06);border-color:var(--border)">
+          ${t('sens_unavailable_mip')}
+        </div>`;
+      return;
+    }
+
+    if (state === 'ask') {
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(139,148,255,.06);border-color:var(--border)">
+          <div style="font-weight:600;margin-bottom:4px">${t('sens_ask_title')}</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">${t('sens_ask_text')}</div>
+          <button class="btn primary" id="sens-run-btn">${t('sens_btn_run')}</button>
+        </div>`;
+      document.getElementById('sens-run-btn').addEventListener('click', startSensitivityAnalysis);
+      return;
+    }
+
+    if (state === 'running') {
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(139,148,255,.06);border-color:var(--border);display:flex;align-items:center;gap:10px">
+          <span class="dot loading"></span>
+          <span style="font-size:12px">${t('sens_running_text')}</span>
+        </div>`;
+      return;
+    }
+
+    if (state === 'error') {
+      panel.innerHTML = `
+        <div class="error-msg">${escHtml(t('sens_error_prefix') + payload)}</div>
+        <button class="btn" id="sens-retry-btn" style="margin-top:8px">${t('sens_btn_retry')}</button>`;
+      document.getElementById('sens-retry-btn').addEventListener('click', startSensitivityAnalysis);
+      return;
+    }
+
+    if (state === 'result') {
+      const cols = payload.cols || [];
+      const rows = payload.rows || [];
+
+      const rhsByName = {};
+      ((lastSolution && lastSolution.Rows) || []).forEach(r => {
+        const name = r.Name || ('r' + r.Index);
+        rhsByName[name] = isFinite(r.Upper) ? r.Upper : (isFinite(r.Lower) ? r.Lower : null);
+      });
+
+      const colsRows = cols.map(c => `
+        <tr>
+          <td class="varname">${escHtml(c.name)}</td>
+          <td class="num">${fmt(c.cost)}</td>
+          <td class="num">${fmt(c.min)}</td>
+          <td class="num">${fmt(c.max)}</td>
+          <td class="num">${fmt(c.objAtMin)}</td>
+          <td class="num">${fmt(c.objAtMax)}</td>
+        </tr>`).join('');
+
+      const rowsRows = rows.map(r => `
+        <tr>
+          <td class="varname">${escHtml(r.name)}</td>
+          <td class="num">${fmt(rhsByName[r.name])}</td>
+          <td class="num">${fmt(r.min)}</td>
+          <td class="num">${fmt(r.max)}</td>
+          <td class="num">${fmt(r.objAtMin)}</td>
+          <td class="num">${fmt(r.objAtMax)}</td>
+        </tr>`).join('');
+
+      panel.innerHTML = `
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">${t('sens_legend')}</div>
+
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px">${t('sens_result_vars_heading')}</div>
+        <div class="table-wrap" style="margin-bottom:18px">
+          <table class="result">
+            <thead><tr>
+              <th>${t('th_variable')}</th><th>${t('sens_th_cost')}</th><th>${t('sens_th_min')}</th><th>${t('sens_th_max')}</th>
+              <th title="${t('sens_th_obj_min_title')}">${t('sens_th_obj_min')}</th><th title="${t('sens_th_obj_max_title')}">${t('sens_th_obj_max')}</th>
+            </tr></thead>
+            <tbody>${colsRows || `<tr><td colspan="6" style="color:var(--muted)">${t('no_variables_msg')}</td></tr>`}</tbody>
+          </table>
+        </div>
+
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px">${t('sens_result_rows_heading')}</div>
+        <div class="table-wrap">
+          <table class="result">
+            <thead><tr>
+              <th>${t('th_constraint')}</th><th>${t('sens_th_rhs')}</th><th>${t('sens_th_min')}</th><th>${t('sens_th_max')}</th>
+              <th title="${t('sens_th_obj_min_title')}">${t('sens_th_obj_min')}</th><th title="${t('sens_th_obj_max_title')}">${t('sens_th_obj_max')}</th>
+            </tr></thead>
+            <tbody>${rowsRows || `<tr><td colspan="6" style="color:var(--muted)">${t('no_constraints_msg')}</td></tr>`}</tbody>
+          </table>
+        </div>
+
+        <button class="btn" id="sens-retry-btn" style="margin-top:12px">${t('sens_btn_retry')}</button>`;
+      document.getElementById('sens-retry-btn').addEventListener('click', startSensitivityAnalysis);
+      return;
+    }
   }
 
   function renderError(msg) {
