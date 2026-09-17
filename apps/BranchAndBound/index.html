@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Branch and Bound — Visualizador Didático</title>
+<script src="vendor/d3.min.js"></script>
+<link rel="stylesheet" href="vendor/codemirror/codemirror.min.css">
+<link rel="stylesheet" href="vendor/codemirror/theme/dracula.min.css">
+<link rel="stylesheet" href="vendor/codemirror/theme/monokai.min.css">
+<link rel="stylesheet" href="vendor/codemirror/theme/material-darker.min.css">
+<link rel="stylesheet" href="vendor/codemirror/theme/nord.min.css">
+<link rel="stylesheet" href="vendor/codemirror/theme/eclipse.min.css">
+<script src="vendor/codemirror/codemirror.min.js"></script>
+<style>
+  :root {
+    --bg:      #282a36;
+    --bg2:     #1e2029;
+    --bg3:     #21222c;
+    --border:  #44475a;
+    --text:    #f8f8f2;
+    --muted:   #6272a4;
+    --accent:  #bd93f9;
+    --green:   #50fa7b;
+    --red:     #ff5555;
+    --orange:  #ffb86c;
+    --yellow:  #f1fa8c;
+    --incumbent: #ffd700;
+    --cyan:    #8be9fd;
+    --pink:    #ff79c6;
+    --shadow:  0 1px 3px rgba(0,0,0,.5);
+  }
+  html[data-theme="light"] {
+    --bg:      #ffffff;
+    --bg2:     #f3f4f8;
+    --bg3:     #e8eaf2;
+    --border:  #d1d5db;
+    --text:    #111827;
+    --muted:   #6b7280;
+    --accent:  #7c3aed;
+    --green:   #15803d;
+    --red:     #dc2626;
+    --orange:  #b45309;
+    --yellow:  #92400e;
+    --incumbent: #eab308;
+    --cyan:    #0369a1;
+    --pink:    #9d174d;
+    --shadow:  0 1px 3px rgba(0,0,0,.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg2);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+  button, select, textarea, input {
+    font-family: inherit;
+    font-size: inherit;
+    color: var(--text);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  select option { background: var(--bg3); color: var(--text); }
+  button {
+    padding: 6px 12px;
+    cursor: pointer;
+    background: var(--bg3);
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+  button.primary:hover:not(:disabled) { filter: brightness(1.1); color: var(--bg); }
+  button.small { padding: 3px 8px; font-size: 12px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 8px; }
+
+  /* ─── Toolbar ─── */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 14px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .brand { font-weight: 700; font-size: 16px; color: var(--accent); }
+  .toolbar .status { color: var(--muted); font-size: 13px; }
+  .toolbar .spacer { flex: 1; }
+  .cap-warning { color: var(--orange); font-weight: 600; }
+
+  /* ─── Theme switch (app-wide light/dark) ─── */
+  .theme-switch { display: inline-flex; align-items: center; cursor: pointer; user-select: none; flex-shrink: 0; }
+  .theme-switch-input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .theme-switch-track { width: 38px; height: 20px; background: var(--border); border-radius: 10px; position: relative; transition: background .2s; }
+  .theme-switch-thumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); box-shadow: 0 1px 2px rgba(0,0,0,.35); transition: left .2s, background .2s; }
+  .theme-switch-input:checked + .theme-switch-track { background: var(--accent); }
+  .theme-switch-input:checked + .theme-switch-track .theme-switch-thumb { left: 20px; background: #fff; }
+  .theme-switch-input:focus-visible + .theme-switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ─── Input panel ─── */
+  #input-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 24px;
+    overflow: auto;
+  }
+  #input-panel .card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    width: min(720px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  #cm-wrapper {
+    width: 100%;
+    height: 260px;
+    min-height: 120px;
+    max-height: 80vh;
+    border: 1px solid var(--border);
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+  }
+  #cm-wrapper .CodeMirror {
+    height: 100%;
+    font-family: 'Consolas', 'Cascadia Code', monospace;
+    font-size: 13px;
+  }
+  #cm-resize-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 14px;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    background: var(--bg3);
+    cursor: ns-resize;
+    user-select: none;
+    touch-action: none;
+  }
+  #cm-resize-handle::before {
+    content: '';
+    width: 32px;
+    height: 4px;
+    border-top: 1px dashed var(--muted);
+  }
+  #cm-resize-handle:hover::before,
+  #cm-resize-handle.dragging::before { border-color: var(--accent); }
+  .input-row { display: flex; gap: 8px; align-items: center; }
+  .input-row select { flex: 1; padding: 6px 8px; }
+  #limit-controls { display: flex; gap: 16px; color: var(--muted); font-size: 12.5px; }
+  #limit-controls label { display: flex; align-items: center; gap: 6px; }
+  #limit-controls input { width: 60px; padding: 3px 6px; }
+  #parse-error {
+    color: var(--red);
+    font-size: 13px;
+    white-space: pre-wrap;
+    display: none;
+  }
+
+  /* ─── App layout ─── */
+  #app-panel {
+    flex: 1;
+    display: none;
+    overflow: hidden;
+  }
+  #app-panel.active { display: flex; }
+  #input-panel.hidden { display: none; }
+
+  #tree-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    min-width: 0;
+  }
+  #tree-svg-wrap { flex: 1; overflow: hidden; position: relative; background: var(--bg2); }
+  #tree-svg { width: 100%; height: 100%; }
+
+  .legend {
+    display: flex;
+    gap: 14px;
+    padding: 6px 12px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+
+  #sidebar {
+    width: 380px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: var(--bg);
+  }
+  .panel {
+    border-bottom: 1px solid var(--border);
+    padding: 12px 14px;
+  }
+  .panel.grow { flex: 1; min-height: 120px; overflow-y: auto; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table th, table td { text-align: left; padding: 3px 6px; border-bottom: 1px solid var(--bg3); }
+  table th { color: var(--muted); font-weight: 600; }
+  tr.frontier-row { cursor: pointer; }
+  tr.frontier-row:hover { background: var(--bg3); }
+  tr.frontier-row.current { background: var(--bg3); outline: 1px solid var(--accent); }
+
+  .empty-hint { color: var(--muted); font-style: italic; font-size: 12.5px; }
+
+  .frac-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; gap: 8px; }
+  .frac-row .val { font-family: 'Consolas', monospace; color: var(--cyan); }
+
+  #incumbent-box .obj { font-size: 20px; font-weight: 700; color: var(--green); }
+  #incumbent-box .none { color: var(--muted); font-style: italic; }
+
+  #log-list { display: flex; flex-direction: column-reverse; gap: 2px; }
+  #log-list .entry { font-size: 12px; color: var(--muted); }
+  #log-list .entry.important { color: var(--text); }
+
+  #result-banner {
+    display: none;
+    padding: 10px 14px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  .node-solution-row { display: flex; justify-content: space-between; font-family: 'Consolas', monospace; font-size: 12.5px; padding: 2px 0; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="brand">Branch and Bound</div>
+  <div class="status" id="model-status">Nenhum modelo carregado</div>
+  <div class="spacer"></div>
+  <div class="status" id="node-counter"></div>
+  <label class="theme-switch" id="theme-switch-label" title="Alternar tema claro/escuro">
+    <input type="checkbox" id="btn-theme" class="theme-switch-input">
+    <span class="theme-switch-track"><span class="theme-switch-thumb"></span></span>
+  </label>
+  <button class="small" id="btn-reset" style="display:none">Reiniciar</button>
+</div>
+
+<div id="result-banner"></div>
+
+<div id="input-panel">
+  <div class="card">
+    <h2>Modelo (formato LP)</h2>
+    <div class="input-row">
+      <select id="example-select">
+        <option value="">— escolher exemplo pronto —</option>
+        <option value="mochila">Mochila 0/1 (6 itens)</option>
+        <option value="producao">Produção (2 variáveis, exemplo clássico)</option>
+        <option value="cobertura">Cobertura de conjuntos (5 variáveis binárias)</option>
+        <option value="orcamento">Orçamento de capital (6 projetos, 2 restrições)</option>
+      </select>
+      <select id="editor-theme-select" title="Tema de cores do editor">
+        <option value="dracula">Dracula</option>
+        <option value="monokai">Monokai</option>
+        <option value="material-darker">Material Darker</option>
+        <option value="nord">Nord</option>
+        <option value="eclipse">Eclipse</option>
+        <option value="default">Claro (padrão)</option>
+      </select>
+      <button class="small" id="btn-open-file" title="Abrir um arquivo .lp do computador">Abrir arquivo…</button>
+      <input type="file" id="file-input" accept=".lp,.txt" style="display:none">
+    </div>
+    <div id="cm-wrapper"></div>
+    <div id="cm-resize-handle" title="Arraste para ajustar a altura do editor"></div>
+    <div id="limit-controls">
+      <label>Máx. variáveis inteiras <input type="number" id="max-integer-vars" value="15" min="1" max="30"></label>
+      <label>Teto de nós <input type="number" id="node-cap" value="400" min="10" max="5000"></label>
+    </div>
+    <div id="parse-error"></div>
+    <div class="input-row">
+      <div class="spacer"></div>
+      <button class="primary" id="btn-load">Carregar e iniciar B&amp;B</button>
+    </div>
+  </div>
+</div>
+
+<div id="app-panel">
+  <div id="tree-col">
+    <div class="legend">
+      <span><span class="dot" style="background:var(--pink)"></span>pendente (não resolvido)</span>
+      <span><span class="dot" style="background:var(--cyan)"></span>aberto (candidato a ramificar)</span>
+      <span><span class="dot" style="background:var(--muted)"></span>ramificado</span>
+      <span><span class="dot" style="background:var(--orange)"></span>podado — limite</span>
+      <span><span class="dot" style="background:var(--red)"></span>podado — inviável</span>
+      <span><span class="dot" style="background:var(--green)"></span>podado — integralidade</span>
+      <span><span class="dot" style="background:var(--incumbent);border:2px solid var(--bg);outline:1.5px solid var(--incumbent)"></span>incumbente atual</span>
+    </div>
+    <div id="tree-svg-wrap">
+      <svg id="tree-svg"></svg>
+    </div>
+  </div>
+
+  <div id="sidebar">
+    <div class="panel">
+      <h2>Nó atual</h2>
+      <div id="current-node-box"><div class="empty-hint">Clique em um nó pendente para resolvê-lo, ou em um nó já resolvido para ver seus detalhes.</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Incumbente</h2>
+      <div id="incumbent-box"><div class="none">Nenhum ainda</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Fronteira (a explorar)</h2>
+      <div id="frontier-box"><div class="empty-hint">Vazia</div></div>
+    </div>
+
+    <div class="panel grow">
+      <h2>Histórico</h2>
+      <div id="log-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ════════════════════════════════════════════════════════════════════
+   0. Biblioteca de exemplos LP
+════════════════════════════════════════════════════════════════════ */
+const LP_EXAMPLES = {
+  mochila: `Maximize
+  obj: 10 a + 6 b + 12 c + 4 d + 8 e + 3 f
+
+Subject To
+  peso: 5 a + 3 b + 7 c + 2 d + 4 e + 1 f <= 12
+
+Bounds
+  0 <= a <= 1
+  0 <= b <= 1
+  0 <= c <= 1
+  0 <= d <= 1
+  0 <= e <= 1
+  0 <= f <= 1
+
+Generals
+  a b c d e f
+
+End`,
+  producao: `Maximize
+  obj: 5 x1 + 4 x2
+
+Subject To
+  r1: 6 x1 + 4 x2 <= 24
+  r2: x1 + 2 x2 <= 6
+
+Generals
+  x1 x2
+
+End`,
+  cobertura: `Minimize
+  obj: x1 + x2 + x3 + x4 + x5
+
+Subject To
+  e1: x1 + x2 >= 1
+  e2: x2 + x3 >= 1
+  e3: x3 + x4 >= 1
+  e4: x4 + x5 >= 1
+  e5: x5 + x1 >= 1
+
+Bounds
+  0 <= x1 <= 1
+  0 <= x2 <= 1
+  0 <= x3 <= 1
+  0 <= x4 <= 1
+  0 <= x5 <= 1
+
+Generals
+  x1 x2 x3 x4 x5
+
+End`,
+  orcamento: `Maximize
+  obj: 16 p1 + 22 p2 + 12 p3 + 8 p4 + 11 p5 + 19 p6
+
+Subject To
+  orcamento: 5 p1 + 7 p2 + 4 p3 + 3 p4 + 4 p5 + 6 p6 <= 14
+  limite: p1 + p2 + p3 + p4 + p5 + p6 <= 3
+
+Bounds
+  0 <= p1 <= 1
+  0 <= p2 <= 1
+  0 <= p3 <= 1
+  0 <= p4 <= 1
+  0 <= p5 <= 1
+  0 <= p6 <= 1
+
+Generals
+  p1 p2 p3 p4 p5 p6
+
+End`,
+};
+
+/* ════════════════════════════════════════════════════════════════════
+   0b. Editor LP (CodeMirror 5) — mesmo modo de sintaxe do projeto irmão WebHighs
+════════════════════════════════════════════════════════════════════ */
+CodeMirror.defineMode('lp', function () {
+  const kw = /^(Minimize|Maximize|Minimum|Maximum|Min|Max|Subject\s+To|Such\s+That|s\.t\.|Bounds?|Generals?|Integers?|Binaries|Binary|Free|End)\b/i;
+
+  return {
+    startState: () => ({ section: null }),
+    token(stream, state) {
+      if (stream.eatSpace()) return null;
+
+      // Comments: backslash to end of line
+      if (stream.peek() === '\\') { stream.skipToEnd(); return 'comment'; }
+
+      // Section keywords
+      if (stream.match(kw)) { return 'keyword'; }
+
+      // Constraint / variable label (identifier followed by colon)
+      if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_.]*\s*:/)) { return 'def'; }
+
+      // Numbers (including scientific notation, negative handled by operator)
+      if (stream.match(/^\d+(\.\d+)?([eE][+-]?\d+)?/)) { return 'number'; }
+
+      // Operators
+      if (stream.match(/^(<=|>=|=)/)) { return 'operator'; }
+      if (stream.match(/^[+\-]/)) { return 'operator'; }
+
+      // Identifiers (variables)
+      if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_.']*/)) { return 'variable'; }
+
+      stream.next();
+      return null;
+    }
+  };
+});
+
+let savedEditorTheme = 'dracula';
+try { savedEditorTheme = localStorage.getItem('bnb-editor-theme') || 'dracula'; } catch (_) {}
+
+const lpEditor = CodeMirror(document.getElementById('cm-wrapper'), {
+  value: '',
+  mode: 'lp',
+  theme: savedEditorTheme,
+  lineNumbers: true,
+  lineWrapping: false,
+  tabSize: 2,
+  indentWithTabs: false,
+});
+
+// Manípulo de arrasto próprio (em vez de CSS resize: vertical) porque o mousedown do
+// CodeMirror sobre a área do editor competia com o hit-test nativo do canto de resize
+// do navegador, tornando-o difícil/impossível de agarrar de forma confiável.
+(function () {
+  const wrapper = document.getElementById('cm-wrapper');
+  const handle = document.getElementById('cm-resize-handle');
+  const MIN_H = 120;
+  let dragging = false, startY = 0, startHeight = 0;
+
+  function onMove(e) {
+    if (!dragging) return;
+    const maxH = Math.round(window.innerHeight * 0.8);
+    const newHeight = Math.min(maxH, Math.max(MIN_H, startHeight + (e.clientY - startY)));
+    wrapper.style.height = newHeight + 'px';
+    lpEditor.refresh();
+  }
+  function onUp() {
+    if (!dragging) return;
+    dragging = false;
+    handle.classList.remove('dragging');
+    document.body.style.cursor = '';
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+  }
+  handle.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    startY = e.clientY;
+    startHeight = wrapper.getBoundingClientRect().height;
+    handle.classList.add('dragging');
+    document.body.style.cursor = 'ns-resize';
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    e.preventDefault();
+  });
+})();
+
+document.getElementById('editor-theme-select').value = savedEditorTheme;
+document.getElementById('editor-theme-select').addEventListener('change', function () {
+  lpEditor.setOption('theme', this.value);
+  try { localStorage.setItem('bnb-editor-theme', this.value); } catch (_) {}
+});
+
+document.getElementById('example-select').addEventListener('change', function () {
+  if (this.value && LP_EXAMPLES[this.value]) {
+    lpEditor.setValue(LP_EXAMPLES[this.value]);
+  }
+});
+
+document.getElementById('btn-open-file').addEventListener('click', () => {
+  document.getElementById('file-input').click();
+});
+document.getElementById('file-input').addEventListener('change', function () {
+  const file = this.files && this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    lpEditor.setValue(String(reader.result));
+    document.getElementById('example-select').value = '';
+  };
+  reader.onerror = () => {
+    const errBox = document.getElementById('parse-error');
+    errBox.textContent = 'Não foi possível ler o arquivo "' + file.name + '".';
+    errBox.style.display = 'block';
+  };
+  reader.readAsText(file);
+  this.value = ''; // allows re-selecting the same file to re-trigger 'change'
+});
+
+/* ════════════════════════════════════════════════════════════════════
+   0c. Tema claro/escuro do app (independente do tema do editor)
+════════════════════════════════════════════════════════════════════ */
+(function () {
+  const checkbox = document.getElementById('btn-theme');
+
+  function applyAppTheme(name) {
+    document.documentElement.dataset.theme = name;
+    checkbox.checked = (name === 'dark');
+    try { localStorage.setItem('bnb-app-theme', name); } catch (_) {}
+  }
+
+  checkbox.addEventListener('change', () => {
+    applyAppTheme(checkbox.checked ? 'dark' : 'light');
+    renderTree(); // re-render so the SVG picks up the new var(--...) colors immediately
+  });
+
+  let saved = null;
+  try { saved = localStorage.getItem('bnb-app-theme'); } catch (_) {}
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyAppTheme(saved || (prefersDark ? 'dark' : 'light'));
+})();
+
+/* ════════════════════════════════════════════════════════════════════
+   1. Web Worker do HiGHS (inline via blob)
+   Protocolo: main -> worker: {action:'parse', lp} | {action:'solveNode', id, patch:[[colIndex,{lower?,upper?}]]}
+              worker -> main: {type:'ready'} | {type:'parsed', ...} | {type:'parse_error', message}
+                             | {type:'nodeSolved', id, status, objective, colValue} | {type:'fatal_error', message}
+════════════════════════════════════════════════════════════════════ */
+const HIGHS_BASE = new URL('.', location.href).href + 'vendor/';
+
+const workerSrc = `
+importScripts('${HIGHS_BASE}highs.js');
+
+let highs = null;
+let base = null;   // descriptor of the parsed model (colCost/colLower/.../matrix), integrality stripped for node solves
+let dead = false;
+
+function isFatalWasmError(err) {
+  const msg = String((err && err.message) || err || '');
+  return (err && err.name === 'RuntimeError') ||
+         /abort\\(|Aborted|out of memory|Cannot enlarge memory|WebAssembly\\.Memory|memory access out of bounds|RuntimeError/i.test(msg);
+}
+
+self.addEventListener('error', function (e) {
+  dead = true;
+  try { postMessage({ type: 'fatal_error', message: (e && e.message) || String(e) }); } catch (_) {}
+});
+self.addEventListener('unhandledrejection', function (e) {
+  dead = true;
+  const reason = e && e.reason;
+  try { postMessage({ type: 'fatal_error', message: (reason && reason.message) || String(reason) }); } catch (_) {}
+});
+
+Module({
+  locateFile: f => '${HIGHS_BASE}' + f,
+  print: () => {},
+  printErr: () => {},
+}).then(h => {
+  highs = h;
+  postMessage({ type: 'ready' });
+}).catch(err => {
+  postMessage({ type: 'init_error', message: err.toString() });
+});
+
+function solveRelaxation(boundsPatch) {
+  const colLower = Float64Array.from(base.colLower);
+  const colUpper = Float64Array.from(base.colUpper);
+  if (boundsPatch) {
+    for (const [idx, b] of boundsPatch) {
+      if (b.lower !== undefined && b.lower !== null) colLower[idx] = b.lower;
+      if (b.upper !== undefined && b.upper !== null) colUpper[idx] = b.upper;
+    }
+  }
+  const descriptor = {
+    numCols: base.numCols,
+    numRows: base.numRows,
+    sense: base.sense,
+    offset: base.offset,
+    colCost: base.colCost,
+    colLower,
+    colUpper,
+    rowLower: base.rowLower,
+    rowUpper: base.rowUpper,
+    matrix: base.matrix,
+    // integrality intentionally omitted: every node solve is a pure LP relaxation
+  };
+  const model = highs.createModel(descriptor);
+  try {
+    model.run();
+    const status = model.getModelStatus();
+    let objective = null, colValue = null;
+    if (status === highs.constants.modelStatus.optimal) {
+      objective = model.getObjectiveValue();
+      colValue = Array.from(model.getSolution().colValue);
+    }
+    return { status, objective, colValue };
+  } finally {
+    model.dispose();
+  }
+}
+
+onmessage = function ({ data }) {
+  if (dead) return;
+  if (data.action === 'parse') {
+    let parsed = null;
+    try {
+      parsed = highs.createModel({ format: 'lp', data: data.lp });
+      const dims = parsed.getDimensions();
+      if (dims.numCols === 0) throw new Error('O modelo ficou vazio após o parse — verifique a sintaxe LP (seções Maximize/Minimize, Subject To, End).');
+      base = parsed.getModel();
+      const colNames = [];
+      for (let i = 0; i < dims.numCols; i++) colNames.push(parsed.getColName(i));
+      const rowNames = [];
+      for (let i = 0; i < dims.numRows; i++) rowNames.push(parsed.getRowName(i));
+      const integrality = Array.from(base.integrality);
+      postMessage({
+        type: 'parsed',
+        numCols: base.numCols,
+        numRows: base.numRows,
+        sense: base.sense,
+        colNames,
+        rowNames,
+        integrality,
+        colLower: Array.from(base.colLower),
+        colUpper: Array.from(base.colUpper),
+      });
+    } catch (err) {
+      if (isFatalWasmError(err)) { dead = true; postMessage({ type: 'fatal_error', message: err.toString() }); }
+      else postMessage({ type: 'parse_error', message: err.toString() });
+    } finally {
+      if (parsed) { try { parsed.dispose(); } catch (_) {} }
+    }
+    return;
+  }
+  if (data.action === 'solveNode') {
+    try {
+      const result = solveRelaxation(data.patch);
+      postMessage({ type: 'nodeSolved', id: data.id, status: result.status, objective: result.objective, colValue: result.colValue });
+    } catch (err) {
+      if (isFatalWasmError(err)) { dead = true; postMessage({ type: 'fatal_error', message: err.toString() }); }
+      else postMessage({ type: 'nodeSolveError', id: data.id, message: err.toString() });
+    }
+    return;
+  }
+};
+`;
+
+let worker = null;
+let workerReady = false;
+const pendingSolves = new Map(); // id -> {resolve, reject}
+let pendingParse = null;
+
+function spawnWorker() {
+  const blob = new Blob([workerSrc], { type: 'application/javascript' });
+  worker = new Worker(URL.createObjectURL(blob));
+  worker.onmessage = function ({ data }) {
+    switch (data.type) {
+      case 'ready':
+        workerReady = true;
+        break;
+      case 'parsed':
+        if (pendingParse) { pendingParse.resolve(data); pendingParse = null; }
+        break;
+      case 'parse_error':
+        if (pendingParse) { pendingParse.reject(new Error(data.message)); pendingParse = null; }
+        break;
+      case 'nodeSolved': {
+        const p = pendingSolves.get(data.id);
+        if (p) { pendingSolves.delete(data.id); p.resolve(data); }
+        break;
+      }
+      case 'nodeSolveError': {
+        const p = pendingSolves.get(data.id);
+        if (p) { pendingSolves.delete(data.id); p.reject(new Error(data.message)); }
+        break;
+      }
+      case 'init_error':
+      case 'fatal_error':
+        alert('Erro fatal no motor de resolução (HiGHS): ' + data.message + '\\nRecarregue a página.');
+        break;
+    }
+  };
+  worker.onerror = function (err) {
+    alert('Erro no worker: ' + ((err && err.message) || String(err)));
+  };
+}
+spawnWorker();
+
+function waitReady() {
+  return new Promise((resolve) => {
+    const t = setInterval(() => { if (workerReady) { clearInterval(t); resolve(); } }, 30);
+  });
+}
+
+async function parseLp(lpText) {
+  await waitReady();
+  return new Promise((resolve, reject) => {
+    pendingParse = { resolve, reject };
+    worker.postMessage({ action: 'parse', lp: lpText });
+  });
+}
+
+let solveIdCounter = 0;
+function solveNode(boundsPatchMap) {
+  const id = ++solveIdCounter;
+  const patch = Array.from(boundsPatchMap.entries());
+  return new Promise((resolve, reject) => {
+    pendingSolves.set(id, { resolve, reject });
+    worker.postMessage({ action: 'solveNode', id, patch });
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   2. Estado do Branch and Bound
+════════════════════════════════════════════════════════════════════ */
+const MODEL_STATUS_OPTIMAL = 7;
+const MODEL_STATUS_INFEASIBLE = 8;
+const EPS = 1e-6;
+
+const state = {
+  colNames: [],
+  rowNames: [],
+  integerCols: [],   // indices
+  sense: 1,          // 1 = minimize, -1 = maximize
+  nodes: new Map(),  // id -> node
+  frontier: new Set(),
+  currentNodeId: null,
+  incumbent: null,   // { objective, colValue, nodeId }
+  nodesVisited: 0,
+  nodeCap: 400,
+  maxIntegerVars: 15,
+  capped: false,
+  log: [],
+  nextNodeId: 0,
+};
+
+function addLog(message, important) {
+  state.log.push({ message, important: !!important });
+  renderLog();
+}
+
+// sense === -1 (maximize): larger is better. sense === 1 (minimize): smaller is better.
+function isStrictlyBetter(candidateObjective, referenceObjective) {
+  if (referenceObjective === null || referenceObjective === undefined) return true;
+  return state.sense === -1
+    ? candidateObjective > referenceObjective + EPS
+    : candidateObjective < referenceObjective - EPS;
+}
+
+function formatNum(v) {
+  if (v === null || v === undefined) return '—';
+  const r = Math.round(v);
+  return Math.abs(v - r) < 1e-9 ? String(r) : v.toFixed(4);
+}
+
+// Compact form for labels drawn inside the small tree-node circles — full precision stays
+// available in the side panels and the node's <title> tooltip.
+function formatNumShort(v) {
+  if (v === null || v === undefined) return '—';
+  const r = Math.round(v);
+  return Math.abs(v - r) < 1e-9 ? String(r) : v.toFixed(1);
+}
+
+function makeNode(parentId, boundsPatch, branchVar, branchDir, branchValue, depth) {
+  const id = state.nextNodeId++;
+  const parent = parentId === null ? null : state.nodes.get(parentId);
+  const node = {
+    id, parentId, branchVar, branchDir, branchValue, boundsPatch, depth,
+    status: 'pending', lpObjective: null, colValue: null, fractionalVars: null,
+    // Bound herdado do pai (já resolvido sempre que um filho é criado): ramificar só aperta
+    // bounds, então a relaxação do filho nunca é melhor que a do pai — serve de estimativa
+    // válida para o cálculo do gap enquanto o nó ainda não foi resolvido.
+    boundEstimate: parent ? parent.lpObjective : null,
+  };
+  state.nodes.set(id, node);
+  // Nasce pendente e já entra na fronteira: o aluno escolhe quando resolvê-lo,
+  // não é resolvido automaticamente ao ser criado.
+  state.frontier.add(id);
+  return node;
+}
+
+async function solveAndClassify(node) {
+  state.nodesVisited++;
+  state.frontier.delete(node.id); // sai da fronteira enquanto está sendo resolvido/classificado
+  const result = await solveNode(node.boundsPatch);
+  if (result.status !== MODEL_STATUS_OPTIMAL) {
+    node.status = 'fathomed-infeasible';
+    addLog('Nó ' + node.id + ': relaxação inviável — podado por inviabilidade.');
+    return;
+  }
+  node.lpObjective = result.objective;
+  node.colValue = result.colValue;
+
+  if (state.incumbent && !isStrictlyBetter(node.lpObjective, state.incumbent.objective)) {
+    node.status = 'fathomed-bound';
+    addLog('Nó ' + node.id + ': bound ' + formatNum(node.lpObjective) + ' não supera o incumbente — podado por limite.');
+    return;
+  }
+
+  const fractionalVars = [];
+  for (const idx of state.integerCols) {
+    const v = node.colValue[idx];
+    if (Math.abs(v - Math.round(v)) > EPS) {
+      fractionalVars.push({ index: idx, name: state.colNames[idx], value: v });
+    }
+  }
+
+  if (fractionalVars.length === 0) {
+    node.status = 'fathomed-integer';
+    addLog('Nó ' + node.id + ': solução inteira, objetivo ' + formatNum(node.lpObjective) + ' — candidata a incumbente.', true);
+    maybeUpdateIncumbent(node);
+    return;
+  }
+
+  node.status = 'open';
+  node.fractionalVars = fractionalVars;
+  state.frontier.add(node.id);
+  addLog('Nó ' + node.id + ': candidato a ramificação, bound ' + formatNum(node.lpObjective) + ', ' + fractionalVars.length + ' variável(is) fracionária(s).');
+}
+
+function maybeUpdateIncumbent(node) {
+  if (!state.incumbent || isStrictlyBetter(node.lpObjective, state.incumbent.objective)) {
+    state.incumbent = { objective: node.lpObjective, colValue: node.colValue, nodeId: node.id };
+    addLog('Novo incumbente: nó ' + node.id + ', objetivo ' + formatNum(node.lpObjective) + '.', true);
+    rescanFrontierAgainstIncumbent();
+  }
+}
+
+function rescanFrontierAgainstIncumbent() {
+  for (const id of Array.from(state.frontier)) {
+    const n = state.nodes.get(id);
+    if (n.lpObjective === null) continue; // ainda pendente — sem bound conhecido, nada a comparar ainda
+    if (!isStrictlyBetter(n.lpObjective, state.incumbent.objective)) {
+      n.status = 'fathomed-bound';
+      state.frontier.delete(id);
+      addLog('Nó ' + n.id + ': re-podado por limite após atualização do incumbente.');
+    }
+  }
+}
+
+// Melhor bound ainda possível entre os nós restantes (fronteira): para nós já resolvidos
+// (abertos), usa o próprio objetivo da relaxação; para pendentes, usa o bound herdado do
+// pai. Retorna null quando a fronteira está vazia (busca esgotada — nada mais a limitar).
+function computeGlobalBound() {
+  let best = null;
+  for (const id of state.frontier) {
+    const n = state.nodes.get(id);
+    const b = n.status === 'pending' ? n.boundEstimate : n.lpObjective;
+    if (b === null || b === undefined) continue;
+    if (best === null || (state.sense === -1 ? b > best : b < best)) best = b;
+  }
+  return best;
+}
+
+// Gap percentual entre o incumbente e o melhor bound ainda possível. null se não há
+// incumbente ainda (nada para comparar); 0% quando a busca terminou (bound == incumbente).
+function computeGap() {
+  if (!state.incumbent) return null;
+  const bound = computeGlobalBound();
+  const effectiveBound = bound === null ? state.incumbent.objective : bound;
+  const num = Math.abs(effectiveBound - state.incumbent.objective);
+  const den = Math.max(Math.abs(state.incumbent.objective), 1e-10);
+  return (num / den) * 100;
+}
+
+function initRoot() {
+  // Raiz nasce pendente como qualquer outro nó — o aluno escolhe resolvê-la clicando nela.
+  makeNode(null, new Map(), null, null, null, 0);
+  finishStep();
+}
+
+async function selectNode(id) {
+  const node = state.nodes.get(id);
+  if (!node) return;
+
+  if (node.status === 'pending') {
+    if (state.nodesVisited + 1 > state.nodeCap) {
+      state.capped = true;
+      addLog('Teto de segurança de nós atingido — não é possível resolver mais nós.', true);
+      finishStep();
+      return;
+    }
+    await solveAndClassify(node);
+    state.currentNodeId = id;
+    finishStep();
+    return;
+  }
+
+  state.currentNodeId = id;
+  finishStep();
+}
+
+function branchOnVariable(varIndex) {
+  const node = state.nodes.get(state.currentNodeId);
+  if (!node) return;
+  const v = node.colValue[varIndex];
+  const name = state.colNames[varIndex];
+  const dir1 = 'floor(' + name + ') = ' + Math.floor(v);
+  const dir2 = 'ceil(' + name + ') = ' + Math.ceil(v);
+  addLog('Nó ' + node.id + ': ramificando em ' + name + ' = ' + formatNum(v) + ' → ' + dir1 + ' / ' + dir2, true);
+
+  const cur = node.boundsPatch.get(varIndex) || {};
+  const floorPatch = new Map(node.boundsPatch);
+  floorPatch.set(varIndex, { lower: cur.lower, upper: Math.floor(v) });
+  const ceilPatch = new Map(node.boundsPatch);
+  ceilPatch.set(varIndex, { lower: Math.ceil(v), upper: cur.upper });
+
+  node.status = 'branched';
+  state.frontier.delete(node.id);
+  state.currentNodeId = null;
+
+  // Os dois filhos nascem pendentes (ver makeNode) — não são resolvidos aqui.
+  // O aluno escolhe, na fronteira, qual dos dois (ou qualquer outro nó pendente) resolver a seguir.
+  makeNode(node.id, floorPatch, name, 'floor', Math.floor(v), node.depth + 1);
+  makeNode(node.id, ceilPatch, name, 'ceil', Math.ceil(v), node.depth + 1);
+
+  finishStep();
+}
+
+function finishStep() {
+  renderAll();
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   3. Carregamento do modelo
+════════════════════════════════════════════════════════════════════ */
+document.getElementById('btn-load').addEventListener('click', async () => {
+  const lpText = lpEditor.getValue().trim();
+  const errBox = document.getElementById('parse-error');
+  errBox.style.display = 'none';
+  if (!lpText) {
+    errBox.textContent = 'Cole um modelo LP ou escolha um exemplo.';
+    errBox.style.display = 'block';
+    return;
+  }
+  const maxIntegerVars = parseInt(document.getElementById('max-integer-vars').value, 10) || 15;
+  const nodeCap = parseInt(document.getElementById('node-cap').value, 10) || 400;
+
+  const btn = document.getElementById('btn-load');
+  btn.disabled = true;
+  btn.textContent = 'Carregando…';
+  try {
+    const parsed = await parseLp(lpText);
+    const integerCols = [];
+    for (let i = 0; i < parsed.numCols; i++) {
+      if (parsed.integrality[i] > 0) integerCols.push(i);
+    }
+    if (integerCols.length > maxIntegerVars) {
+      throw new Error('O modelo tem ' + integerCols.length + ' variáveis inteiras/binárias, acima do limite configurado (' + maxIntegerVars + '). Reduza o modelo ou aumente o limite.');
+    }
+    if (integerCols.length === 0) {
+      throw new Error('O modelo não tem nenhuma variável inteira/binária (seção Generals/Binaries) — não há o que ramificar.');
+    }
+
+    state.colNames = parsed.colNames;
+    state.rowNames = parsed.rowNames;
+    state.integerCols = integerCols;
+    state.sense = parsed.sense;
+    state.maxIntegerVars = maxIntegerVars;
+    state.nodeCap = nodeCap;
+    state.nodes = new Map();
+    state.frontier = new Set();
+    state.currentNodeId = null;
+    state.incumbent = null;
+    state.nodesVisited = 0;
+    state.capped = false;
+    state.log = [];
+    state.nextNodeId = 0;
+
+    document.getElementById('input-panel').classList.add('hidden');
+    document.getElementById('app-panel').classList.add('active');
+    document.getElementById('btn-reset').style.display = '';
+    document.getElementById('model-status').textContent =
+      (state.sense === -1 ? 'Maximizar' : 'Minimizar') + ' · ' + parsed.numCols + ' vars (' + integerCols.length + ' inteiras) · ' + parsed.numRows + ' restrições';
+    document.getElementById('result-banner').style.display = 'none';
+
+    await initRoot();
+  } catch (err) {
+    errBox.textContent = err.message;
+    errBox.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Carregar e iniciar B&B';
+  }
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  document.getElementById('app-panel').classList.remove('active');
+  document.getElementById('input-panel').classList.remove('hidden');
+  document.getElementById('btn-reset').style.display = 'none';
+  document.getElementById('model-status').textContent = 'Nenhum modelo carregado';
+  document.getElementById('node-counter').textContent = '';
+  document.getElementById('result-banner').style.display = 'none';
+});
+
+/* ════════════════════════════════════════════════════════════════════
+   4. Renderização (árvore D3 + painéis)
+════════════════════════════════════════════════════════════════════ */
+const NODE_R = 22;
+
+const STATUS_COLOR = {
+  pending: 'var(--pink)',
+  open: 'var(--cyan)',
+  branched: 'var(--muted)',
+  'fathomed-bound': 'var(--orange)',
+  'fathomed-infeasible': 'var(--red)',
+  'fathomed-integer': 'var(--green)',
+};
+
+const STATUS_LABEL = {
+  pending: 'pendente — clique para resolver',
+  open: 'aberto — candidato a ramificação',
+  branched: 'ramificado',
+  'fathomed-bound': 'podado — limite',
+  'fathomed-infeasible': 'podado — inviável',
+  'fathomed-integer': 'podado — integralidade',
+};
+
+function renderAll() {
+  renderHeader();
+  renderTree();
+  renderCurrentNode();
+  renderIncumbent();
+  renderFrontier();
+  checkCompletion();
+}
+
+function renderHeader() {
+  const el = document.getElementById('node-counter');
+  const capText = state.capped ? ' <span class="cap-warning">(TETO ATINGIDO)</span>' : '';
+  let gapText = '';
+  if (state.incumbent) {
+    const gap = computeGap();
+    gapText = ' · gap: ' + (gap === null ? '—' : gap.toFixed(1) + '%');
+  }
+  el.innerHTML = 'Nós visitados: ' + state.nodesVisited + ' / ' + state.nodeCap + gapText + capText;
+}
+
+function renderLog() {
+  const el = document.getElementById('log-list');
+  el.innerHTML = state.log.map((e) =>
+    '<div class="entry' + (e.important ? ' important' : '') + '">' + escapeHtml(e.message) + '</div>'
+  ).join('');
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+}
+
+function renderCurrentNode() {
+  const box = document.getElementById('current-node-box');
+  const node = state.currentNodeId !== null ? state.nodes.get(state.currentNodeId) : null;
+  if (!node) {
+    box.innerHTML = '<div class="empty-hint">Clique em qualquer nó da árvore para ver seus detalhes.</div>';
+    return;
+  }
+
+  let html = '<div style="margin-bottom:4px"><b>Nó ' + node.id + '</b> · profundidade ' + node.depth + '</div>';
+  html += '<div style="margin-bottom:8px;color:var(--muted);font-size:12.5px">' + escapeHtml(STATUS_LABEL[node.status] || node.status) + '</div>';
+
+  if (node.branchVar !== null && node.branchVar !== undefined) {
+    html += '<div style="margin-bottom:8px;color:var(--muted);font-size:12.5px">Chegou por: ' + escapeHtml(node.branchVar) + ' ' +
+      (node.branchDir === 'floor' ? '≤' : '≥') + ' ' + node.branchValue + '</div>';
+  }
+
+  if (node.status === 'fathomed-infeasible') {
+    html += '<div class="empty-hint">Relaxação linear inviável neste nó — não há solução a exibir.</div>';
+    box.innerHTML = html;
+    return;
+  }
+
+  html += '<div style="margin-bottom:8px">objetivo relaxação: <b>' + formatNum(node.lpObjective) + '</b></div>';
+  html += '<div style="margin-bottom:8px">';
+  for (let i = 0; i < state.colNames.length; i++) {
+    html += '<div class="node-solution-row"><span>' + escapeHtml(state.colNames[i]) + '</span><span>' + formatNum(node.colValue[i]) + '</span></div>';
+  }
+  html += '</div>';
+
+  if (node.status === 'open') {
+    html += '<h2 style="margin-top:10px">Ramificar em:</h2>';
+    for (const fv of node.fractionalVars) {
+      html += '<div class="frac-row"><span>' + escapeHtml(fv.name) + ' = <span class="val">' + formatNum(fv.value) + '</span></span>' +
+        '<button class="small" data-branch-var="' + fv.index + '">Ramificar</button></div>';
+    }
+  } else if (node.status === 'fathomed-integer') {
+    html += '<div class="empty-hint">Solução inteira — candidata a incumbente' + (state.incumbent && state.incumbent.nodeId === node.id ? ' (é a incumbente atual).' : '.') + '</div>';
+  } else if (node.status === 'fathomed-bound') {
+    html += '<div class="empty-hint">Podado: bound não supera o incumbente atual.</div>';
+  } else if (node.status === 'branched') {
+    html += '<div class="empty-hint">Já ramificado — veja os filhos na árvore.</div>';
+  }
+
+  box.innerHTML = html;
+  if (node.status === 'open') {
+    box.querySelectorAll('[data-branch-var]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        branchOnVariable(parseInt(btn.dataset.branchVar, 10));
+      });
+    });
+  }
+}
+
+function renderIncumbent() {
+  const box = document.getElementById('incumbent-box');
+  if (!state.incumbent) {
+    box.innerHTML = '<div class="none">Nenhum ainda</div>';
+    return;
+  }
+  let html = '<div class="obj">' + formatNum(state.incumbent.objective) + '</div>';
+  html += '<div style="color:var(--muted);font-size:12px;margin-bottom:6px">origem: nó ' + state.incumbent.nodeId + '</div>';
+
+  const bound = computeGlobalBound();
+  const gap = computeGap();
+  const gapColor = gap === 0 ? 'var(--green)' : 'var(--text)';
+  html += '<div style="font-size:12.5px;margin-bottom:8px">melhor bound: <b>' +
+    formatNum(bound === null ? state.incumbent.objective : bound) +
+    '</b> &nbsp;·&nbsp; gap: <b style="color:' + gapColor + '">' +
+    (gap === null ? '—' : gap.toFixed(1) + '%') + '</b></div>';
+
+  for (let i = 0; i < state.colNames.length; i++) {
+    html += '<div class="node-solution-row"><span>' + escapeHtml(state.colNames[i]) + '</span><span>' + formatNum(state.incumbent.colValue[i]) + '</span></div>';
+  }
+  box.innerHTML = html;
+}
+
+function renderFrontier() {
+  const box = document.getElementById('frontier-box');
+  const ids = Array.from(state.frontier);
+  if (ids.length === 0) {
+    box.innerHTML = '<div class="empty-hint">Vazia</div>';
+    return;
+  }
+  let html = '<table><thead><tr><th>Nó</th><th>Estado</th><th>Bound</th><th>Prof.</th></tr></thead><tbody>';
+  for (const id of ids) {
+    const n = state.nodes.get(id);
+    const stateLabel = n.status === 'pending' ? 'pendente' : 'aberto';
+    html += '<tr class="frontier-row' + (id === state.currentNodeId ? ' current' : '') + '" data-node-id="' + id + '">' +
+      '<td>' + id + '</td><td>' + stateLabel + '</td><td>' + formatNum(n.lpObjective) + '</td><td>' + n.depth + '</td></tr>';
+  }
+  html += '</tbody></table>';
+  box.innerHTML = html;
+  box.querySelectorAll('[data-node-id]').forEach((row) => {
+    row.addEventListener('click', () => selectNode(parseInt(row.dataset.nodeId, 10)));
+  });
+}
+
+function checkCompletion() {
+  const banner = document.getElementById('result-banner');
+  if (state.frontier.size === 0 && !state.capped) {
+    if (state.incumbent) {
+      banner.textContent = 'Branch and Bound completo — solução ótima: ' + formatNum(state.incumbent.objective) +
+        ' (nó ' + state.incumbent.nodeId + ', ' + state.nodesVisited + ' nós visitados).';
+    } else {
+      banner.textContent = 'Branch and Bound completo — modelo inviável (nenhuma solução inteira encontrada).';
+    }
+    banner.style.display = 'block';
+  } else if (state.capped) {
+    banner.textContent = 'Teto de segurança de nós atingido antes de esgotar a fronteira — resultado pode não ser ótimo.';
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+let zoomTransform = d3.zoomIdentity;
+const zoomBehavior = d3.zoom().on('zoom', (event) => {
+  zoomTransform = event.transform;
+  d3.select('#tree-svg > g.zoom-root').attr('transform', zoomTransform);
+});
+d3.select('#tree-svg').call(zoomBehavior);
+
+function renderTree() {
+  const svg = d3.select('#tree-svg');
+  const wrap = document.getElementById('tree-svg-wrap');
+  const width = wrap.clientWidth || 800;
+  const height = wrap.clientHeight || 600;
+
+  if (svg.select('defs').empty()) {
+    const defs = svg.append('defs');
+    const filter = defs.append('filter').attr('id', 'node-shadow')
+      .attr('x', '-60%').attr('y', '-60%').attr('width', '220%').attr('height', '220%');
+    filter.append('feDropShadow')
+      .attr('dx', 0).attr('dy', 1.5).attr('stdDeviation', 2)
+      .attr('flood-color', '#000').attr('flood-opacity', 0.35);
+  }
+
+  let g = svg.select('g.zoom-root');
+  if (g.empty()) {
+    g = svg.append('g').attr('class', 'zoom-root');
+  }
+
+  const nodesArr = Array.from(state.nodes.values());
+  if (nodesArr.length === 0) { g.selectAll('*').remove(); return; }
+
+  const stratifyInput = nodesArr.map((n) => ({ id: String(n.id), parentId: n.parentId === null ? null : String(n.parentId), data: n }));
+  let root;
+  try {
+    root = d3.stratify().id((d) => d.id).parentId((d) => d.parentId)(stratifyInput);
+  } catch (e) {
+    return; // transient inconsistent state mid-update; next render will fix it
+  }
+  const hierarchyRoot = root; // d3.stratify() already returns a hierarchy-shaped root; do not re-wrap with d3.hierarchy()
+  const dx = 110, dy = 150;
+  const treeLayout = d3.tree().nodeSize([dx, dy]);
+  treeLayout(hierarchyRoot);
+
+  // center horizontally around x=0 initially only (first render)
+  if (zoomTransform === d3.zoomIdentity) {
+    svg.call(zoomBehavior.transform, d3.zoomIdentity.translate(width / 2, 64));
+  }
+
+  // Stop the line at each circle's edge (not its center) so no segment is ever
+  // drawn underneath a node — otherwise it bleeds through de-emphasized (opacity<1) nodes.
+  const linkGen = (d) => {
+    const dx = d.target.x - d.source.x, dy = d.target.y - d.source.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const ux = dx / len, uy = dy / len;
+    const x0 = d.source.x + ux * NODE_R, y0 = d.source.y + uy * NODE_R;
+    const x1 = d.target.x - ux * NODE_R, y1 = d.target.y - uy * NODE_R;
+    return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
+  };
+
+  const links = g.selectAll('path.link').data(hierarchyRoot.links(), (d) => d.target.data.id);
+  links.join(
+    (enter) => enter.append('path').attr('class', 'link').attr('fill', 'none').attr('stroke', 'var(--muted)').attr('stroke-opacity', 0.55).attr('stroke-width', 2).attr('d', linkGen),
+    (update) => update.attr('d', linkGen),
+    (exit) => exit.remove()
+  );
+
+  const nodeSel = g.selectAll('g.node').data(hierarchyRoot.descendants(), (d) => d.data.id);
+  const nodeEnter = nodeSel.enter().append('g').attr('class', 'node');
+  nodeEnter.append('circle').attr('r', NODE_R);
+  nodeEnter.append('text').attr('class', 'node-label').attr('text-anchor', 'middle').style('fill', 'var(--bg)').style('font-weight', '700').style('pointer-events', 'none');
+  nodeEnter.append('text').attr('class', 'edge-label').attr('text-anchor', 'middle')
+    .style('font-size', '11px').style('font-weight', '600').style('fill', 'var(--text)')
+    .style('stroke', 'var(--bg2)').style('stroke-width', 3).style('paint-order', 'stroke').style('pointer-events', 'none');
+  nodeEnter.append('title');
+
+  const isIncumbent = (n) => state.incumbent && n.id === state.incumbent.nodeId;
+
+  const merged = nodeEnter.merge(nodeSel);
+  merged.attr('transform', (d) => 'translate(' + d.x + ',' + d.y + ')');
+  merged.select('circle')
+    .attr('fill', (d) => isIncumbent(d.data.data) ? 'var(--incumbent)' : (STATUS_COLOR[d.data.data.status] || 'var(--muted)'))
+    .style('cursor', 'pointer')
+    .style('opacity', (d) => d.data.data.status === 'open' || d.data.data.status === 'pending' || isIncumbent(d.data.data) ? 1 : 0.55)
+    .style('stroke', (d) => d.data.data.id === state.currentNodeId ? 'var(--accent)' : 'var(--bg)')
+    .style('stroke-width', (d) => d.data.data.id === state.currentNodeId ? 4 : (isIncumbent(d.data.data) ? 5 : 2.5))
+    .style('filter', 'url(#node-shadow)')
+    .on('click', (event, d) => selectNode(d.data.data.id));
+  merged.select('text.node-label').each(function (d) {
+    const sel = d3.select(this);
+    sel.style('fill', isIncumbent(d.data.data) ? '#1f2937' : 'var(--bg)');
+    sel.selectAll('tspan').remove();
+    sel.append('tspan').attr('x', 0).attr('dy', '-0.35em').style('font-size', '9px').style('opacity', 0.75).text('#' + d.data.data.id);
+    sel.append('tspan').attr('x', 0).attr('dy', '1.15em').style('font-size', '12px').text(formatNumShort(d.data.data.lpObjective));
+  });
+  merged.select('text.edge-label')
+    .attr('x', (d) => d.parent ? (d.parent.x - d.x) / 2 : 0)
+    .attr('y', (d) => d.parent ? (d.parent.y - d.y) / 2 : 0)
+    .text((d) => {
+      const n = d.data.data;
+      return n.branchVar ? n.branchVar + ' ' + (n.branchDir === 'floor' ? '≤' : '≥') + ' ' + n.branchValue : '';
+    });
+  merged.select('title').text((d) => {
+    const n = d.data.data;
+    return 'Nó ' + n.id + ' · ' + n.status + ' · objetivo relaxação: ' + formatNum(n.lpObjective);
+  });
+
+  nodeSel.exit().remove();
+}
+
+window.addEventListener('resize', () => renderTree());
+</script>
+</body>
+</html>

@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leitor de estrutura de blocos — modelos .lp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E4EAF0; --panel:#F8FAFC; --ink:#0D1620; --muted:#5A6B7C;
+  --rule:#C0CCD9; --rule-soft:#DBE3EB; --prussian:#123A5A; --signal:#A80B3E;
+  --signal-soft:#F3D9E1; --neutral:#8A9AAA;
+  --b0:#123A5A; --b1:#0B6E6B; --b2:#4E3A8C; --b3:#7A5A00;
+  --b4:#0D5F35; --b5:#6E2450; --b6:#2456A0; --b7:#8A4A00;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --disp:"Bricolage Grotesque","IBM Plex Sans",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--sans);
+  font-size:14px; line-height:1.5;
+  background-image:linear-gradient(var(--rule-soft) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--rule-soft) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+/* ---------- cabeçalho ---------- */
+header{
+  border-bottom:1px solid var(--rule); background:var(--panel);
+  padding:14px 20px; display:flex; flex-wrap:wrap; gap:16px;
+  align-items:baseline; justify-content:space-between;
+  position:sticky; top:0; z-index:20;
+}
+h1{
+  font-family:var(--disp); font-weight:800; font-size:20px; margin:0;
+  letter-spacing:-.02em;
+}
+h1 span{color:var(--muted); font-weight:500}
+.readout{
+  font-family:var(--mono); font-size:12px; color:var(--muted);
+  display:flex; gap:18px; flex-wrap:wrap;
+}
+.readout b{color:var(--prussian); font-weight:600}
+/* ---------- layout ---------- */
+main{display:grid; grid-template-columns:326px minmax(0,1fr); gap:0; align-items:start}
+aside{
+  border-right:1px solid var(--rule); background:var(--panel);
+  min-height:calc(100vh - 56px); padding:0 0 40px;
+}
+.zone{padding:18px 20px; border-bottom:1px solid var(--rule-soft)}
+.zone h2{
+  font-family:var(--mono); font-size:11px; font-weight:600; margin:0 0 12px;
+  text-transform:uppercase; letter-spacing:.12em; color:var(--muted);
+}
+.stage{padding:20px; display:flex; flex-direction:column; gap:20px}
+/* ---------- controles ---------- */
+button,select,textarea,input[type=file]{font-family:inherit; font-size:13px}
+.btn{
+  background:var(--prussian); color:#fff; border:0; border-radius:3px;
+  padding:8px 12px; cursor:pointer; font-weight:500;
+}
+.btn:hover{background:#0d2c46}
+.btn.ghost{background:transparent; color:var(--prussian); border:1px solid var(--rule)}
+.btn.ghost:hover{background:#eaeff4}
+.btn.sm{padding:5px 9px; font-size:12px}
+.btn.ghost[aria-pressed=true]{background:var(--prussian); color:#fff; border-color:var(--prussian)}
+.row{display:flex; gap:8px; flex-wrap:wrap}
+textarea{
+  width:100%; height:110px; border:1px solid var(--rule); border-radius:3px;
+  padding:8px; font-family:var(--mono); font-size:11.5px; resize:vertical;
+  background:#fff; color:var(--ink);
+}
+.seg{display:flex; flex-wrap:wrap; border:1px solid var(--rule); border-radius:3px; overflow:hidden}
+.seg button{
+  flex:1 1 45%; background:#fff; border:0; padding:8px 6px; cursor:pointer;
+  font-size:12px; color:var(--muted); border-right:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+}
+.seg button:nth-child(2n){border-right:0}
+.seg button:nth-child(n+3){border-bottom:0}
+.seg button[aria-pressed=true]{background:var(--prussian); color:#fff; font-weight:600}
+label.file{
+  display:block; border:1px dashed var(--rule); border-radius:3px; padding:14px;
+  text-align:center; cursor:pointer; color:var(--muted); background:#fff;
+}
+label.file:hover,label.file.over{border-color:var(--prussian); color:var(--prussian); background:#eef3f8}
+label.file input{position:absolute; width:1px; height:1px; opacity:0}
+/* ---------- listas ---------- */
+.fams{max-height:280px; overflow:auto; border:1px solid var(--rule); border-radius:3px; background:#fff}
+.fam{
+  display:flex; align-items:center; gap:8px; padding:6px 10px;
+  border-bottom:1px solid var(--rule-soft); cursor:pointer; font-size:13px;
+}
+.fam:last-child{border-bottom:0}
+.fam:hover{background:#eef3f8}
+.fam input{margin:0; accent-color:var(--signal)}
+.fam .nm{font-family:var(--mono); font-weight:500; flex:1}
+.fam .ct{font-family:var(--mono); font-size:11px; color:var(--muted)}
+.fam .tp{
+  font-family:var(--mono); font-size:10px; padding:1px 5px; border-radius:2px;
+  background:#e6ecf2; color:var(--muted);
+}
+.fam .tp.int{background:var(--signal-soft); color:var(--signal)}
+.filecard{
+  border:1px solid var(--rule); border-radius:3px; background:#fff; padding:10px 12px;
+  margin-top:10px; font-size:12.5px;
+}
+.filecard .fn{font-family:var(--mono); font-weight:600; color:var(--prussian);
+  word-break:break-all; display:block; margin-bottom:4px}
+.filecard .meta{font-family:var(--mono); font-size:11px; color:var(--muted)}
+.filecard .row{margin-top:8px}
+.sep{
+  display:flex; align-items:center; gap:10px; margin:14px 0 10px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted);
+}
+.sep::before,.sep::after{content:""; flex:1; height:1px; background:var(--rule-soft)}
+.status{
+  font-family:var(--mono); font-size:11.5px; color:var(--muted); margin-top:8px;
+}
+.status.err{color:var(--signal)}
+.sugg{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px}
+.sugg li button{
+  width:100%; text-align:left; background:#fff; border:1px solid var(--rule);
+  border-radius:3px; padding:8px 10px; cursor:pointer;
+}
+.sugg li button:hover{border-color:var(--prussian); background:#eef3f8}
+.sugg .t{font-family:var(--mono); font-size:12px; font-weight:600; color:var(--prussian)}
+.sugg .d{font-size:11.5px; color:var(--muted); margin-top:2px}
+.sugg .tier{
+  display:inline-block; font-family:var(--mono); font-size:9.5px; letter-spacing:.06em;
+  padding:1px 5px; border-radius:2px; margin-left:6px; vertical-align:1px;
+  background:#dcece2; color:#0D5F35; text-transform:uppercase;
+}
+.sugg .tier.warn{background:var(--signal-soft); color:var(--signal)}
+/* ---------- painel do gráfico ---------- */
+.card{background:var(--panel); border:1px solid var(--rule); border-radius:4px}
+.card .head{
+  padding:10px 14px; border-bottom:1px solid var(--rule-soft);
+  display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+}
+.card .head h3{font-family:var(--disp); font-size:15px; margin:0; font-weight:700}
+.viewtabs{display:flex; border:1px solid var(--rule); border-radius:3px; overflow:hidden}
+.viewtabs button{
+  background:#fff; border:0; padding:5px 11px; cursor:pointer; font-size:12px;
+  color:var(--muted); border-right:1px solid var(--rule);
+}
+.viewtabs button:last-child{border-right:0}
+.viewtabs button[aria-pressed=true]{background:var(--prussian); color:#fff; font-weight:600}
+.card.big{position:fixed; inset:14px; z-index:60; display:flex; flex-direction:column; margin:0}
+.card.big .plotwrap{flex:1}
+.scale{
+  display:flex; align-items:center; gap:6px; font-family:var(--mono);
+  font-size:10.5px; color:var(--muted);
+}
+.scale .ramp{
+  width:76px; height:9px; border-radius:2px; border:1px solid var(--rule);
+}
+.plotwrap{position:relative; background:#fff; border-radius:0 0 4px 4px; overflow:hidden}
+canvas{display:block; width:100%; cursor:crosshair; touch-action:none}
+.tip{
+  position:absolute; pointer-events:none; background:var(--ink); color:#fff;
+  font-family:var(--mono); font-size:11px; padding:5px 8px; border-radius:3px;
+  white-space:pre; opacity:0; transition:opacity .08s; max-width:340px; z-index:5;
+}
+.tip.on{opacity:1}
+.legend{
+  display:flex; gap:14px; flex-wrap:wrap; padding:10px 14px;
+  border-top:1px solid var(--rule-soft); font-size:11.5px; color:var(--muted);
+  font-family:var(--mono);
+}
+.legend i{width:10px; height:10px; display:inline-block; border-radius:2px; margin-right:5px; vertical-align:-1px}
+/* ---------- relatório ---------- */
+.report{padding:16px 18px}
+.report h3{font-family:var(--disp); font-size:16px; margin:0 0 10px; font-weight:700}
+.verdict{
+  border-left:3px solid var(--prussian); padding:10px 14px; background:#eef3f8;
+  border-radius:0 3px 3px 0; margin-bottom:14px;
+}
+.verdict.bad{border-left-color:var(--signal); background:#fbeef2}
+.verdict.good{border-left-color:#0D5F35; background:#eaf3ee}
+.verdict p{margin:0 0 6px}
+.verdict p:last-child{margin-bottom:0}
+table{width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:14px}
+th,td{text-align:left; padding:6px 8px; border-bottom:1px solid var(--rule-soft)}
+th{font-family:var(--mono); font-size:10.5px; text-transform:uppercase;
+   letter-spacing:.08em; color:var(--muted); font-weight:600}
+td.num{font-family:var(--mono); text-align:right}
+code{font-family:var(--mono); font-size:12px; background:#e9eef4; padding:1px 4px; border-radius:2px}
+.warns{color:var(--signal); font-size:12.5px; margin-top:8px}
+.empty{color:var(--muted); font-size:13px; padding:6px 0}
+@media (max-width:900px){
+  main{grid-template-columns:1fr}
+  aside{border-right:0; border-bottom:1px solid var(--rule); min-height:0}
+  .fams{max-height:200px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+:focus-visible{outline:2px solid var(--signal); outline-offset:2px}
+/* ---------- ajuda ---------- */
+.scrim{
+  position:fixed; inset:0; background:rgba(13,22,32,.55); z-index:50;
+  display:flex; align-items:flex-start; justify-content:center;
+  padding:40px 20px; overflow:auto;
+}
+.scrim[hidden]{display:none}
+.help{
+  background:var(--panel); border:1px solid var(--rule); border-radius:5px;
+  max-width:760px; width:100%; box-shadow:0 18px 50px rgba(13,22,32,.28);
+}
+.help .bar{
+  position:sticky; top:0; background:var(--panel); border-bottom:1px solid var(--rule);
+  padding:16px 24px; display:flex; align-items:center; justify-content:space-between;
+  border-radius:5px 5px 0 0; z-index:2;
+}
+.help .bar h2{font-family:var(--disp); font-size:19px; margin:0; font-weight:800; letter-spacing:-.02em}
+.help .body{padding:6px 24px 28px}
+.help section{padding:18px 0; border-bottom:1px solid var(--rule-soft)}
+.help section:last-child{border-bottom:0}
+.help h4{
+  font-family:var(--mono); font-size:11px; font-weight:600; margin:0 0 10px;
+  text-transform:uppercase; letter-spacing:.12em; color:var(--muted);
+}
+.help h5{font-family:var(--disp); font-size:15px; margin:16px 0 6px; font-weight:700}
+.help h5:first-of-type{margin-top:0}
+.help p{margin:0 0 10px; max-width:64ch}
+.help p:last-child{margin-bottom:0}
+.help ul{margin:0 0 10px; padding-left:18px; max-width:64ch}
+.help li{margin-bottom:6px}
+.help .steps{list-style:none; padding:0; counter-reset:st; margin:0}
+.help .steps li{
+  counter-increment:st; position:relative; padding-left:34px; margin-bottom:12px; max-width:62ch;
+}
+.help .steps li::before{
+  content:counter(st); position:absolute; left:0; top:1px;
+  font-family:var(--mono); font-size:11px; font-weight:600; color:#fff;
+  background:var(--prussian); width:21px; height:21px; border-radius:3px;
+  display:flex; align-items:center; justify-content:center;
+}
+.help .note{
+  border-left:3px solid var(--signal); background:#fbeef2; padding:10px 14px;
+  border-radius:0 3px 3px 0; margin:12px 0 0;
+}
+.help .swatch{
+  display:inline-block; width:11px; height:11px; border-radius:2px;
+  margin-right:6px; vertical-align:-1px;
+}
+.help table{margin:6px 0 0}
+.help td:first-child{font-family:var(--mono); font-size:11.5px; white-space:nowrap; width:1%}
+.helpbtn{
+  background:transparent; border:1px solid var(--rule); color:var(--prussian);
+  border-radius:3px; padding:5px 12px; cursor:pointer; font-weight:500; font-size:12.5px;
+}
+.helpbtn:hover{background:#eaeff4; border-color:var(--prussian)}
+.closebtn{background:transparent; border:0; cursor:pointer; color:var(--muted); font-size:22px; line-height:1; padding:2px 6px}
+.closebtn:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Leitor de estrutura de blocos <span>· modelos .lp</span></h1>
+  <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+    <div class="readout" id="readout">
+      <span>nenhum modelo carregado</span>
+    </div>
+    <button class="helpbtn" id="helpBtn" aria-haspopup="dialog">Ajuda</button>
+  </div>
+</header>
+
+<main>
+<aside>
+  <div class="zone">
+    <h2>Modelo</h2>
+    <div class="row" style="margin-bottom:10px">
+      <button class="btn ghost sm" data-sample="facility">Localização</button>
+      <button class="btn ghost sm" data-sample="rede">Rede de depósitos</button>
+      <button class="btn ghost sm" data-sample="gap">Alocação</button>
+    </div>
+    <label class="file" id="drop">
+      Arraste um arquivo .lp aqui ou clique para escolher
+      <input type="file" id="fileIn" accept=".lp,.txt,.lp.txt">
+    </label>
+    <div class="filecard" id="filecard" hidden>
+      <span class="fn" id="fname"></span>
+      <span class="meta" id="fmeta"></span>
+      <div class="row">
+        <button class="btn ghost sm" id="reparse">Analisar de novo</button>
+        <button class="btn ghost sm" id="clearFile">Descartar</button>
+      </div>
+    </div>
+    <div class="status" id="status" hidden></div>
+    <div id="fixZone" hidden style="margin-top:10px">
+      <label class="fam" style="border:1px solid var(--rule);border-radius:3px;background:#fff">
+        <input type="checkbox" id="fixChk" checked>
+        <span class="nm" style="font-family:var(--sans);font-weight:400" id="fixLabel"></span>
+      </label>
+      <p style="font-size:11.5px;color:var(--muted);margin:6px 0 0">
+        Variáveis com limite inferior e superior iguais a zero não influenciam a estrutura.
+      </p>
+    </div>
+    <div class="sep">ou cole o texto</div>
+    <textarea id="paste" placeholder="cole aqui um modelo em formato LP (CPLEX/Gurobi)"></textarea>
+    <button class="btn sm" id="parseBtn" style="margin-top:6px">Analisar texto colado</button>
+  </div>
+
+  <div class="zone">
+    <h2>Decomposição</h2>
+    <div class="seg" role="group" aria-label="Modo de análise">
+      <button data-mode="orig" aria-pressed="true">Original</button>
+      <button data-mode="benders" aria-pressed="false">Benders</button>
+      <button data-mode="dw" aria-pressed="false">Dantzig-Wolfe</button>
+      <button data-mode="lagr" aria-pressed="false">Lagrange</button>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin:10px 0 0" id="modeHelp">
+      Ordem em que o modelo foi escrito, sem reordenar nada.
+    </p>
+  </div>
+
+  <div class="zone" id="suggZone" hidden>
+    <h2>Partições sugeridas</h2>
+    <ul class="sugg" id="sugg"></ul>
+  </div>
+
+  <div class="zone" id="famZone" hidden>
+    <h2 id="famTitle">Famílias</h2>
+    <div class="row" style="margin-bottom:8px">
+      <button class="btn ghost sm" id="selNone">Limpar</button>
+      <button class="btn ghost sm" id="selInt">Só as inteiras</button>
+    </div>
+    <div class="fams" id="fams"></div>
+  </div>
+</aside>
+
+<div class="stage">
+  <div class="card" id="plotCard">
+    <div class="head">
+      <h3 id="plotTitle">Padrão de esparsidade</h3>
+      <div class="row" style="align-items:center">
+        <div class="viewtabs" role="group" aria-label="Nível de detalhe">
+          <button data-view="detalhe" aria-pressed="true">Matriz</button>
+          <button data-view="resumo" aria-pressed="false">Resumo por família</button>
+        </div>
+        <button class="btn ghost sm" id="densBtn" aria-pressed="true"
+          title="Alterna entre o mapa de densidade e um ponto por coeficiente">Densidade</button>
+        <button class="btn ghost sm" id="zoomOut" aria-label="Afastar">−</button>
+        <span id="zoomLbl" style="font-family:var(--mono);font-size:11.5px;color:var(--muted);min-width:44px;text-align:center">1.0×</span>
+        <button class="btn ghost sm" id="zoomIn" aria-label="Aproximar">+</button>
+        <button class="btn ghost sm" id="zoomReset">Enquadrar</button>
+        <button class="btn ghost sm" id="expand">Ampliar</button>
+        <button class="btn ghost sm" id="png">Baixar PNG</button>
+      </div>
+    </div>
+    <div class="plotwrap" id="plotwrap">
+      <canvas id="cv"></canvas>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div class="card report" id="report">
+    <h3>Diagnóstico</h3>
+    <p class="empty">Carregue um modelo para começar. Use os exemplos se quiser ver a ferramenta
+    em ação antes de subir o seu — ou abra a <button class="helpbtn" id="helpBtn2" style="padding:2px 8px">Ajuda</button>
+    para entender o que cada modo faz.</p>
+  </div>
+</div>
+</main>
+
+<div class="scrim" id="scrim" hidden>
+ <div class="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" id="helpBox">
+  <div class="bar">
+    <h2 id="helpTitle">Como usar esta ferramenta</h2>
+    <button class="closebtn" id="helpClose" aria-label="Fechar ajuda">&times;</button>
+  </div>
+  <div class="body">
+
+   <section>
+    <h4>O que ela faz</h4>
+    <p>Ela lê um modelo em formato LP, monta a matriz de coeficientes e reordena linhas e
+    colunas para revelar se existe estrutura de blocos — o padrão que autoriza decompor o
+    problema por Benders ou por Dantzig-Wolfe.</p>
+    <p>A ideia é simples: escrito na ordem certa, o acoplamento de um modelo fica visível.
+    Poucas <b>colunas</b> atravessando todos os blocos indicam variáveis complicadoras, o caso
+    de Benders. Poucas <b>linhas</b> atravessando todos os blocos indicam restrições
+    complicadoras, o caso de Dantzig-Wolfe. A mesma matriz pode admitir as duas leituras.</p>
+   </section>
+
+   <section>
+    <h4>Passo a passo</h4>
+    <ol class="steps">
+      <li>Carregue o modelo: arraste um <code>.lp</code>, cole o texto, ou clique num dos
+      três exemplos para ver a ferramenta funcionando antes de subir o seu. Arquivo e caixa
+      de texto são fontes separadas — o arquivo é sempre lido inteiro, e a caixa de texto
+      serve só para colar. O cartão que aparece depois do carregamento mostra o tamanho e o
+      número de linhas lidas.</li>
+      <li>Escolha o modo. Comece por <b>Benders</b> se você já tem uma ideia de quais
+      variáveis são as complicadoras; use <b>Dantzig-Wolfe</b> se o acoplamento parece vir
+      de restrições de capacidade compartilhada.</li>
+      <li>Clique numa <b>partição sugerida</b>. A ferramenta testa sozinha cada família de
+      nomes, cada par e cada trio, e ranqueia os resultados.</li>
+      <li>Ajuste à mão marcando ou desmarcando famílias na lista. O gráfico e o diagnóstico
+      recalculam a cada clique.</li>
+      <li>Leia o diagnóstico abaixo do gráfico: ele diz se a decomposição é válida, onde
+      está o acoplamento e em quantos blocos o resto se separa.</li>
+    </ol>
+   </section>
+
+   <section>
+    <h4>Os três modos</h4>
+    <h5>Original</h5>
+    <p>A ordem em que você escreveu o modelo. Serve de referência: qualquer padrão que
+    apareça aqui é coincidência da sua ordem de escrita.</p>
+    <h5>Benders</h5>
+    <p>Move as colunas que você marcou para a esquerda e agrupa o resto em blocos. O alvo é
+    o formato <code>[A 0 ; B C]</code>: o bloco de zeros no canto superior direito é a
+    condição inegociável, e significa que existem restrições envolvendo apenas as
+    complicadoras.</p>
+    <h5>Dantzig-Wolfe</h5>
+    <p>Move as linhas que você marcou para o topo e agrupa o resto em blocos independentes,
+    cada um virando um subproblema de <i>pricing</i>.</p>
+    <h5>Lagrange</h5>
+    <p>Mesma partição por linhas: as marcadas seriam dualizadas, isto é, levadas para a
+    função objetivo com multiplicadores. O que muda é o diagnóstico, porque as perguntas
+    são outras — veja a seção seguinte.</p>
+   </section>
+
+   <section>
+    <h4>O que é específico de Lagrange</h4>
+    <p>Estruturalmente, escolher restrições para dualizar é a mesma decisão de escolher
+    linhas de acoplamento em Dantzig-Wolfe. Mas o critério de uma boa escolha é diferente,
+    e a ferramenta avalia três coisas que só importam aqui.</p>
+    <h5>Propriedade de integralidade</h5>
+    <p>O dual lagrangiano só dá um limitante melhor que a relaxação linear se os subproblemas
+    <i>não</i> tiverem a propriedade de integralidade. Se tiverem, o bound é exatamente o
+    mesmo da relaxação — e todo o esforço do subgradiente não compra nada.</p>
+    <p>A ferramenta classifica cada subproblema por uma heurística: coeficientes todos ±1 com
+    cada coluna aparecendo em no máximo duas linhas indicam estrutura de rede, onde a
+    propriedade costuma valer. Coeficientes gerais indicam algo tipo mochila, onde ela
+    costuma falhar — que é o caso favorável. É uma orientação, não uma prova: confirmar exige
+    resolver e comparar os bounds.</p>
+    <h5>Subproblemas ilimitados</h5>
+    <p>Variáveis que só aparecem nas linhas dualizadas ficam sem nenhuma restrição depois da
+    relaxação. Se não tiverem limites finitos, o subproblema é ilimitado para quase todo
+    vetor de multiplicadores e o método não sai do lugar. A ferramenta detecta esse caso e
+    avisa, listando exemplos.</p>
+    <h5>Dimensão do dual</h5>
+    <p>Cada restrição dualizada é um multiplicador, e o número deles é a dimensão do espaço
+    onde o subgradiente vai procurar. Restrições de igualdade dão multiplicadores livres;
+    desigualdades dão multiplicadores de sinal restrito. A ferramenta separa a contagem.</p>
+    <div class="note"><p>Um exemplo de que a escolha muda de método para método: no problema
+    de alocação generalizada, Dantzig-Wolfe prefere dualizar as capacidades — menos linhas,
+    mais blocos. Lagrange prefere dualizar as atribuições, porque aí os subproblemas viram
+    mochilas e o bound supera o da relaxação linear. Carregue o exemplo <b>Alocação</b> e
+    compare os dois modos.</p></div>
+   </section>
+
+   <section>
+    <h4>Famílias de nome</h4>
+    <p>A seleção é feita por família, não por variável individual — é assim que você pensa no
+    modelo. A família é o prefixo antes do primeiro índice: <code>o_1</code>,
+    <code>o_2</code> e <code>o_3</code> formam a família <code>o</code>;
+    <code>MC_2_0</code> e <code>x[1,2,0]</code> viram <code>MC</code> e <code>x</code>.</p>
+    <div class="note"><p>Isso depende de os nomes carregarem os índices. Se o solver estiver
+    gerando nomes automáticos (<code>C0</code>, <code>R47</code>), tudo cai numa família só e
+    a busca automática não ajuda. Nomeie as restrições no seu código antes de exportar.</p></div>
+   </section>
+
+   <section>
+    <h4>Partições sugeridas</h4>
+    <p>Em Benders o ranking é dividido em dois níveis, e o nível vem antes da pontuação:</p>
+    <ul>
+      <li><b>subproblema é LP</b> — todas as variáveis inteiras foram para o mestre. Benders
+      clássico é válido: vale dualidade forte e os cortes não eliminam o ótimo.</li>
+      <li><b>N inteiras no sub</b> — sobraram variáveis inteiras no subproblema. Você pode
+      relaxá-las, e aí o método devolve um <i>limite inferior</i> do seu MILP em vez do
+      ótimo; ou partir para <i>Logic-based Benders</i>, que troca a dualidade linear por um
+      dual de inferência.</li>
+    </ul>
+    <p>Dentro de cada nível, a pontuação premia conjuntos complicadores pequenos — o mestre
+    é o custo do método — e dá bônus por blocos independentes. Em Dantzig-Wolfe o critério é
+    o espelhado: poucas linhas de acoplamento, muitos blocos.</p>
+   </section>
+
+   <section>
+    <h4>Lendo o gráfico</h4>
+    <table>
+      <tr><td><span class="swatch" style="background:var(--signal)"></span>vermelho</td>
+          <td>coeficientes na faixa de acoplamento: colunas complicadoras em Benders,
+              linhas de acoplamento em Dantzig-Wolfe</td></tr>
+      <tr><td><span class="swatch" style="background:var(--b0)"></span>coloridos</td>
+          <td>cada cor é um bloco independente do subproblema</td></tr>
+      <tr><td><span class="swatch" style="background:var(--neutral)"></span>cinza</td>
+          <td>coeficientes fora dos blocos — tipicamente o bloco A do mestre</td></tr>
+      <tr><td>tracejado</td>
+          <td>fronteiras entre blocos</td></tr>
+    </table>
+    <p style="margin-top:12px">Passe o mouse sobre qualquer célula para ver o nome da
+    restrição, o nome e o tipo da variável, o coeficiente e o bloco. No resumo por família,
+    o mesmo gesto mostra quantas linhas e colunas a família tem e quantos coeficientes há no
+    cruzamento. A roda do mouse dá zoom,
+    arrastar move a matriz, <b>Enquadrar</b> volta ao início e <b>Baixar PNG</b> exporta a
+    imagem.</p>
+   </section>
+
+   <section>
+    <h4>Variáveis fixadas em zero</h4>
+    <p>Muitos modelos declaram a variável para todo o produto cartesiano de índices e depois
+    fixam em zero as combinações impossíveis — cobertura, janelas de tempo, compatibilidades.
+    A ferramenta lê a seção <code>Bounds</code>, identifica as variáveis com limite inferior e
+    superior iguais a zero, e oferece ocultá-las.</p>
+    <p>Vale deixar ligado. Uma variável fixa em zero não influencia a estrutura, mas enche a
+    matriz de colunas inertes que escondem o padrão. Num modelo de rede real que testei,
+    116.280 das 283.220 colunas eram fixas em zero — 37% dos coeficientes desapareceram
+    sem que a estrutura mudasse.</p>
+   </section>
+
+   <section>
+    <h4>Modelos grandes</h4>
+    <p>Um modelo com dezenas de milhares de colunas não cabe em pontos visíveis na tela.
+    A ferramenta lida com isso de três formas:</p>
+    <h5>Resumo por família</h5>
+    <p>Troca a matriz completa por uma grade pequena onde cada célula é um par
+    <i>família de restrição × família de variável</i>, com a intensidade dada pelo número de
+    coeficientes. Um modelo de 2.610 × 24.855 vira uma grade de 3 × 3 — e é justamente
+    nesse nível que a estrutura de blocos se lê. Costuma ser o modo mais útil para começar.</p>
+    <h5>Mapa de densidade</h5>
+    <p>Na visão de matriz, quando cada célula fica abaixo de 1,5 px a ferramenta troca o
+    desenho ponto a ponto por um mapa de densidade: cada pixel acumula quantos coeficientes
+    caem ali, e a opacidade cresce com essa contagem. Nada some por ser pequeno demais. Onde
+    houver acoplamento e bloco no mesmo pixel, o acoplamento é desenhado por cima — é o que
+    você quer enxergar. Dando zoom, o desenho volta a ser ponto a ponto sozinho.</p>
+    <h5>Escala independente por eixo</h5>
+    <p>Matrizes de otimização costumam ser muito alongadas — 32 mil linhas por 280 mil
+    colunas, por exemplo. Manter a proporção real espremeria tudo numa tira de poucos pixels
+    de altura, então a ferramenta escala cada eixo separadamente para preencher a área. A
+    proporção fica distorcida de propósito: o que importa aqui é onde estão os blocos, não a
+    forma da matriz.</p>
+    <p>O botão <b>Densidade</b> alterna entre os dois desenhos. Com ele desligado
+    (<b>Pontos</b>), cada coeficiente vira um quadrado sólido de um pixel, sem agregação nem
+    transparência — imagem mais dura, que em alguns modelos deixa o padrão mais nítido do que
+    o esmaecimento do mapa. A contrapartida é que pontos sobrepostos desaparecem: o que você
+    vê deixa de indicar quantos coeficientes há ali. Mesmo nesse modo o acoplamento é
+    desenhado numa segunda passada, por cima, para não ser encoberto.</p>
+    <h5>Zoom até a variável</h5>
+    <p>O zoom vai até a célula individual, em qualquer tamanho de modelo. Quando cada célula
+    passa de 11 px, aparecem réguas com os nomes reais das restrições e das variáveis; acima
+    de 40 px o valor do coeficiente é escrito dentro da célula. Role o mouse, use os botões
+    <b>+</b> e <b>−</b>, ou dê duplo clique para aproximar (com <code>Shift</code>, afasta).
+    O indicador ao lado dos botões mostra a escala atual.</p>
+    <p>Isso é barato porque só a janela visível é percorrida. Num modelo com 404 mil
+    coeficientes, a 4.700× o desenho toca cerca de 80 entradas em vez de todas — o zoom
+    profundo é mais leve que a visão geral, não mais pesado.</p>
+    <h5>Ampliar</h5>
+    <p>Coloca o gráfico em tela cheia. <code>Esc</code> ou o botão <b>Reduzir</b> voltam.</p>
+   </section>
+
+   <section>
+    <h4>Lendo o diagnóstico</h4>
+    <p>As medidas que mais importam, em ordem:</p>
+    <ul>
+      <li><b>Colunas no mestre</b> — em Benders, o tamanho do mestre é o custo do método.
+      Quanto menor a fração, melhor.</li>
+      <li><b>Inteiras restantes no subproblema</b> — zero significa Benders clássico válido.
+      Qualquer número acima disso muda o que o método entrega.</li>
+      <li><b>Linhas de acoplamento</b> — onde as complicadoras encostam no subproblema.
+      Ao fixá-las, essas linhas viram limites no lado direito.</li>
+      <li><b>Linhas só do mestre (bloco A)</b> — se for zero, o mestre nasce sem informação
+      e as primeiras iterações tendem a ser cegas. Vale semeá-lo com cortes vindos de uma
+      solução heurística.</li>
+      <li><b>Blocos</b> — mais de um significa subproblemas independentes, paralelizáveis.
+      Um bloco só não invalida Benders: apenas significa um LP grande por iteração, sem
+      ganho de paralelismo.</li>
+    </ul>
+   </section>
+
+   <section>
+    <h4>Formatos e limites</h4>
+    <p>Aceita o formato LP do CPLEX e do Gurobi: seções <code>Minimize</code>,
+    <code>Subject To</code>, <code>Bounds</code>, <code>General</code>,
+    <code>Binary</code>, comentários com <code>\</code>, restrições multilinha, nomes com
+    colchetes, coeficientes colados no nome e restrições de faixa.</p>
+    <p>Não há limite de tamanho: o arquivo é lido por inteiro. Um modelo de 1 MB com
+    50 mil coeficientes leva cerca de um quarto de segundo para ser analisado. Acima de
+    12 MB a ferramenta avisa que pode demorar. Se a leitura falhar, o diagnóstico mostra
+    quantas linhas foram reconhecidas em cada seção e as primeiras linhas do texto, para
+    você localizar o problema.</p>
+    <p>Não lê <code>.mps</code> nem formato binário. Se seu modelo vem do Gurobi, exporte com
+    <code>model.write("modelo.lp")</code>. Termos quadráticos são detectados, ignorados e
+    avisados — a análise usa só a parte linear.</p>
+   </section>
+
+   <section>
+    <h4>O que ela não responde</h4>
+    <p>A ferramenta diz se a estrutura <b>existe</b>. Ela não diz se decompor <b>vale a
+    pena</b>: não estima tempo de resolução, não mede gap de integralidade e não sabe se o
+    seu solver já resolve o modelo direto mais rápido.</p>
+    <p>Duas medições que decidem isso, e que só você pode fazer: resolver uma instância real
+    como MILP completo e comparar com a relaxação linear do subproblema; e verificar quantas
+    variáveis complicadoras uma instância típica tem. Se forem poucas dezenas, o
+    <i>branch-and-bound</i> do solver provavelmente já dá conta sozinho.</p>
+   </section>
+
+  </div>
+ </div>
+</div>
+
+
+<script id="core">
+/* ==========================================================================
+   NÚCLEO — parser de formato LP + detecção de estrutura de blocos
+   Sem nenhuma referência ao DOM: testável isoladamente.
+   ========================================================================== */
+
+// push(...arr) estoura a pilha acima de ~100 mil itens; estes helpers evitam spread.
+function pushAll(dst, src){ for (let i = 0; i < src.length; i++) dst.push(src[i]); }
+function maxOf(arr){ let m = -Infinity; for (let i = 0; i < arr.length; i++) if (arr[i] > m) m = arr[i]; return m; }
+function minOf(arr){ let m = Infinity; for (let i = 0; i < arr.length; i++) if (arr[i] < m) m = arr[i]; return m; }
+
+const SECTION_RE = [
+  [/^\s*(maximize|maximise|max)\s*:?\s*$/i, 'obj_max'],
+  [/^\s*(minimize|minimise|min)\s*:?\s*$/i, 'obj_min'],
+  [/^\s*(subject\s+to|such\s+that|s\.?\s*t\.?)\s*:?\s*$/i, 'cons'],
+  [/^\s*(bounds?)\s*$/i, 'bounds'],
+  [/^\s*(generals?|gen)\s*$/i, 'general'],
+  [/^\s*(binaries|binary|bin)\s*$/i, 'binary'],
+  [/^\s*(semi-continuous|semis|sc)\s*$/i, 'semi'],
+  [/^\s*(sos)\s*$/i, 'sos'],
+  [/^\s*(end)\s*$/i, 'end'],
+];
+
+// Cabeçalho inline: "Maximize obj: 3x + 2y" numa linha só
+const SECTION_INLINE = [
+  [/^\s*(maximize|maximise|max)\b/i, 'obj_max'],
+  [/^\s*(minimize|minimise|min)\b/i, 'obj_min'],
+  [/^\s*(subject\s+to|such\s+that|s\.?\s*t\.?)\b/i, 'cons'],
+];
+
+const IDENT = "[A-Za-z!#$%&()\\/,;?@_`'{}|~][A-Za-z0-9!#$%&\\/;?@_`'{}|~.]*(?:\\[[^\\]]*\\])?";
+const TOK_RE = new RegExp(
+  "\\s*(?:" +
+  "(<=|=<|>=|=>|<|>|=)" +                       // 1 sense
+  "|([+-])" +                                    // 2 sign
+  "|(\\d+\\.?\\d*(?:[eE][+-]?\\d+)?|\\.\\d+(?:[eE][+-]?\\d+)?)" + // 3 number
+  "|(" + IDENT + ")" +                           // 4 ident
+  "|(:)|(\\*)|(\\^)|(\\[)|(\\])|(/)" +           // 5..10
+  ")", "y");
+
+function tokenize(text) {
+  const toks = [];
+  TOK_RE.lastIndex = 0;
+  let i = 0;
+  while (i < text.length) {
+    TOK_RE.lastIndex = i;
+    const m = TOK_RE.exec(text);
+    if (!m) {
+      if (/\s/.test(text[i])) { i++; continue; }
+      i++; continue; // caractere desconhecido: ignora
+    }
+    i = TOK_RE.lastIndex;
+    if (m[1]) toks.push({ t: 'sense', v: m[1].replace('=<', '<=').replace('=>', '>=') });
+    else if (m[2]) toks.push({ t: 'sign', v: m[2] });
+    else if (m[3]) toks.push({ t: 'num', v: parseFloat(m[3]) });
+    else if (m[4]) toks.push({ t: 'id', v: m[4] });
+    else if (m[5]) toks.push({ t: 'colon' });
+    else if (m[6]) toks.push({ t: 'star' });
+    else if (m[7]) toks.push({ t: 'caret' });
+    else if (m[8]) toks.push({ t: 'lbrk' });
+    else if (m[9]) toks.push({ t: 'rbrk' });
+    else if (m[10]) toks.push({ t: 'slash' });
+  }
+  return toks;
+}
+
+function splitSections(text) {
+  const clean = text.replace(/\r\n?/g, '\n').split('\n').map(l => {
+    const k = l.indexOf('\\');
+    return k >= 0 ? l.slice(0, k) : l;
+  });
+  const out = { obj: [], cons: [], bounds: [], general: [], binary: [], semi: [], sos: [] };
+  let cur = null, sense = 'min';
+  for (const line of clean) {
+    if (!line.trim()) continue;
+    let matched = false;
+    for (const [re, key] of SECTION_RE) {
+      if (re.test(line)) {
+        if (key === 'end') return { ...out, sense };
+        if (key === 'obj_max') { cur = 'obj'; sense = 'max'; }
+        else if (key === 'obj_min') { cur = 'obj'; sense = 'min'; }
+        else cur = key;
+        matched = true; break;
+      }
+    }
+    if (matched) continue;
+    for (const [re, key] of SECTION_INLINE) {
+      if (re.test(line)) {
+        const rest = line.replace(re, '');
+        if (key === 'obj_max') { cur = 'obj'; sense = 'max'; }
+        else if (key === 'obj_min') { cur = 'obj'; sense = 'min'; }
+        else cur = key;
+        if (rest.trim()) out[cur].push(rest);
+        matched = true; break;
+      }
+    }
+    if (matched) continue;
+    if (cur) out[cur].push(line);
+  }
+  return { ...out, sense };
+}
+
+function parseTerms(toks, i, stop) {
+  const terms = [];
+  let sign = 1, coef = null;
+  while (i < toks.length && !stop(toks[i])) {
+    const tk = toks[i];
+    if (tk.t === 'sign') { sign = tk.v === '-' ? -1 : 1; coef = null; i++; }
+    else if (tk.t === 'num') { coef = tk.v; i++; }
+    else if (tk.t === 'star') { i++; }
+    else if (tk.t === 'id') {
+      terms.push({ col: tk.v, coef: sign * (coef === null ? 1 : coef) });
+      sign = 1; coef = null; i++;
+    }
+    else if (tk.t === 'caret') { i += 2; }        // termo quadrático: pula expoente
+    else if (tk.t === 'lbrk' || tk.t === 'rbrk' || tk.t === 'slash') { i++; }
+    else i++;
+  }
+  return [terms, i];
+}
+
+function parseLP(text) {
+  const warnings = [];
+  const rawLines = text.replace(/\r\n?/g, '\n').split('\n');
+  if (/\[[^\]]*\^\s*2/.test(text) || /\]\s*\/\s*2/.test(text)) {
+    warnings.push('Termos quadráticos detectados. A análise usa apenas a parte linear.');
+  }
+  const sec = splitSections(text);
+
+  // --- objetivo ---
+  const objToks = tokenize(sec.obj.join(' '));
+  let oi = 0;
+  if (objToks.length > 1 && objToks[0].t === 'id' && objToks[1].t === 'colon') oi = 2;
+  const [objTerms] = parseTerms(objToks, oi, () => false);
+
+  // --- restrições ---
+  const cToks = tokenize(sec.cons.join(' '));
+  const rows = [];
+  let i = 0, anon = 0;
+  const isSense = tk => tk.t === 'sense';
+  while (i < cToks.length) {
+    let name = null;
+    if (cToks[i].t === 'id' && cToks[i + 1] && cToks[i + 1].t === 'colon') {
+      name = cToks[i].v; i += 2;
+    }
+    // faixa à esquerda:  -5 <= expr <= 10
+    let lo = null;
+    if (cToks[i] && (cToks[i].t === 'num' || cToks[i].t === 'sign')) {
+      let j = i, sg = 1;
+      if (cToks[j].t === 'sign') { sg = cToks[j].v === '-' ? -1 : 1; j++; }
+      if (cToks[j] && cToks[j].t === 'num' && cToks[j + 1] && cToks[j + 1].t === 'sense'
+          && cToks[j + 2] && cToks[j + 2].t !== 'num') {
+        lo = sg * cToks[j].v; i = j + 2;
+      }
+    }
+    const [terms, ni] = parseTerms(cToks, i, isSense);
+    i = ni;
+    if (i >= cToks.length) {
+      if (terms.length) warnings.push('Restrição sem operador de comparação foi ignorada.');
+      break;
+    }
+    const sense = cToks[i].v; i++;
+    let sg = 1;
+    if (cToks[i] && cToks[i].t === 'sign') { sg = cToks[i].v === '-' ? -1 : 1; i++; }
+    let rhs = 0;
+    if (cToks[i] && cToks[i].t === 'num') { rhs = sg * cToks[i].v; i++; }
+    // faixa à direita
+    if (cToks[i] && cToks[i].t === 'sense' && cToks[i + 1] &&
+        (cToks[i + 1].t === 'num' || cToks[i + 1].t === 'sign')) {
+      i++; let s2 = 1;
+      if (cToks[i].t === 'sign') { s2 = cToks[i].v === '-' ? -1 : 1; i++; }
+      if (cToks[i] && cToks[i].t === 'num') i++;
+    }
+    if (!terms.length) continue;
+    rows.push({ name: name || `R${++anon}`, sense, rhs, lo, terms });
+  }
+
+  // --- tipos de variáveis ---
+  const grabNames = arr => tokenize(arr.join(' ')).filter(t => t.t === 'id').map(t => t.v);
+  const binary = new Set(grabNames(sec.binary));
+  const general = new Set(grabNames(sec.general));
+  const semi = new Set(grabNames(sec.semi));
+
+  // bounds: nomes + limites (para identificar variáveis fixadas em zero)
+  const boundNames = grabNames(sec.bounds).filter(n => !/^(free|inf|infinity|-inf)$/i.test(n));
+  const lbMap = new Map(), ubMap = new Map();
+  {
+    const bt = tokenize(sec.bounds.join(' '));
+    let i = 0;
+    const num = k => {
+      let sg = 1, j = k;
+      if (bt[j] && bt[j].t === 'sign') { sg = bt[j].v === '-' ? -1 : 1; j++; }
+      if (bt[j] && bt[j].t === 'num') return [sg * bt[j].v, j + 1];
+      if (bt[j] && bt[j].t === 'id' && /^inf(inity)?$/i.test(bt[j].v)) return [sg * Infinity, j + 1];
+      return [null, k];
+    };
+    while (i < bt.length) {
+      const [lo, i1] = num(i);
+      if (lo !== null && bt[i1] && bt[i1].t === 'sense' && bt[i1 + 1] && bt[i1 + 1].t === 'id') {
+        const nm = bt[i1 + 1].v; i = i1 + 2;
+        lbMap.set(nm, Math.max(lbMap.get(nm) ?? -Infinity, lo));
+        if (bt[i] && bt[i].t === 'sense') {
+          const [hi, i2] = num(i + 1);
+          if (hi !== null) { ubMap.set(nm, Math.min(ubMap.get(nm) ?? Infinity, hi)); i = i2; }
+        }
+        continue;
+      }
+      if (bt[i] && bt[i].t === 'id') {
+        const nm = bt[i].v; i++;
+        if (bt[i] && bt[i].t === 'id' && /^free$/i.test(bt[i].v)) {
+          lbMap.set(nm, -Infinity); ubMap.set(nm, Infinity); i++; continue;
+        }
+        if (bt[i] && bt[i].t === 'sense') {
+          const op = bt[i].v; const [v, i2] = num(i + 1);
+          if (v !== null) {
+            if (op === '=') { lbMap.set(nm, v); ubMap.set(nm, v); }
+            else if (op === '<=' || op === '<') ubMap.set(nm, v);
+            else lbMap.set(nm, v);
+            i = i2; continue;
+          }
+        }
+        continue;
+      }
+      i++;
+    }
+  }
+
+  // --- índice de colunas ---
+  const colIndex = new Map();
+  const cols = [];
+  const addCol = n => {
+    if (!colIndex.has(n)) { colIndex.set(n, cols.length); cols.push(n); }
+    return colIndex.get(n);
+  };
+  for (const r of rows) for (const t of r.terms) addCol(t.col);
+  for (const t of objTerms) addCol(t.col);
+  for (const n of boundNames) addCol(n);
+  for (const n of binary) addCol(n);
+  for (const n of general) addCol(n);
+
+  const colType = cols.map(n =>
+    binary.has(n) ? 'bin' : general.has(n) ? 'int' : semi.has(n) ? 'semi' : 'cont');
+
+  // --- matriz esparsa em arrays tipados (memória e velocidade) ---
+  const tmpR = [], tmpC = [], tmpV = [];
+  rows.forEach((r, ri) => {
+    const seen = new Map();
+    for (const t of r.terms) {
+      const ci = colIndex.get(t.col);
+      seen.set(ci, (seen.get(ci) || 0) + t.coef);
+    }
+    for (const [ci, v] of seen) if (v !== 0) { tmpR.push(ri); tmpC.push(ci); tmpV.push(v); }
+    r.terms = null;                       // libera memória: não é mais usado
+  });
+  const nnz = tmpR.length;
+  const eR = Int32Array.from(tmpR), eC = Int32Array.from(tmpC), eV = Float64Array.from(tmpV);
+  const rowStart = new Int32Array(rows.length + 1);
+  for (let k = 0; k < nnz; k++) rowStart[eR[k] + 1]++;
+  for (let i = 0; i < rows.length; i++) rowStart[i + 1] += rowStart[i];
+
+  const fixedZero = new Set();
+  const colLB = new Float64Array(cols.length), colUB = new Float64Array(cols.length);
+  cols.forEach((n, i) => {
+    const isBin = binary.has(n);
+    const lo = lbMap.has(n) ? lbMap.get(n) : 0;
+    const hi = ubMap.has(n) ? ubMap.get(n) : (isBin ? 1 : Infinity);
+    colLB[i] = lo; colUB[i] = hi;
+    if (hi === 0 && lo === 0) fixedZero.add(i);
+  });
+
+  const objCoef = new Map();
+  for (const t of objTerms) {
+    const ci = colIndex.get(t.col);
+    objCoef.set(ci, (objCoef.get(ci) || 0) + t.coef);
+  }
+
+  const sections = {
+    objetivo: sec.obj.length, restricoes: sec.cons.length, bounds: sec.bounds.length,
+    general: sec.general.length, binary: sec.binary.length,
+  };
+  return {
+    sense: sec.sense, rows, cols, colType, colIndex, objCoef, warnings,
+    eR, eC, eV, nnz, rowStart, fixedZero, colLB, colUB,
+    nrows: rows.length, ncols: cols.length,
+    sections, totalLines: rawLines.length, chars: text.length,
+  };
+}
+
+/**
+ * Devolve um modelo derivado sem as colunas em hide (mantendo os nomes originais).
+ */
+function filterModel(m, hide) {
+  if (!hide || !hide.size) return m;
+  const map = new Int32Array(m.ncols).fill(-1);
+  const cols = [], colType = [], colIndex = new Map(), lbs = [], ubs = [];
+  for (let c = 0; c < m.ncols; c++) {
+    if (hide.has(c)) continue;
+    map[c] = cols.length; colIndex.set(m.cols[c], cols.length);
+    cols.push(m.cols[c]); colType.push(m.colType[c]);
+    lbs.push(m.colLB[c]); ubs.push(m.colUB[c]);
+  }
+  let n = 0;
+  for (let k = 0; k < m.nnz; k++) if (map[m.eC[k]] >= 0) n++;
+  const eR = new Int32Array(n), eC = new Int32Array(n), eV = new Float64Array(n);
+  let j = 0;
+  for (let k = 0; k < m.nnz; k++) {
+    const nc = map[m.eC[k]];
+    if (nc < 0) continue;
+    eR[j] = m.eR[k]; eC[j] = nc; eV[j] = m.eV[k]; j++;
+  }
+  const rowStart = new Int32Array(m.nrows + 1);
+  for (let k = 0; k < n; k++) rowStart[eR[k] + 1]++;
+  for (let i = 0; i < m.nrows; i++) rowStart[i + 1] += rowStart[i];
+  const objCoef = new Map();
+  m.objCoef.forEach((v, c) => { if (map[c] >= 0) objCoef.set(map[c], v); });
+  const fixedZero = new Set();
+  m.fixedZero.forEach(c => { if (map[c] >= 0) fixedZero.add(map[c]); });
+  return { ...m, cols, colType, colIndex, eR, eC, eV, nnz: n, rowStart,
+           ncols: cols.length, objCoef, fixedZero, hiddenCount: hide.size,
+           colLB: Float64Array.from(lbs), colUB: Float64Array.from(ubs) };
+}
+
+/* ---------- famílias por nome ---------- */
+function familyOf(name) {
+  const b = name.indexOf('[');
+  if (b > 0) return name.slice(0, b);
+  const p = name.indexOf('(');
+  if (p > 0) return name.slice(0, p);
+  const u = name.indexOf('_');
+  if (u > 0) return name.slice(0, u);
+  const m = name.match(/^([A-Za-z]+)\d/);
+  if (m) return m[1];
+  return name;
+}
+
+function buildFamilies(names) {
+  const map = new Map();
+  names.forEach((n, i) => {
+    const f = familyOf(n);
+    if (!map.has(f)) map.set(f, []);
+    map.get(f).push(i);
+  });
+  return map;
+}
+
+/* ---------- union-find ---------- */
+class DSU {
+  constructor(n) { this.p = new Int32Array(n); for (let i = 0; i < n; i++) this.p[i] = i; }
+  find(x) { while (this.p[x] !== x) { this.p[x] = this.p[this.p[x]]; x = this.p[x]; } return x; }
+  union(a, b) { a = this.find(a); b = this.find(b); if (a !== b) this.p[a] = b; }
+}
+
+/**
+ * Componentes conexas do grafo bipartido linha–coluna, ignorando
+ * as linhas em skipRows e as colunas em skipCols.
+ */
+function components(model, skipRows, skipCols) {
+  const { nrows, ncols, eR, eC, nnz } = model;
+  const dsu = new DSU(nrows + ncols);
+  for (let k = 0; k < nnz; k++) {
+    if (skipRows.has(eR[k]) || skipCols.has(eC[k])) continue;
+    dsu.union(eR[k], nrows + eC[k]);
+  }
+  const rootId = new Map();
+  const blocks = [];
+  const rowBlock = new Int32Array(nrows).fill(-1);
+  const colBlock = new Int32Array(ncols).fill(-1);
+  const touchedRow = new Uint8Array(nrows);
+  const touchedCol = new Uint8Array(ncols);
+  for (let k = 0; k < nnz; k++) {
+    if (skipRows.has(eR[k]) || skipCols.has(eC[k])) continue;
+    touchedRow[eR[k]] = 1; touchedCol[eC[k]] = 1;
+  }
+  const assign = (node, isRow, idx) => {
+    const root = dsu.find(node);
+    if (!rootId.has(root)) { rootId.set(root, blocks.length); blocks.push({ rows: [], cols: [] }); }
+    const b = rootId.get(root);
+    if (isRow) { rowBlock[idx] = b; blocks[b].rows.push(idx); }
+    else { colBlock[idx] = b; blocks[b].cols.push(idx); }
+  };
+  for (let r = 0; r < nrows; r++) if (!skipRows.has(r) && touchedRow[r]) assign(r, true, r);
+  for (let c = 0; c < ncols; c++) if (!skipCols.has(c) && touchedCol[c]) assign(nrows + c, false, c);
+  blocks.sort((a, b) => (b.rows.length + b.cols.length) - (a.rows.length + a.cols.length));
+  blocks.forEach((bl, k) => { bl.rows.forEach(r => rowBlock[r] = k); bl.cols.forEach(c => colBlock[c] = k); });
+  return { blocks, rowBlock, colBlock };
+}
+
+/**
+ * Estrutura de Benders para um conjunto de colunas complicadoras.
+ * Devolve blocos do subproblema, linhas que só têm colunas complicadoras
+ * (bloco A do mestre) e linhas de acoplamento.
+ */
+function bendersStructure(model, linkCols) {
+  const { nrows, eR, eC, nnz } = model;
+  const rLink = new Int32Array(nrows), rFree = new Int32Array(nrows);
+  for (let k = 0; k < nnz; k++) { if (linkCols.has(eC[k])) rLink[eR[k]]++; else rFree[eR[k]]++; }
+  const rowsByIdx = { };
+  const masterRows = [];       // bloco A: só variáveis complicadoras
+  const couplingRows = [];     // linhas com complicadoras E variáveis do subproblema
+  for (let r = 0; r < nrows; r++) {
+    if (rFree[r] === 0 && rLink[r] > 0) masterRows.push(r);
+    else if (rLink[r] > 0) couplingRows.push(r);
+  }
+  const skipRows = new Set(masterRows);
+  const { blocks, rowBlock, colBlock } = components(model, skipRows, linkCols);
+  let intInSub = 0, intInLink = 0;
+  model.colType.forEach((t, c) => {
+    if (t === 'bin' || t === 'int' || t === 'semi') {
+      if (linkCols.has(c)) intInLink++; else intInSub++;
+    }
+  });
+  return {
+    kind: 'benders', linkCols, masterRows, couplingRows,
+    blocks, rowBlock, colBlock,
+    nBlocks: blocks.length,
+    subRows: nrows - masterRows.length,
+    subCols: model.ncols - linkCols.size,
+    intInSub, intInLink,
+    pureLP: intInSub === 0,
+  };
+}
+
+/**
+ * Estrutura de Dantzig-Wolfe para um conjunto de linhas de acoplamento.
+ */
+function dwStructure(model, linkRows) {
+  const { ncols, eR, eC, nnz } = model;
+  const cLink = new Int32Array(ncols), cFree = new Int32Array(ncols);
+  for (let k = 0; k < nnz; k++) { if (linkRows.has(eR[k])) cLink[eC[k]]++; else cFree[eC[k]]++; }
+  const masterCols = [];
+  for (let c = 0; c < ncols; c++) if (cFree[c] === 0 && cLink[c] > 0) masterCols.push(c);
+  const skipCols = new Set(masterCols);
+  const { blocks, rowBlock, colBlock } = components(model, linkRows, skipCols);
+  return {
+    kind: 'dw', linkRows, masterCols, blocks, rowBlock, colBlock,
+    nBlocks: blocks.length,
+  };
+}
+
+/**
+ * Relaxação lagrangiana: dualizar um conjunto de linhas.
+ * Estruturalmente é a mesma partição de linhas do Dantzig-Wolfe; o que muda é
+ * o diagnóstico, então aqui acrescentamos o que é específico do caso lagrangiano.
+ */
+function lagrStructure(model, dualRows) {
+  const st = dwStructure(model, dualRows);
+  const { eR, eC, eV, nnz, rowStart, colType, colLB, colUB } = model;
+
+  // multiplicadores: igualdade -> livre; desigualdade -> sinal restrito
+  let eq = 0, ineq = 0;
+  dualRows.forEach(r => { if (model.rows[r].sense === '=') eq++; else ineq++; });
+
+  // colunas que só aparecem nas linhas dualizadas ficam sem restrição no
+  // subproblema: se não tiverem limite finito, o subproblema é ilimitado.
+  let freeUnbounded = 0;
+  const freeExamples = [];
+  for (const c of st.masterCols) {
+    if (!isFinite(colUB[c]) || !isFinite(colLB[c])) {
+      freeUnbounded++;
+      if (freeExamples.length < 4) freeExamples.push(model.cols[c]);
+    }
+  }
+
+  // propriedade de integralidade (heurística por bloco):
+  // coeficientes todos ±1 e cada coluna em no máximo 2 linhas do bloco
+  // sugerem estrutura de rede, cujo bound coincide com o da relaxação linear.
+  const rowBlockOf = st.rowBlock;
+  const blockInfo = st.blocks.map(() => ({ pm1: true, maxDeg: 0, hasInt: false, nnz: 0 }));
+  const deg = new Int32Array(model.ncols);
+  for (let k = 0; k < nnz; k++) {
+    const b = rowBlockOf[eR[k]];
+    if (b < 0) continue;
+    const info = blockInfo[b];
+    info.nnz++;
+    if (Math.abs(Math.abs(eV[k]) - 1) > 1e-9) info.pm1 = false;
+    if (colType[eC[k]] !== 'cont') info.hasInt = true;
+    deg[eC[k]]++;
+  }
+  // cada coluna pertence a um único bloco: o grau máximo do bloco é o máximo dos seus graus
+  st.blocks.forEach((bl, i) => {
+    let mx = 0;
+    for (const c of bl.cols) if (deg[c] > mx) mx = deg[c];
+    blockInfo[i].maxDeg = mx;
+  });
+  const classify = i => {
+    const b = blockInfo[i];
+    if (!b.hasInt) return 'lp';                       // bloco contínuo: bound = relaxação linear
+    if (b.pm1 && b.maxDeg <= 2) return 'rede';        // provável propriedade de integralidade
+    if (b.pm1) return 'talvez';
+    return 'geral';                                   // coeficientes gerais: bound pode ser melhor
+  };
+  const classes = st.blocks.map((_, i) => classify(i));
+  const tally = { lp: 0, rede: 0, talvez: 0, geral: 0 };
+  classes.forEach(k => tally[k]++);
+
+  return { ...st, kind: 'lagr', eq, ineq, freeUnbounded, freeExamples,
+           blockInfo, classes, tally, nMult: dualRows.size };
+}
+
+/* ---------- busca automática por famílias ---------- */
+
+// Em Benders o custo do método é o tamanho do mestre: o conjunto complicador
+// precisa ser PEQUENO e deve conter as decisões discretas.
+function scoreBenders(st, model) {
+  if (st.nBlocks === 0) return -1;
+  const frac = st.linkCols.size / model.ncols;
+  if (frac > 0.5) return -1;
+  const rowFrac = st.couplingRows.length / Math.max(1, model.nrows);
+  let nInt = 0;
+  st.linkCols.forEach(c => { const t = model.colType[c]; if (t !== 'cont') nInt++; });
+  const purity = st.linkCols.size ? nInt / st.linkCols.size : 0;
+  return 130 * (1 - frac)
+       + 12 * Math.log2(st.nBlocks + 1)
+       + 40 * purity
+       + 10 * (1 - rowFrac)
+       + (st.masterRows.length > 0 ? 6 : 0);
+}
+
+// Em Dantzig-Wolfe o custo do mestre são as linhas de acoplamento:
+// poucas linhas, muitos blocos.
+function scoreDW(st, model) {
+  if (st.nBlocks < 2) return -1;
+  const frac = st.linkRows.size / model.nrows;
+  if (frac > 0.5) return -1;
+  const biggest = maxOf(st.blocks.map(b => b.rows.length));
+  const balance = 1 - biggest / Math.max(1, model.nrows - st.linkRows.size);
+  return 110 * (1 - frac) + 22 * Math.log2(st.nBlocks) + 18 * balance
+       + (st.masterCols.length > 0 ? 6 : 0);
+}
+
+function suggestBenders(model, maxCombo = 3) {
+  const fams = buildFamilies(model.cols);
+  const keys = [...fams.keys()];
+  const out = [];
+  const tryset = (names) => {
+    const s = new Set();
+    for (const n of names) for (const c of fams.get(n)) s.add(c);
+    if (s.size === 0 || s.size >= model.ncols) return;
+    const st = bendersStructure(model, s);
+    out.push({ names: [...names], size: s.size, st, score: scoreBenders(st, model) });
+  };
+  // heurística padrão: todas as inteiras/binárias
+  const intCols = new Set();
+  model.colType.forEach((t, i) => { if (t === 'bin' || t === 'int') intCols.add(i); });
+  if (intCols.size && intCols.size < model.ncols) {
+    const st = bendersStructure(model, intCols);
+    out.push({ names: ['«todas as inteiras»'], size: intCols.size, st, score: scoreBenders(st, model) + 5 });
+  }
+  const binCols = new Set();
+  model.colType.forEach((t, i) => { if (t === 'bin') binCols.add(i); });
+  if (binCols.size && binCols.size < model.ncols && binCols.size !== intCols.size) {
+    const st = bendersStructure(model, binCols);
+    out.push({ names: ['«todas as binárias»'], size: binCols.size, st, score: scoreBenders(st, model) + 5 });
+  }
+  for (const k of keys) tryset([k]);
+  if (maxCombo >= 2 && keys.length <= 26) {
+    for (let a = 0; a < keys.length; a++)
+      for (let b = a + 1; b < keys.length; b++) tryset([keys[a], keys[b]]);
+  }
+  if (maxCombo >= 3 && keys.length <= 16) {
+    for (let a = 0; a < keys.length; a++)
+      for (let b = a + 1; b < keys.length; b++)
+        for (let c = b + 1; c < keys.length; c++) tryset([keys[a], keys[b], keys[c]]);
+  }
+  // ordena: primeiro os que deixam o subproblema contínuo, depois por score
+  out.sort((x, y) => (y.st.pureLP - x.st.pureLP) || (y.score - x.score));
+  const seen = new Set(); const uniq = [];
+  for (const o of out) {
+    const sig = o.st.nBlocks + ":" + o.size;
+    if (seen.has(sig) && uniq.length > 2) continue;
+    seen.add(sig); uniq.push(o);
+    if (uniq.length >= 8) break;
+  }
+  return uniq;
+}
+
+/**
+ * Em Lagrange, além de poucas linhas dualizadas e muitos blocos, interessa que os
+ * subproblemas NÃO tenham a propriedade de integralidade — é daí que vem um bound
+ * melhor que o da relaxação linear.
+ */
+function scoreLagr(st, model) {
+  if (st.nBlocks < 1) return -1;
+  const frac = st.nMult / model.nrows;
+  if (frac > 0.8) return -1;          // dualizar muitas linhas é legítimo aqui
+  const forte = (st.tally.geral + 0.5 * st.tally.talvez) / Math.max(1, st.nBlocks);
+  // a força do bound é o ponto central de Lagrange, então pesa mais que o tamanho
+  return 70 * (1 - frac)
+       + 18 * Math.log2(st.nBlocks + 1)
+       + 60 * forte
+       - (st.freeUnbounded > 0 ? 25 : 0);
+}
+
+function suggestLagr(model, maxCombo = 3) {
+  const fams = buildFamilies(model.rows.map(r => r.name));
+  const keys = [...fams.keys()];
+  const out = [];
+  const tryset = (names) => {
+    const s = new Set();
+    for (const n of names) for (const r of fams.get(n)) s.add(r);
+    if (s.size === 0 || s.size >= model.nrows) return;
+    const st = lagrStructure(model, s);
+    out.push({ names: [...names], size: s.size, st, score: scoreLagr(st, model) });
+  };
+  for (const k of keys) tryset([k]);
+  if (maxCombo >= 2 && keys.length <= 26)
+    for (let a = 0; a < keys.length; a++)
+      for (let b = a + 1; b < keys.length; b++) tryset([keys[a], keys[b]]);
+  if (maxCombo >= 3 && keys.length <= 16)
+    for (let a = 0; a < keys.length; a++)
+      for (let b = a + 1; b < keys.length; b++)
+        for (let d = b + 1; d < keys.length; d++) tryset([keys[a], keys[b], keys[d]]);
+  out.sort((x, y) => y.score - x.score);
+  return out.filter(o => o.score > 0).slice(0, 8);
+}
+
+function suggestDW(model, maxCombo = 3) {
+  const fams = buildFamilies(model.rows.map(r => r.name));
+  const keys = [...fams.keys()];
+  const out = [];
+  const tryset = (names) => {
+    const s = new Set();
+    for (const n of names) for (const r of fams.get(n)) s.add(r);
+    if (s.size === 0 || s.size >= model.nrows) return;
+    const st = dwStructure(model, s);
+    out.push({ names: [...names], size: s.size, st, score: scoreDW(st, model) });
+  };
+  for (const k of keys) tryset([k]);
+  if (maxCombo >= 2 && keys.length <= 26) {
+    for (let a = 0; a < keys.length; a++)
+      for (let b = a + 1; b < keys.length; b++) tryset([keys[a], keys[b]]);
+  }
+  if (maxCombo >= 3 && keys.length <= 16) {
+    for (let a = 0; a < keys.length; a++)
+      for (let b = a + 1; b < keys.length; b++)
+        for (let c = b + 1; c < keys.length; c++) tryset([keys[a], keys[b], keys[c]]);
+  }
+  out.sort((x, y) => y.score - x.score);
+  return out.filter(o => o.st.nBlocks >= 2).slice(0, 8);
+}
+
+/* ---------- ordenação para desenho ---------- */
+
+function orderBenders(model, st) {
+  const colOrder = [], colSep = [];
+  const link = [...st.linkCols].sort((a, b) => a - b);
+  pushAll(colOrder, link);
+  if (link.length) colSep.push(colOrder.length);
+  for (const b of st.blocks) { b.cols.sort((x, y) => x - y); pushAll(colOrder, b.cols); colSep.push(colOrder.length); }
+  const placedC = new Set(colOrder);
+  for (let c = 0; c < model.ncols; c++) if (!placedC.has(c)) colOrder.push(c);
+
+  const rowOrder = [], rowSep = [];
+  pushAll(rowOrder, st.masterRows);
+  if (st.masterRows.length) rowSep.push(rowOrder.length);
+  for (const b of st.blocks) { b.rows.sort((x, y) => x - y); pushAll(rowOrder, b.rows); rowSep.push(rowOrder.length); }
+  const placedR = new Set(rowOrder);
+  for (let r = 0; r < model.nrows; r++) if (!placedR.has(r)) rowOrder.push(r);
+  return { rowOrder, colOrder, rowSep, colSep };
+}
+
+function orderDW(model, st) {
+  const rowOrder = [], rowSep = [];
+  const link = [...st.linkRows].sort((a, b) => a - b);
+  pushAll(rowOrder, link);
+  if (link.length) rowSep.push(rowOrder.length);
+  for (const b of st.blocks) { b.rows.sort((x, y) => x - y); pushAll(rowOrder, b.rows); rowSep.push(rowOrder.length); }
+  const placedR = new Set(rowOrder);
+  for (let r = 0; r < model.nrows; r++) if (!placedR.has(r)) rowOrder.push(r);
+
+  const colOrder = [], colSep = [];
+  pushAll(colOrder, st.masterCols);
+  if (st.masterCols.length) colSep.push(colOrder.length);
+  for (const b of st.blocks) { b.cols.sort((x, y) => x - y); pushAll(colOrder, b.cols); colSep.push(colOrder.length); }
+  const placedC = new Set(colOrder);
+  for (let c = 0; c < model.ncols; c++) if (!placedC.has(c)) colOrder.push(c);
+  return { rowOrder, colOrder, rowSep, colSep };
+}
+</script>
+
+<script id="samples">
+const SAMPLES = {"facility": "\\ Localizacao de instalacoes - 2 depositos, 3 clientes\nMinimize\n obj: 4 open_1 + 3 open_2 + 1 ship_1_A + 5 ship_2_A + 3 ship_1_B\n      + 2 ship_2_B + 6 ship_1_C + 2 ship_2_C\nSubject To\n assign_A: ship_1_A + ship_2_A = 1\n assign_B: ship_1_B + ship_2_B = 1\n assign_C: ship_1_C + ship_2_C = 1\n link_1_A: ship_1_A - open_1 <= 0\n link_1_B: ship_1_B - open_1 <= 0\n link_1_C: ship_1_C - open_1 <= 0\n link_2_A: ship_2_A - open_2 <= 0\n link_2_B: ship_2_B - open_2 <= 0\n link_2_C: ship_2_C - open_2 <= 0\nBounds\n ship_1_A <= 1\n ship_1_B <= 1\n ship_1_C <= 1\n ship_2_A <= 1\n ship_2_B <= 1\n ship_2_C <= 1\nBinary\n open_1 open_2\nEnd", "rede": "\\ Rede de depositos multi-periodo (Model_Sk reduzido)\n\\ 4 produtos / 2 familias, 3 depositos, 2 clientes, 2 fontes, 2 periodos\nMinimize\n obj: 4.00 x_1_1_1_0 + 4.00 x_1_1_1_1 + 5.00 x_1_1_2_0 + 5.00 x_1_1_2_1 + 6.00 x_1_1_3_0 + 6.00 x_1_1_3_1\n      + 5.00 x_1_2_1_0 + 5.00 x_1_2_1_1 + 6.00 x_1_2_2_0 + 6.00 x_1_2_2_1 + 7.00 x_1_2_3_0 + 7.00 x_1_2_3_1\n      + 8.00 x_2_1_1_0 + 8.00 x_2_1_1_1 + 10.00 x_2_1_2_0 + 10.00 x_2_1_2_1 + 12.00 x_2_1_3_0 + 12.00 x_2_1_3_1\n      + 10.00 x_2_2_1_0 + 10.00 x_2_2_1_1 + 12.00 x_2_2_2_0 + 12.00 x_2_2_2_1 + 14.00 x_2_2_3_0 + 14.00 x_2_2_3_1\n      + 6.00 x_3_1_1_0 + 6.00 x_3_1_1_1 + 7.50 x_3_1_2_0 + 7.50 x_3_1_2_1 + 9.00 x_3_1_3_0 + 9.00 x_3_1_3_1\n      + 7.50 x_3_2_1_0 + 7.50 x_3_2_1_1 + 9.00 x_3_2_2_0 + 9.00 x_3_2_2_1 + 10.50 x_3_2_3_0 + 10.50 x_3_2_3_1\n      + 2.00 x_4_1_1_0 + 2.00 x_4_1_1_1 + 2.50 x_4_1_2_0 + 2.50 x_4_1_2_1 + 3.00 x_4_1_3_0 + 3.00 x_4_1_3_1\n      + 2.50 x_4_2_1_0 + 2.50 x_4_2_1_1 + 3.00 x_4_2_2_0 + 3.00 x_4_2_2_1 + 3.50 x_4_2_3_0 + 3.50 x_4_2_3_1\n      + 5.00 y_1_1_1_0 + 5.00 y_1_1_1_1 + 6.00 y_1_1_2_0 + 6.00 y_1_1_2_1 + 6.00 y_1_2_1_0 + 6.00 y_1_2_1_1\n      + 8.00 y_1_3_2_0 + 8.00 y_1_3_2_1 + 10.00 y_2_1_1_0 + 10.00 y_2_1_1_1 + 12.00 y_2_1_2_0 + 12.00 y_2_1_2_1\n      + 12.00 y_2_2_1_0 + 12.00 y_2_2_1_1 + 16.00 y_2_3_2_0 + 16.00 y_2_3_2_1 + 7.50 y_3_1_1_0 + 7.50 y_3_1_1_1\n      + 9.00 y_3_1_2_0 + 9.00 y_3_1_2_1 + 9.00 y_3_2_1_0 + 9.00 y_3_2_1_1 + 12.00 y_3_3_2_0 + 12.00 y_3_3_2_1\n      + 2.50 y_4_1_1_0 + 2.50 y_4_1_1_1 + 3.00 y_4_1_2_0 + 3.00 y_4_1_2_1 + 3.00 y_4_2_1_0 + 3.00 y_4_2_1_1\n      + 4.00 y_4_3_2_0 + 4.00 y_4_3_2_1 + 6 e_1_1_0 + 6 e_1_1_1 + 7 e_1_2_0 + 7 e_1_2_1\n      + 8 e_1_3_0 + 8 e_1_3_1 + 6 e_2_1_0 + 6 e_2_1_1 + 7 e_2_2_0 + 7 e_2_2_1\n      + 8 e_2_3_0 + 8 e_2_3_1 + 6 e_4_1_0 + 6 e_4_1_1 + 7 e_4_2_0 + 7 e_4_2_1\n      + 8 e_4_3_0 + 8 e_4_3_1 + 50 slack_1_1_0 + 50 slack_1_1_1 + 50 slack_1_2_0 + 50 slack_1_2_1\n      + 100 slack_2_1_0 + 100 slack_2_1_1 + 100 slack_2_2_0 + 100 slack_2_2_1 + 150 slack_3_1_0 + 150 slack_3_1_1\n      + 150 slack_3_2_0 + 150 slack_3_2_1 + 200 slack_4_1_0 + 200 slack_4_1_1 + 200 slack_4_2_0 + 200 slack_4_2_1\n      + 200 o_1 + 400 o_2 + 600 o_3 + 7 waste_1_1 + 7 waste_1_2 + 7 waste_1_3\n      + 14 waste_2_1 + 14 waste_2_2 + 14 waste_2_3 + 28 waste_4_1 + 28 waste_4_2 + 28 waste_4_3\nSubject To\n CD_1_1_0: y_1_1_1_0 + y_1_2_1_0 + slack_1_1_0 = 3\n CD_1_1_1: y_1_1_1_1 + y_1_2_1_1 + slack_1_1_1 = 4\n CD_1_2_0: y_1_1_2_0 + y_1_3_2_0 + slack_1_2_0 = 4\n CD_1_2_1: y_1_1_2_1 + y_1_3_2_1 + slack_1_2_1 = 5\n CD_2_1_0: y_2_1_1_0 + y_2_2_1_0 + slack_2_1_0 = 5\n CD_2_1_1: y_2_1_1_1 + y_2_2_1_1 + slack_2_1_1 = 6\n CD_2_2_0: y_2_1_2_0 + y_2_3_2_0 + slack_2_2_0 = 6\n CD_2_2_1: y_2_1_2_1 + y_2_3_2_1 + slack_2_2_1 = 7\n CD_3_1_0: y_3_1_1_0 + y_3_2_1_0 + slack_3_1_0 = 7\n CD_3_1_1: y_3_1_1_1 + y_3_2_1_1 + slack_3_1_1 = 8\n CD_3_2_0: y_3_1_2_0 + y_3_3_2_0 + slack_3_2_0 = 8\n CD_3_2_1: y_3_1_2_1 + y_3_3_2_1 + slack_3_2_1 = 9\n CD_4_1_0: y_4_1_1_0 + y_4_2_1_0 + slack_4_1_0 = 9\n CD_4_1_1: y_4_1_1_1 + y_4_2_1_1 + slack_4_1_1 = 10\n CD_4_2_0: y_4_1_2_0 + y_4_3_2_0 + slack_4_2_0 = 10\n CD_4_2_1: y_4_1_2_1 + y_4_3_2_1 + slack_4_2_1 = 11\n TP_1_1_0: x_1_1_1_0 + x_1_2_1_0 - te_1_1_0 = 0\n TP_1_1_1: x_1_1_1_1 + x_1_2_1_1 - te_1_1_1 = 0\n TP_1_2_0: x_1_1_2_0 + x_1_2_2_0 - te_1_2_0 = 0\n TP_1_2_1: x_1_1_2_1 + x_1_2_2_1 - te_1_2_1 = 0\n TP_1_3_0: x_1_1_3_0 + x_1_2_3_0 - te_1_3_0 = 0\n TP_1_3_1: x_1_1_3_1 + x_1_2_3_1 - te_1_3_1 = 0\n TP_2_1_0: x_2_1_1_0 + x_2_2_1_0 - te_2_1_0 = 0\n TP_2_1_1: x_2_1_1_1 + x_2_2_1_1 - te_2_1_1 = 0\n TP_2_2_0: x_2_1_2_0 + x_2_2_2_0 - te_2_2_0 = 0\n TP_2_2_1: x_2_1_2_1 + x_2_2_2_1 - te_2_2_1 = 0\n TP_2_3_0: x_2_1_3_0 + x_2_2_3_0 - te_2_3_0 = 0\n TP_2_3_1: x_2_1_3_1 + x_2_2_3_1 - te_2_3_1 = 0\n TP_3_1_0: x_3_1_1_0 + x_3_2_1_0 - te_3_1_0 = 0\n TP_3_1_1: x_3_1_1_1 + x_3_2_1_1 - te_3_1_1 = 0\n TP_3_2_0: x_3_1_2_0 + x_3_2_2_0 - te_3_2_0 = 0\n TP_3_2_1: x_3_1_2_1 + x_3_2_2_1 - te_3_2_1 = 0\n TP_3_3_0: x_3_1_3_0 + x_3_2_3_0 - te_3_3_0 = 0\n TP_3_3_1: x_3_1_3_1 + x_3_2_3_1 - te_3_3_1 = 0\n TP_4_1_0: x_4_1_1_0 + x_4_2_1_0 - te_4_1_0 = 0\n TP_4_1_1: x_4_1_1_1 + x_4_2_1_1 - te_4_1_1 = 0\n TP_4_2_0: x_4_1_2_0 + x_4_2_2_0 - te_4_2_0 = 0\n TP_4_2_1: x_4_1_2_1 + x_4_2_2_1 - te_4_2_1 = 0\n TP_4_3_0: x_4_1_3_0 + x_4_2_3_0 - te_4_3_0 = 0\n TP_4_3_1: x_4_1_3_1 + x_4_2_3_1 - te_4_3_1 = 0\n TL_1_1_0: y_1_1_1_0 + y_1_1_2_0 - tl_1_1_0 = 0\n TL_1_1_1: y_1_1_1_1 + y_1_1_2_1 - tl_1_1_1 = 0\n TL_1_2_0: y_1_2_1_0 - tl_1_2_0 = 0\n TL_1_2_1: y_1_2_1_1 - tl_1_2_1 = 0\n TL_1_3_0: y_1_3_2_0 - tl_1_3_0 = 0\n TL_1_3_1: y_1_3_2_1 - tl_1_3_1 = 0\n TL_2_1_0: y_2_1_1_0 + y_2_1_2_0 - tl_2_1_0 = 0\n TL_2_1_1: y_2_1_1_1 + y_2_1_2_1 - tl_2_1_1 = 0\n TL_2_2_0: y_2_2_1_0 - tl_2_2_0 = 0\n TL_2_2_1: y_2_2_1_1 - tl_2_2_1 = 0\n TL_2_3_0: y_2_3_2_0 - tl_2_3_0 = 0\n TL_2_3_1: y_2_3_2_1 - tl_2_3_1 = 0\n TL_3_1_0: y_3_1_1_0 + y_3_1_2_0 - tl_3_1_0 = 0\n TL_3_1_1: y_3_1_1_1 + y_3_1_2_1 - tl_3_1_1 = 0\n TL_3_2_0: y_3_2_1_0 - tl_3_2_0 = 0\n TL_3_2_1: y_3_2_1_1 - tl_3_2_1 = 0\n TL_3_3_0: y_3_3_2_0 - tl_3_3_0 = 0\n TL_3_3_1: y_3_3_2_1 - tl_3_3_1 = 0\n TL_4_1_0: y_4_1_1_0 + y_4_1_2_0 - tl_4_1_0 = 0\n TL_4_1_1: y_4_1_1_1 + y_4_1_2_1 - tl_4_1_1 = 0\n TL_4_2_0: y_4_2_1_0 - tl_4_2_0 = 0\n TL_4_2_1: y_4_2_1_1 - tl_4_2_1 = 0\n TL_4_3_0: y_4_3_2_0 - tl_4_3_0 = 0\n TL_4_3_1: y_4_3_2_1 - tl_4_3_1 = 0\n IBA0_1_1: te_1_1_0 - e_1_1_0 - tl_1_1_0 - waste_1_1 = -5\n WV_1_1: waste_1_1 + 5 o_1 <= 5\n IB_1_1_1: e_1_1_1 - e_1_1_0 - te_1_1_1 + tl_1_1_1 = 0\n IBA0_1_2: te_1_2_0 - e_1_2_0 - tl_1_2_0 - waste_1_2 = -4\n WV_1_2: waste_1_2 + 4 o_2 <= 4\n IB_1_2_1: e_1_2_1 - e_1_2_0 - te_1_2_1 + tl_1_2_1 = 0\n IBA0_1_3: te_1_3_0 - e_1_3_0 - tl_1_3_0 - waste_1_3 = 0\n WV_1_3: waste_1_3 + 0 o_3 <= 0\n IB_1_3_1: e_1_3_1 - e_1_3_0 - te_1_3_1 + tl_1_3_1 = 0\n IBA0_2_1: te_2_1_0 - e_2_1_0 - tl_2_1_0 - waste_2_1 = -3\n WV_2_1: waste_2_1 + 3 o_1 <= 3\n IB_2_1_1: e_2_1_1 - e_2_1_0 - te_2_1_1 + tl_2_1_1 = 0\n IBA0_2_2: te_2_2_0 - e_2_2_0 - tl_2_2_0 - waste_2_2 = 0\n WV_2_2: waste_2_2 + 0 o_2 <= 0\n IB_2_2_1: e_2_2_1 - e_2_2_0 - te_2_2_1 + tl_2_2_1 = 0\n IBA0_2_3: te_2_3_0 - e_2_3_0 - tl_2_3_0 - waste_2_3 = 0\n WV_2_3: waste_2_3 + 0 o_3 <= 0\n IB_2_3_1: e_2_3_1 - e_2_3_0 - te_2_3_1 + tl_2_3_1 = 0\n IBA0_4_1: te_4_1_0 - e_4_1_0 - tl_4_1_0 - waste_4_1 = -2\n WV_4_1: waste_4_1 + 2 o_1 <= 2\n IB_4_1_1: e_4_1_1 - e_4_1_0 - te_4_1_1 + tl_4_1_1 = 0\n IBA0_4_2: te_4_2_0 - e_4_2_0 - tl_4_2_0 - waste_4_2 = 0\n WV_4_2: waste_4_2 + 0 o_2 <= 0\n IB_4_2_1: e_4_2_1 - e_4_2_0 - te_4_2_1 + tl_4_2_1 = 0\n IBA0_4_3: te_4_3_0 - e_4_3_0 - tl_4_3_0 - waste_4_3 = 0\n WV_4_3: waste_4_3 + 0 o_3 <= 0\n IB_4_3_1: e_4_3_1 - e_4_3_0 - te_4_3_1 + tl_4_3_1 = 0\n CDK0_3_1: tl_3_1_0 - te_3_1_0 <= 0\n CDK_3_1_1: te_3_1_1 - tl_3_1_1 = 0\n CDK0_3_2: tl_3_2_0 - te_3_2_0 <= 0\n CDK_3_2_1: te_3_2_1 - tl_3_2_1 = 0\n CDK0_3_3: tl_3_3_0 - te_3_3_0 <= 0\n CDK_3_3_1: te_3_3_1 - tl_3_3_1 = 0\n MC_1_0: 1.0 e_1_1_0 + 2.0 e_2_1_0 + 0.5 e_4_1_0 - 100 o_1 <= 0\n MC_1_1: 1.0 e_1_1_1 + 2.0 e_2_1_1 + 0.5 e_4_1_1 - 100 o_1 <= 0\n MC_2_0: 1.0 e_1_2_0 + 2.0 e_2_2_0 + 0.5 e_4_2_0 - 80 o_2 <= 0\n MC_2_1: 1.0 e_1_2_1 + 2.0 e_2_2_1 + 0.5 e_4_2_1 - 80 o_2 <= 0\n MC_3_0: 1.0 e_1_3_0 + 2.0 e_2_3_0 + 0.5 e_4_3_0 - 120 o_3 <= 0\n MC_3_1: 1.0 e_1_3_1 + 2.0 e_2_3_1 + 0.5 e_4_3_1 - 120 o_3 <= 0\n BA_1_0: 1.0 x_1_1_1_0 + 1.0 x_1_2_1_0 + 2.0 x_2_1_1_0 + 2.0 x_2_2_1_0 + 1.5 x_3_1_1_0 + 1.5 x_3_2_1_0 + 0.5 x_4_1_1_0 + 0.5 x_4_2_1_0 - 50.0 o_1 <= 0\n BA_1_1: 1.0 x_1_1_1_1 + 1.0 x_1_2_1_1 + 2.0 x_2_1_1_1 + 2.0 x_2_2_1_1 + 1.5 x_3_1_1_1 + 1.5 x_3_2_1_1 + 0.5 x_4_1_1_1 + 0.5 x_4_2_1_1 - 50.0 o_1 <= 0\n BA_2_0: 1.0 x_1_1_2_0 + 1.0 x_1_2_2_0 + 2.0 x_2_1_2_0 + 2.0 x_2_2_2_0 + 1.5 x_3_1_2_0 + 1.5 x_3_2_2_0 + 0.5 x_4_1_2_0 + 0.5 x_4_2_2_0 - 48.0 o_2 <= 0\n BA_2_1: 1.0 x_1_1_2_1 + 1.0 x_1_2_2_1 + 2.0 x_2_1_2_1 + 2.0 x_2_2_2_1 + 1.5 x_3_1_2_1 + 1.5 x_3_2_2_1 + 0.5 x_4_1_2_1 + 0.5 x_4_2_2_1 - 48.0 o_2 <= 0\n BA_3_0: 1.0 x_1_1_3_0 + 1.0 x_1_2_3_0 + 2.0 x_2_1_3_0 + 2.0 x_2_2_3_0 + 1.5 x_3_1_3_0 + 1.5 x_3_2_3_0 + 0.5 x_4_1_3_0 + 0.5 x_4_2_3_0 - 48.0 o_3 <= 0\n BA_3_1: 1.0 x_1_1_3_1 + 1.0 x_1_2_3_1 + 2.0 x_2_1_3_1 + 2.0 x_2_2_3_1 + 1.5 x_3_1_3_1 + 1.5 x_3_2_3_1 + 0.5 x_4_1_3_1 + 0.5 x_4_2_3_1 - 48.0 o_3 <= 0\n SC_1_1_0: x_1_1_1_0 + x_1_1_2_0 + x_1_1_3_0 + x_2_1_1_0 + x_2_1_2_0 + x_2_1_3_0 <= 50\n SC_1_1_1: x_1_1_1_1 + x_1_1_2_1 + x_1_1_3_1 + x_2_1_1_1 + x_2_1_2_1 + x_2_1_3_1 <= 50\n SC_1_2_0: x_1_2_1_0 + x_1_2_2_0 + x_1_2_3_0 + x_2_2_1_0 + x_2_2_2_0 + x_2_2_3_0 <= 50\n SC_1_2_1: x_1_2_1_1 + x_1_2_2_1 + x_1_2_3_1 + x_2_2_1_1 + x_2_2_2_1 + x_2_2_3_1 <= 50\n SC_2_1_0: x_3_1_1_0 + x_3_1_2_0 + x_3_1_3_0 + x_4_1_1_0 + x_4_1_2_0 + x_4_1_3_0 <= 60\n SC_2_1_1: x_3_1_1_1 + x_3_1_2_1 + x_3_1_3_1 + x_4_1_1_1 + x_4_1_2_1 + x_4_1_3_1 <= 60\n SC_2_2_0: x_3_2_1_0 + x_3_2_2_0 + x_3_2_3_0 + x_4_2_1_0 + x_4_2_2_0 + x_4_2_3_0 <= 60\n SC_2_2_1: x_3_2_1_1 + x_3_2_2_1 + x_3_2_3_1 + x_4_2_1_1 + x_4_2_2_1 + x_4_2_3_1 <= 60\nBinary\n o_1 o_2 o_3\nGeneral\n x_1_1_1_0 x_1_1_1_1 x_1_1_2_0 x_1_1_2_1 x_1_1_3_0 x_1_1_3_1 x_1_2_1_0 x_1_2_1_1 x_1_2_2_0 x_1_2_2_1 x_1_2_3_0 x_1_2_3_1\n x_2_1_1_0 x_2_1_1_1 x_2_1_2_0 x_2_1_2_1 x_2_1_3_0 x_2_1_3_1 x_2_2_1_0 x_2_2_1_1 x_2_2_2_0 x_2_2_2_1 x_2_2_3_0 x_2_2_3_1\n x_3_1_1_0 x_3_1_1_1 x_3_1_2_0 x_3_1_2_1 x_3_1_3_0 x_3_1_3_1 x_3_2_1_0 x_3_2_1_1 x_3_2_2_0 x_3_2_2_1 x_3_2_3_0 x_3_2_3_1\n x_4_1_1_0 x_4_1_1_1 x_4_1_2_0 x_4_1_2_1 x_4_1_3_0 x_4_1_3_1 x_4_2_1_0 x_4_2_1_1 x_4_2_2_0 x_4_2_2_1 x_4_2_3_0 x_4_2_3_1\n slack_1_1_0 slack_1_1_1 slack_1_2_0 slack_1_2_1 slack_2_1_0 slack_2_1_1 slack_2_2_0 slack_2_2_1 slack_3_1_0 slack_3_1_1 slack_3_2_0 slack_3_2_1\n slack_4_1_0 slack_4_1_1 slack_4_2_0 slack_4_2_1\nEnd", "gap": "\\ Alocacao generalizada - 3 maquinas, 6 tarefas\n\\ Acoplamento por LINHAS (cada tarefa em uma maquina) -> Dantzig-Wolfe\nMinimize\n obj: 4 a_1_1 + 5 a_1_2 + 6 a_1_3 + 7 a_1_4 + 8 a_1_5 + 9 a_1_6 + 5 a_2_1 + 7 a_2_2 + 9 a_2_3 + 4 a_2_4 + 6 a_2_5 + 8 a_2_6 + 6 a_3_1 + 9 a_3_2 + 5 a_3_3 + 8 a_3_4 + 4 a_3_5 + 7 a_3_6\nSubject To\n task_1: a_1_1 + a_2_1 + a_3_1 = 1\n task_2: a_1_2 + a_2_2 + a_3_2 = 1\n task_3: a_1_3 + a_2_3 + a_3_3 = 1\n task_4: a_1_4 + a_2_4 + a_3_4 = 1\n task_5: a_1_5 + a_2_5 + a_3_5 = 1\n task_6: a_1_6 + a_2_6 + a_3_6 = 1\n cap_1: 4 a_1_1 + 5 a_1_2 + 2 a_1_3 + 3 a_1_4 + 4 a_1_5 + 5 a_1_6 <= 11\n cap_2: 5 a_2_1 + 2 a_2_2 + 3 a_2_3 + 4 a_2_4 + 5 a_2_5 + 2 a_2_6 <= 12\n cap_3: 2 a_3_1 + 3 a_3_2 + 4 a_3_3 + 5 a_3_4 + 2 a_3_5 + 3 a_3_6 <= 13\nBinary\n a_1_1 a_1_2 a_1_3 a_1_4 a_1_5 a_1_6 a_2_1 a_2_2 a_2_3 a_2_4 a_2_5 a_2_6 a_3_1 a_3_2 a_3_3 a_3_4 a_3_5 a_3_6\nEnd"};
+
+</script>
+
+<script>
+/* ==================== estado ==================== */
+let MODEL=null, MODEL_RAW=null, HIDE_FIXED=true, MODE='orig', STRUCT=null, ORDER=null, VIEWMODE='detalhe', DENSITY=true;
+let linkColFams=new Set(), linkRowFams=new Set();
+let colFams=new Map(), rowFams=new Map();
+const BLOCK_VARS=['--b0','--b1','--b2','--b3','--b4','--b5','--b6','--b7'];
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const blockColor=i=>css(BLOCK_VARS[i%BLOCK_VARS.length]);
+const $=s=>document.querySelector(s);
+const byRow=()=>MODE==='dw'||MODE==='lagr';   // modos que dualizam/acoplam por linha
+
+/* ==================== carga ==================== */
+let SOURCE='', SRCNAME='';
+const fmtBytes=n=>n<1024?n+' B':n<1048576?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(1)+' MB';
+function setStatus(msg,isErr){
+  const el=$('#status');
+  if(!msg){ el.hidden=true; return; }
+  el.hidden=false; el.textContent=msg; el.classList.toggle('err',!!isErr);
+}
+function showFileCard(name,text){
+  SRCNAME=name;
+  $('#filecard').hidden=false;
+  $('#fname').textContent=name;
+  $('#fmeta').textContent=`${fmtBytes(text.length)} · ${text.split('\n').length.toLocaleString('pt-BR')} linhas`;
+}
+
+function load(text,label){
+  SOURCE=text;
+  const heavy=text.length>8e6;
+  setStatus(heavy
+    ? `Analisando ${fmtBytes(text.length)} — modelos deste tamanho levam alguns segundos.`
+    : `Analisando ${fmtBytes(text.length)}…`);
+  let m;
+  try{ m=parseLP(text); }
+  catch(err){ setStatus('Não consegui interpretar o arquivo: '+err.message,true); failReport(text,null); return; }
+  if(!m.nrows){ setStatus('Nenhuma restrição encontrada.',true); failReport(text,m); return; }
+  MODEL_RAW=m;
+  applyFilter();
+  setStatus(`${MODEL.nrows.toLocaleString('pt-BR')} restrições · ${MODEL.ncols.toLocaleString('pt-BR')} variáveis`);
+  colFams=buildFamilies(MODEL.cols);
+  rowFams=buildFamilies(MODEL.rows.map(r=>r.name));
+  linkColFams=new Set(); linkRowFams=new Set();
+  const bin=[...colFams.entries()].filter(([,ix])=>ix.every(i=>MODEL.colType[i]==='bin'));
+  if(bin.length) bin.forEach(([f])=>linkColFams.add(f));
+  const dw=suggestDW(MODEL, MODEL.nnz>200000?1:MODEL.nnz>40000?2:3);
+  if(dw.length) dw[0].names.forEach(n=>linkRowFams.add(n));
+  updateReadout(); renderFams(); renderSugg(); recompute(); fit();
+}
+
+function applyFilter(){
+  const nz=MODEL_RAW.fixedZero.size;
+  const box=$('#fixZone');
+  if(nz){
+    box.hidden=false;
+    $('#fixLabel').innerHTML=`Ocultar <b>${nz.toLocaleString('pt-BR')}</b> variáveis fixadas em zero`;
+    $('#fixChk').checked=HIDE_FIXED;
+  } else box.hidden=true;
+  MODEL=(HIDE_FIXED&&nz)?filterModel(MODEL_RAW,MODEL_RAW.fixedZero):MODEL_RAW;
+}
+
+/* diagnóstico quando a leitura falha */
+function failReport(text,m){
+  MODEL=null; $('#suggZone').hidden=true; $('#famZone').hidden=true;
+  const has=re=>re.test(text);
+  const rows=[];
+  if(m) for(const [k,v] of Object.entries(m.sections))
+    rows.push(`<tr><td>${k}</td><td class="num">${v.toLocaleString('pt-BR')}</td></tr>`);
+  let hint='';
+  if(!has(/subject\s+to|such\s+that|^\s*s\.?\s*t\.?\s*$/im)){
+    hint=`<p>Não encontrei nenhum cabeçalho <code>Subject To</code> no texto analisado.
+      Se você carregou um arquivo e depois clicou em <b>Analisar texto colado</b>, o que foi
+      analisado foi só a caixa de texto — use <b>Analisar de novo</b> no cartão do arquivo.</p>`;
+  } else {
+    hint=`<p>O cabeçalho <code>Subject To</code> existe no texto, mas nenhuma restrição foi
+      reconhecida depois dele. Isso costuma indicar um formato que ainda não sei ler —
+      me mande as primeiras linhas da seção para eu conferir.</p>`;
+  }
+  $('#report').innerHTML=`<h3>Diagnóstico</h3>
+    <div class="verdict bad"><p><b>Não consegui montar a matriz.</b></p>${hint}</div>
+    ${rows.length?`<table><tr><th>Seção</th><th style="text-align:right">Linhas lidas</th></tr>${rows.join('')}</table>`:''}
+    <p style="font-size:12px;color:var(--muted)">Primeiras linhas do que foi analisado:</p>
+    <pre style="font-family:var(--mono);font-size:11px;background:#fff;border:1px solid var(--rule);
+      border-radius:3px;padding:10px;overflow:auto;max-height:160px;margin:0">${
+      text.split('\n').slice(0,12).join('\n').replace(/[<>&]/g,ch=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[ch]))
+    }</pre>`;
+}
+function updateReadout(){
+  const m=MODEL, dens=(m.nnz/(m.nrows*m.ncols)*100);
+  $('#readout').innerHTML=
+    `<span>linhas <b>${m.nrows}</b></span><span>colunas <b>${m.ncols}</b></span>`+
+    `<span>não-zeros <b>${m.nnz}</b></span><span>densidade <b>${dens.toFixed(2)}%</b></span>`+
+    `<span>inteiras <b>${m.colType.filter(t=>t!=='cont').length}</b></span>`;
+}
+
+/* ==================== famílias ==================== */
+function renderFams(){
+  if(!MODEL||MODE==='orig'){ $('#famZone').hidden=true; return; }
+  $('#famZone').hidden=false;
+  const isB=MODE==='benders';
+  $('#famTitle').textContent=isB?'Famílias de variáveis · marque as complicadoras'
+    :MODE==='lagr'?'Famílias de restrições · marque as que serão dualizadas'
+    :'Famílias de restrições · marque as de acoplamento';
+  const fams=isB?colFams:rowFams;
+  const sel=isB?linkColFams:linkRowFams;
+  const box=$('#fams'); box.innerHTML='';
+  [...fams.entries()].sort((a,b)=>b[1].length-a[1].length).forEach(([f,ix])=>{
+    const el=document.createElement('label'); el.className='fam';
+    let tag='';
+    if(isB){
+      const types=new Set(ix.map(i=>MODEL.colType[i]));
+      const anyInt=[...types].some(t=>t!=='cont');
+      tag=`<span class="tp ${anyInt?'int':''}">${types.size>1?'misto':[...types][0]}</span>`;
+    }
+    el.innerHTML=`<input type="checkbox" ${sel.has(f)?'checked':''}>`+
+                 `<span class="nm">${f}</span>${tag}<span class="ct">${ix.length}</span>`;
+    el.querySelector('input').addEventListener('change',e=>{
+      e.target.checked?sel.add(f):sel.delete(f); recompute();
+    });
+    box.appendChild(el);
+  });
+}
+const idxOf=(fams,names)=>{const s=new Set();names.forEach(n=>(fams.get(n)||[]).forEach(i=>s.add(i)));return s;};
+
+/* ==================== sugestões ==================== */
+function renderSugg(){
+  if(!MODEL||MODE==='orig'){ $('#suggZone').hidden=true; return; }
+  $('#suggZone').hidden=false;
+  const ul=$('#sugg'); ul.innerHTML='';
+  const depth = MODEL.nnz>200000 ? 1 : MODEL.nnz>40000 ? 2 : 3;
+  const list=MODE==='benders'?suggestBenders(MODEL,depth)
+            :MODE==='lagr'?suggestLagr(MODEL,depth)
+            :suggestDW(MODEL,depth);
+  if(!list.length){ ul.innerHTML='<li class="empty">Nenhuma partição por família produz blocos separados.</li>'; return; }
+  list.slice(0,6).forEach(s=>{
+    const li=document.createElement('li'); const b=document.createElement('button');
+    const names=s.names.filter(n=>!n.startsWith('«'));
+    let tier='';
+    if(MODE==='benders') tier=s.st.pureLP
+      ? '<span class="tier">subproblema é LP</span>'
+      : `<span class="tier warn">${s.st.intInSub} inteiras no sub</span>`;
+    if(MODE==='lagr'){
+      const forte=s.st.tally.geral+s.st.tally.talvez;
+      tier=forte
+        ? `<span class="tier">bound pode superar a relaxação</span>`
+        : `<span class="tier warn">bound = relaxação linear</span>`;
+    }
+    b.innerHTML=`<div class="t">${s.names.join(' + ')}${tier}</div>`+
+      `<div class="d">${MODE==='benders'
+        ? `${s.size} colunas no mestre · ${s.st.nBlocks} bloco${s.st.nBlocks>1?'s':''} · ${s.st.couplingRows.length} linhas de acoplamento`
+        : MODE==='lagr'
+        ? `${s.size} multiplicadores · ${s.st.nBlocks} subproblema${s.st.nBlocks>1?'s':''}`
+        : `${s.size} linhas no mestre · ${s.st.nBlocks} blocos · ${s.st.masterCols.length} colunas próprias do mestre`}</div>`;
+    b.addEventListener('click',()=>{
+      if(MODE!=='benders'){ linkRowFams=new Set(); names.forEach(n=>linkRowFams.add(n)); }
+      else if(MODE==='benders'){
+        linkColFams=new Set();
+        if(names.length) names.forEach(n=>linkColFams.add(n));
+        else { // «todas as inteiras» / «todas as binárias»
+          const want=s.names[0].includes('binárias')?['bin']:['bin','int','semi'];
+          [...colFams.entries()].forEach(([f,ix])=>{
+            if(ix.some(i=>want.includes(MODEL.colType[i]))) linkColFams.add(f);
+          });
+        }
+      }
+      renderFams(); recompute();
+    });
+    li.appendChild(b); ul.appendChild(li);
+  });
+}
+
+/* ==================== cálculo ==================== */
+function recompute(){
+  if(!MODEL) return;
+  if(MODE==='orig'){
+    STRUCT=null;
+    ORDER={rowOrder:[...Array(MODEL.nrows).keys()],colOrder:[...Array(MODEL.ncols).keys()],rowSep:[],colSep:[]};
+  } else if(MODE==='benders'){
+    STRUCT=bendersStructure(MODEL,idxOf(colFams,[...linkColFams]));
+    ORDER=orderBenders(MODEL,STRUCT);
+  } else {
+    const rs=idxOf(rowFams,[...linkRowFams]);
+    STRUCT=MODE==='lagr'?lagrStructure(MODEL,rs):dwStructure(MODEL,rs);
+    ORDER=orderDW(MODEL,STRUCT);
+  }
+  buildPos(); AGG=null; draw(); renderReport(); renderLegend();
+}
+let posR,posC;
+let BBOX=null;
+function buildPos(){
+  posR=new Int32Array(MODEL.nrows); posC=new Int32Array(MODEL.ncols);
+  ORDER.rowOrder.forEach((r,i)=>posR[r]=i);
+  ORDER.colOrder.forEach((c,i)=>posC[c]=i);
+  // caixas dos blocos calculadas uma vez: com milhares de blocos, refazer
+  // isso a cada quadro dominaria o custo do desenho
+  BBOX=null;
+  if(STRUCT&&STRUCT.blocks.length){
+    BBOX=STRUCT.blocks.map(b=>{
+      if(!b.rows.length||!b.cols.length) return null;
+      let r0=1/0,r1=-1,c0=1/0,c1=-1;
+      for(const r of b.rows){const p=posR[r]; if(p<r0)r0=p; if(p>r1)r1=p;}
+      for(const c of b.cols){const p=posC[c]; if(p<c0)c0=p; if(p>c1)c1=p;}
+      return {r0,r1,c0,c1};
+    });
+  }
+}
+function coefAt(r,c){
+  for(let k=MODEL.rowStart[r];k<MODEL.rowStart[r+1];k++) if(MODEL.eC[k]===c) return MODEL.eV[k];
+  return undefined;
+}
+
+/* ==================== desenho ==================== */
+const cv=$('#cv'), ctx=cv.getContext('2d');
+let view={s:1,x:0,y:0}, cellW=1, cellH=1, dpr=1;
+function fit(){
+  if(!MODEL) return;
+  const big=$('#plotCard').classList.contains('big');
+  const w=$('#plotwrap').clientWidth;
+  const h=big?$('#plotwrap').clientHeight:Math.max(380,Math.min(760,w*0.66));
+  cv.style.height=h+'px';
+  if(VIEWMODE==='resumo'){ view={s:1,x:0,y:0}; draw(); return; }
+  const pad=20;
+  // escala fracionária e independente por eixo: a matriz sempre cabe e preenche a área.
+  // Para matrizes muito alongadas, manter proporção deixaria o desenho numa tira ilegível.
+  cellW=(w-pad*2)/MODEL.ncols;
+  cellH=(h-pad*2)/MODEL.nrows;
+  const cap=Math.min(18,Math.max(cellW,cellH));
+  cellW=Math.min(cellW,cap); cellH=Math.min(cellH,cap);
+  view={s:1,x:(w-cellW*MODEL.ncols)/2,y:(h-cellH*MODEL.nrows)/2};
+  updateZoomLabel(); draw();
+}
+function draw(){
+  if(!MODEL) return;
+  if(VIEWMODE==='resumo'){ drawResumo(); return; }
+  drawDetail();
+}
+
+/* ---------- matriz completa ---------- */
+// Só percorre a janela visível: no zoom profundo isso troca centenas de milhares
+// de entradas por algumas dezenas.
+function visibleRange(w,h){
+  const c0=Math.max(0,Math.floor((-view.x)/(view.s*cellW))-1);
+  const c1=Math.min(MODEL.ncols-1,Math.ceil((w-view.x)/(view.s*cellW))+1);
+  const r0=Math.max(0,Math.floor((-view.y)/(view.s*cellH))-1);
+  const r1=Math.min(MODEL.nrows-1,Math.ceil((h-view.y)/(view.s*cellH))+1);
+  return {c0,c1,r0,r1};
+}
+
+function drawDetail(){
+  const w=$('#plotwrap').clientWidth, h=cvH();
+  prep(w,h);
+  const nR=MODEL.nrows, nC=MODEL.ncols;
+  const csW=cellW*view.s, csH=cellH*view.s;
+
+  // Abaixo de ~1,5 px por célula os pontos somem no antialiasing: por padrão
+  // troca para o mapa de densidade, mas o usuário pode desligar e ver um ponto
+  // por coeficiente, que dá uma imagem mais dura e às vezes mais legível.
+  const sub=Math.min(csW,csH)<1.5;
+  if(sub&&DENSITY){ drawDensity(w,h); return; }
+
+  const rng=visibleRange(w,h);
+  ctx.save(); ctx.translate(view.x,view.y); ctx.scale(view.s,view.s);
+  paintBackgrounds(cellW,cellH,nR,nC);
+  const sw=Math.max(1/view.s,cellW-(csW>=4?1/view.s:0));
+  const sh=Math.max(1/view.s,cellH-(csH>=4?1/view.s:0));
+  const {eC,eV,rowStart}=MODEL;
+  const showVal=csW>=40&&csH>=17;
+  if(showVal){ ctx.font=(11/view.s)+'px '+MONO; ctx.textAlign='center'; ctx.textBaseline='middle'; }
+  // Em escala subpixel várias entradas caem no mesmo ponto. Duas passadas
+  // garantem que o acoplamento fique por cima, em vez de depender da ordem.
+  const passes=(sub&&STRUCT)?[false,true]:[null];
+  for(const onlyLink of passes){
+    for(let i=rng.r0;i<=rng.r1;i++){
+      const r=ORDER.rowOrder[i];
+      for(let k=rowStart[r];k<rowStart[r+1];k++){
+        const p=posC[eC[k]];
+        if(p<rng.c0||p>rng.c1) continue;
+        if(onlyLink!==null){
+          const isLink=entryCat(r,eC[k])===-1;
+          if(isLink!==onlyLink) continue;
+        }
+        ctx.fillStyle=entryColor(r,eC[k]);
+        ctx.fillRect(p*cellW,i*cellH,sw,sh);
+        if(showVal){
+          ctx.fillStyle='#fff';
+          ctx.fillText(fmtCoef(eV[k]),p*cellW+cellW/2,i*cellH+cellH/2);
+        }
+      }
+    }
+  }
+  paintSeparators(cellW,cellH,nR,nC);
+  ctx.strokeStyle=css('--rule'); ctx.lineWidth=1/view.s;
+  ctx.strokeRect(0,0,nC*cellW,nR*cellH);
+  ctx.restore();
+  drawRulers(w,h,rng,csW,csH);
+  DENSMAX=0;
+}
+
+const MONO='"IBM Plex Mono",ui-monospace,monospace';
+function fmtCoef(v){
+  const a=Math.abs(v);
+  if(a>=1000||(a<0.01&&a>0)) return v.toExponential(1);
+  return String(+v.toFixed(3));
+}
+
+/* réguas com os nomes reais, quando há espaço para eles */
+function drawRulers(w,h,rng,csW,csH){
+  const wantRows=csH>=11, wantCols=csW>=11;
+  if(!wantRows&&!wantCols) return;
+  const LW=Math.min(190,w*0.26), TH=78;
+  ctx.font='11px '+MONO; ctx.textBaseline='middle';
+  if(wantCols){
+    ctx.fillStyle='rgba(255,255,255,.9)'; ctx.fillRect(0,0,w,TH);
+    ctx.strokeStyle=css('--rule-soft'); ctx.beginPath(); ctx.moveTo(0,TH); ctx.lineTo(w,TH); ctx.stroke();
+    for(let j=rng.c0;j<=rng.c1;j++){
+      const x=view.x+view.s*(j*cellW)+csW/2;
+      if(x<-40||x>w+40) continue;
+      const c=ORDER.colOrder[j];
+      ctx.save(); ctx.translate(x+4,TH-8); ctx.rotate(-Math.PI/3);
+      ctx.textAlign='left';
+      ctx.fillStyle=(MODE==='benders'&&STRUCT&&STRUCT.linkCols.has(c))?css('--signal'):css('--muted');
+      ctx.fillText(MODEL.cols[c],0,0); ctx.restore();
+    }
+  }
+  if(wantRows){
+    ctx.fillStyle='rgba(255,255,255,.9)'; ctx.fillRect(0,wantCols?TH:0,LW,h);
+    ctx.strokeStyle=css('--rule-soft'); ctx.beginPath(); ctx.moveTo(LW,0); ctx.lineTo(LW,h); ctx.stroke();
+    ctx.textAlign='right';
+    for(let i=rng.r0;i<=rng.r1;i++){
+      const y=view.y+view.s*(i*cellH)+csH/2;
+      if(y<(wantCols?TH:0)+6||y>h-2) continue;
+      const r=ORDER.rowOrder[i];
+      ctx.fillStyle=(byRow()&&STRUCT&&STRUCT.linkRows.has(r))?css('--signal'):css('--muted');
+      ctx.fillText(MODEL.rows[r].name,LW-8,y);
+    }
+  }
+}
+
+/* ---------- mapa de densidade: um bin por pixel ---------- */
+let DENSMAX=0;
+function drawDensity(w,h){
+  const nR=MODEL.nrows,nC=MODEL.ncols;
+  const W=Math.max(1,Math.round(w)),H=Math.max(1,Math.round(h));
+  const cnt=new Uint32Array(W*H), cat=new Int16Array(W*H).fill(-2);
+  const kw=cellW*view.s, kh=cellH*view.s;
+  let maxc=0;
+  const {eC,rowStart}=MODEL;
+  const rng=visibleRange(w,h);
+  for(let i2=rng.r0;i2<=rng.r1;i2++){
+    const r=ORDER.rowOrder[i2];
+    const y=(i2*kh+view.y)|0;
+    if(y<0||y>=H) continue;
+    for(let k=rowStart[r];k<rowStart[r+1];k++){
+      const x=(posC[eC[k]]*kw+view.x)|0;
+      if(x<0||x>=W) continue;
+      const i=y*W+x; const c=++cnt[i]; if(c>maxc) maxc=c;
+      // prioridade: acoplamento > bloco > resto (queremos enxergar o acoplamento)
+      const nc=entryCat(r,eC[k]);
+      if(nc>cat[i]) cat[i]=nc;
+    }
+  }
+  DENSMAX=maxc;
+  const img=ctx.createImageData(W,H), d=img.data;
+  const pal=new Map();
+  const rgbOf=v=>{ if(pal.has(v)) return pal.get(v);
+    const hex=v===-1?css('--signal'):v===-3?css('--neutral'):blockColor(v);
+    const n=parseInt(hex.slice(1),16); const o=[(n>>16)&255,(n>>8)&255,n&255];
+    pal.set(v,o); return o; };
+  const lm=Math.log(maxc+1);
+  for(let i=0;i<W*H;i++){
+    if(!cnt[i]) continue;
+    const [r,g,b]=rgbOf(cat[i]);
+    const a=0.35+0.65*(Math.log(cnt[i]+1)/lm);
+    const j=i*4; d[j]=r; d[j+1]=g; d[j+2]=b; d[j+3]=Math.round(a*255);
+  }
+  // fundo dos blocos, desenhado por baixo
+  ctx.save(); ctx.translate(view.x,view.y); ctx.scale(view.s,view.s);
+  paintBackgrounds(cellW,cellH,nR,nC);
+  ctx.restore();
+  const off=document.createElement('canvas'); off.width=W; off.height=H;
+  off.getContext('2d').putImageData(img,0,0);
+  ctx.drawImage(off,0,0,W,H);
+  ctx.save(); ctx.translate(view.x,view.y); ctx.scale(view.s,view.s);
+  paintSeparators(cellW,cellH,nR,nC);
+  ctx.strokeStyle=css('--rule'); ctx.lineWidth=1/view.s;
+  ctx.strokeRect(0,0,nC*cellW,nR*cellH);
+  ctx.restore();
+}
+
+function entryCat(r,c){
+  if(MODE==='benders'&&STRUCT&&STRUCT.linkCols.has(c)) return -1;
+  if(byRow()&&STRUCT&&STRUCT.linkRows.has(r)) return -1;
+  if(STRUCT&&STRUCT.rowBlock[r]>=0&&STRUCT.rowBlock[r]===STRUCT.colBlock[c]) return STRUCT.rowBlock[r];
+  return STRUCT?-3:0;
+}
+function entryColor(r,c){
+  const k=entryCat(r,c);
+  return k===-1?css('--signal'):k===-3?css('--neutral'):STRUCT?blockColor(k):css('--prussian');
+}
+function paintBackgrounds(csW,csH,nR,nC){
+  if(BBOX){
+    for(let i=0;i<BBOX.length;i++){
+      const b=BBOX[i]; if(!b) continue;
+      ctx.fillStyle=blockColor(i)+'14';
+      ctx.fillRect(b.c0*csW,b.r0*csH,(b.c1-b.c0+1)*csW,(b.r1-b.r0+1)*csH);
+    }
+  }
+  if(STRUCT&&MODE==='benders'&&STRUCT.linkCols.size){
+    ctx.fillStyle=css('--signal')+'12'; ctx.fillRect(0,0,STRUCT.linkCols.size*csW,nR*csH);
+  }
+  if(STRUCT&&byRow()&&STRUCT.linkRows.size){
+    ctx.fillStyle=css('--signal')+'12'; ctx.fillRect(0,0,nC*csW,STRUCT.linkRows.size*csH);
+  }
+}
+function paintSeparators(csW,csH,nR,nC){
+  if(!ORDER.rowSep.length&&!ORDER.colSep.length) return;
+  ctx.strokeStyle=css('--prussian'); ctx.lineWidth=1/view.s;
+  ctx.setLineDash([4/view.s,3/view.s]);
+  ORDER.rowSep.forEach(k=>{ctx.beginPath();ctx.moveTo(0,k*csH);ctx.lineTo(nC*csW,k*csH);ctx.stroke();});
+  ORDER.colSep.forEach(k=>{ctx.beginPath();ctx.moveTo(k*csW,0);ctx.lineTo(k*csW,nR*csH);ctx.stroke();});
+  ctx.setLineDash([]);
+}
+
+/* ---------- resumo agregado por família ---------- */
+let AGG=null;
+function buildAgg(){
+  const rf=[...rowFams.keys()], cf=[...colFams.keys()];
+  const rpos=new Map(), cpos=new Map();
+  const minPos=(ix,pos)=>{let m=Infinity;for(let i=0;i<ix.length;i++){const p=pos[ix[i]];if(p<m)m=p;}return m;};
+  rf.forEach(f=>rpos.set(f,minPos(rowFams.get(f),posR)));
+  cf.forEach(f=>cpos.set(f,minPos(colFams.get(f),posC)));
+  rf.sort((a,b)=>rpos.get(a)-rpos.get(b));
+  cf.sort((a,b)=>cpos.get(a)-cpos.get(b));
+  const ri=new Map(rf.map((f,i)=>[f,i])), ci=new Map(cf.map((f,i)=>[f,i]));
+  const rowOf=new Int16Array(MODEL.nrows), colOf=new Int16Array(MODEL.ncols);
+  rowFams.forEach((ix,f)=>ix.forEach(r=>rowOf[r]=ri.get(f)));
+  colFams.forEach((ix,f)=>ix.forEach(c=>colOf[c]=ci.get(f)));
+  const n=rf.length*cf.length;
+  const cnt=new Uint32Array(n), cat=new Int16Array(n).fill(-2);
+  const {eR,eC,nnz}=MODEL;
+  for(let k=0;k<nnz;k++){
+    const i=rowOf[eR[k]]*cf.length+colOf[eC[k]];
+    cnt[i]++; const nc=entryCat(eR[k],eC[k]); if(nc>cat[i]) cat[i]=nc;
+  }
+  // fronteira: quantas famílias iniciais são de acoplamento
+  let cSep=0,rSep=0;
+  if(MODE==='benders') cSep=cf.filter(f=>colFams.get(f).every(c=>STRUCT.linkCols.has(c))).length;
+  if(byRow())          rSep=rf.filter(f=>rowFams.get(f).every(r=>STRUCT.linkRows.has(r))).length;
+  let aggMax=1; for(let i=0;i<cnt.length;i++) if(cnt[i]>aggMax) aggMax=cnt[i];
+  AGG={rf,cf,cnt,cat,max:aggMax,cSep,rSep,
+       rSize:rf.map(f=>rowFams.get(f).length), cSize:cf.map(f=>colFams.get(f).length)};
+}
+function aggGeom(w,h){
+  const padL=Math.min(150,Math.max(80,w*0.14)), padT=86, padR=10, padB=26;
+  const cw=Math.max(10,(w-padL-padR)/AGG.cf.length);
+  const ch=Math.max(10,(h-padT-padB)/AGG.rf.length);
+  return {padL,padT,cw,ch};
+}
+function drawResumo(){
+  if(!AGG) buildAgg();
+  const w=$('#plotwrap').clientWidth, h=cvH();
+  prep(w,h);
+  const {padL,padT,cw,ch}=aggGeom(w,h);
+  const {rf,cf,cnt,cat,max}=AGG;
+  const lm=Math.log(max+1);
+  ctx.font='11px '+css('--mono').replace(/"/g,'');
+  // rótulos das colunas (girados)
+  ctx.save(); ctx.fillStyle=css('--muted');
+  cf.forEach((f,j)=>{
+    ctx.save();
+    ctx.translate(padL+j*cw+cw/2+4,padT-8); ctx.rotate(-Math.PI/3);
+    ctx.textAlign='left';
+    const isLink=MODE==='benders'&&STRUCT&&colFams.get(f).every(c=>STRUCT.linkCols.has(c));
+    ctx.fillStyle=isLink?css('--signal'):css('--muted');
+    ctx.fillText(`${f} (${AGG.cSize[j]})`,0,0);
+    ctx.restore();
+  });
+  ctx.restore();
+  // células
+  rf.forEach((f,i)=>{
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    const isLinkR=byRow()&&STRUCT&&rowFams.get(f).every(r=>STRUCT.linkRows.has(r));
+    ctx.fillStyle=isLinkR?css('--signal'):css('--muted');
+    ctx.fillText(`${f} (${AGG.rSize[i]})`,padL-8,padT+i*ch+ch/2);
+    ctx.strokeStyle=css('--rule-soft'); ctx.lineWidth=1;
+    cf.forEach((_,j)=>ctx.strokeRect(padL+j*cw+.5,padT+i*ch+.5,cw-1,ch-1));
+  });
+  rf.forEach((f,i)=>{
+    cf.forEach((_,j)=>{
+      const k=i*cf.length+j, n=cnt[k]; if(!n) return;
+      const x=padL+j*cw, y=padT+i*ch;
+      const v=cat[k];
+      const hex=v===-1?css('--signal'):v===-3?css('--neutral'):STRUCT?blockColor(v):css('--prussian');
+      ctx.globalAlpha=0.22+0.78*(Math.log(n+1)/lm);
+      ctx.fillStyle=hex; ctx.fillRect(x+1,y+1,cw-2,ch-2);
+      ctx.globalAlpha=1;
+      if(cw>=44&&ch>=20){
+        ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(n.toLocaleString('pt-BR'),x+cw/2,y+ch/2);
+      }
+    });
+  });
+  // fronteiras de acoplamento
+  ctx.strokeStyle=css('--prussian'); ctx.lineWidth=1.5; ctx.setLineDash([5,3]);
+  if(AGG.cSep>0&&AGG.cSep<cf.length){
+    const x=padL+AGG.cSep*cw; ctx.beginPath(); ctx.moveTo(x,padT-4);
+    ctx.lineTo(x,padT+rf.length*ch); ctx.stroke();
+  }
+  if(AGG.rSep>0&&AGG.rSep<rf.length){
+    const y=padT+AGG.rSep*ch; ctx.beginPath(); ctx.moveTo(padL-4,y);
+    ctx.lineTo(padL+cf.length*cw,y); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  DENSMAX=max;
+}
+
+function cvH(){ return parseInt(cv.style.height||'400'); }
+// permite chegar a células de ~44 px, seja qual for o tamanho do modelo
+function maxZoom(){ return Math.max(4,44/Math.max(1e-9,Math.min(cellW,cellH))); }
+function clampZoom(s){ return Math.max(0.3,Math.min(maxZoom(),s)); }
+function zoomAt(mx,my,factor){
+  const ns=clampZoom(view.s*factor);
+  view.x=mx-(mx-view.x)*(ns/view.s); view.y=my-(my-view.y)*(ns/view.s); view.s=ns;
+  drawSoon(); updateZoomLabel();
+}
+function updateZoomLabel(){
+  const el=$('#zoomLbl'); if(!el) return;
+  el.textContent=view.s>=100?Math.round(view.s)+'×':view.s>=10?view.s.toFixed(0)+'×':view.s.toFixed(1)+'×';
+}
+function prep(w,h){
+  dpr=window.devicePixelRatio||1;
+  cv.width=w*dpr; cv.height=h*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+}
+function renderLegend(){
+  const L=$('#legend');
+  if(VIEWMODE==='resumo'){
+    L.innerHTML=`<span>cada célula = um par (família de restrição × família de variável)</span>`+
+      `<span class="scale">poucos <span class="ramp" style="background:linear-gradient(90deg,${css('--prussian')}33,${css('--prussian')})"></span> muitos não-zeros</span>`+
+      (STRUCT?`<span><i style="background:${css('--signal')}"></i>acoplamento</span>`:'');
+    return;
+  }
+  if(!DENSITY&&Math.min(cellW,cellH)*view.s<1.5){
+    L.innerHTML=`<span>um ponto por coeficiente, sem agregação</span>`+
+      (STRUCT?`<span><i style="background:${css('--signal')}"></i>acoplamento (desenhado por cima)</span>`:'')+
+      `<span>pontos sobrepostos ficam invisíveis nesta escala</span>`;
+    return;
+  }
+  if(DENSMAX>1){
+    L.innerHTML=`<span>mapa de densidade · até <b>${DENSMAX}</b> não-zeros por pixel</span>`+
+      `<span class="scale">raro <span class="ramp" style="background:linear-gradient(90deg,${css('--prussian')}44,${css('--prussian')})"></span> denso</span>`+
+      (STRUCT?`<span><i style="background:${css('--signal')}"></i>acoplamento</span>`:'')+
+      `<span>role o mouse ou use + para chegar às células</span>`;
+    return;
+  }
+  if(!STRUCT){ L.innerHTML=`<span><i style="background:${css('--prussian')}"></i>coeficiente não-nulo</span>`; return; }
+  let h='';
+  h+=`<span><i style="background:${css('--signal')}"></i>${MODE==='benders'?'coluna complicadora'
+      :MODE==='lagr'?'linha dualizada':'linha de acoplamento'}</span>`;
+  STRUCT.blocks.slice(0,6).forEach((b,i)=>{
+    h+=`<span><i style="background:${blockColor(i)}"></i>bloco ${i+1} (${b.rows.length}×${b.cols.length})</span>`;
+  });
+  if(STRUCT.blocks.length>6) h+=`<span>+${STRUCT.blocks.length-6} blocos</span>`;
+  h+=`<span><i style="background:${css('--neutral')}"></i>fora dos blocos</span>`;
+  L.innerHTML=h;
+}
+
+/* ==================== interação ==================== */
+const tip=$('#tip');
+cv.addEventListener('mousemove',ev=>{
+  if(!MODEL) return;
+  const r=cv.getBoundingClientRect();
+  const mx=ev.clientX-r.left, my=ev.clientY-r.top;
+  if(VIEWMODE==='resumo'){
+    if(!AGG){ tip.classList.remove('on'); return; }
+    const g=aggGeom(r.width,cvH());
+    const j=Math.floor((mx-g.padL)/g.cw), i=Math.floor((my-g.padT)/g.ch);
+    if(i<0||j<0||i>=AGG.rf.length||j>=AGG.cf.length){ tip.classList.remove('on'); return; }
+    const n=AGG.cnt[i*AGG.cf.length+j];
+    tip.textContent=`restrição  ${AGG.rf[i]}  (${AGG.rSize[i]} linhas)\n`+
+                    `variável   ${AGG.cf[j]}  (${AGG.cSize[j]} colunas)\n`+
+                    `${n.toLocaleString('pt-BR')} coeficientes não-nulos`;
+    tip.classList.add('on');
+    tip.style.left=Math.min(mx+14,r.width-260)+'px'; tip.style.top=(my+14)+'px';
+    return;
+  }
+  const wx=(mx-view.x)/view.s, wy=(my-view.y)/view.s;
+  const c=Math.floor(wx/cellW), rw=Math.floor(wy/cellH);
+  if(c<0||rw<0||c>=MODEL.ncols||rw>=MODEL.nrows){ tip.classList.remove('on'); return; }
+  const ri=ORDER.rowOrder[rw], ci=ORDER.colOrder[c];
+  const ent=coefAt(ri,ci);
+  const row=MODEL.rows[ri];
+  let txt=`${row.name}  ${row.sense} ${row.rhs}\n${MODEL.cols[ci]}  [${MODEL.colType[ci]}]`;
+  txt+=(ent===undefined)?`\n(zero)`:`\ncoeficiente = ${(+ent.toFixed(6))}`;
+  if(MODEL.eR.length&&cellW<1) txt+=`\n(cada pixel cobre várias colunas — dê zoom)`;
+  if(STRUCT&&STRUCT.rowBlock[ri]>=0) txt+=`\nbloco ${STRUCT.rowBlock[ri]+1}`;
+  tip.textContent=txt; tip.classList.add('on');
+  tip.style.left=Math.min(mx+14,r.width-250)+'px'; tip.style.top=(my+14)+'px';
+});
+cv.addEventListener('mouseleave',()=>tip.classList.remove('on'));
+cv.addEventListener('wheel',ev=>{
+  if(!MODEL||VIEWMODE==='resumo') return; ev.preventDefault();
+  const r=cv.getBoundingClientRect(), mx=ev.clientX-r.left, my=ev.clientY-r.top;
+  const k=Math.exp(-ev.deltaY*0.0016), ns=clampZoom(view.s*k);
+  view.x=mx-(mx-view.x)*(ns/view.s); view.y=my-(my-view.y)*(ns/view.s); view.s=ns; drawSoon(); updateZoomLabel();
+},{passive:false});
+let drag=null;
+cv.addEventListener('pointerdown',e=>{if(VIEWMODE==='resumo')return;drag={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y};cv.setPointerCapture(e.pointerId);});
+let rafPend=false;
+function drawSoon(){ if(rafPend)return; rafPend=true; requestAnimationFrame(()=>{rafPend=false;draw();}); }
+cv.addEventListener('pointermove',e=>{if(!drag)return;view.x=drag.vx+(e.clientX-drag.x);view.y=drag.vy+(e.clientY-drag.y);drawSoon();});
+cv.addEventListener('pointerup',()=>drag=null);
+cv.addEventListener('pointercancel',()=>drag=null);
+document.querySelectorAll('.viewtabs button').forEach(b=>b.addEventListener('click',()=>{
+  VIEWMODE=b.dataset.view;
+  document.querySelectorAll('.viewtabs button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  $('#zoomReset').disabled=(VIEWMODE==='resumo');
+  if(MODEL){ AGG=null; fit(); draw(); renderLegend(); }
+}));
+$('#expand').addEventListener('click',()=>{
+  const card=$('#plotCard'); const on=card.classList.toggle('big');
+  $('#expand').textContent=on?'Reduzir':'Ampliar';
+  document.body.style.overflow=on?'hidden':'';
+  setTimeout(fit,30);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&$('#plotCard').classList.contains('big')) $('#expand').click();
+});
+$('#densBtn').addEventListener('click',()=>{
+  DENSITY=!DENSITY;
+  $('#densBtn').setAttribute('aria-pressed',String(DENSITY));
+  $('#densBtn').textContent=DENSITY?'Densidade':'Pontos';
+  if(MODEL){ draw(); renderLegend(); }
+});
+$('#zoomIn').addEventListener('click',()=>{const r=cv.getBoundingClientRect();zoomAt(r.width/2,cvH()/2,2.2);});
+$('#zoomOut').addEventListener('click',()=>{const r=cv.getBoundingClientRect();zoomAt(r.width/2,cvH()/2,1/2.2);});
+cv.addEventListener('dblclick',e=>{
+  if(VIEWMODE==='resumo')return;
+  const r=cv.getBoundingClientRect();
+  zoomAt(e.clientX-r.left,e.clientY-r.top,e.shiftKey?1/3:3);
+});
+$('#zoomReset').addEventListener('click',()=>{fit();updateZoomLabel();});
+$('#png').addEventListener('click',()=>{
+  const a=document.createElement('a');
+  a.download='estrutura-'+MODE+'.png'; a.href=cv.toDataURL('image/png'); a.click();
+});
+window.addEventListener('resize',()=>{if(MODEL)fit();});
+
+/* ==================== relatório ==================== */
+const pct=(a,b)=>b?(100*a/b).toFixed(1)+'%':'—';
+function famsOfRows(idxSet){
+  const c=new Map();
+  idxSet.forEach(r=>{const f=familyOf(MODEL.rows[r].name);c.set(f,(c.get(f)||0)+1);});
+  return [...c.entries()].sort((a,b)=>b[1]-a[1]).map(([f,n])=>`${f}(${n})`).join(', ')||'—';
+}
+function renderReport(){
+  const R=$('#report');
+  if(MODE==='orig'){
+    R.innerHTML=`<h3>Diagnóstico</h3>
+      <div class="verdict"><p>Esta é a ordem em que o modelo foi escrito. Padrões só aparecem
+      por acaso aqui — troque para <b>Benders</b> ou <b>Dantzig-Wolfe</b> para reordenar linhas
+      e colunas e ver se existe estrutura.</p></div>${warnHTML()}`;
+    return;
+  }
+  R.innerHTML=`<h3>Diagnóstico</h3>`+(MODE==='benders'?bendersReport():MODE==='lagr'?lagrReport():dwReport())+warnHTML();
+}
+function warnHTML(){
+  if(!MODEL.warnings.length) return '';
+  return `<div class="warns">${MODEL.warnings.map(w=>'⚠ '+w).join('<br>')}</div>`;
+}
+function blockTable(st,byRows){
+  if(!st.blocks.length) return '';
+  const rows=st.blocks.slice(0,10).map((b,i)=>
+    `<tr><td><span style="color:${blockColor(i)}">■</span> bloco ${i+1}</td>
+     <td class="num">${b.rows.length}</td><td class="num">${b.cols.length}</td>
+     <td style="font-size:11.5px;color:var(--muted)">${famsOfRows(b.rows)}</td></tr>`).join('');
+  const more=st.blocks.length>10?`<tr><td colspan="4" style="color:var(--muted)">… mais ${st.blocks.length-10} blocos</td></tr>`:'';
+  return `<table><tr><th>Bloco</th><th style="text-align:right">Linhas</th>
+    <th style="text-align:right">Colunas</th><th>Famílias de restrição</th></tr>${rows}${more}</table>`;
+}
+function bendersReport(){
+  const st=STRUCT,m=MODEL;
+  if(!st.linkCols.size) return `<div class="verdict"><p>Nenhuma família marcada. Escolha as
+    variáveis que ficariam no mestre — ou clique numa das partições sugeridas.</p></div>`;
+  if(st.subCols===0) return `<div class="verdict bad"><p><b>Todas as colunas foram para o mestre.</b>
+    Não sobra subproblema para decompor — desmarque alguma família.</p></div>`;
+  const nb=st.nBlocks;
+  let cls='good',v='';
+  if(st.pureLP){
+    v=`<p><b>Benders clássico se aplica.</b> Fixando as ${st.linkCols.size} colunas complicadoras,
+       o subproblema fica inteiramente contínuo — dualidade forte vale e os cortes são válidos.</p>`;
+  } else {
+    cls='bad';
+    v=`<p><b>Benders clássico não se aplica diretamente.</b> Sobram
+       <b>${st.intInSub}</b> variáveis inteiras no subproblema. Duas saídas: relaxá-las
+       (o método passa a devolver um <i>limite inferior</i> do MILP, não o ótimo) ou usar
+       <i>Logic-based Benders</i>.</p>`;
+  }
+  v+=`<p>O acoplamento aparece em <b>${st.couplingRows.length}</b> linhas
+      (${pct(st.couplingRows.length,m.nrows)} do modelo): ${famsOfRows(st.couplingRows)}.
+      Ao fixar as complicadoras, essas linhas viram limites no lado direito.</p>`;
+  v+= st.masterRows.length
+    ? `<p>Há <b>${st.masterRows.length}</b> linhas envolvendo <i>só</i> as complicadoras
+       (${famsOfRows(st.masterRows)}). É o bloco A: vai inteiro para o mestre, junto com os cortes.</p>`
+    : `<p>Não há nenhuma linha envolvendo só as complicadoras: o bloco A nasce vazio.
+       O mestre inicial fica sem informação e as primeiras iterações tendem a ser cegas —
+       vale semeá-lo com cortes de uma solução heurística.</p>`;
+  v+= nb>1
+    ? `<p>Fixadas as complicadoras, o subproblema se separa em <b>${nb}</b> blocos independentes,
+       resolvíveis em paralelo.</p>`
+    : `<p>O subproblema fica em <b>um bloco único</b>: não se separa. Benders continua válido,
+       mas sem ganho de paralelismo — um LP grande por iteração.</p>`;
+  return `<div class="verdict ${cls}">${v}</div>
+    <table>
+      <tr><th>Medida</th><th style="text-align:right">Valor</th><th>Leitura</th></tr>
+      <tr><td>Colunas no mestre</td><td class="num">${st.linkCols.size} / ${m.ncols}</td>
+          <td>${pct(st.linkCols.size,m.ncols)} das variáveis</td></tr>
+      <tr><td>Colunas no subproblema</td><td class="num">${st.subCols}</td>
+          <td>quanto menor o mestre, melhor</td></tr>
+      <tr><td>Linhas de acoplamento</td><td class="num">${st.couplingRows.length}</td>
+          <td>onde as complicadoras encostam no subproblema</td></tr>
+      <tr><td>Linhas só do mestre (bloco A)</td><td class="num">${st.masterRows.length}</td><td></td></tr>
+      <tr><td>Blocos do subproblema</td><td class="num">${nb}</td>
+          <td>${nb>1?'paralelizável':'sem separação'}</td></tr>
+      <tr><td>Inteiras restantes no subproblema</td><td class="num">${st.intInSub}</td>
+          <td>${st.pureLP?'nenhuma — subproblema é LP':'exige relaxação ou Logic-based'}</td></tr>
+    </table>${blockTable(st)}`;
+}
+function dwReport(){
+  const st=STRUCT,m=MODEL;
+  if(!st.linkRows.size) return `<div class="verdict"><p>Nenhuma família marcada. Escolha as
+    restrições que ficariam no mestre — ou clique numa das partições sugeridas.</p></div>`;
+  const nb=st.nBlocks;
+  const cls=nb>1?'good':'bad';
+  let v = nb>1
+    ? `<p><b>Estrutura angular por blocos encontrada.</b> Removendo
+       ${st.linkRows.size} linhas de acoplamento (${pct(st.linkRows.size,m.nrows)} do modelo),
+       o resto se separa em <b>${nb}</b> blocos independentes — um subproblema de <i>pricing</i> cada.</p>`
+    : `<p><b>Não há separação.</b> Mesmo removendo essas ${st.linkRows.size} linhas, o modelo
+       continua conexo. Tente marcar outra família, ou combine duas.</p>`;
+  v+=`<p>Linhas de acoplamento: ${famsOfRows(st.linkRows)}.</p>`;
+  if(st.masterCols.length) v+=`<p><b>${st.masterCols.length}</b> colunas aparecem só nas linhas
+     de acoplamento — ficam no mestre e não entram em nenhum bloco de pricing.</p>`;
+  if(nb>1) v+=`<p>Lembre-se: aplicada a um LP, Dantzig-Wolfe reproduz o mesmo valor ótimo da
+     relaxação. O ganho de limitante só aparece se os blocos forem resolvidos como problemas
+     inteiros e não tiverem a propriedade de integralidade.</p>`;
+  return `<div class="verdict ${cls}">${v}</div>
+    <table>
+      <tr><th>Medida</th><th style="text-align:right">Valor</th><th>Leitura</th></tr>
+      <tr><td>Linhas no mestre</td><td class="num">${st.linkRows.size} / ${m.nrows}</td>
+          <td>${pct(st.linkRows.size,m.nrows)} das restrições</td></tr>
+      <tr><td>Blocos de pricing</td><td class="num">${nb}</td>
+          <td>${nb>1?'independentes':'sem separação'}</td></tr>
+      <tr><td>Colunas próprias do mestre</td><td class="num">${st.masterCols.length}</td><td></td></tr>
+    </table>${blockTable(st)}`;
+}
+
+function lagrReport(){
+  const st=STRUCT,m=MODEL;
+  if(!st.linkRows.size) return `<div class="verdict"><p>Nenhuma família marcada. Escolha as
+    restrições que seriam dualizadas — ou clique numa das partições sugeridas.</p></div>`;
+  const forte=st.tally.geral+st.tally.talvez;
+  const cls=st.freeUnbounded?'bad':forte?'good':'';
+  let v='';
+  if(st.nBlocks>1)
+    v+=`<p><b>Dualizando ${st.nMult} restrições, o que sobra se separa em ${st.nBlocks}
+        subproblemas independentes</b>, resolvidos a cada iteração do subgradiente.</p>`;
+  else
+    v+=`<p>Dualizando ${st.nMult} restrições sobra <b>um subproblema único</b>. Relaxação
+        lagrangiana continua válida, mas sem o ganho de separação.</p>`;
+
+  if(!forte){
+    v+=`<p><b>O bound provavelmente não supera a relaxação linear.</b> Todos os subproblemas
+        têm coeficientes ±1 com cada coluna em no máximo duas linhas, ou são contínuos —
+        estrutura de rede, que costuma ter a propriedade de integralidade. Quando ela vale,
+        o dual lagrangiano vale exatamente o mesmo que a relaxação linear, e todo o esforço
+        do subgradiente não compra nada. Vale testar dualizar outro conjunto.</p>`;
+  } else {
+    v+=`<p><b>${forte} dos ${st.nBlocks} subproblemas têm coeficientes gerais</b>, o que
+        sugere ausência da propriedade de integralidade. É a condição para o bound
+        lagrangiano ficar acima do da relaxação linear — o motivo de usar o método.</p>`;
+  }
+  if(st.freeUnbounded)
+    v+=`<p><b>Atenção: ${st.freeUnbounded} variáveis ficam sem nenhuma restrição</b> depois da
+        dualização e não têm limites finitos (${st.freeExamples.join(', ')}${st.freeUnbounded>4?', …':''}).
+        O subproblema fica ilimitado para quase todo vetor de multiplicadores. Adicione
+        limites explícitos ou não dualize essas linhas.</p>`;
+  v+=`<p>Multiplicadores: <b>${st.eq}</b> livres (restrições de igualdade) e
+      <b>${st.ineq}</b> de sinal restrito (desigualdades).</p>`;
+
+  const nomes={lp:'contínuo (bound = relaxação linear)',rede:'tipo rede (propriedade de integralidade provável)',
+               talvez:'coeficientes ±1, estrutura incerta',geral:'coeficientes gerais (bound pode melhorar)'};
+  const linhas=Object.entries(st.tally).filter(([,n])=>n)
+    .map(([k,n])=>`<tr><td>${nomes[k]}</td><td class="num">${n}</td></tr>`).join('');
+  return `<div class="verdict ${cls}">${v}</div>
+    <table>
+      <tr><th>Medida</th><th style="text-align:right">Valor</th><th>Leitura</th></tr>
+      <tr><td>Restrições dualizadas</td><td class="num">${st.nMult} / ${m.nrows}</td>
+          <td>${pct(st.nMult,m.nrows)} — é a dimensão do dual</td></tr>
+      <tr><td>Subproblemas</td><td class="num">${st.nBlocks}</td>
+          <td>${st.nBlocks>1?'resolvidos em paralelo por iteração':'sem separação'}</td></tr>
+      <tr><td>Variáveis soltas sem limite</td><td class="num">${st.freeUnbounded}</td>
+          <td>${st.freeUnbounded?'risco de subproblema ilimitado':'nenhuma'}</td></tr>
+    </table>
+    <table><tr><th>Natureza dos subproblemas</th><th style="text-align:right">Quantos</th></tr>${linhas}</table>
+    ${blockTable(st)}
+    <p style="font-size:12px;color:var(--muted)">A classificação é heurística: olha se os
+    coeficientes do bloco são todos ±1 e se cada coluna aparece em no máximo duas linhas.
+    Serve para orientar, não substitui resolver e comparar os bounds.</p>`;
+}
+
+/* ==================== eventos de UI ==================== */
+document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{
+  MODE=b.dataset.mode;
+  document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  $('#modeHelp').textContent = MODE==='orig'
+    ? 'Ordem em que o modelo foi escrito, sem reordenar nada.'
+    : MODE==='benders'
+    ? 'Colunas complicadoras à esquerda; o subproblema é reordenado em blocos.'
+    : MODE==='lagr'
+    ? 'Linhas dualizadas no topo; abaixo, os subproblemas que sobram.'
+    : 'Linhas de acoplamento no topo; os blocos de pricing ficam abaixo.';
+  $('#plotTitle').textContent = MODE==='orig'?'Padrão de esparsidade'
+    : MODE==='benders'?'Estrutura de Benders  [A 0 ; B C]'
+    : MODE==='lagr'?'Relaxação lagrangiana · linhas dualizadas':'Estrutura angular por blocos';
+  renderFams(); renderSugg(); if(MODEL){recompute(); fit();}
+}));
+document.querySelectorAll('[data-sample]').forEach(b=>
+  b.addEventListener('click',()=>{
+    SOURCE=''; $('#filecard').hidden=true;
+    $('#paste').value=SAMPLES[b.dataset.sample];
+    load(SAMPLES[b.dataset.sample],'exemplo');
+  }));
+$('#parseBtn').addEventListener('click',()=>{
+  const t=$('#paste').value.trim();
+  if(!t){ setStatus('A caixa de texto está vazia. Cole o modelo ou carregue um arquivo.',true); return; }
+  SOURCE=''; $('#filecard').hidden=true;
+  load(t,'texto colado');
+});
+function readFile(f){
+  if(!f) return;
+  setStatus('Lendo '+f.name+' ('+fmtBytes(f.size)+')…');
+  const rd=new FileReader();
+  rd.onerror=()=>setStatus('Falha ao ler o arquivo.',true);
+  rd.onload=()=>{
+    const txt=rd.result;
+    showFileCard(f.name,txt);
+    $('#paste').value='';
+    setTimeout(()=>load(txt,f.name),10);   // deixa a mensagem aparecer antes de travar a thread
+  };
+  rd.readAsText(f);
+}
+$('#fileIn').addEventListener('change',e=>readFile(e.target.files[0]));
+$('#reparse').addEventListener('click',()=>{ if(SOURCE) load(SOURCE,SRCNAME); });
+$('#fixChk').addEventListener('change',e=>{
+  HIDE_FIXED=e.target.checked;
+  if(!MODEL_RAW) return;
+  applyFilter();
+  colFams=buildFamilies(MODEL.cols); rowFams=buildFamilies(MODEL.rows.map(r=>r.name));
+  updateReadout(); renderFams(); renderSugg(); recompute(); fit();
+});
+$('#clearFile').addEventListener('click',()=>{
+  SOURCE=''; SRCNAME=''; $('#filecard').hidden=true; $('#fileIn').value=''; setStatus('');
+});
+const drop=$('#drop');
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',e=>readFile(e.dataTransfer.files[0]));
+/* ---- ajuda ---- */
+const scrim=$('#scrim'); let lastFocus=null;
+function openHelp(){
+  lastFocus=document.activeElement; scrim.hidden=false;
+  $('#helpClose').focus(); document.body.style.overflow='hidden';
+}
+function closeHelp(){
+  scrim.hidden=true; document.body.style.overflow='';
+  if(lastFocus) lastFocus.focus();
+}
+$('#helpBtn').addEventListener('click',openHelp);
+const hb2=$('#helpBtn2'); if(hb2) hb2.addEventListener('click',openHelp);
+$('#helpClose').addEventListener('click',closeHelp);
+scrim.addEventListener('mousedown',e=>{ if(e.target===scrim) closeHelp(); });
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&!scrim.hidden) closeHelp();
+  if(e.key==='Tab'&&!scrim.hidden){
+    const f=$('#helpBox').querySelectorAll('button,[href],[tabindex]:not([tabindex="-1"])');
+    if(!f.length) return;
+    const a=f[0], z=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}
+    else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}
+  }
+});
+
+$('#selNone').addEventListener('click',()=>{
+  (MODE==='benders'?linkColFams:linkRowFams).clear(); renderFams(); recompute();
+});
+$('#selInt').addEventListener('click',()=>{
+  if(MODE!=='benders') return;
+  linkColFams=new Set();
+  [...colFams.entries()].forEach(([f,ix])=>{ if(ix.some(i=>MODEL.colType[i]!=='cont')) linkColFams.add(f); });
+  renderFams(); recompute();
+});
+</script>
+</body>
+</html>

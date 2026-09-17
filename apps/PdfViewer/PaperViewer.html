@@ -1,0 +1,3758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acervo</title>
+<style>
+:root{
+  --ui:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --read:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --base:14px;
+  --rail:248px;
+  --drawer:440px;
+}
+/* ---------- conjuntos de fonte ---------- */
+html[data-font="serifada"]{
+  --read:Georgia,'Iowan Old Style','Palatino Linotype',Palatino,'Times New Roman',serif;
+}
+html[data-font="editor"]{
+  --ui:ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,'Liberation Mono',monospace;
+  --read:Georgia,'Iowan Old Style','Palatino Linotype',Palatino,serif;
+}
+html[data-font="classica"]{
+  --ui:'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --read:'Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+}
+
+/* ---------- temas ---------- */
+html,html[data-theme="material"]{
+  --bg:#212121; --surface:#282828; --surface-2:#303030; --surface-3:#3d3d3d;
+  --line:#3a3a3a; --line-soft:#2e2e2e;
+  --text:#eeffff; --read-ink:#d3e0e3; --dim:#b0bec5; --faint:#78909c;
+  --accent:#ffcb6b; --accent-soft:#8a6c2e; --accent-ink:#20211d;
+  --teal:#80cbc4; --red:#f07178;
+  --shade:rgba(0,0,0,.55); --veil:rgba(20,20,20,.86); --backdrop:rgba(10,10,10,.72);
+}
+html[data-theme="dracula"]{
+  --bg:#282a36; --surface:#2e3140; --surface-2:#363949; --surface-3:#44475a;
+  --line:#44475a; --line-soft:#373a4a;
+  --text:#f8f8f2; --read-ink:#dfe0e8; --dim:#bcc2e0; --faint:#6272a4;
+  --accent:#bd93f9; --accent-soft:#5c4586; --accent-ink:#22232e;
+  --teal:#8be9fd; --red:#ff5555;
+  --shade:rgba(0,0,0,.55); --veil:rgba(30,31,42,.88); --backdrop:rgba(15,15,22,.72);
+}
+html[data-theme="monokai"]{
+  --bg:#272822; --surface:#2e2f28; --surface-2:#36372f; --surface-3:#49483e;
+  --line:#49483e; --line-soft:#3a3a32;
+  --text:#f8f8f2; --read-ink:#e3e3d8; --dim:#c8c8bb; --faint:#8a8570;
+  --accent:#fd971f; --accent-soft:#7d4d13; --accent-ink:#231f16;
+  --teal:#66d9ef; --red:#f92672;
+  --shade:rgba(0,0,0,.55); --veil:rgba(30,31,26,.88); --backdrop:rgba(14,15,12,.72);
+}
+html[data-theme="nord"]{
+  --bg:#2e3440; --surface:#343c4b; --surface-2:#3b4252; --surface-3:#4c566a;
+  --line:#434c5e; --line-soft:#3a4251;
+  --text:#eceff4; --read-ink:#dbe1ea; --dim:#c3ccda; --faint:#7b88a1;
+  --accent:#ebcb8b; --accent-soft:#7a6741; --accent-ink:#2e3440;
+  --teal:#8fbcbb; --red:#bf616a;
+  --shade:rgba(0,0,0,.5); --veil:rgba(35,41,52,.88); --backdrop:rgba(20,24,31,.72);
+}
+html[data-theme="eclipse"]{
+  --bg:#ffffff; --surface:#f6f7f8; --surface-2:#eceef1; --surface-3:#dde2e8;
+  --line:#d3d9e0; --line-soft:#e6eaee;
+  --text:#14181c; --read-ink:#23282e; --dim:#4c5661; --faint:#8894a0;
+  --accent:#2a6099; --accent-soft:#b6cde4; --accent-ink:#ffffff;
+  --teal:#1c7a6b; --red:#b3261e;
+  --shade:rgba(20,30,45,.16); --veil:rgba(255,255,255,.9); --backdrop:rgba(40,48,58,.4);
+}
+html[data-theme="claro"]{
+  --bg:#fcfcfb; --surface:#f3f3f1; --surface-2:#eaeae6; --surface-3:#dbdbd5;
+  --line:#d6d6d0; --line-soft:#e8e8e3; --text:#1d1f21; --read-ink:#2b2e31;
+  --dim:#555a5f; --faint:#8b9096;
+  --accent:#8a6410; --accent-soft:#e0cfa8; --accent-ink:#fffdf6;
+  --teal:#3a7a6d; --red:#a8382c;
+  --shade:rgba(40,35,25,.14); --veil:rgba(252,252,251,.9); --backdrop:rgba(45,42,35,.4);
+}
+html[data-theme="eclipse"] .cover,
+html[data-theme="claro"] .cover{border:1px solid var(--line)}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:var(--ui);font-size:var(--base);line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow:hidden;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+::selection{background:var(--accent);color:var(--accent-ink)}
+
+/* ---------- boas-vindas ---------- */
+#welcome{
+  position:fixed;inset:0;z-index:50;display:grid;place-items:center;
+  padding:40px;background:var(--bg);
+}
+.w-inner{max-width:560px}
+.w-mark{width:34px;height:44px;margin-bottom:34px}
+#welcome h1{
+  font-family:var(--read);font-weight:400;font-size:calc(var(--base)*2.714);line-height:1.2;
+  margin:0 0 18px;letter-spacing:-.01em;
+}
+#welcome p{color:var(--dim);margin:0 0 12px;max-width:52ch;line-height:1.65}
+.w-actions{margin-top:30px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.btn-major{
+  background:var(--accent);color:var(--accent-ink);font-weight:600;
+  padding:11px 22px;border-radius:3px;
+}
+.btn-major:hover{filter:brightness(1.12)}
+.btn-ghost{
+  border:1px solid var(--line);padding:10px 18px;border-radius:3px;color:var(--dim);
+}
+.btn-ghost:hover{border-color:var(--surface-3);color:var(--text)}
+.w-note{margin-top:34px;padding-top:18px;border-top:1px solid var(--line-soft);
+  font-size:calc(var(--base)*0.893);color:var(--faint);line-height:1.7}
+.w-error{color:var(--red);margin-top:22px;font-size:calc(var(--base)*0.929)}
+
+/* ---------- moldura ---------- */
+#app{display:none;height:100%;grid-template-rows:auto 1fr;grid-template-columns:var(--rail) 1fr}
+#app.on{display:grid}
+header{
+  grid-column:1/-1;display:flex;align-items:center;gap:8px;
+  padding:0 12px;height:54px;border-bottom:1px solid var(--line);background:var(--surface);
+  min-width:0;
+}
+.root-name,.root-count{flex:none}
+.root-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.root-count{color:var(--faint);font-size:calc(var(--base)*0.893);white-space:nowrap}
+.search-wrap{flex:1 1 150px;min-width:110px;max-width:460px;position:relative;margin-left:4px}
+.search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--faint)}
+#q{
+  width:100%;background:var(--bg);border:1px solid var(--line);border-radius:3px;
+  padding:8px 34px;font-size:calc(var(--base)*0.964);
+}
+#q::placeholder{color:var(--faint)}
+#q:focus{border-color:var(--surface-3);outline:none}
+.q-clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);color:var(--faint);padding:4px 6px}
+.spacer{flex:1}
+.tool{
+  padding:7px 10px;border-radius:3px;color:var(--dim);font-size:calc(var(--base)*0.929);
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:none;
+}
+.tool .ic{font-size:calc(var(--base)*0.93);line-height:1;filter:saturate(.85)}
+/* em janela estreita sobram só os ícones, mas nada some do cabeçalho */
+@media(max-width:1180px){ header .tool .lb{display:none} }
+@media(max-width:1180px){ .root-count{display:none} }
+@media(max-width:820px){ .root-name{display:none} }
+.tool:hover{background:var(--surface-2);color:var(--text)}
+.tool[disabled]{opacity:.4;cursor:default}
+.tool.on{background:var(--surface-3);color:var(--text)}
+.seg{display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.seg button{padding:6px 11px;color:var(--faint)}
+.seg button.on{background:var(--surface-3);color:var(--text)}
+
+/* ---------- barra lateral ---------- */
+#rail{
+  grid-row:2;overflow-y:auto;border-right:1px solid var(--line);
+  background:var(--surface);padding:14px 0 60px;
+}
+.rail-h{
+  font-size:calc(var(--base)*0.821);color:var(--faint);padding:16px 16px 7px;font-weight:500;
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.rail-h button{font-size:calc(var(--base)*0.821);color:var(--accent-soft)}
+.rail-h button:hover{color:var(--accent)}
+.chip{
+  display:flex;align-items:center;gap:8px;width:100%;text-align:left;
+  padding:5px 16px;font-size:calc(var(--base)*0.929);color:var(--dim);line-height:1.35;
+}
+.chip:hover{background:var(--surface-2);color:var(--text)}
+.chip.on{background:var(--surface-3);color:var(--text)}
+.chip .n{margin-left:auto;font-size:calc(var(--base)*0.821);color:var(--faint);font-variant-numeric:tabular-nums}
+.chip .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex:none}
+.chip .star{color:var(--accent)}
+.tree-ind{flex:none;color:var(--faint);font-size:calc(var(--base)*0.786)}
+#tags-empty{padding:2px 16px 6px;font-size:calc(var(--base)*0.857);color:var(--faint);line-height:1.6}
+
+/* ---------- área principal ---------- */
+#main{grid-row:2;overflow-y:auto;position:relative;scroll-padding-top:20px}
+#filterbar{
+  display:none;gap:8px;align-items:center;flex-wrap:wrap;
+  padding:11px 22px;border-bottom:1px solid var(--line-soft);
+  position:sticky;top:0;background:var(--bg);z-index:5;
+}
+#filterbar.on{display:flex}
+.fchip{
+  display:inline-flex;align-items:center;gap:7px;font-size:calc(var(--base)*0.893);
+  background:var(--surface-2);border:1px solid var(--line);
+  padding:4px 7px 4px 10px;border-radius:2px;color:var(--dim);
+}
+.fchip b{font-weight:500;color:var(--text)}
+.fchip button{color:var(--faint);padding:0 2px;line-height:1}
+.fchip button:hover{color:var(--red)}
+.fb-count{font-size:calc(var(--base)*0.893);color:var(--faint);margin-left:auto}
+
+/* grade */
+#grid{padding:22px;display:grid;gap:26px 20px;grid-template-columns:repeat(auto-fill,minmax(158px,1fr))}
+.card{text-align:left;display:block;width:100%}
+.cover{
+  position:relative;aspect-ratio:210/297;background:var(--surface-2);
+  border-radius:1px;overflow:hidden;
+  box-shadow:0 1px 0 var(--shade),0 10px 20px -12px var(--shade);
+}
+.card:hover .cover,.card:focus-visible .cover{box-shadow:0 0 0 2px var(--accent-soft),0 10px 20px -12px var(--shade)}
+.card.sel .cover{box-shadow:0 0 0 2px var(--accent),0 10px 20px -12px var(--shade)}
+.cover img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.cover .ph{
+  width:100%;height:100%;display:grid;place-items:center;color:var(--faint);
+  font-family:var(--read);font-size:calc(var(--base)*1.857);
+}
+.cover .fav{position:absolute;top:6px;right:7px;color:var(--accent);
+  filter:drop-shadow(0 1px 2px var(--shade))}
+.cover .anb{
+  position:absolute;right:0;bottom:0;background:var(--veil);color:var(--accent);
+  font-size:calc(var(--base)*0.75);padding:2px 6px;border-top-left-radius:2px;
+}
+.cover .flag{
+  position:absolute;left:0;bottom:0;background:var(--veil);color:var(--dim);
+  font-size:calc(var(--base)*0.75);padding:2px 6px;border-top-right-radius:2px;
+}
+.c-title{
+  font-family:var(--read);font-size:calc(var(--base)*1.036);line-height:1.32;margin:9px 0 3px;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.c-meta{font-size:calc(var(--base)*0.821);color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* lista */
+#grid.list{display:block;padding:8px 0 40px}
+#grid.list .card{
+  display:grid;grid-template-columns:30px 1fr 90px;gap:14px;align-items:baseline;
+  padding:10px 22px;border-bottom:1px solid var(--line-soft);
+}
+#grid.list .cover{display:none}
+#grid.list .card:hover{background:var(--surface)}
+#grid.list .card.sel{background:var(--surface-2);box-shadow:inset 2px 0 0 var(--accent)}
+#grid.list .c-title{-webkit-line-clamp:1;margin:0;font-size:calc(var(--base)*1.071)}
+#grid.list .c-meta{font-size:calc(var(--base)*0.893)}
+.l-year{font-size:calc(var(--base)*0.893);color:var(--dim);font-variant-numeric:tabular-nums;text-align:right}
+.l-fav{text-align:center;color:var(--accent)}
+#grid:not(.list) .l-year,#grid:not(.list) .l-fav{display:none}
+
+.empty{padding:70px 22px;text-align:center;color:var(--faint);max-width:44ch;margin:0 auto}
+.empty b{display:block;font-family:var(--read);font-size:calc(var(--base)*1.429);color:var(--dim);
+  font-weight:400;margin-bottom:10px}
+
+/* ---------- gaveta de detalhe ---------- */
+#drawer{
+  position:fixed;top:0;right:0;bottom:0;width:var(--drawer);max-width:100vw;
+  background:var(--surface);border-left:1px solid var(--line);
+  transform:translateX(100%);transition:transform .2s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;z-index:20;
+}
+#drawer.on{transform:none}
+@media (prefers-reduced-motion:reduce){#drawer{transition:none}}
+.d-head{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line);align-items:center}
+.d-body{overflow-y:auto;padding:22px 26px 60px;flex:1}
+.d-title{
+  font-family:var(--read);font-size:calc(var(--base)*1.643);line-height:1.26;font-weight:400;margin:0 0 12px;
+}
+.d-authors{color:var(--dim);font-size:calc(var(--base)*0.929);line-height:1.6;margin-bottom:3px}
+.d-pub{color:var(--faint);font-size:calc(var(--base)*0.893);line-height:1.6}
+.d-pub a{color:var(--faint)}
+.d-abs{
+  font-family:var(--read);font-size:calc(var(--base)*1.107);line-height:1.72;color:var(--read-ink);
+  margin:20px 0 0;white-space:pre-wrap;
+}
+.d-abs mark{background:var(--accent);color:var(--accent-ink);border-radius:1px}
+.d-none{color:var(--faint);font-style:italic;font-size:calc(var(--base)*0.964);margin-top:20px}
+.d-sec{margin-top:26px;padding-top:18px;border-top:1px solid var(--line-soft)}
+.d-lab{font-size:calc(var(--base)*0.821);color:var(--faint);margin-bottom:8px}
+#d-note{
+  width:100%;min-height:90px;resize:vertical;background:var(--bg);
+  border:1px solid var(--line);border-radius:3px;padding:10px 12px;
+  font-family:var(--read);font-size:calc(var(--base)*1.036);line-height:1.6;
+}
+#d-note:focus{border-color:var(--surface-3);outline:none}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{
+  display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:2px;padding:3px 6px 3px 9px;font-size:calc(var(--base)*0.893);
+}
+.tag button{color:var(--faint);line-height:1;padding:0 1px}
+.tag button:hover{color:var(--red)}
+#d-tagin{
+  background:none;border:1px dashed var(--line);border-radius:2px;
+  padding:4px 9px;font-size:calc(var(--base)*0.893);width:130px;
+}
+#d-tagin:focus{outline:none;border-color:var(--accent-soft);border-style:solid}
+.d-file{
+  font-size:calc(var(--base)*0.857);color:var(--faint);word-break:break-all;line-height:1.6;
+  font-feature-settings:"tnum";
+}
+.d-editgrid{display:grid;grid-template-columns:60px 1fr;gap:9px 12px;align-items:center;font-size:calc(var(--base)*0.929)}
+.d-editgrid label{color:var(--faint);font-size:calc(var(--base)*0.893)}
+.d-editgrid input,.d-editgrid textarea{
+  background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:6px 9px;width:100%;
+}
+.d-editgrid textarea{
+  grid-column:1/-1;min-height:80px;resize:vertical;
+  font-family:var(--read);font-size:var(--base);line-height:1.6;
+}
+.d-editgrid input:focus,.d-editgrid textarea:focus{border-color:var(--surface-3);outline:none}
+.d-editgrid .wide{grid-column:1/-1}
+
+/* ---------- progresso ---------- */
+#prog{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:40;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:4px;
+  padding:13px 18px;min-width:370px;display:none;
+  box-shadow:0 18px 40px -18px var(--shade);
+}
+#prog.on{display:block}
+.p-top{display:flex;gap:12px;align-items:baseline;margin-bottom:9px}
+.p-label{font-size:calc(var(--base)*0.929);font-weight:500}
+.p-sub{font-size:calc(var(--base)*0.857);color:var(--faint);margin-left:auto;font-variant-numeric:tabular-nums}
+.p-bar{height:3px;background:var(--bg);border-radius:2px;overflow:hidden}
+.p-fill{height:100%;background:var(--accent);width:0;transition:width .25s linear}
+.p-file{font-size:calc(var(--base)*0.821);color:var(--faint);margin-top:8px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;direction:rtl;text-align:left}
+.p-actions{margin-top:10px;display:flex;gap:8px}
+.p-actions button{font-size:calc(var(--base)*0.857);color:var(--dim);padding:3px 9px;border:1px solid var(--line);border-radius:3px}
+.p-actions button:hover{color:var(--text);border-color:var(--surface-3)}
+
+/* ---------- modal ---------- */
+#modal,#lookmodal,#tagedit,#bibmodal,#renmodal,#aboutmodal,#helpmodal{position:fixed;inset:0;background:var(--backdrop);z-index:60;display:none;place-items:center;padding:24px}
+#modal.on,#lookmodal.on,#tagedit.on,#bibmodal.on,#renmodal.on,#aboutmodal.on,#helpmodal.on{display:grid}
+.m-box{background:var(--surface);border:1px solid var(--line);border-radius:4px;
+  padding:26px;width:440px;max-width:100%;max-height:86vh;overflow-y:auto}
+.m-box h2{font-family:var(--read);font-weight:400;font-size:calc(var(--base)*1.5);margin:0 0 18px}
+.m-row{margin-bottom:18px}
+.m-row label{display:block;font-size:calc(var(--base)*0.893);color:var(--faint);margin-bottom:6px}
+.m-row input[type=text],.m-row input[type=email]{
+  width:100%;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:8px 10px}
+.m-hint{font-size:calc(var(--base)*0.857);color:var(--faint);line-height:1.6;margin-top:6px}
+.m-check{display:flex;gap:9px;align-items:flex-start;font-size:calc(var(--base)*0.964);line-height:1.5}
+.m-check input{margin-top:3px;accent-color:var(--accent)}
+.m-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px}
+#toast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:70;
+  background:var(--surface-3);border:1px solid var(--line);border-radius:3px;
+  padding:9px 16px;font-size:calc(var(--base)*0.929);display:none;
+}
+#toast.on{display:block}
+#selbar.on ~ #toast{bottom:78px}
+#prog.on ~ #selbar{bottom:96px}
+
+/* ---------- ajuda ---------- */
+.help-box{
+  width:860px;max-width:100%;max-height:88vh;display:grid;
+  grid-template-columns:200px 1fr;grid-template-rows:auto 1fr auto;gap:0;
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden;
+}
+.help-top{
+  grid-column:1/-1;display:flex;align-items:center;gap:10px;
+  padding:16px 22px;border-bottom:1px solid var(--line);
+}
+.help-top h2{font-family:var(--read);font-weight:400;font-size:calc(var(--base)*1.5);margin:0}
+.help-nav{
+  overflow-y:auto;border-right:1px solid var(--line);padding:12px 0;background:var(--bg);
+}
+.help-nav button{
+  display:block;width:100%;text-align:left;padding:7px 18px;
+  font-size:calc(var(--base)*0.893);color:var(--dim);line-height:1.35;
+}
+.help-nav button:hover{background:var(--surface-2);color:var(--text)}
+.help-nav button.on{color:var(--accent);box-shadow:inset 2px 0 0 var(--accent)}
+.help-body{
+  overflow-y:auto;padding:4px 30px 50px;
+  font-size:calc(var(--base)*0.964);line-height:1.68;color:var(--dim);
+}
+.help-body section{padding-top:26px;scroll-margin-top:4px}
+.help-body h3{
+  font-family:var(--read);font-weight:500;font-size:calc(var(--base)*1.21);
+  color:var(--text);margin:0 0 10px;
+}
+.help-body h4{
+  font-size:calc(var(--base)*0.964);font-weight:600;color:var(--text);margin:18px 0 5px;
+}
+.help-body p{margin:0 0 11px}
+.help-body b{color:var(--text);font-weight:500}
+.help-body ul{margin:0 0 12px;padding-left:19px}
+.help-body li{margin-bottom:6px}
+.help-body code,.about code,.m-hint code{
+  font-family:ui-monospace,Consolas,monospace;font-size:.9em;
+  background:var(--surface-2);border-radius:2px;padding:1px 5px;color:var(--text);
+}
+.help-body .note{
+  border-left:2px solid var(--accent);background:var(--surface-2);
+  padding:10px 14px;margin:0 0 14px;border-radius:0 3px 3px 0;
+}
+.keys{width:100%;border-collapse:collapse;margin-bottom:12px}
+.keys td{padding:6px 0;border-bottom:1px solid var(--line-soft);vertical-align:top}
+.keys td:first-child{width:130px;white-space:nowrap}
+.keys kbd{
+  font-family:ui-monospace,Consolas,monospace;font-size:.85em;
+  border:1px solid var(--line);border-bottom-width:2px;border-radius:3px;
+  padding:1px 6px;background:var(--surface-2);color:var(--text);
+}
+.help-foot{
+  grid-column:1/-1;display:flex;justify-content:flex-end;gap:10px;
+  padding:13px 22px;border-top:1px solid var(--line);
+}
+@media(max-width:760px){
+  .help-box{grid-template-columns:1fr}
+  .help-nav{display:none}
+}
+
+/* ---------- sobre ---------- */
+.about{font-size:calc(var(--base)*0.964);line-height:1.65;color:var(--dim)}
+.about h3{
+  font-family:var(--read);font-weight:500;font-size:calc(var(--base)*1.14);
+  color:var(--text);margin:22px 0 8px;
+}
+.about h3:first-child{margin-top:0}
+.about p{margin:0 0 10px}
+.about a{color:var(--accent);text-decoration:none}
+.about a:hover{text-decoration:underline}
+.about ul{list-style:none;margin:0;padding:0}
+.about li{
+  padding:10px 0;border-top:1px solid var(--line-soft);
+}
+.about li b{color:var(--text);font-weight:500}
+.about li .lk{display:block;font-size:calc(var(--base)*0.857);margin-top:2px}
+.about .sig{
+  margin-top:20px;padding-top:14px;border-top:1px solid var(--line-soft);
+  font-size:calc(var(--base)*0.857);color:var(--faint);
+}
+
+/* ---------- busca no texto completo ---------- */
+.c-snip{
+  font-family:var(--read);font-size:calc(var(--base)*0.893);line-height:1.5;
+  color:var(--dim);margin-top:4px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.c-snip mark,.d-snip mark{background:var(--accent);color:var(--accent-ink);border-radius:1px}
+.c-score{
+  display:inline-block;margin-top:3px;font-size:calc(var(--base)*0.75);
+  color:var(--accent);font-variant-numeric:tabular-nums;
+}
+#grid:not(.list) .c-snip{display:none}
+.d-snip{
+  font-family:var(--read);font-size:calc(var(--base)*0.964);line-height:1.6;
+  color:var(--read-ink);background:var(--bg);border:1px solid var(--line-soft);
+  border-radius:3px;padding:9px 11px;
+}
+
+/* ---------- localizar no artigo ---------- */
+#rd-find{
+  position:absolute;right:20px;top:60px;z-index:46;display:none;gap:6px;align-items:center;
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:6px 8px;
+  box-shadow:0 14px 30px -14px var(--shade);
+}
+#rd-find.on{display:flex}
+#rd-fq{
+  background:var(--bg);border:1px solid var(--line);border-radius:3px;
+  padding:5px 9px;width:180px;font-size:calc(var(--base)*0.929);
+}
+#rd-fq:focus{border-color:var(--surface-3);outline:none}
+#rd-fc{font-size:calc(var(--base)*0.821);color:var(--faint);min-width:56px;text-align:center}
+#rd-find button{color:var(--dim);padding:3px 7px;border-radius:3px}
+#rd-find button:hover{background:var(--surface-2);color:var(--text)}
+.hlLayer i.find{
+  background:rgba(255,130,20,.4);box-shadow:0 0 0 2px rgba(255,130,20,.9);border-radius:2px;
+}
+
+/* ---------- bibtex ---------- */
+.radiorow{display:flex;flex-direction:column;gap:7px;margin-top:3px}
+.radiorow label{
+  display:flex;gap:9px;align-items:baseline;font-size:calc(var(--base)*0.964);
+  color:var(--dim);cursor:pointer;
+}
+.radiorow input{accent-color:var(--accent)}
+.radiorow label b{font-weight:500;color:var(--text)}
+#bib-out{
+  width:100%;height:190px;margin-top:4px;resize:vertical;
+  background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:9px 11px;
+  font-family:ui-monospace,Consolas,monospace;font-size:calc(var(--base)*0.821);line-height:1.5;
+  white-space:pre;overflow:auto;
+}
+
+/* ---------- renomear ---------- */
+#ren-list{
+  max-height:46vh;overflow:auto;margin-top:4px;
+  background:var(--bg);border:1px solid var(--line);border-radius:3px;
+}
+#ren-list table{width:100%;border-collapse:collapse;font-size:calc(var(--base)*0.857)}
+#ren-list td{padding:7px 8px;border-bottom:1px solid var(--line-soft);vertical-align:top;line-height:1.45}
+#ren-list tr:last-child td{border-bottom:none}
+#ren-list td.ck{width:26px;padding-right:0}
+#ren-list td.ck input{accent-color:var(--accent);margin:2px 0 0}
+#ren-list .old{color:var(--faint);word-break:break-all}
+#ren-list .new{color:var(--text);word-break:break-all}
+#ren-list .why{color:var(--faint);font-style:italic}
+#ren-list .ok{color:var(--teal)}
+#ren-list .err{color:var(--red)}
+#ren-list .empty{padding:16px;color:var(--faint);text-align:center}
+#ren-sum{font-size:calc(var(--base)*0.857);color:var(--dim);margin-top:8px;min-height:1.4em}
+
+/* ---------- marcadores ---------- */
+.chip .ed{
+  margin-left:4px;color:var(--faint);padding:0 3px;visibility:hidden;line-height:1;
+  font-size:calc(var(--base)*0.929);
+}
+.chip:hover .ed{visibility:visible}
+.chip .ed:hover{color:var(--accent)}
+.tagmode{
+  display:flex;gap:5px;align-items:center;padding:3px 16px 7px;
+  font-size:calc(var(--base)*0.786);color:var(--faint);
+}
+.tagmode button{
+  border:1px solid var(--line);border-radius:2px;padding:1px 7px;color:var(--faint);
+  font-size:calc(var(--base)*0.786);
+}
+.tagmode button.on{border-color:var(--accent);color:var(--text)}
+
+/* seleção múltipla */
+.card{position:relative}
+.cbx{
+  position:absolute;left:6px;top:6px;width:19px;height:19px;border-radius:3px;
+  border:1.5px solid var(--faint);background:var(--veil);
+  display:none;place-items:center;z-index:2;
+  font-size:calc(var(--base)*0.85);line-height:1;color:transparent;
+}
+#grid:not(.list) .card:hover .cbx,#grid.picking .cbx{display:grid}
+.cbx.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);display:grid}
+#grid.list .card{grid-template-columns:24px 30px 1fr 90px}
+#grid.list .cbx{position:static;display:grid;justify-self:center;align-self:center}
+.card.picked{background:var(--surface)}
+#grid:not(.list) .card.picked .cover{box-shadow:0 0 0 2px var(--accent),0 10px 20px -12px var(--shade)}
+
+#selbar{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:38;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:4px;
+  padding:9px 12px;display:none;gap:9px;align-items:center;
+  box-shadow:0 18px 40px -18px var(--shade);
+}
+#selbar.on{display:flex}
+#selbar .n{font-size:calc(var(--base)*0.929);color:var(--text);padding:0 4px;white-space:nowrap}
+#selbar button{
+  border:1px solid var(--line);border-radius:3px;padding:5px 11px;
+  color:var(--dim);font-size:calc(var(--base)*0.929);white-space:nowrap;
+}
+#selbar button:hover{color:var(--text);border-color:var(--surface-3)}
+
+#tagmenu{
+  position:fixed;z-index:44;display:none;width:246px;max-height:56vh;overflow-y:auto;
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:6px;
+  box-shadow:0 18px 40px -16px var(--shade);
+}
+#tagmenu.on{display:block}
+.tm-row{
+  display:flex;align-items:center;gap:8px;width:100%;text-align:left;
+  padding:6px 8px;border-radius:3px;font-size:calc(var(--base)*0.929);color:var(--dim);
+}
+.tm-row:hover{background:var(--surface-2);color:var(--text)}
+.tm-row .box{
+  width:15px;height:15px;border-radius:3px;border:1.5px solid var(--faint);flex:none;
+  display:grid;place-items:center;font-size:calc(var(--base)*0.79);color:transparent;line-height:1;
+}
+.tm-row .box.all{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tm-row .box.some{background:var(--accent-soft);border-color:var(--accent-soft)}
+.tm-row .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tm-new{display:flex;gap:6px;padding:7px 8px 4px;border-top:1px solid var(--line-soft);margin-top:5px}
+.tm-new input{
+  flex:1;background:var(--bg);border:1px solid var(--line);border-radius:3px;
+  padding:5px 8px;font-size:calc(var(--base)*0.929);min-width:0;
+}
+.tm-new input:focus{border-color:var(--surface-3);outline:none}
+.dotc{width:9px;height:9px;border-radius:2px;flex:none}
+.tagi{flex:none;display:block}
+.chip .tagi{margin-right:-1px}
+.tag .tagi{position:relative;top:1px}
+.swatches{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.swatches button{
+  width:30px;height:30px;border-radius:4px;border:2px solid transparent;
+  background:var(--surface-2);display:grid;place-items:center;
+}
+.swatches button:hover{border-color:var(--line)}
+.swatches button.on{border-color:var(--text)}
+
+/* ---------- leitor ---------- */
+#reader{
+  position:fixed;inset:0;z-index:45;background:var(--bg);
+  display:none;grid-template-rows:auto 1fr;grid-template-columns:1fr 320px;
+}
+#reader.on{display:grid}
+#reader{position:fixed}
+#reader.solo{grid-template-columns:1fr}
+#reader.solo #rd-side{display:none}
+#rd-bar{
+  grid-column:1/-1;display:flex;align-items:center;gap:10px;
+  padding:0 12px;height:50px;border-bottom:1px solid var(--line);background:var(--surface);
+}
+.rd-title{
+  font-family:var(--read);font-size:calc(var(--base)*1.07);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:38%;
+}
+.rd-pageno{
+  font-size:calc(var(--base)*0.893);color:var(--dim);font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+#rd-goto{
+  width:48px;background:var(--bg);border:1px solid var(--line);border-radius:3px;
+  padding:4px 6px;text-align:right;font-size:calc(var(--base)*0.893);
+}
+#rd-pages{overflow:auto;padding:20px 0 60px;background:var(--surface-2)}
+.pgwrap{margin:0 auto 18px;width:max-content}
+.pghead{
+  display:flex;align-items:center;gap:9px;margin-bottom:5px;
+  font-size:calc(var(--base)*0.786);color:var(--faint);
+}
+.pghead button{color:var(--faint);font-size:calc(var(--base)*0.786)}
+.pghead button:hover{color:var(--accent)}
+.pg{position:relative;background:#fff;box-shadow:0 2px 14px -4px var(--shade);overflow:hidden}
+.pg canvas{display:block}
+.pg .skel{position:absolute;inset:0;display:grid;place-items:center;color:#c9c9c9;font-size:13px}
+.hlLayer{position:absolute;inset:0;pointer-events:none}
+.hlLayer i{position:absolute;border-radius:1px;display:block}
+.hlLayer i.sel{box-shadow:0 0 0 2px #2f6fd0}
+.textLayer{position:absolute;inset:0;overflow:hidden;line-height:1;opacity:1}
+.textLayer span,.textLayer br{
+  color:transparent;position:absolute;white-space:pre;cursor:text;transform-origin:0% 0%;
+}
+.textLayer ::selection{background:rgba(70,130,255,.35)}
+#rd-pal{
+  position:fixed;z-index:48;display:none;gap:5px;padding:5px;
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;
+  box-shadow:0 10px 26px -12px var(--shade);
+}
+#rd-pal.on{display:flex}
+#rd-pal .sw{width:23px;height:23px;border-radius:3px;border:1px solid rgba(0,0,0,.22)}
+#rd-pal .sw:hover{transform:scale(1.12)}
+#rd-side{overflow-y:auto;border-left:1px solid var(--line);background:var(--surface);padding-bottom:60px}
+.side-head{
+  position:sticky;top:0;background:var(--surface);z-index:2;
+  display:flex;align-items:center;gap:9px;padding:12px 14px;
+  border-bottom:1px solid var(--line-soft);font-size:calc(var(--base)*0.821);color:var(--faint);
+}
+.side-head button{font-size:calc(var(--base)*0.821);color:var(--accent-soft)}
+.side-head button:hover{color:var(--accent)}
+.an{padding:11px 14px;border-bottom:1px solid var(--line-soft);cursor:pointer}
+.an:hover{background:var(--surface-2)}
+.an.sel{background:var(--surface-2);box-shadow:inset 2px 0 0 var(--accent)}
+.an-top{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.an-top .sw{width:9px;height:9px;border-radius:2px;flex:none}
+.an-top .pp{font-size:calc(var(--base)*0.786);color:var(--faint)}
+.an-top .rm{margin-left:auto;color:var(--faint);font-size:calc(var(--base)*0.786)}
+.an-top .rm:hover{color:var(--red)}
+.an-q{
+  font-family:var(--read);font-size:calc(var(--base)*0.929);line-height:1.5;color:var(--read-ink);
+  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
+}
+.an-c{
+  width:100%;margin-top:7px;background:var(--bg);border:1px solid var(--line);
+  border-radius:3px;padding:6px 8px;font-size:calc(var(--base)*0.893);
+  resize:vertical;min-height:32px;font-family:var(--ui);
+}
+.an-c:focus{border-color:var(--surface-3);outline:none}
+.side-empty{padding:26px 16px;color:var(--faint);font-size:calc(var(--base)*0.929);line-height:1.65}
+@media(max-width:900px){
+  #reader,#reader.on{grid-template-columns:1fr}
+  #rd-side{display:none}
+}
+
+/* ---------- aparência ---------- */
+.look-btn{
+  position:fixed;top:14px;right:16px;z-index:55;
+  border:1px solid var(--line);background:var(--surface);border-radius:3px;
+  padding:6px 12px;font-size:calc(var(--base)*0.893);color:var(--dim);
+}
+.look-btn:hover{color:var(--text);border-color:var(--surface-3)}
+#app.on ~ .look-btn{display:none}
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.tsw{
+  border:1px solid var(--line);border-radius:3px;padding:9px 10px 10px;text-align:left;
+  background:var(--sw-bg);
+}
+.tsw:hover{border-color:var(--faint)}
+.tsw.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.tsw .bars{display:flex;gap:3px;margin-bottom:7px}
+.tsw .bars i{height:15px;flex:1;border-radius:1px}
+.tsw .nm{font-size:calc(var(--base)*0.857);color:var(--sw-ink)}
+.fonts{display:grid;gap:7px}
+.fbt{
+  border:1px solid var(--line);border-radius:3px;padding:9px 12px;text-align:left;
+  display:flex;align-items:baseline;gap:10px;
+}
+.fbt:hover{border-color:var(--faint)}
+.fbt.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.fbt .nm{font-size:calc(var(--base)*0.929);min-width:78px}
+.fbt .sp{font-size:var(--base);color:var(--dim);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.sizes{display:flex;gap:7px}
+.sizes button{
+  flex:1;border:1px solid var(--line);border-radius:3px;padding:7px 0;font-size:calc(var(--base)*0.929);color:var(--dim);
+}
+.sizes button.on{border-color:var(--accent);color:var(--text);box-shadow:inset 0 0 0 1px var(--accent)}
+@media(max-width:820px){
+  :root{--rail:0px}
+  #rail{display:none}
+  #app{grid-template-columns:1fr}
+  #drawer{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== BOAS-VINDAS ========== -->
+<section id="welcome">
+  <div class="w-inner">
+    <svg class="w-mark" viewBox="0 0 34 44" fill="none" aria-hidden="true">
+      <rect x="1" y="1" width="22" height="30" stroke="var(--faint)" stroke-width="1.5"/>
+      <rect x="6" y="7" width="22" height="30" fill="var(--surface)" stroke="var(--dim)" stroke-width="1.5"/>
+      <rect x="11" y="13" width="22" height="30" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"/>
+      <path d="M16 22h12M16 27h12M16 32h7" stroke="var(--accent)" stroke-width="1.3" opacity=".65"/>
+    </svg>
+    <h1>Seus PDFs de artigos, com título, ano e resumo de cada um.</h1>
+    <p>Escolha a pasta onde estão os artigos. Tudo é lido direto do seu computador — nada é enviado para lugar nenhum. As subpastas entram junto.</p>
+    <p>Título, autores, ano e resumo são buscados pelo DOI impresso na primeira página, e você pode corrigir qualquer campo à mão. Suas anotações e marcadores ficam num arquivo <code>index.json</code> dentro da própria pasta.</p>
+    <div class="w-actions">
+      <button class="btn-major" id="pick">Escolher pasta</button>
+      <button class="btn-ghost" id="reopen" hidden>Abrir a última pasta</button>
+      <button class="btn-ghost" id="help2">❔ Ajuda</button>
+      <button class="btn-ghost" id="about2">ℹ️ Sobre</button>
+    </div>
+    <p class="w-error" id="w-error" hidden></p>
+    <p class="w-note" id="w-note">Funciona no Chrome e no Edge, que são os navegadores capazes de ler uma pasta do disco. No Firefox e no Safari a leitura de pastas não existe.</p>
+  </div>
+</section>
+
+<!-- ========== APLICAÇÃO ========== -->
+<div id="app">
+  <header>
+    <span class="root-name" id="rootname"></span>
+    <span class="root-count" id="rootcount"></span>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M11 11l4 4" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+      <input id="q" type="search" placeholder="Buscar em títulos, autores, resumos, marcadores e notas" autocomplete="off">
+      <button class="q-clear" id="qclear" hidden aria-label="Limpar busca">✕</button>
+    </div>
+    <button class="tool" id="deep" title="Procurar também dentro do corpo dos PDFs">
+      <span class="ic">📄</span><span class="lb">Texto completo</span></button>
+    <button class="tool" id="sem" title="Buscar por sentido, não por palavra exata">
+      <span class="ic">🧭</span><span class="lb">Semântica</span></button>
+    <div class="spacer"></div>
+    <div class="seg" role="group" aria-label="Modo de exibição">
+      <button id="v-grid" class="on" aria-label="Ver em capas" title="Capas">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/><rect x="1" y="9" width="6" height="6"/><rect x="9" y="9" width="6" height="6"/></svg>
+      </button>
+      <button id="v-list" aria-label="Ver em lista" title="Lista">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="2"/><rect x="1" y="7" width="14" height="2"/><rect x="1" y="12" width="14" height="2"/></svg>
+      </button>
+    </div>
+    <button class="tool" id="scan" title="Varrer a pasta atrás de PDFs novos">
+      <span class="ic">🔄</span><span class="lb">Procurar novos</span></button>
+    <button class="tool" id="help" title="Guia do aplicativo">
+      <span class="ic">❔</span><span class="lb">Ajuda</span></button>
+    <button class="tool" id="about" title="Sobre este projeto">
+      <span class="ic">ℹ️</span><span class="lb">Sobre</span></button>
+    <button class="tool" id="look2" title="Tema e fontes">
+      <span class="ic">🎨</span><span class="lb">Aparência</span></button>
+    <button class="tool" id="settings" aria-label="Ajustes" title="Ajustes">
+      <span class="ic">⚙️</span></button>
+  </header>
+
+  <nav id="rail"></nav>
+
+  <main id="main">
+    <div id="filterbar"></div>
+    <div id="grid"></div>
+  </main>
+</div>
+
+<!-- ========== GAVETA ========== -->
+<aside id="drawer" aria-label="Detalhes do artigo">
+  <div class="d-head">
+    <button class="tool" id="d-read">Ler e grifar</button>
+    <button class="tool" id="d-open" title="Abrir no visualizador do navegador">Abrir fora</button>
+    <button class="tool" id="d-fav">Favoritar</button>
+    <button class="tool" id="d-refetch" title="Buscar metadados de novo pelo DOI">Rebuscar</button>
+    <div class="spacer"></div>
+    <button class="tool" id="d-close" aria-label="Fechar">✕</button>
+  </div>
+  <div class="d-body" id="d-body"></div>
+</aside>
+
+<!-- ========== PROGRESSO ========== -->
+<div id="prog" role="status" aria-live="polite">
+  <div class="p-top">
+    <span class="p-label" id="p-label">Indexando</span>
+    <span class="p-sub" id="p-sub"></span>
+  </div>
+  <div class="p-bar"><div class="p-fill" id="p-fill"></div></div>
+  <div class="p-file" id="p-file"></div>
+  <div class="p-actions"><button id="p-stop">Parar</button></div>
+</div>
+
+<!-- ========== AJUSTES ========== -->
+<div id="modal">
+  <div class="m-box" role="dialog" aria-modal="true" aria-labelledby="m-title">
+    <h2 id="m-title">Ajustes</h2>
+    <div class="m-row">
+      <label for="s-mail">Seu e-mail</label>
+      <input type="email" id="s-mail" placeholder="voce@universidade.br">
+      <p class="m-hint">O OpenAlex e o Crossref pedem um e-mail de contato para dar prioridade às consultas. Fica só no seu arquivo <code>index.json</code>, junto dos artigos.</p>
+    </div>
+    <div class="m-row">
+      <label class="m-check"><input type="checkbox" id="s-full">
+        <span>Guardar o texto completo de cada PDF<br>
+        <span class="m-hint" style="margin:2px 0 0">Permite buscar dentro do corpo dos artigos, não só nos resumos. Ocupa cerca de 50 KB por artigo dentro de <code>_biblioteca/docs</code>.</span></span></label>
+    </div>
+    <div class="m-row">
+      <label>Busca semântica</label>
+      <p class="m-hint" id="sem-status" style="margin:2px 0 8px"></p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-ghost" id="sem-idx" style="padding:7px 13px;font-size:13px">Indexar vetores</button>
+        <button class="btn-ghost" id="sem-re" style="padding:7px 13px;font-size:13px">Refazer todos</button>
+      </div>
+      <p class="m-hint">Gera um vetor de significado para o título e o resumo de cada artigo, usando um
+        modelo que roda dentro do navegador. O modelo tem cerca de 120 MB e é baixado uma única vez.
+        Nada é enviado para fora da sua máquina.</p>
+    </div>
+    <div class="m-row">
+      <label>Manutenção</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+        <button class="btn-ghost" id="s-bib" style="padding:7px 13px;font-size:13px">Exportar BibTeX</button>
+        <button class="btn-ghost" id="s-rename" style="padding:7px 13px;font-size:13px">Renomear PDFs</button>
+        <button class="btn-ghost" id="s-export" style="padding:7px 13px;font-size:13px">Exportar índice</button>
+        <button class="btn-ghost" id="s-reindex" style="padding:7px 13px;font-size:13px">Reindexar tudo</button>
+        <button class="btn-ghost" id="s-switch" style="padding:7px 13px;font-size:13px">Trocar de pasta</button>
+      </div>
+      <p class="m-hint">Reindexar refaz título, ano e resumo de todos os artigos. Suas notas, marcadores e favoritos são preservados.</p>
+    </div>
+    <div class="m-actions">
+      <button class="btn-ghost" id="s-close">Fechar</button>
+      <button class="btn-major" id="s-save" style="padding:10px 20px">Salvar ajustes</button>
+    </div>
+  </div>
+</div>
+
+<div id="helpmodal" class="modalbase">
+  <div class="help-box" role="dialog" aria-modal="true" aria-labelledby="hp-title">
+    <div class="help-top">
+      <h2 id="hp-title">Guia do Acervo</h2>
+      <div class="spacer"></div>
+      <span class="root-count">tudo roda no seu computador</span>
+    </div>
+
+    <nav class="help-nav" id="hp-nav">
+      <button data-go="h1">1. Começar</button>
+      <button data-go="h2">2. A pasta e o índice</button>
+      <button data-go="h3">3. Indexação e metadados</button>
+      <button data-go="h4">4. Navegar e filtrar</button>
+      <button data-go="h5">5. Marcadores</button>
+      <button data-go="h6">6. Seleção em lote</button>
+      <button data-go="h7">7. Os três modos de busca</button>
+      <button data-go="h8">8. Leitor, grifos e notas</button>
+      <button data-go="h9">9. Exportar BibTeX</button>
+      <button data-go="h10">10. Ajustes e aparência</button>
+      <button data-go="h11">11. Atalhos de teclado</button>
+      <button data-go="h12">12. Limites e problemas</button>
+      <button data-go="h13">13. Renomear os PDFs</button>
+    </nav>
+
+    <div class="help-body" id="hp-body">
+
+      <section id="h1">
+        <h3>1. Começar</h3>
+        <p>Clique em <b>Escolher pasta</b> e aponte para onde estão seus PDFs. O navegador vai
+          pedir autorização de leitura e escrita — ela é necessária porque o aplicativo grava o
+          índice dentro da própria pasta. Todas as subpastas entram junto, sem limite de
+          profundidade.</p>
+        <p>A partir daí a indexação começa sozinha. Da segunda vez em diante, o botão
+          <b>Abrir a última pasta</b> na tela inicial dispensa reescolher — basta reautorizar
+          com um clique.</p>
+        <div class="note">Na primeira vez, prefira apontar para uma pasta pequena, com dez ou
+          quinze artigos. Você vê o resultado da extração em dois minutos e decide se vale
+          soltar no acervo inteiro.</div>
+      </section>
+
+      <section id="h2">
+        <h3>2. A pasta e o índice</h3>
+        <p>Nada é copiado para dentro do navegador: os PDFs continuam exatamente onde estão.
+          O que o aplicativo cria é uma subpasta <code>_biblioteca</code> com três coisas:</p>
+        <ul>
+          <li><code>index.json</code> — título, autores, ano, revista, DOI, resumo, marcadores,
+            favoritos e a sua nota de cada artigo. É texto legível: dá para abrir e conferir.</li>
+          <li><code>capas/</code> — a primeira página de cada PDF renderizada como miniatura,
+            feita uma vez só.</li>
+          <li><code>docs/</code> — um arquivo por artigo, com o texto completo (se ativado) e os
+            seus grifos e notas de página.</li>
+        </ul>
+        <p>Isso torna a pasta <b>autocontida</b>: copie para um pendrive ou outro computador,
+          abra o aplicativo apontando para ela, e tudo está lá — inclusive seus grifos.</p>
+      </section>
+
+      <section id="h3">
+        <h3>3. Indexação e metadados</h3>
+        <p>Para cada PDF, o aplicativo lê as duas primeiras páginas e procura o <b>DOI</b>.
+          Achando, consulta o <b>OpenAlex</b> e traz título, autores, ano, revista e resumo.
+          Quando o OpenAlex não tem o resumo, ele tenta o <b>Crossref</b>. Sem DOI, procura um
+          identificador do arXiv.</p>
+        <p>Não achando nenhum identificador, ele chuta a partir do próprio PDF: o título é o
+          bloco de texto com a maior fonte no topo da página 1, o resumo é o trecho entre
+          "Abstract" e "Introduction" ou "Keywords", e o ano vem da linha de copyright. Acerta
+          boa parte das vezes, mas é onde aparecem os erros.</p>
+
+        <h4>Corrigir à mão</h4>
+        <p>Abra o artigo e use o bloco <b>Corrigir metadados</b> na gaveta. O que você digitar
+          ali vira permanente: fica marcado como manual e nenhuma reindexação, nem o botão
+          <b>Rebuscar</b>, sobrescreve. O campo de resumo aceita colar o texto inteiro.</p>
+
+        <h4>Procurar novos</h4>
+        <p>Depois de jogar PDFs novos na pasta, clique em <b>Procurar novos</b>. Ele compara
+          caminho, tamanho e data de cada arquivo e só processa o que mudou — por isso leva
+          segundos, e não os minutos da primeira vez. Arquivos que sumiram do disco ficam
+          marcados em vez de apagados, para você não perder as anotações.</p>
+        <div class="note">A indexação pode ser interrompida a qualquer momento pelo botão
+          <b>Parar</b>. O que já foi feito está gravado, e a próxima varredura continua de onde
+          você parou.</div>
+      </section>
+
+      <section id="h4">
+        <h3>4. Navegar e filtrar</h3>
+        <p>A barra da esquerda tem quatro blocos de filtro, que se combinam entre si:</p>
+        <ul>
+          <li><b>Pastas</b> — a árvore de pastas físicas do disco. Clicar numa pasta inclui
+            também as subpastas dela.</li>
+          <li><b>Marcadores</b> — sua organização paralela, independente de onde o arquivo está.</li>
+          <li><b>Ano</b> — os anos presentes no acervo, com a contagem de cada um.</li>
+          <li><b>Favoritos</b> e <b>Sem resumo encontrado</b> — este último é a sua lista de
+            trabalho: os artigos cuja extração falhou e que merecem correção manual.</li>
+        </ul>
+        <p>Os filtros ativos aparecem como etiquetas no topo da lista, com o total de resultados,
+          e cada uma pode ser removida individualmente.</p>
+        <p>O botão de visualização alterna entre <b>capas</b> — melhor para reconhecer artigos
+          pela figura da primeira página — e <b>lista</b>, mais denso e com a revista visível.</p>
+      </section>
+
+      <section id="h5">
+        <h3>5. Marcadores</h3>
+        <p>Marcadores são rótulos coloridos que você aplica livremente, no modelo do Overleaf.
+          Um artigo pode ter quantos quiser, e eles não têm relação com a pasta em que o arquivo
+          está — é justamente essa a utilidade: um PDF em <code>Controle/Robusto/</code> pode
+          carregar <code>ler</code>, <code>benchmark</code> e <code>citar na tese</code> ao mesmo
+          tempo.</p>
+        <p>Para criar, abra um artigo e digite no campo <b>+ marcador</b>, ou selecione vários
+          artigos e use <b>Marcadores…</b>. A cor é atribuída automaticamente a partir do nome,
+          de forma estável, e pode ser trocada.</p>
+        <p>Passando o mouse sobre um marcador na barra lateral aparece um <b>⋯</b> que abre o
+          editor: renomear (propaga para todos os artigos de uma vez), trocar a cor ou excluir do
+          acervo inteiro. Excluir remove só o rótulo — arquivos e anotações ficam intactos.</p>
+        <p>Selecionando dois ou mais marcadores, surge o controle <b>e / ou</b>: com "e" só
+          aparecem artigos que têm todos; com "ou", os que têm qualquer um. O filtro
+          <b>Sem marcador</b> mostra o que ainda não foi organizado.</p>
+      </section>
+
+      <section id="h6">
+        <h3>6. Seleção em lote</h3>
+        <p>Passando o mouse sobre uma capa aparece uma caixinha no canto superior esquerdo; no
+          modo lista ela fica na primeira coluna. Clique para selecionar, e uma barra surge na
+          parte de baixo da tela.</p>
+        <ul>
+          <li><b>Shift + clique</b> seleciona o intervalo inteiro entre dois artigos.</li>
+          <li><b>Selecionar tudo</b> pega tudo o que está passando pelo filtro atual — então dá
+            para buscar um termo, selecionar tudo e marcar de uma vez.</li>
+          <li><b>Marcadores…</b> mostra o estado de cada marcador no conjunto: cheio quando todos
+            os selecionados têm, meio-tom quando só alguns. Clicar aplica a todos ou remove de
+            todos.</li>
+          <li><b>Favoritar</b>, <b>Desfavoritar</b> e <b>BibTeX…</b> agem sobre a seleção inteira.</li>
+        </ul>
+        <p>A tecla <kbd>Esc</kbd> limpa a seleção.</p>
+      </section>
+
+      <section id="h7">
+        <h3>7. Os três modos de busca</h3>
+        <p>A caixa de busca do cabeçalho funciona de três maneiras diferentes, e elas servem a
+          perguntas diferentes.</p>
+
+        <h4>Busca normal (sempre ativa)</h4>
+        <p>Procura simultaneamente em título, autores, revista, resumo, marcadores, sua nota,
+          nome do arquivo e no texto dos seus grifos e comentários. É instantânea e cobre a
+          maioria dos casos. Vários termos funcionam como "e": todos precisam aparecer.</p>
+
+        <h4>Texto completo</h4>
+        <p>O botão <b>Texto completo</b> estende a busca ao corpo dos PDFs, não só aos resumos.
+          Na primeira vez ele carrega o texto de todos os artigos na memória — alguns segundos,
+          com barra de progresso — e depois cada busca é imediata. No modo lista, cada resultado
+          mostra o trecho onde o termo apareceu, destacado.</p>
+        <p>Exige que a opção <b>Guardar o texto completo de cada PDF</b> esteja ativa em Ajustes.
+          Se você a ativou depois de já ter indexado, é preciso reindexar uma vez.</p>
+
+        <h4>Semântica</h4>
+        <p>O botão <b>Semântica</b> procura por <b>sentido</b>, não por palavra. Escreva a ideia
+          como você a descreveria em voz alta — "estabilidade de sistemas com atraso de
+          transporte" — e os artigos aparecem ordenados por aproximação, com o percentual embaixo
+          do título. Funciona entre idiomas: pergunta em português encontra artigo em inglês.</p>
+        <p>Antes do primeiro uso é preciso gerar os vetores em <b>Ajustes → Indexar vetores</b>.
+          Isso baixa um modelo de cerca de 120 MB, uma única vez, e o executa dentro do próprio
+          navegador. Nada é enviado para fora.</p>
+        <div class="note">Os filtros de pasta, marcador e ano continuam valendo junto com
+          qualquer um dos três modos. Dá para restringir a um marcador e perguntar dentro dele.</div>
+      </section>
+
+      <section id="h8">
+        <h3>8. Leitor, grifos e notas</h3>
+        <p>O botão <b>Ler e grifar</b> na gaveta do artigo abre o leitor. As páginas rolam
+          continuamente e são renderizadas conforme você chega perto delas. <b>Largura</b> ajusta
+          o zoom à janela; <b>−</b> e <b>+</b> ajustam manualmente.</p>
+
+        <h4>Grifar</h4>
+        <p>Selecione qualquer trecho de texto e aparece uma paleta com quatro cores. A opção
+          <b>grifar e comentar</b> já abre o campo de comentário com o cursor dentro. Clicar num
+          grifo existente o seleciona no painel lateral; clicar no item do painel salta para o
+          trecho na página.</p>
+
+        <h4>Notas de página</h4>
+        <p>O <b>+ nota</b> no cabeçalho de cada página cria uma anotação solta, sem precisar
+          selecionar nada — útil quando o comentário é sobre uma figura, sobre a página inteira ou
+          sobre o que está faltando ali.</p>
+
+        <h4>Localizar</h4>
+        <p><kbd>Ctrl</kbd>+<kbd>F</kbd> abre a busca dentro do artigo. Mostra "3 de 17" e salta
+          entre ocorrências com <kbd>Enter</kbd>, ou <kbd>Shift</kbd>+<kbd>Enter</kbd> para voltar.
+          A ocorrência atual ganha uma faixa laranja sobre a linha.</p>
+
+        <h4>Exportar</h4>
+        <p>O botão <b>Copiar</b> leva todas as anotações do artigo para a área de transferência em
+          Markdown, com o cabeçalho bibliográfico e cada grifo como citação seguida do seu
+          comentário. Cola direto no Obsidian ou num rascunho de revisão.</p>
+        <p>Seus grifos e comentários também entram na busca da biblioteca: procurar por uma
+          palavra que você comentou encontra aquele artigo, mesmo que ela não esteja no resumo.</p>
+      </section>
+
+      <section id="h9">
+        <h3>9. Exportar BibTeX</h3>
+        <p>Disponível no botão <b>BibTeX…</b> da barra de seleção e em Ajustes. Você escolhe o
+          conjunto — os artigos selecionados, os que estão passando pelo filtro atual, ou o acervo
+          inteiro — e a origem das entradas:</p>
+        <ul>
+          <li><b>Montadas aqui</b> — instantâneo, a partir dos metadados que você já tem.
+            Decide entre <code>@article</code> e <code>@inproceedings</code> pelo nome da revista.</li>
+          <li><b>Buscadas no Crossref</b> — a entrada canônica da editora, com volume, número e
+            páginas. Leva cerca de um segundo por artigo e só funciona para os que têm DOI;
+            os demais caem automaticamente para a versão montada aqui.</li>
+        </ul>
+        <p>As chaves seguem o padrão sobrenome do primeiro autor + ano + primeira palavra
+          significativa do título, sem acento, com sufixo de letra quando houver colisão. O
+          resultado aparece numa caixa editável antes de copiar ou salvar como <code>.bib</code>.</p>
+      </section>
+
+      <section id="h10">
+        <h3>10. Ajustes e aparência</h3>
+        <p>O <b>⋯</b> no cabeçalho abre os ajustes:</p>
+        <ul>
+          <li><b>Seu e-mail</b> — o OpenAlex e o Crossref dão prioridade a quem se identifica.
+            Vale preencher antes de indexar centenas de artigos. Fica só no seu
+            <code>index.json</code>.</li>
+          <li><b>Guardar o texto completo</b> — habilita a busca no corpo dos PDFs. Ocupa cerca
+            de 50 KB por artigo.</li>
+          <li><b>Busca semântica</b> — gera ou refaz os vetores, e mostra quantos artigos já têm.</li>
+          <li><b>Exportar índice</b> — baixa um JSON com tudo, como cópia de segurança.</li>
+          <li><b>Reindexar tudo</b> — refaz metadados e capas de todos os artigos. Notas,
+            marcadores, favoritos, grifos e correções manuais são preservados.</li>
+        </ul>
+        <p>O botão <b>Aparência</b> tem seis temas (Dracula, Monokai, Material Darker, Nord,
+          Eclipse e Claro), quatro conjuntos de fonte e quatro tamanhos de texto. Tudo usa fontes
+          do próprio sistema, sem download. A escolha fica no navegador e é espelhada no
+          <code>index.json</code>, então acompanha a pasta se você abri-la em outra máquina.</p>
+      </section>
+
+      <section id="h11">
+        <h3>11. Atalhos de teclado</h3>
+        <table class="keys">
+          <tr><td><kbd>/</kbd></td><td>vai para a caixa de busca</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>busca na biblioteca; dentro do leitor, localiza no artigo</td></tr>
+          <tr><td><kbd>Enter</kbd></td><td>no localizar, próxima ocorrência</td></tr>
+          <tr><td><kbd>Shift</kbd>+<kbd>Enter</kbd></td><td>no localizar, ocorrência anterior</td></tr>
+          <tr><td><kbd>Shift</kbd>+clique</td><td>seleciona um intervalo de artigos</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>fecha o painel aberto, sai do leitor ou limpa a seleção, nessa ordem</td></tr>
+        </table>
+      </section>
+
+      <section id="h12">
+        <h3>12. Limites e problemas</h3>
+        <h4>Só Chrome e Edge</h4>
+        <p>A leitura de uma pasta do disco depende da File System Access API, que o Firefox e o
+          Safari não implementam. Não há como contornar sem abandonar a ideia de ler os arquivos
+          onde eles estão.</p>
+
+        <h4>PDFs escaneados</h4>
+        <p>Um PDF que é só imagem, sem camada de texto, não tem o que selecionar: não dá para
+          grifar, não entra na busca de texto completo e o resumo não é extraído. A capa e os
+          metadados por DOI continuam funcionando se houver DOI impresso.</p>
+
+        <h4>Artigos em duas colunas</h4>
+        <p>A extração separa as colunas antes de montar as linhas, mas fórmulas, tabelas e
+          legendas de figura se perdem ou aparecem fora de ordem. Para o resumo isso raramente
+          importa; para a busca no texto completo, ocasionalmente sim.</p>
+
+        <h4>Se o índice sumir</h4>
+        <p>O <code>index.json</code> é o ponto único de falha. Use <b>Exportar índice</b> de vez
+          em quando, especialmente antes de mover a pasta de lugar. Os grifos ficam em arquivos
+          separados dentro de <code>docs/</code> e não são afetados por problemas no índice.</p>
+      </section>
+
+      <section id="h13">
+        <h3>13. Renomear os PDFs</h3>
+        <p>Em <b>Ajustes → Renomear PDFs</b>, ou pelo botão <b>Renomear…</b> da barra de seleção,
+          o Acervo dá aos arquivos um nome padronizado a partir dos metadados que já tem:</p>
+        <p><code>2021 - Robust optimization for production planning - Silva e Souza.pdf</code></p>
+        <ul>
+          <li>O ano e o título saem do índice, do jeito que aparecem na gaveta de detalhe. Se
+            você corrigiu algo à mão, é a correção que vale.</li>
+          <li>Entram os sobrenomes dos dois primeiros autores, ligados por <b>e</b>. Com um autor
+            só, fica só ele. Com três ou mais, acrescenta-se <b>et al.</b></li>
+          <li>Caracteres que o Windows não aceita em nomes de arquivo (<code>: / \ ? * " &lt; &gt; |</code>)
+            são trocados por espaço, e títulos muito longos são cortados numa palavra inteira.</li>
+        </ul>
+        <h4>Nada acontece sem conferência</h4>
+        <p>A janela mostra, para cada artigo, o nome atual e o nome novo. Você escolhe o escopo
+          (selecionados, filtro atual ou todos), desmarca o que não quiser e só então clica em
+          <b>Renomear</b>. Artigos sem ano, sem título ou sem autores no índice são listados com
+          o motivo e ficam de fora; corrija os metadados na gaveta e rode de novo.</p>
+        <h4>O que é preservado</h4>
+        <p>A identidade do artigo é o conteúdo do arquivo, não o nome. Por isso grifos, notas,
+          marcadores, favoritos, capa e vetores continuam no lugar. O arquivo é movido dentro da
+          mesma pasta, sem cópia. Se já existir um arquivo com o nome pretendido, o novo recebe
+          um sufixo <code>(2)</code>.</p>
+      </section>
+    </div>
+
+    <div class="help-foot">
+      <button class="btn-major" id="hp-close" style="padding:10px 20px">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div id="aboutmodal" class="modalbase">
+  <div class="m-box" style="width:580px" role="dialog" aria-modal="true" aria-labelledby="ab-title">
+    <h2 id="ab-title">Sobre este projeto</h2>
+    <div class="about">
+      <h3>Sobre mim</h3>
+      <p><b style="color:var(--text)">Alexandre Checoli Choueiri</b>
+        (<a href="mailto:alexandrechecoli@ufpr.br">alexandrechecoli@ufpr.br</a>)</p>
+      <p>Sou professor do curso de Engenharia de Produção da Universidade Federal do Paraná
+        (UFPR). Fiz este aplicativo para organizar e ler os artigos científicos que uso em
+        pesquisa e em aula, sem depender de serviço externo nem de assinatura.</p>
+
+      <h3>Sobre o projeto</h3>
+      <p>Acervo é um gerenciador e leitor de biblioteca de artigos científicos que roda
+        inteiramente no navegador. Você aponta uma pasta do seu computador e ele percorre
+        todas as subpastas, extrai título, autores, ano e resumo de cada PDF, e deixa tudo
+        pesquisável — por palavra, pelo corpo do texto ou por sentido.</p>
+      <p>Nenhum arquivo é enviado para lugar nenhum. Os PDFs são lidos direto do disco, e o
+        índice, os marcadores, as notas e os grifos ficam num arquivo dentro da própria pasta,
+        em formato legível. A pasta é autocontida: copie para outro computador e tudo vai junto.</p>
+
+      <h3>Tecnologias e referências</h3>
+      <ul>
+        <li><b>PDF.js</b> — biblioteca da Mozilla que renderiza os PDFs e extrai o texto de
+          cada página, inclusive a camada invisível que permite selecionar e grifar.
+          <span class="lk"><a href="https://mozilla.github.io/pdf.js/" target="_blank" rel="noopener">mozilla.github.io/pdf.js</a></span></li>
+
+        <li><b>File System Access API</b> — recurso do navegador que permite ler e gravar
+          numa pasta do disco mediante autorização, sem servidor no meio. É o que torna
+          possível uma aplicação local feita só de HTML, CSS e JavaScript.
+          <span class="lk"><a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API" target="_blank" rel="noopener">developer.mozilla.org</a></span></li>
+
+        <li><b>OpenAlex</b> — catálogo aberto de publicações científicas. É a fonte principal
+          de título, autores, ano, revista e resumo, consultada pelo DOI impresso na primeira
+          página do PDF.
+          <span class="lk"><a href="https://openalex.org" target="_blank" rel="noopener">openalex.org</a></span></li>
+
+        <li><b>Crossref</b> — agência de registro de DOI. Serve de segunda fonte quando o
+          OpenAlex não tem o resumo, e fornece as entradas BibTeX canônicas das editoras.
+          <span class="lk"><a href="https://www.crossref.org" target="_blank" rel="noopener">crossref.org</a></span></li>
+
+        <li><b>Transformers.js</b> — biblioteca da Hugging Face que executa modelos de
+          aprendizado de máquina dentro do navegador, via ONNX Runtime com aceleração por
+          WebGPU. É o que permite a busca semântica sem instalar nada.
+          <span class="lk"><a href="https://huggingface.co/docs/transformers.js" target="_blank" rel="noopener">huggingface.co/docs/transformers.js</a></span></li>
+
+        <li><b>multilingual-e5-small</b> — modelo de embeddings multilíngue, desenvolvido pela
+          Microsoft e convertido para ONNX. Transforma o resumo de cada artigo num vetor de
+          significado, o que permite buscar por assunto em português e encontrar artigos
+          escritos em inglês.
+          <span class="lk"><a href="https://huggingface.co/Xenova/multilingual-e5-small" target="_blank" rel="noopener">huggingface.co/Xenova/multilingual-e5-small</a></span></li>
+
+        <li><b>Claude (Anthropic)</b> — assistente de IA usado no desenvolvimento deste
+          aplicativo, no mesmo esquema dos outros: eu como gerente geral, ele digitando.
+          <span class="lk"><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a></span></li>
+      </ul>
+
+      <p class="sig">Tudo roda no seu computador. As únicas requisições que saem são as
+        consultas ao OpenAlex e ao Crossref pelo DOI, e o download único do modelo de busca
+        semântica. Os PDFs e suas anotações nunca saem da máquina.</p>
+    </div>
+    <div class="m-actions">
+      <button class="btn-major" id="ab-close" style="padding:10px 20px">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SELEÇÃO E MARCADORES ========== -->
+<div id="selbar">
+  <span class="n" id="selcount"></span>
+  <button id="sel-tag">Marcadores…</button>
+  <button id="sel-bib">BibTeX…</button>
+  <button id="sel-rename">Renomear…</button>
+  <button id="sel-fav">Favoritar</button>
+  <button id="sel-unfav">Desfavoritar</button>
+  <button id="sel-all">Selecionar tudo</button>
+  <button id="sel-clear">Limpar</button>
+</div>
+<div id="tagmenu"></div>
+
+<div id="bibmodal" class="modalbase">
+  <div class="m-box" style="width:520px" role="dialog" aria-modal="true" aria-labelledby="bb-title">
+    <h2 id="bb-title">Exportar BibTeX</h2>
+    <div class="m-row">
+      <label>Quais artigos</label>
+      <div class="radiorow" id="bb-scope"></div>
+    </div>
+    <div class="m-row">
+      <label>De onde vêm as entradas</label>
+      <div class="radiorow">
+        <label><input type="radio" name="bbsrc" value="local" checked>
+          <span><b>Montadas aqui</b> — instantâneo, usa os metadados que você já tem.</span></label>
+        <label><input type="radio" name="bbsrc" value="crossref">
+          <span><b>Buscadas no Crossref</b> — entrada canônica da editora, com tipo e páginas
+            corretos. Leva cerca de um segundo por artigo e só funciona para os que têm DOI.</span></label>
+      </div>
+    </div>
+    <div class="m-row">
+      <label for="bib-out">Resultado</label>
+      <textarea id="bib-out" spellcheck="false" placeholder="Clique em Gerar."></textarea>
+    </div>
+    <div class="m-actions">
+      <button class="btn-ghost" id="bb-close">Fechar</button>
+      <button class="btn-ghost" id="bb-copy">Copiar</button>
+      <button class="btn-ghost" id="bb-save">Salvar .bib</button>
+      <button class="btn-major" id="bb-gen" style="padding:10px 20px">Gerar</button>
+    </div>
+  </div>
+</div>
+
+<div id="renmodal" class="modalbase">
+  <div class="m-box" style="width:680px" role="dialog" aria-modal="true" aria-labelledby="rn-title">
+    <h2 id="rn-title">Renomear os PDFs</h2>
+    <div class="m-row">
+      <label>Quais artigos</label>
+      <div class="radiorow" id="rn-scope"></div>
+      <p class="m-hint">Cada arquivo passa a se chamar <code>ANO - Título do artigo - Sobrenome e Sobrenome.pdf</code>,
+        usando os metadados que já estão no índice. Com mais de dois autores entra <code>et al.</code>
+        Grifos, notas, marcadores e capas continuam ligados ao artigo, porque a identidade é o conteúdo, não o nome.</p>
+    </div>
+    <div class="m-row">
+      <label>Conferência antes de aplicar</label>
+      <div id="ren-list"></div>
+      <div id="ren-sum"></div>
+    </div>
+    <div class="m-actions">
+      <button class="btn-ghost" id="rn-close">Fechar</button>
+      <button class="btn-ghost" id="rn-all">Marcar tudo</button>
+      <button class="btn-ghost" id="rn-none">Desmarcar tudo</button>
+      <button class="btn-major" id="rn-go" style="padding:10px 20px">Renomear</button>
+    </div>
+  </div>
+</div>
+
+<div id="tagedit" class="modalbase">
+  <div class="m-box" style="width:360px" role="dialog" aria-modal="true" aria-labelledby="te-title">
+    <h2 id="te-title">Marcador</h2>
+    <div class="m-row">
+      <label for="te-name">Nome</label>
+      <input type="text" id="te-name">
+    </div>
+    <div class="m-row">
+      <label>Cor</label>
+      <div class="swatches" id="te-colors"></div>
+    </div>
+    <p class="m-hint" id="te-count"></p>
+    <div class="m-actions">
+      <button class="btn-ghost" id="te-del" style="margin-right:auto;color:var(--red)">Excluir marcador</button>
+      <button class="btn-ghost" id="te-cancel">Cancelar</button>
+      <button class="btn-major" id="te-save" style="padding:10px 20px">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== LEITOR ========== -->
+<section id="reader" aria-label="Leitor">
+  <div id="rd-bar">
+    <button class="tool" id="rd-close" title="Voltar ao acervo (Esc)">‹ Acervo</button>
+    <span class="rd-title" id="rd-title"></span>
+    <div class="spacer"></div>
+    <button class="tool" id="rd-prev" title="Página anterior">‹</button>
+    <input id="rd-goto" inputmode="numeric" aria-label="Ir para a página">
+    <span class="rd-pageno" id="rd-of"></span>
+    <button class="tool" id="rd-next" title="Próxima página">›</button>
+    <button class="tool" id="rd-out" title="Diminuir">−</button>
+    <span class="rd-pageno" id="rd-zoom"></span>
+    <button class="tool" id="rd-in" title="Aumentar">+</button>
+    <button class="tool" id="rd-fit">Largura</button>
+    <button class="tool" id="rd-findbtn" title="Localizar no artigo (Ctrl+F)">Localizar</button>
+    <button class="tool" id="rd-side-t" title="Mostrar ou esconder as anotações">Anotações</button>
+  </div>
+  <div id="rd-find">
+    <input id="rd-fq" placeholder="localizar no artigo" autocomplete="off">
+    <span id="rd-fc"></span>
+    <button id="rd-fp" aria-label="Anterior">‹</button>
+    <button id="rd-fn" aria-label="Próximo">›</button>
+    <button id="rd-fx" aria-label="Fechar">✕</button>
+  </div>
+  <div id="rd-pages"></div>
+  <aside id="rd-side">
+    <div class="side-head">
+      <span id="rd-count"></span>
+      <div class="spacer"></div>
+      <button id="rd-note">+ nota na página</button>
+      <button id="rd-copy">Copiar</button>
+    </div>
+    <div id="rd-list"></div>
+  </aside>
+</section>
+<div id="rd-pal" role="group" aria-label="Grifar seleção"></div>
+
+<button class="look-btn" id="look">Aparência</button>
+
+<div id="lookmodal" class="modalbase">
+  <div class="m-box" role="dialog" aria-modal="true" aria-labelledby="l-title">
+    <h2 id="l-title">Aparência</h2>
+    <div class="m-row">
+      <label>Tema</label>
+      <div class="themes" id="themelist"></div>
+    </div>
+    <div class="m-row">
+      <label>Fontes</label>
+      <div class="fonts" id="fontlist"></div>
+    </div>
+    <div class="m-row">
+      <label>Tamanho do texto</label>
+      <div class="sizes" id="sizelist"></div>
+    </div>
+    <div class="m-actions">
+      <button class="btn-major" id="l-close" style="padding:10px 20px">Pronto</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+/* ==================================================================
+   ACERVO — biblioteca local de artigos científicos
+   Tudo roda no navegador. Os arquivos ficam na pasta do usuário.
+   ================================================================== */
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const LIB   = '_biblioteca';
+const $     = s => document.querySelector(s);
+const esc   = s => String(s==null?'':s).replace(/[&<>"]/g, c =>
+                ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- estado ---------- */
+const S = {
+  root:null, libDir:null, coverDir:null, docsDir:null,
+  docs:{},                 // hash -> registro
+  covers:new Map(),        // hash -> objectURL
+  prefs:{mail:'', fulltext:true},
+  view:'grid',
+  sel:null,
+  busy:false, stop:false,
+  filter:{q:'', folder:null, tags:[], tagMode:'and', untagged:false, year:null,
+           fav:false, nometa:false, deep:false, sem:false}
+};
+
+/* ==================================================================
+   1. Guardar o handle da pasta (para reabrir com um clique)
+   ================================================================== */
+const idb = {
+  db:null,
+  async open(){
+    if(this.db) return this.db;
+    this.db = await new Promise((res,rej)=>{
+      const r = indexedDB.open('acervo',1);
+      r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => res(r.result);
+      r.onerror   = () => rej(r.error);
+    });
+    return this.db;
+  },
+  async get(k){
+    const db = await this.open();
+    return new Promise((res,rej)=>{
+      const r = db.transaction('kv').objectStore('kv').get(k);
+      r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+    });
+  },
+  async set(k,v){
+    const db = await this.open();
+    return new Promise((res,rej)=>{
+      const t = db.transaction('kv','readwrite');
+      t.objectStore('kv').put(v,k);
+      t.oncomplete=()=>res(); t.onerror=()=>rej(t.error);
+    });
+  }
+};
+
+/* ==================================================================
+   2. Sistema de arquivos
+   ================================================================== */
+async function ensurePermission(handle){
+  const opt = {mode:'readwrite'};
+  if(await handle.queryPermission(opt) === 'granted') return true;
+  return await handle.requestPermission(opt) === 'granted';
+}
+
+async function mountRoot(handle){
+  S.root     = handle;
+  S.libDir   = await handle.getDirectoryHandle(LIB, {create:true});
+  S.coverDir = await S.libDir.getDirectoryHandle('capas', {create:true});
+  S.docsDir  = await S.libDir.getDirectoryHandle('docs',  {create:true});
+  await idb.set('root', handle);
+}
+
+/* percorre a pasta raiz e todas as subpastas atrás de PDFs */
+async function* walk(dir, rel=''){
+  for await (const entry of dir.values()){
+    if(entry.name.startsWith('.') || entry.name === LIB) continue;
+    const path = rel ? rel + '/' + entry.name : entry.name;
+    if(entry.kind === 'directory'){
+      yield* walk(entry, path);
+    }else if(/\.pdf$/i.test(entry.name)){
+      yield {handle:entry, path, dir:rel};
+    }
+  }
+}
+
+async function fileByPath(path){
+  const parts = path.split('/');
+  let dir = S.root;
+  for(let i=0;i<parts.length-1;i++) dir = await dir.getDirectoryHandle(parts[i]);
+  return (await dir.getFileHandle(parts[parts.length-1])).getFile();
+}
+
+async function writeFile(dir, name, data){
+  const fh = await dir.getFileHandle(name, {create:true});
+  const w  = await fh.createWritable();
+  await w.write(data);
+  await w.close();
+}
+
+async function readJSON(dir, name){
+  try{
+    const f = await (await dir.getFileHandle(name)).getFile();
+    return JSON.parse(await f.text());
+  }catch(e){ return null; }
+}
+
+/* identidade estável do arquivo: 1º MB + tamanho */
+async function hashFile(file){
+  const buf = await file.slice(0, 1<<20).arrayBuffer();
+  const d   = await crypto.subtle.digest('SHA-256', buf);
+  const hex = [...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  return hex.slice(0,16) + file.size.toString(36);
+}
+
+/* ---------- índice ---------- */
+let saveTimer=null;
+function saveSoon(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveIndex,700); }
+async function saveIndex(){
+  clearTimeout(saveTimer);
+  if(!S.libDir) return;
+  await writeFile(S.libDir,'index.json', JSON.stringify({
+    format:'acervo/1', saved:new Date().toISOString(),
+    prefs:S.prefs, tagcolors:S.tagcolors, docs:S.docs
+  },null,1));
+}
+async function loadIndex(){
+  const d = await readJSON(S.libDir,'index.json');
+  if(d && d.docs){
+    S.docs = d.docs;
+    if(d.prefs) Object.assign(S.prefs, d.prefs);
+    if(d.tagcolors) S.tagcolors = d.tagcolors;
+  }
+}
+
+/* ==================================================================
+   3. Leitura do PDF
+   ================================================================== */
+/* monta linhas respeitando duas colunas, que é o normal em artigo */
+function linesFrom(items, width){
+  const raw = items.filter(i=>i.str.trim()).map(i=>({
+    s:i.str, x:i.transform[4], y:i.transform[5], w:i.width || 0,
+    h:Math.hypot(i.transform[2], i.transform[3])
+  }));
+  if(!raw.length) return [];
+  const mid = width/2;
+  const left = raw.filter(i=>i.x < mid*0.92).length;
+  const right= raw.filter(i=>i.x > mid*1.02).length;
+  const twoCol = left>12 && right>12 &&
+                 raw.filter(i=>i.x < mid && i.x + 40 > mid).length < raw.length*0.12;
+
+  const group = arr => {
+    const lines=[];
+    arr.sort((a,b)=> b.y-a.y || a.x-b.x);
+    for(const it of arr){
+      const last = lines[lines.length-1];
+      if(last && Math.abs(last.y - it.y) < Math.max(2.2, it.h*0.42)){
+        last.parts.push(it); last.h = Math.max(last.h, it.h);
+      }else{
+        lines.push({y:it.y, h:it.h, parts:[it]});
+      }
+    }
+    return lines.map(l=>{
+      l.parts.sort((a,b)=>a.x-b.x);
+      let t='';
+      for(let i=0;i<l.parts.length;i++){
+        const p=l.parts[i], prev=l.parts[i-1];
+        if(prev && p.x - (prev.x + prev.s.length*prev.h*0.48) > p.h*0.28 && !/\s$/.test(t)) t+=' ';
+        t += p.s;
+      }
+      const x0 = Math.min(...l.parts.map(p=>p.x));
+      const x1 = Math.max(...l.parts.map(p=>p.x + (p.w || p.s.length*p.h*0.5)));
+      return {text:t.replace(/\s+/g,' ').trim(), h:l.h, y:l.y, x:x0, w:x1-x0};
+    }).filter(l=>l.text);
+  };
+
+  return twoCol
+    ? [...group(raw.filter(i=>i.x < mid)), ...group(raw.filter(i=>i.x >= mid))]
+    : group(raw);
+}
+
+async function readPdf(file, wantFull){
+  const data = new Uint8Array(await file.arrayBuffer());
+  const pdf  = await pdfjsLib.getDocument({data, disableAutoFetch:true}).promise;
+  const out  = {pages:pdf.numPages, lines:[], text:'', full:'', meta:null, pdf};
+
+  try{ out.meta = (await pdf.getMetadata()).info; }catch(e){}
+
+  const n = Math.min(2, pdf.numPages);
+  for(let i=1;i<=n;i++){
+    const page = await pdf.getPage(i);
+    const vp   = page.getViewport({scale:1});
+    const tc   = await page.getTextContent();
+    const ls   = linesFrom(tc.items, vp.width);
+    if(i===1) out.lines = ls;
+    out.text += ls.map(l=>l.text).join('\n') + '\n';
+  }
+
+  if(wantFull){
+    const parts=[];
+    for(let i=1;i<=pdf.numPages;i++){
+      const page = await pdf.getPage(i);
+      const vp   = page.getViewport({scale:1});
+      const tc   = await page.getTextContent();
+      parts.push(linesFrom(tc.items, vp.width).map(l=>l.text).join('\n'));
+      page.cleanup();
+    }
+    out.full = parts.join('\n\n');
+  }
+  return out;
+}
+
+async function makeCover(pdf, hash){
+  const page = await pdf.getPage(1);
+  const vp1  = page.getViewport({scale:1});
+  const vp   = page.getViewport({scale: 420/vp1.width});
+  const cv   = document.createElement('canvas');
+  cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height);
+  await page.render({canvasContext:ctx, viewport:vp}).promise;
+  const blob = await new Promise(r=>cv.toBlob(r,'image/jpeg',0.72));
+  if(blob) await writeFile(S.coverDir, hash + '.jpg', blob);
+  page.cleanup();
+}
+
+/* ---------- identificadores ---------- */
+function findDOI(text, meta){
+  const hay = (text||'') + ' ' + Object.values(meta||{}).filter(v=>typeof v==='string').join(' ');
+  const m = hay.match(/\b10\.\d{4,9}\/[^\s"'<>,;)\]}]+/);
+  if(!m) return null;
+  return m[0].replace(/[.,;:)\]}]+$/,'').trim();
+}
+function findArxiv(text){
+  const m = (text||'').match(/arXiv[:\s]\s*(\d{4}\.\d{4,5})(v\d+)?/i);
+  return m ? m[1] : null;
+}
+
+/* ---------- chutes a partir do próprio PDF ---------- */
+const NOISE = /^(journal|volume|vol\.|issn|isbn|doi|https?:|www\.|received|accepted|revised|published|copyright|©|proceedings|conference|available online|contents lists|elsevier|springer|ieee|preprint|downloaded)/i;
+
+function guessTitle(lines, meta){
+  const top = lines.slice(0, 26).filter(l =>
+    l.text.length > 8 && !NOISE.test(l.text) && !/^\d+$/.test(l.text) &&
+    !/@/.test(l.text) && (l.text.match(/[a-zà-ú]/g)||[]).length > 4);
+  if(top.length){
+    const max = Math.max(...top.map(l=>l.h));
+    const block = [];
+    for(const l of top){
+      if(l.h >= max-0.6) block.push(l.text);
+      else if(block.length) break;
+    }
+    const t = block.join(' ').replace(/\s+/g,' ').trim();
+    if(t.length > 12) return t.slice(0,300);
+  }
+  const mt = meta && (meta.Title||'').trim();
+  if(mt && mt.length>12 && !/\.(docx?|tex|pdf|indd)$/i.test(mt)) return mt;
+  return '';
+}
+
+function guessAbstract(text){
+  const flat = text.replace(/\s+/g,' ');
+  const m = flat.match(/\bA\s?B\s?S\s?T\s?R\s?A\s?C\s?T\b|\bResumo\b|\bSummary\b/i);
+  if(!m) return '';
+  let a = flat.slice(m.index + m[0].length).replace(/^[\s:.\u2014-]+/,'');
+  const end = a.search(/\b(Keywords?|Key words|Index Terms|Palavras[- ]chave|1\.?\s+Introduction|I\.\s+INTRODUCTION|Introduction)\b/i);
+  if(end > 120) a = a.slice(0,end);
+  a = a.trim();
+  return a.length > 80 ? a.slice(0,2600) : '';
+}
+
+function guessYear(text, meta){
+  const now = new Date().getFullYear();
+  const near = text.match(/(?:©|\(c\)|Received|Accepted|Published|Copyright)[^\n]{0,60}?((?:19|20)\d{2})/i);
+  if(near) return +near[1];
+  const all = (text.match(/\b(19[89]\d|20[0-4]\d)\b/g)||[]).map(Number).filter(y=>y<=now);
+  if(all.length){
+    const count={}; all.forEach(y=>count[y]=(count[y]||0)+1);
+    return +Object.keys(count).sort((a,b)=>count[b]-count[a]||b-a)[0];
+  }
+  const d = meta && (meta.CreationDate||'').match(/(\d{4})/);
+  return d ? +d[1] : null;
+}
+
+/* ---------- consulta às bases abertas ---------- */
+function invertedToText(inv){
+  if(!inv) return '';
+  const out=[];
+  for(const w in inv) for(const p of inv[w]) out[p]=w;
+  return out.join(' ').replace(/\s+/g,' ').trim();
+}
+function stripJats(s){
+  return String(s||'').replace(/<[^>]+>/g,' ').replace(/&lt;[^&]*&gt;/g,' ')
+    .replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#x?\w+;/g,' ')
+    .replace(/\s+/g,' ').replace(/^Abstract\s*/i,'').trim();
+}
+const mailQ = () => S.prefs.mail ? '&mailto=' + encodeURIComponent(S.prefs.mail) : '';
+
+async function lookupOpenAlex(doi){
+  const base = 'https://api.openalex.org/works/doi:' + encodeURIComponent(doi);
+  const sel  = '?select=title,publication_year,authorships,primary_location,abstract_inverted_index'
+             + mailQ();
+  let r = await fetch(base + sel);
+  if(r.status === 400 || r.status === 403) r = await fetch(base + '?x=1' + mailQ());
+  if(!r.ok) return null;
+  const w = await r.json();
+  if(!w || !w.title) return null;
+  return {
+    title: w.title,
+    year: w.publication_year || null,
+    authors: (w.authorships||[]).map(a => a.author && a.author.display_name).filter(Boolean),
+    journal: (w.primary_location && w.primary_location.source && w.primary_location.source.display_name) || '',
+    abstract: invertedToText(w.abstract_inverted_index),
+    source:'openalex'
+  };
+}
+async function lookupCrossref(doi){
+  const r = await fetch('https://api.crossref.org/works/' + encodeURIComponent(doi) + '?x=1' + mailQ());
+  if(!r.ok) return null;
+  const w = (await r.json()).message;
+  if(!w) return null;
+  return {
+    title: (w.title && w.title[0]) || '',
+    year: (w.issued && w.issued['date-parts'] && w.issued['date-parts'][0][0]) || null,
+    authors: (w.author||[]).map(a => [a.given,a.family].filter(Boolean).join(' ')).filter(Boolean),
+    journal: (w['container-title'] && w['container-title'][0]) || '',
+    abstract: stripJats(w.abstract),
+    source:'crossref'
+  };
+}
+async function lookupArxiv(id){
+  try{ return await lookupOpenAlex('10.48550/arXiv.' + id); }catch(e){ return null; }
+}
+
+/* junta o que veio da base com o que foi lido do PDF */
+async function resolveMeta(doi, arxiv, fallback){
+  let rec = null;
+  if(doi){
+    try{ rec = await lookupOpenAlex(doi); }catch(e){}
+    if(!rec || !rec.abstract){
+      try{
+        const c = await lookupCrossref(doi);
+        if(c) rec = rec ? {...rec, abstract: rec.abstract || c.abstract,
+                           journal: rec.journal || c.journal,
+                           source: rec.abstract ? rec.source : 'openalex+crossref'} : c;
+      }catch(e){}
+    }
+  }
+  if(!rec && arxiv){ rec = await lookupArxiv(arxiv); }
+  if(!rec) return {...fallback, source:'pdf'};
+  return {
+    title: rec.title || fallback.title,
+    year: rec.year || fallback.year,
+    authors: rec.authors.length ? rec.authors : fallback.authors,
+    journal: rec.journal || fallback.journal,
+    abstract: rec.abstract || fallback.abstract,
+    source: rec.abstract ? rec.source : rec.source + '/pdf'
+  };
+}
+
+/* ==================================================================
+   4. Indexação
+   ================================================================== */
+const P = {
+  show(label){ $('#prog').classList.add('on'); $('#p-label').textContent=label; },
+  set(done,total,file){
+    $('#p-sub').textContent = done + ' de ' + total;
+    $('#p-fill').style.width = (total? done/total*100 : 0) + '%';
+    if(file!==undefined) $('#p-file').textContent = file;
+  },
+  hide(){ $('#prog').classList.remove('on'); $('#p-fill').style.width='0'; }
+};
+
+function toast(msg, ms=2800){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),ms);
+}
+
+async function scan({force=false}={}){
+  if(S.busy) return;
+  S.busy=true; S.stop=false;
+  $('#scan').disabled=true;
+  P.show('Procurando PDFs'); P.set(0,0,'');
+
+  /* 1. varre a árvore de pastas */
+  const found=[];
+  try{
+    for await (const f of walk(S.root)) found.push(f);
+  }catch(e){
+    toast('Não consegui ler a pasta: ' + e.message);
+    S.busy=false; $('#scan').disabled=false; P.hide(); return;
+  }
+
+  /* 2. decide o que precisa de trabalho */
+  const seen = new Set();
+  const todo = [];
+  const byPath = {};
+  for(const h in S.docs) byPath[S.docs[h].path] = S.docs[h];
+
+  P.show('Conferindo arquivos');
+  for(let i=0;i<found.length;i++){
+    if(S.stop) break;
+    P.set(i, found.length, found[i].path);
+    let file;
+    try{ file = await found[i].handle.getFile(); }catch(e){ continue; }
+
+    /* atalho: mesmo caminho, mesmo tamanho, mesma data → é o mesmo arquivo */
+    const known = byPath[found[i].path];
+    if(!force && known && known.mtime === file.lastModified && known.size === file.size){
+      seen.add(known.hash); known.missing = false; continue;
+    }
+
+    let hash;
+    try{ hash = await hashFile(file); }catch(e){ continue; }
+    seen.add(hash);
+    const cur = S.docs[hash];
+    if(cur){
+      cur.path = found[i].path; cur.dir = found[i].dir;
+      cur.mtime = file.lastModified; cur.size = file.size;
+      cur.missing = false;
+      saveSoon();
+      if(!force) continue;
+    }
+    todo.push({...found[i], file, hash});
+  }
+  for(const h in S.docs) if(!seen.has(h)) S.docs[h].missing = true;
+
+  render();
+  await saveIndex();
+
+  /* 3. processa os que faltam */
+  if(todo.length){
+    P.show('Lendo os artigos');
+    for(let i=0;i<todo.length;i++){
+      if(S.stop) break;
+      P.set(i, todo.length, todo[i].path);
+      try{ await indexOne(todo[i]); }
+      catch(e){
+        S.docs[todo[i].hash] = S.docs[todo[i].hash] || blank(todo[i]);
+        S.docs[todo[i].hash].error = String(e.message||e).slice(0,140);
+      }
+      if(i % 4 === 3){ await saveIndex(); render(); }
+      await new Promise(r=>setTimeout(r,60));   /* respiro para as APIs */
+    }
+    P.set(todo.length, todo.length,'');
+  }
+
+  await saveIndex();
+  render(); buildRail();
+  P.hide();
+  S.busy=false; $('#scan').disabled=false;
+
+  if(todo.length){
+    if(SEM.vecs.size) toast('Há artigos novos sem vetor — refaça a indexação semântica em Ajustes.', 5000);
+    FT.cache.clear(); FT.loaded = false; FT.hits = null; FT.snips.clear();
+    if(S.filter.deep){ await ensureFullText(); ftSearch(); render(); }
+  }
+
+  const n = todo.length;
+  toast(S.stop ? 'Parei. ' + n + ' na fila — é só clicar em Procurar novos para continuar.'
+               : n ? n + (n===1?' artigo indexado':' artigos indexados')
+                   : 'Nenhum arquivo novo.');
+}
+
+function blank(f){
+  return {hash:f.hash, path:f.path, dir:f.dir, file:f.handle.name,
+          size:f.file.size, mtime:f.file.lastModified,
+          title:'', year:null, authors:[], journal:'', doi:'', abstract:'',
+          source:'', tags:[], note:'', fav:false, added:new Date().toISOString()};
+}
+
+async function indexOne(f){
+  const keep = S.docs[f.hash] || {};
+  const rec  = Object.assign(blank(f), {
+    tags: keep.tags || [], note: keep.note || '', fav: !!keep.fav,
+    added: keep.added || new Date().toISOString()
+  });
+
+  const r = await readPdf(f.file, S.prefs.fulltext);
+  rec.pages = r.pages;
+
+  const doi   = findDOI(r.text, r.meta);
+  const arxiv = findArxiv(r.text);
+  rec.doi = doi || '';
+  if(arxiv) rec.arxiv = arxiv;
+
+  const fallback = {
+    title: guessTitle(r.lines, r.meta),
+    year: guessYear(r.text, r.meta),
+    authors: [],
+    journal: '',
+    abstract: guessAbstract(r.text),
+    source:'pdf'
+  };
+
+  /* campos corrigidos à mão nunca são sobrescritos */
+  const meta = await resolveMeta(doi, arxiv, fallback);
+  const fix  = keep.manual || {};
+  rec.manual = fix;
+  rec.title    = fix.title    || meta.title || f.handle.name.replace(/\.pdf$/i,'');
+  rec.year     = fix.year     || meta.year;
+  rec.authors  = fix.authors  || meta.authors;
+  rec.journal  = fix.journal  || meta.journal;
+  rec.abstract = fix.abstract || meta.abstract;
+  rec.source   = meta.source;
+
+  try{ await makeCover(r.pdf, f.hash); rec.cover = true; }catch(e){ rec.cover = false; }
+  try{
+    const prev = await readJSON(S.docsDir, f.hash + '.json') || {};
+    const ann  = prev.annots || [];
+    const txt  = S.prefs.fulltext && r.full ? r.full : (prev.text || '');
+    if(txt || ann.length){
+      await writeFile(S.docsDir, f.hash + '.json',
+        JSON.stringify({hash:f.hash, text:txt, annots:ann}));
+    }
+    rec.hasText = !!txt;
+    rec.annots  = ann.length;
+    if(ann.length) rec.hlText = ann.map(a =>
+      [a.text, a.comment].filter(Boolean).join(' ')).join('  ').slice(0,1500);
+  }catch(e){}
+  try{ r.pdf.destroy(); }catch(e){}
+
+  S.docs[f.hash] = rec;
+}
+
+/* ==================================================================
+   5. Filtros
+   ================================================================== */
+function norm(s){
+  return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+function haystack(d){
+  return norm([d.title, d.journal, d.file, d.note, (d.authors||[]).join(' '),
+               (d.tags||[]).join(' '), d.abstract, d.hlText, d.year, d.doi].join(' '));
+}
+function visible(){
+  const f = S.filter;
+  const terms = norm(f.q).split(/\s+/).filter(Boolean);
+  const out = Object.values(S.docs).filter(d=>{
+    if(f.folder !== null && (d.dir||'') !== f.folder &&
+       !(d.dir||'').startsWith(f.folder + '/')) return false;
+    if(f.fav && !d.fav) return false;
+    if(f.nometa && d.source && d.source !== 'pdf' && d.abstract) return false;
+    if(f.year && d.year !== f.year) return false;
+    if(f.untagged && (d.tags||[]).length) return false;
+    if(f.tags.length){
+      const hit = f.tags.filter(t => (d.tags||[]).includes(t)).length;
+      if(f.tagMode === 'or' ? hit === 0 : hit !== f.tags.length) return false;
+    }
+    if(terms.length && !f.sem){
+      const h = haystack(d);
+      if(!terms.every(t => h.includes(t)) &&
+         !(f.deep && FT.hits && FT.hits.has(d.hash))) return false;
+    }
+    return true;
+  });
+  if(f.sem && SEM.rank){
+    return out.filter(d => SEM.rank.has(d.hash))
+              .sort((a,b) => SEM.rank.get(b.hash) - SEM.rank.get(a.hash));
+  }
+  return out.sort((a,b)=> (b.year||0)-(a.year||0) ||
+                  String(a.title).localeCompare(String(b.title),'pt'));
+}
+
+/* ==================================================================
+   6. Interface
+   ================================================================== */
+function buildRail(){
+  const docs = Object.values(S.docs);
+  const f = S.filter;
+  let h = '';
+
+  h += '<div class="rail-h"><span>Acervo</span></div>';
+  h += chip('all', f.folder===null && !f.fav && !f.nometa && !f.year && !f.tags.length,
+            'Todos os artigos', docs.length, '');
+  h += chip('fav', f.fav, 'Favoritos', docs.filter(d=>d.fav).length,
+            '<span class="star">★</span>');
+  const weak = docs.filter(d=>!d.abstract || d.source==='pdf').length;
+  if(weak) h += chip('nometa', f.nometa, 'Sem resumo encontrado', weak, '');
+
+  /* pastas */
+  const dirs = {};
+  docs.forEach(d=>{
+    const p = d.dir || '';
+    if(!p) return;
+    const parts = p.split('/');
+    for(let i=0;i<parts.length;i++){
+      const key = parts.slice(0,i+1).join('/');
+      dirs[key] = (dirs[key]||0) + 1;
+    }
+  });
+  const dirKeys = Object.keys(dirs).sort((a,b)=>a.localeCompare(b,'pt'));
+  if(dirKeys.length){
+    h += '<div class="rail-h"><span>Pastas</span>' +
+         (f.folder!==null?'<button data-act="clearfolder">limpar</button>':'') + '</div>';
+    const rootN = docs.filter(d=>!d.dir).length;
+    if(rootN) h += chip('folder:', f.folder==='', 'Na raiz', rootN,
+                        '<span class="tree-ind">›</span>');
+    for(const k of dirKeys){
+      const depth = k.split('/').length - 1;
+      h += '<button class="chip' + (f.folder===k?' on':'') + '" data-act="folder:' + esc(k) + '"' +
+           ' style="padding-left:' + (16 + depth*13) + 'px">' +
+           '<span class="tree-ind">›</span>' +
+           '<span class="lbl">' + esc(k.split('/').pop()) + '</span>' +
+           '<span class="n">' + dirs[k] + '</span></button>';
+    }
+  }
+
+  /* marcadores */
+  const tags = {};
+  docs.forEach(d => (d.tags||[]).forEach(t => tags[t] = (tags[t]||0)+1));
+  const tagKeys = allTags();
+  h += '<div class="rail-h"><span>Marcadores</span>' +
+       (f.tags.length ? '<button data-act="cleartags">limpar</button>' : '') + '</div>';
+  if(!tagKeys.length){
+    h += '<p id="tags-empty">Selecione artigos pela caixinha na capa e use “Marcadores…” ' +
+         'para agrupá-los por tema, independente da pasta em que os arquivos estão.</p>';
+  }else{
+    if(f.tags.length > 1){
+      h += '<div class="tagmode"><span>combinar:</span>' +
+           '<button data-act="mode:and" class="' + (f.tagMode!=='or'?'on':'') + '">e</button>' +
+           '<button data-act="mode:or" class="' + (f.tagMode==='or'?'on':'') + '">ou</button></div>';
+    }
+    for(const t of tagKeys)
+      h += '<button class="chip' + (f.tags.includes(t)?' on':'') + '" data-act="tag:' + esc(t) + '">' +
+           tagIcon(tagColor(t), 13) +
+           '<span class="lbl">' + esc(t) + '</span>' +
+           '<span class="n">' + (tags[t]||0) + '</span>' +
+           '<span class="ed" role="button" tabindex="0" title="Renomear, recolorir ou excluir" ' +
+           'data-act="edittag:' + esc(t) + '">\u22ef</span></button>';
+    const semtag = docs.filter(d => !(d.tags||[]).length).length;
+    if(semtag) h += chip('untagged', f.untagged, 'Sem marcador', semtag, '');
+  }
+
+  /* anos */
+  const years = {};
+  docs.forEach(d => { if(d.year) years[d.year] = (years[d.year]||0)+1; });
+  const yKeys = Object.keys(years).sort((a,b)=>b-a);
+  if(yKeys.length){
+    h += '<div class="rail-h"><span>Ano</span>' +
+         (f.year?'<button data-act="clearyear">limpar</button>':'') + '</div>';
+    for(const y of yKeys)
+      h += chip('year:'+y, f.year===+y, y, years[y], '');
+  }
+
+  $('#rail').innerHTML = h;
+}
+function chip(act,on,label,n,icon){
+  return '<button class="chip' + (on?' on':'') + '" data-act="' + esc(act) + '">' +
+         icon + '<span class="lbl">' + esc(label) + '</span>' +
+         '<span class="n">' + n + '</span></button>';
+}
+
+function render(){
+  const list = visible();
+  const total = Object.keys(S.docs).length;
+  $('#rootcount').textContent = total ? total + (total===1?' artigo':' artigos') : '';
+
+  /* barra de filtros ativos */
+  const f = S.filter, fb = [];
+  if(f.folder !== null) fb.push(fchip('pasta', f.folder || 'raiz', 'clearfolder'));
+  f.tags.forEach(t => fb.push(fchip('marcador', t, 'tag:'+t)));
+  if(f.untagged) fb.push(fchip('', 'sem marcador', 'untagged'));
+  if(f.year)   fb.push(fchip('ano', f.year, 'clearyear'));
+  if(f.fav)    fb.push(fchip('', 'favoritos', 'fav'));
+  if(f.nometa) fb.push(fchip('', 'sem resumo', 'nometa'));
+  if(f.q)      fb.push(fchip('busca', f.q, 'clearq'));
+  $('#filterbar').classList.toggle('on', fb.length>0);
+  $('#filterbar').innerHTML = fb.join('') +
+    (fb.length ? '<span class="fb-count">' + list.length +
+     (list.length===1?' resultado':' resultados') + '</span>' : '');
+
+  const g = $('#grid');
+  g.className = (S.view === 'list' ? 'list' : '') + (S.pick.size ? ' picking' : '');
+
+  if(!list.length){
+    g.innerHTML = '<div class="empty">' + (S.filter.sem && !S.filter.q
+      ? '<b>Busca semântica ligada.</b>Descreva o assunto em vez de adivinhar a palavra exata — ' +
+        'por exemplo “estabilidade de sistemas com atraso” — e os artigos mais próximos aparecem ' +
+        'ordenados por aproximação.'
+      : total
+      ? '<b>Nada com esses filtros.</b>Tente uma palavra diferente ou limpe os filtros acima.'
+      : '<b>A pasta ainda não foi lida.</b>Clique em “Procurar novos” para varrer as subpastas atrás de PDFs.')
+      + '</div>';
+    return;
+  }
+
+  g.innerHTML = list.map(d=>{
+    const authors = (d.authors||[]).length
+      ? (d.authors.length > 2 ? d.authors[0] + ' e outros' : d.authors.join(', '))
+      : d.file.replace(/\.pdf$/i,'');
+    const meta = S.view==='list'
+      ? esc(authors) + (d.journal ? ' — ' + esc(d.journal) : '')
+      : esc(authors) + (d.year ? ', ' + d.year : '');
+    return '<button class="card' + (S.sel===d.hash?' sel':'') +
+      (S.pick.has(d.hash)?' picked':'') + '" data-h="' + d.hash + '">' +
+      '<span class="cbx' + (S.pick.has(d.hash)?' on':'') + '" data-cb="' + d.hash +
+        '" role="checkbox" aria-checked="' + S.pick.has(d.hash) + '">\u2713</span>' +
+      '<div class="cover" data-cover="' + d.hash + '">' +
+        '<div class="ph">' + esc((d.title||d.file).trim().charAt(0).toUpperCase()) + '</div>' +
+        (d.fav ? '<span class="fav">★</span>' : '') +
+        (d.missing ? '<span class="flag">arquivo sumiu</span>' : '') +
+        (d.annots ? '<span class="anb">' + d.annots + '</span>' : '') +
+      '</div>' +
+      '<div class="l-fav">' + (d.fav ? '★' : '') + '</div>' +
+      '<div><div class="c-title">' + esc(d.title || d.file) + '</div>' +
+      '<div class="c-meta">' + meta + '</div>' +
+      (S.filter.sem && SEM.rank && SEM.rank.has(d.hash)
+        ? '<div class="c-score">' + Math.round(SEM.rank.get(d.hash)*100) + '% de aproximação</div>' : '') +
+      (S.filter.deep && FT.snips.has(d.hash)
+        ? '<div class="c-snip">' + markTerms(FT.snips.get(d.hash)) + '</div>' : '') +
+      '</div>' +
+      '<div class="l-year">' + (d.year || '') + '</div>' +
+    '</button>';
+  }).join('');
+
+  document.querySelectorAll('[data-cover]').forEach(el => coverObserver.observe(el));
+  updateSel();
+}
+function fchip(label,val,act){
+  return '<span class="fchip">' + (label ? esc(label) + ' ' : '') +
+         '<b>' + esc(val) + '</b>' +
+         '<button data-act="' + esc(act) + '" aria-label="Remover filtro">✕</button></span>';
+}
+
+/* capas carregadas só quando entram na tela */
+const coverObserver = new IntersectionObserver(entries=>{
+  for(const e of entries){
+    if(!e.isIntersecting) continue;
+    const el = e.target, hash = el.dataset.cover;
+    coverObserver.unobserve(el);
+    if(!S.docs[hash] || !S.docs[hash].cover) continue;
+    loadCover(hash).then(url=>{
+      if(!url || !el.isConnected) return;
+      const img = new Image();
+      img.src = url; img.alt = '';
+      img.onload = () => { const ph = el.querySelector('.ph'); if(ph) ph.replaceWith(img); };
+    });
+  }
+},{rootMargin:'400px'});
+
+async function loadCover(hash){
+  if(S.covers.has(hash)) return S.covers.get(hash);
+  try{
+    const f = await (await S.coverDir.getFileHandle(hash + '.jpg')).getFile();
+    const url = URL.createObjectURL(f);
+    S.covers.set(hash, url);
+    return url;
+  }catch(e){ return null; }
+}
+
+/* ==================================================================
+   7. Gaveta de detalhe
+   ================================================================== */
+function openDoc(hash){
+  S.sel = hash;
+  const d = S.docs[hash];
+  if(!d) return;
+  $('#drawer').classList.add('on');
+  $('#d-fav').textContent = d.fav ? 'Favorito ★' : 'Favoritar';
+
+  const terms = norm(S.filter.q).split(/\s+/).filter(t=>t.length>2);
+  const mark = txt => {
+    let out = esc(txt);
+    for(const t of terms){
+      const re = new RegExp('(' + t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','gi');
+      out = out.replace(re,'<mark>$1</mark>');
+    }
+    return out;
+  };
+
+  const authors = (d.authors||[]).join(', ');
+  const pub = [d.journal, d.year].filter(Boolean).join(', ');
+
+  $('#d-body').innerHTML =
+    '<h2 class="d-title">' + mark(d.title || d.file) + '</h2>' +
+    (authors ? '<div class="d-authors">' + mark(authors) + '</div>' : '') +
+    (pub ? '<div class="d-pub">' + esc(pub) + '</div>' : '') +
+    (d.doi ? '<div class="d-pub"><a href="https://doi.org/' + esc(d.doi) +
+             '" target="_blank" rel="noopener">doi.org/' + esc(d.doi) + '</a></div>' : '') +
+    (d.abstract
+      ? '<p class="d-abs">' + mark(d.abstract) + '</p>'
+      : '<p class="d-none">Nenhum resumo encontrado' +
+        (d.doi ? ' — a base não tinha o resumo deste DOI.' : ' e nenhum DOI na primeira página.') +
+        ' Você pode colar o resumo à mão no campo abaixo.</p>') +
+
+    (S.filter.deep && FT.snips.has(d.hash)
+      ? '<div class="d-sec"><div class="d-lab">Trecho no corpo do artigo</div>' +
+        '<div class="d-snip">' + markTerms(FT.snips.get(d.hash)) + '</div></div>' : '') +
+    '<div class="d-sec"><div class="d-lab">Marcadores</div>' +
+      '<div class="tagrow" id="d-tags"></div></div>' +
+
+    '<div class="d-sec"><div class="d-lab">Sua nota</div>' +
+      '<textarea id="d-note" placeholder="O que este artigo te serve? Método, resultado, por que citar…"></textarea>' +
+    '</div>' +
+
+    '<div class="d-sec"><div class="d-lab">Corrigir metadados</div>' +
+      '<div class="d-editgrid">' +
+        '<label for="e-title">Título</label><input id="e-title" value="' + esc(d.title) + '">' +
+        '<label for="e-year">Ano</label><input id="e-year" inputmode="numeric" value="' + esc(d.year||'') + '">' +
+        '<label for="e-auth">Autores</label><input id="e-auth" value="' + esc(authors) + '">' +
+        '<label for="e-jour">Revista</label><input id="e-jour" value="' + esc(d.journal||'') + '">' +
+        '<label for="e-doi">DOI</label><input id="e-doi" value="' + esc(d.doi||'') + '">' +
+        '<label class="wide" for="e-abs">Resumo</label>' +
+        '<textarea id="e-abs" placeholder="Cole aqui o resumo se a base não tinha.">' +
+          esc(d.abstract||'') + '</textarea>' +
+      '</div></div>' +
+
+    '<div class="d-sec"><div class="d-lab">Arquivo</div>' +
+      '<div class="d-file">' + esc(d.path) +
+      (d.pages ? '<br>' + d.pages + ' páginas, ' + (d.size/1048576).toFixed(1) + ' MB' : '') +
+      (d.source ? '<br>metadados via ' + esc(d.source) : '') +
+      (d.annots ? '<br>' + d.annots + (d.annots===1?' anotação sua':' anotações suas') : '') +
+      (d.missing ? '<br>o arquivo não está mais nesse caminho' : '') +
+      '</div></div>';
+
+  $('#d-note').value = d.note || '';
+  $('#d-note').addEventListener('input', e=>{ d.note = e.target.value; saveSoon(); });
+  drawTags();
+
+  /* edição manual: o que você digitar vence a base para sempre */
+  const bind = (id, key, conv) => {
+    const el = $(id);
+    el.addEventListener('change', ()=>{
+      const v = conv ? conv(el.value) : el.value.trim();
+      d.manual = d.manual || {};
+      if(v === '' || v === null){ delete d.manual[key]; }
+      else { d.manual[key] = v; d[key] = v; }
+      saveSoon(); render(); openDoc(hash);
+      toast('Campo salvo.');
+    });
+  };
+  bind('#e-title','title');
+  bind('#e-year','year', v => v.trim() ? +v.trim() : null);
+  bind('#e-auth','authors', v => v.trim() ? v.split(',').map(s=>s.trim()).filter(Boolean) : null);
+  bind('#e-jour','journal');
+  bind('#e-doi','doi');
+  bind('#e-abs','abstract');
+
+  render();
+}
+
+function drawTags(){
+  const d = S.docs[S.sel]; if(!d) return;
+  $('#d-tags').innerHTML = (d.tags||[]).map(t =>
+    '<span class="tag">' + tagIcon(tagColor(t), 11) +
+    esc(t) + '<button data-untag="' + esc(t) + '" aria-label="Remover">✕</button></span>'
+  ).join('') + '<input id="d-tagin" placeholder="+ marcador" list="alltags">' +
+    '<datalist id="alltags">' +
+    [...new Set(Object.values(S.docs).flatMap(x=>x.tags||[]))]
+      .map(t=>'<option value="' + esc(t) + '">').join('') + '</datalist>';
+
+  $('#d-tagin').addEventListener('keydown', e=>{
+    if(e.key !== 'Enter') return;
+    const v = e.target.value.trim();
+    if(!v) return;
+    d.tags = d.tags || [];
+    if(!d.tags.includes(v)) d.tags.push(v);
+    if(!S.tagcolors[v]) S.tagcolors[v] = tagColor(v);
+    saveSoon(); drawTags(); buildRail(); render();
+    $('#d-tagin').focus();
+  });
+  $('#d-tags').querySelectorAll('[data-untag]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      d.tags = (d.tags||[]).filter(t => t !== b.dataset.untag);
+      saveSoon(); drawTags(); buildRail(); render();
+    });
+  });
+}
+
+function closeDrawer(){
+  $('#drawer').classList.remove('on');
+  S.sel = null; render();
+}
+
+/* ==================================================================
+   8. Marcadores e seleção múltipla
+   ================================================================== */
+const TAGC = ['#d9534f','#e0801e','#cfae1b','#6faa3c','#2fa39a',
+              '#3b8fd4','#7a6ad8','#c05cc0','#9a7a5e','#8d97a1'];
+S.tagcolors = {};
+S.pick = new Set();
+S.lastPick = null;
+
+const TAGPATH = 'M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0'
+  + 'l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1H2zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z';
+function tagIcon(color, size){
+  return '<svg class="tagi" width="' + size + '" height="' + size + '" viewBox="0 0 16 16" ' +
+         'fill="' + color + '" aria-hidden="true"><path fill-rule="evenodd" d="' + TAGPATH + '"/></svg>';
+}
+function tagColor(t){
+  if(S.tagcolors[t]) return S.tagcolors[t];
+  let n = 0;
+  for(let i=0;i<t.length;i++) n = (n*31 + t.charCodeAt(i)) >>> 0;
+  return TAGC[n % TAGC.length];
+}
+function allTags(){
+  const set = new Set(Object.keys(S.tagcolors));
+  Object.values(S.docs).forEach(d => (d.tags||[]).forEach(t => set.add(t)));
+  return [...set].sort((a,b)=>a.localeCompare(b,'pt'));
+}
+function countTag(t){
+  return Object.values(S.docs).filter(d => (d.tags||[]).includes(t)).length;
+}
+
+/* ---------- seleção ---------- */
+function updateSel(){
+  const n = S.pick.size;
+  $('#selbar').classList.toggle('on', n>0);
+  $('#selcount').textContent = n + (n===1 ? ' selecionado' : ' selecionados');
+  $('#grid').classList.toggle('picking', n>0);
+}
+function togglePick(hash, range){
+  if(range && S.lastPick){
+    const order = visible().map(d=>d.hash);
+    const a = order.indexOf(S.lastPick), b = order.indexOf(hash);
+    if(a >= 0 && b >= 0){
+      const [i,j] = a < b ? [a,b] : [b,a];
+      const add = !S.pick.has(hash);
+      for(let k=i;k<=j;k++) add ? S.pick.add(order[k]) : S.pick.delete(order[k]);
+      S.lastPick = hash;
+      render(); return;
+    }
+  }
+  S.pick.has(hash) ? S.pick.delete(hash) : S.pick.add(hash);
+  S.lastPick = hash;
+  render();
+}
+function clearPick(){ S.pick.clear(); S.lastPick = null; render(); }
+
+$('#sel-clear').addEventListener('click', clearPick);
+$('#sel-all').addEventListener('click', ()=>{
+  visible().forEach(d => S.pick.add(d.hash)); render();
+});
+$('#sel-fav').addEventListener('click', ()=>{
+  S.pick.forEach(h => { if(S.docs[h]) S.docs[h].fav = true; });
+  saveSoon(); buildRail(); render();
+});
+$('#sel-unfav').addEventListener('click', ()=>{
+  S.pick.forEach(h => { if(S.docs[h]) S.docs[h].fav = false; });
+  saveSoon(); buildRail(); render();
+});
+
+/* ---------- menu de marcadores em lote ---------- */
+const TM = {hashes:[]};
+function openTagMenu(anchor, hashes){
+  TM.hashes = hashes;
+  drawTagMenu();
+  const m = $('#tagmenu');
+  m.classList.add('on');
+  const r = anchor.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(innerWidth - m.offsetWidth - 8, r.left)) + 'px';
+  const above = r.top - m.offsetHeight - 8;
+  m.style.top = (above > 8 ? above : Math.min(r.bottom + 8, innerHeight - m.offsetHeight - 8)) + 'px';
+  const inp = m.querySelector('.tm-new input');
+  if(inp) inp.focus();
+}
+function drawTagMenu(){
+  const docs = TM.hashes.map(h => S.docs[h]).filter(Boolean);
+  const tags = allTags();
+  const rows = tags.map(t=>{
+    const n = docs.filter(d => (d.tags||[]).includes(t)).length;
+    const st = n === 0 ? '' : (n === docs.length ? 'all' : 'some');
+    return '<button class="tm-row" data-tm="' + esc(t) + '">' +
+      '<span class="box ' + st + '">✓</span>' +
+      tagIcon(tagColor(t), 13) +
+      '<span class="lbl">' + esc(t) + '</span></button>';
+  }).join('');
+  $('#tagmenu').innerHTML = (rows ||
+    '<p class="m-hint" style="padding:8px">Nenhum marcador ainda. Crie o primeiro abaixo.</p>') +
+    '<div class="tm-new"><input id="tm-new" placeholder="novo marcador" autocomplete="off"></div>';
+}
+function applyTag(t, add){
+  TM.hashes.forEach(h=>{
+    const d = S.docs[h]; if(!d) return;
+    d.tags = d.tags || [];
+    if(add){ if(!d.tags.includes(t)) d.tags.push(t); }
+    else d.tags = d.tags.filter(x => x !== t);
+  });
+  if(!S.tagcolors[t]) S.tagcolors[t] = tagColor(t);
+  saveSoon(); buildRail(); render();
+  if(S.sel && TM.hashes.includes(S.sel)) drawTags();
+}
+$('#tagmenu').addEventListener('click', e=>{
+  const row = e.target.closest('[data-tm]'); if(!row) return;
+  const t = row.dataset.tm;
+  const docs = TM.hashes.map(h => S.docs[h]).filter(Boolean);
+  const all = docs.length && docs.every(d => (d.tags||[]).includes(t));
+  applyTag(t, !all);
+  drawTagMenu();
+});
+$('#tagmenu').addEventListener('keydown', e=>{
+  if(e.key !== 'Enter' || e.target.id !== 'tm-new') return;
+  const v = e.target.value.trim();
+  if(!v) return;
+  applyTag(v, true);
+  drawTagMenu();
+  $('#tagmenu').querySelector('.tm-new input').focus();
+});
+$('#sel-tag').addEventListener('click', e=>{
+  e.stopPropagation();
+  openTagMenu(e.currentTarget, [...S.pick]);
+});
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#tagmenu') && !e.target.closest('#sel-tag'))
+    $('#tagmenu').classList.remove('on');
+});
+
+/* ---------- editar um marcador ---------- */
+let TE = null;
+function openTagEdit(t){
+  TE = t;
+  $('#te-name').value = t;
+  const n = countTag(t);
+  $('#te-count').textContent = n
+    ? n + (n===1 ? ' artigo usa este marcador.' : ' artigos usam este marcador.')
+    : 'Nenhum artigo usa este marcador.';
+  const cur = tagColor(t);
+  $('#te-colors').innerHTML = TAGC.map(c =>
+    '<button data-col="' + c + '" class="' + (c===cur?'on':'') + '" aria-label="Cor">' +
+    tagIcon(c, 18) + '</button>').join('');
+  $('#tagedit').classList.add('on');
+  $('#te-name').focus();
+}
+$('#te-colors').addEventListener('click', e=>{
+  const b = e.target.closest('[data-col]'); if(!b) return;
+  $('#te-colors').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+});
+$('#te-cancel').addEventListener('click', ()=> $('#tagedit').classList.remove('on'));
+$('#tagedit').addEventListener('click', e=>{
+  if(e.target.id === 'tagedit') $('#tagedit').classList.remove('on');
+});
+$('#te-save').addEventListener('click', ()=>{
+  const novo = $('#te-name').value.trim();
+  const on = $('#te-colors').querySelector('button.on');
+  const cor = on ? on.dataset.col : tagColor(TE);
+  if(!novo){ toast('O marcador precisa de um nome.'); return; }
+  if(novo !== TE){
+    Object.values(S.docs).forEach(d=>{
+      if(!(d.tags||[]).includes(TE)) return;
+      d.tags = d.tags.filter(x => x !== TE);
+      if(!d.tags.includes(novo)) d.tags.push(novo);
+    });
+    delete S.tagcolors[TE];
+    const i = S.filter.tags.indexOf(TE);
+    if(i >= 0) S.filter.tags[i] = novo;
+  }
+  S.tagcolors[novo] = cor;
+  $('#tagedit').classList.remove('on');
+  saveSoon(); buildRail(); render();
+  if(S.sel) drawTags();
+  toast('Marcador salvo.');
+});
+$('#te-del').addEventListener('click', ()=>{
+  const n = countTag(TE);
+  if(n && !confirm('Remover o marcador “' + TE + '” de ' + n +
+     (n===1?' artigo?':' artigos?') + '\n\nOs arquivos e as anotações não são afetados.')) return;
+  Object.values(S.docs).forEach(d=>{
+    if(d.tags) d.tags = d.tags.filter(x => x !== TE);
+  });
+  delete S.tagcolors[TE];
+  S.filter.tags = S.filter.tags.filter(x => x !== TE);
+  $('#tagedit').classList.remove('on');
+  saveSoon(); buildRail(); render();
+  if(S.sel) drawTags();
+});
+
+/* ==================================================================
+   9. Leitor — grifos e notas
+   ================================================================== */
+const HLC = {
+  a:{fill:'rgba(255,214,64,.42)',  dot:'#ffd640'},
+  b:{fill:'rgba(118,226,150,.42)', dot:'#76e296'},
+  c:{fill:'rgba(110,190,255,.42)', dot:'#6ebeff'},
+  d:{fill:'rgba(255,140,190,.40)', dot:'#ff8cbe'},
+  n:{fill:'rgba(0,0,0,0)',         dot:'var(--accent)'}
+};
+const uid = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4);
+
+const R = {hash:null, pdf:null, base:[], scale:1, annots:[], docfile:null,
+           sel:null, pending:null, saveT:null, obs:null};
+
+$('#rd-pal').innerHTML =
+  ['a','b','c','d'].map(k =>
+    '<button class="sw" data-c="' + k + '" style="background:' + HLC[k].dot +
+    '" aria-label="Grifar"></button>').join('') +
+  '<button class="tool" data-c="n" style="padding:2px 9px">grifar e comentar</button>';
+
+async function openReader(hash){
+  const d = S.docs[hash]; if(!d) return;
+  R.hash = hash; R.sel = null; R.pending = null;
+  FD.pages = null; FD.hits = []; FD.i = -1;
+  $('#reader').classList.add('on');
+  $('#rd-title').textContent = d.title || d.file;
+  $('#rd-pages').innerHTML = '<div class="side-empty">Abrindo o PDF…</div>';
+  $('#rd-list').innerHTML = '';
+
+  try{
+    const file = await fileByPath(d.path);
+    const buf  = new Uint8Array(await file.arrayBuffer());
+    R.pdf = await pdfjsLib.getDocument({data:buf}).promise;
+  }catch(e){
+    $('#rd-pages').innerHTML = '<div class="side-empty">Não achei o arquivo em ' +
+      esc(d.path) + '. Se ele mudou de lugar, use “Procurar novos”.</div>';
+    return;
+  }
+
+  R.docfile = await readJSON(S.docsDir, hash + '.json') || {hash};
+  R.annots  = R.docfile.annots || [];
+
+  R.base = [];
+  for(let i=1;i<=R.pdf.numPages;i++){
+    const p = await R.pdf.getPage(i);
+    const v = p.getViewport({scale:1});
+    R.base.push({w:v.width, h:v.height});
+    p.cleanup();
+  }
+  $('#rd-of').textContent = 'de ' + R.pdf.numPages;
+  fitWidth();
+  listAnnots();
+}
+
+function closeReader(){
+  flushAnnots();
+  closeFind(); FD.pages = null;
+  if(R.obs) R.obs.disconnect();
+  $('#reader').classList.remove('on');
+  $('#rd-pages').innerHTML = '';
+  hidePal();
+  try{ if(R.pdf) R.pdf.destroy(); }catch(e){}
+  R.pdf = null; R.hash = null; R.annots = [];
+  render();
+}
+
+function fitWidth(){
+  const w = $('#rd-pages').clientWidth || 900;
+  const maxw = Math.max(...R.base.map(b=>b.w));
+  R.scale = Math.max(.35, Math.min(4, (w - 60) / maxw));
+  layout();
+}
+
+function layout(keep){
+  const host = $('#rd-pages');
+  const at = keep || currentPage();
+  host.innerHTML = R.base.map((b,i)=>
+    '<div class="pgwrap">' +
+      '<div class="pghead"><span>página ' + (i+1) + '</span>' +
+      '<button data-note="' + (i+1) + '">+ nota</button></div>' +
+      '<div class="pg" data-p="' + (i+1) + '" style="width:' + Math.round(b.w*R.scale) +
+        'px;height:' + Math.round(b.h*R.scale) + 'px">' +
+        '<div class="skel">…</div><div class="hlLayer"></div>' +
+      '</div></div>').join('');
+  $('#rd-zoom').textContent = Math.round(R.scale*100) + '%';
+  if(R.obs) R.obs.disconnect();
+  R.obs = new IntersectionObserver(onVis, {root:host, rootMargin:'700px 0px'});
+  host.querySelectorAll('.pg').forEach(el => R.obs.observe(el));
+  drawAll();
+  if(at > 1) gotoPage(at, 'auto');
+}
+
+function onVis(entries){
+  for(const e of entries){
+    if(e.isIntersecting) renderPage(e.target);
+    else freePage(e.target);
+  }
+  const p = currentPage();
+  if(p && document.activeElement !== $('#rd-goto')) $('#rd-goto').value = p;
+}
+
+function currentPage(){
+  const host = $('#rd-pages');
+  if(!host) return 1;
+  const top = host.getBoundingClientRect().top + 90;
+  let best = 1;
+  for(const pg of host.querySelectorAll('.pg')){
+    const r = pg.getBoundingClientRect();
+    if(r.top <= top) best = +pg.dataset.p; else break;
+  }
+  return best;
+}
+
+async function renderPage(el){
+  if(!R.pdf || el.dataset.done === '1' || el.dataset.busy === '1') return;
+  el.dataset.busy = '1';
+  try{
+    const n    = +el.dataset.p;
+    const page = await R.pdf.getPage(n);
+    const vp   = page.getViewport({scale:R.scale});
+    const dpr  = Math.min(window.devicePixelRatio || 1, 2);
+    const cv   = document.createElement('canvas');
+    cv.width  = Math.round(vp.width*dpr);  cv.height = Math.round(vp.height*dpr);
+    cv.style.width = Math.round(vp.width) + 'px';
+    cv.style.height= Math.round(vp.height) + 'px';
+    const ctx = cv.getContext('2d');
+    ctx.scale(dpr, dpr);
+    await page.render({canvasContext:ctx, viewport:vp}).promise;
+    const skel = el.querySelector('.skel'); if(skel) skel.remove();
+    el.prepend(cv);
+
+    const tl = document.createElement('div');
+    tl.className = 'textLayer';
+    /* o PDF.js 3.x dimensiona os spans com calc(var(--scale-factor)*Npx) */
+    tl.style.setProperty('--scale-factor', R.scale);
+    el.style.setProperty('--scale-factor', R.scale);
+    el.appendChild(tl);
+    const tc = await page.getTextContent();
+    const args = {container:tl, viewport:vp, textDivs:[]};
+    try{ await pdfjsLib.renderTextLayer({...args, textContentSource:tc}).promise; }
+    catch(err){
+      try{ await pdfjsLib.renderTextLayer({...args, textContent:tc}).promise; }catch(e2){}
+    }
+    page.cleanup();
+    el.dataset.done = '1';
+  }catch(e){}
+  el.dataset.busy = '';
+}
+
+function freePage(el){
+  if(el.dataset.done !== '1') return;
+  const cv = el.querySelector('canvas'), tl = el.querySelector('.textLayer');
+  if(cv){ cv.width = 0; cv.height = 0; cv.remove(); }
+  if(tl) tl.remove();
+  el.insertAdjacentHTML('afterbegin','<div class="skel">…</div>');
+  el.dataset.done = '';
+}
+
+function drawAll(){
+  document.querySelectorAll('#rd-pages .pg').forEach(pg=>{
+    const p = +pg.dataset.p, L = pg.querySelector('.hlLayer');
+    if(!L) return;
+    L.innerHTML = R.annots.filter(a => a.page===p && a.rects && a.rects.length)
+      .map(a => a.rects.map(r =>
+        '<i' + (R.sel===a.id?' class="sel"':'') + ' style="left:' + (r[0]*100) +
+        '%;top:' + (r[1]*100) + '%;width:' + (r[2]*100) + '%;height:' + (r[3]*100) +
+        '%;background:' + HLC[a.color].fill + '"></i>').join('')).join('');
+  });
+  if(typeof paintFind === 'function') paintFind();
+}
+
+/* ---------- seleção ---------- */
+function mergeRects(rs){
+  const lines = {};
+  rs.forEach(r=>{ const k = Math.round(r.top); (lines[k] = lines[k] || []).push(r); });
+  return Object.keys(lines).map(k=>{
+    const g = lines[k];
+    const l = Math.min(...g.map(r=>r.left)),  t = Math.min(...g.map(r=>r.top));
+    const x = Math.max(...g.map(r=>r.right)), b = Math.max(...g.map(r=>r.bottom));
+    return {left:l, top:t, width:x-l, height:b-t, right:x, bottom:b};
+  });
+}
+function hidePal(){ $('#rd-pal').classList.remove('on'); }
+
+$('#rd-pages').addEventListener('mouseup', ()=>{
+  setTimeout(()=>{
+    const sel = window.getSelection();
+    if(!sel || sel.isCollapsed || !sel.toString().trim()) return hidePal();
+    const range = sel.getRangeAt(0);
+    const node  = range.startContainer.nodeType === 1
+                ? range.startContainer : range.startContainer.parentElement;
+    const pg = node && node.closest ? node.closest('.pg') : null;
+    if(!pg) return hidePal();
+    const box = pg.getBoundingClientRect();
+    const raw = [...range.getClientRects()]
+      .filter(r => r.width > 1 && r.height > 1 &&
+                   r.top >= box.top - 3 && r.bottom <= box.bottom + 3);
+    if(!raw.length) return hidePal();
+    const merged = mergeRects(raw);
+    R.pending = {
+      page:+pg.dataset.p,
+      text: sel.toString().replace(/\s+/g,' ').trim(),
+      rects: merged.map(r => [ (r.left-box.left)/box.width, (r.top-box.top)/box.height,
+                               r.width/box.width, r.height/box.height ])
+    };
+    const last = merged[merged.length-1];
+    const pal  = $('#rd-pal');
+    pal.classList.add('on');
+    const pw = pal.offsetWidth || 190;
+    pal.style.left = Math.max(8, Math.min(innerWidth - pw - 8, last.left)) + 'px';
+    pal.style.top  = Math.max(8, last.top - pal.offsetHeight - 8) + 'px';
+  }, 0);
+});
+
+$('#rd-pal').addEventListener('mousedown', e => e.preventDefault());
+$('#rd-pal').addEventListener('click', e=>{
+  const b = e.target.closest('[data-c]'); if(!b || !R.pending) return;
+  const k = b.dataset.c;
+  const a = {id:uid(), page:R.pending.page, rects:R.pending.rects, text:R.pending.text,
+             comment:'', color: k==='n' ? 'a' : k, at:Date.now()};
+  R.annots.push(a);
+  R.pending = null;
+  window.getSelection().removeAllRanges();
+  hidePal(); saveAnnots(); drawAll(); listAnnots(); selectAnnot(a.id, k==='n');
+});
+
+/* clique simples sobre um grifo: seleciona sem atrapalhar a seleção de texto */
+$('#rd-pages').addEventListener('click', e=>{
+  const nb = e.target.closest('[data-note]');
+  if(nb){ addNote(+nb.dataset.note); return; }
+  const pg = e.target.closest('.pg'); if(!pg) return;
+  const s = window.getSelection();
+  if(s && !s.isCollapsed) return;
+  const box = pg.getBoundingClientRect();
+  const x = (e.clientX-box.left)/box.width, y = (e.clientY-box.top)/box.height;
+  const p = +pg.dataset.p;
+  const hit = R.annots.filter(a => a.page===p && a.rects && a.rects.length)
+    .find(a => a.rects.some(r => x>=r[0] && x<=r[0]+r[2] && y>=r[1] && y<=r[1]+r[3]));
+  if(hit) selectAnnot(hit.id, false);
+});
+
+/* ---------- anotações ---------- */
+function addNote(page){
+  const a = {id:uid(), page, rects:[], text:'', comment:'', color:'n', at:Date.now()};
+  R.annots.push(a);
+  saveAnnots(); listAnnots(); selectAnnot(a.id, true);
+}
+
+function listAnnots(){
+  R.annots.sort((a,b)=> a.page - b.page ||
+    ((a.rects[0]?a.rects[0][1]:0) - (b.rects[0]?b.rects[0][1]:0)));
+  const n = R.annots.length;
+  $('#rd-count').textContent = n ? n + (n===1?' anotação':' anotações') : 'sem anotações';
+  $('#rd-list').innerHTML = n ? R.annots.map(a =>
+    '<div class="an' + (R.sel===a.id?' sel':'') + '" data-id="' + a.id + '">' +
+      '<div class="an-top">' +
+        '<span class="sw" style="background:' + HLC[a.color].dot + '"></span>' +
+        '<span class="pp">página ' + a.page + '</span>' +
+        '<button class="rm" data-rm="' + a.id + '">excluir</button></div>' +
+      (a.text ? '<div class="an-q">' + esc(a.text) + '</div>' : '') +
+      '<textarea class="an-c" data-cm="' + a.id + '" placeholder="' +
+        (a.text ? 'comentário' : 'nota desta página') + '">' + esc(a.comment||'') + '</textarea>' +
+    '</div>').join('')
+    : '<div class="side-empty">Selecione um trecho do texto para grifar — aparece uma paleta de cores. ' +
+      'Cada grifo aceita um comentário. Para uma nota que não se prende a um trecho, use “+ nota” ' +
+      'no cabeçalho da página.</div>';
+}
+
+function selectAnnot(id, focus){
+  R.sel = id;
+  document.querySelectorAll('#rd-list .an').forEach(el =>
+    el.classList.toggle('sel', el.dataset.id === id));
+  drawAll();
+  const item = document.querySelector('#rd-list .an[data-id="' + id + '"]');
+  if(item){
+    item.scrollIntoView({block:'nearest'});
+    if(focus) item.querySelector('.an-c').focus();
+  }
+}
+
+function jumpTo(a){
+  const pg = document.querySelector('#rd-pages .pg[data-p="' + a.page + '"]');
+  if(!pg) return;
+  const host = $('#rd-pages');
+  const off  = a.rects && a.rects[0] ? a.rects[0][1] * pg.offsetHeight : 0;
+  host.scrollTo({
+    top: Math.max(0, host.scrollTop + pg.getBoundingClientRect().top -
+         host.getBoundingClientRect().top + off - 90),
+    behavior:'smooth'
+  });
+}
+
+$('#rd-list').addEventListener('click', e=>{
+  const rm = e.target.closest('[data-rm]');
+  if(rm){
+    R.annots = R.annots.filter(a => a.id !== rm.dataset.rm);
+    if(R.sel === rm.dataset.rm) R.sel = null;
+    saveAnnots(); drawAll(); listAnnots();
+    return;
+  }
+  if(e.target.classList.contains('an-c')) return;
+  const item = e.target.closest('.an');
+  if(item){
+    const a = R.annots.find(x => x.id === item.dataset.id);
+    selectAnnot(item.dataset.id, false);
+    if(a) jumpTo(a);
+  }
+});
+$('#rd-list').addEventListener('input', e=>{
+  const t = e.target.closest('[data-cm]'); if(!t) return;
+  const a = R.annots.find(x => x.id === t.dataset.cm);
+  if(a){ a.comment = t.value; saveAnnots(); }
+});
+
+function saveAnnots(){
+  clearTimeout(R.saveT);
+  R.saveT = setTimeout(flushAnnots, 600);
+}
+async function flushAnnots(){
+  clearTimeout(R.saveT); R.saveT = null;
+  if(!R.hash || !S.docsDir) return;
+  R.docfile.hash = R.hash;
+  R.docfile.annots = R.annots;
+  try{ await writeFile(S.docsDir, R.hash + '.json', JSON.stringify(R.docfile)); }
+  catch(e){ toast('Não consegui gravar as anotações: ' + e.message); return; }
+  const d = S.docs[R.hash];
+  if(d){
+    d.annots = R.annots.length;
+    d.hlText = R.annots.map(a => [a.text, a.comment].filter(Boolean).join(' '))
+                       .join('  ').slice(0,1500);
+    saveSoon();
+  }
+}
+
+/* ---------- barra do leitor ---------- */
+function gotoPage(n, how){
+  const pg = document.querySelector('#rd-pages .pg[data-p="' + n + '"]');
+  if(!pg) return;
+  const host = $('#rd-pages');
+  host.scrollTo({
+    top: Math.max(0, host.scrollTop + pg.getBoundingClientRect().top -
+         host.getBoundingClientRect().top - 34),
+    behavior: how || 'smooth'
+  });
+}
+function zoom(f){
+  R.scale = Math.max(.35, Math.min(4, R.scale * f));
+  layout(currentPage());
+}
+$('#rd-close').addEventListener('click', closeReader);
+$('#rd-prev').addEventListener('click', ()=> gotoPage(Math.max(1, currentPage()-1)));
+$('#rd-next').addEventListener('click', ()=> gotoPage(Math.min(R.base.length, currentPage()+1)));
+$('#rd-in').addEventListener('click',  ()=> zoom(1.2));
+$('#rd-out').addEventListener('click', ()=> zoom(1/1.2));
+$('#rd-fit').addEventListener('click', fitWidth);
+$('#rd-side-t').addEventListener('click', ()=> $('#reader').classList.toggle('solo'));
+$('#rd-note').addEventListener('click', ()=> addNote(currentPage()));
+$('#rd-goto').addEventListener('change', e=>{
+  const n = Math.max(1, Math.min(R.base.length, +e.target.value || 1));
+  e.target.value = n; gotoPage(n);
+});
+$('#rd-copy').addEventListener('click', async ()=>{
+  const d = S.docs[R.hash] || {};
+  const md = '# ' + (d.title || d.file || '') + '\n' +
+    ((d.authors||[]).join(', ') + (d.year ? ', ' + d.year : '')).trim() + '\n' +
+    (d.doi ? 'https://doi.org/' + d.doi + '\n' : '') + '\n' +
+    R.annots.map(a =>
+      '**p. ' + a.page + '**' +
+      (a.text ? '\n> ' + a.text : '') +
+      (a.comment ? '\n\n' + a.comment : '')).join('\n\n');
+  try{ await navigator.clipboard.writeText(md); toast('Anotações copiadas.'); }
+  catch(e){ toast('O navegador bloqueou a cópia.'); }
+});
+$('#rd-pages').addEventListener('scroll', ()=>{
+  if(document.activeElement !== $('#rd-goto')) $('#rd-goto').value = currentPage();
+}, {passive:true});
+addEventListener('resize', ()=>{ if($('#reader').classList.contains('on')) hidePal(); });
+
+/* ==================================================================
+   10. Aparência — tema, fontes e tamanho do texto
+   ================================================================== */
+const THEMES = [
+  {id:'material', nm:'Material Darker', bg:'#212121', ink:'#eeffff',
+   bars:['#212121','#ffcb6b','#80cbc4','#f07178']},
+  {id:'dracula',  nm:'Dracula',  bg:'#282a36', ink:'#f8f8f2',
+   bars:['#282a36','#bd93f9','#8be9fd','#ff79c6']},
+  {id:'monokai',  nm:'Monokai',  bg:'#272822', ink:'#f8f8f2',
+   bars:['#272822','#fd971f','#a6e22e','#f92672']},
+  {id:'nord',     nm:'Nord',     bg:'#2e3440', ink:'#eceff4',
+   bars:['#2e3440','#ebcb8b','#8fbcbb','#bf616a']},
+  {id:'eclipse',  nm:'Eclipse',  bg:'#ffffff', ink:'#14181c',
+   bars:['#ffffff','#2a6099','#1c7a6b','#b3261e']},
+  {id:'claro',    nm:'Claro',    bg:'#fcfcfb', ink:'#1d1f21',
+   bars:['#fcfcfb','#8a6410','#3a7a6d','#a8382c']}
+];
+const FONTS = [
+  {id:'sistema',  nm:'Sistema',  sp:'A fonte padrão do seu sistema, em tudo.'},
+  {id:'serifada', nm:'Serifada', sp:'Interface em sans, resumos em serifa.'},
+  {id:'editor',   nm:'Editor',   sp:'Interface monoespaçada, como no app de DOE.'},
+  {id:'classica', nm:'Clássica', sp:'Leitura em Palatino, como um artigo impresso.'}
+];
+const SIZES = [['13px','Pequeno'],['14px','Médio'],['15px','Grande'],['16.5px','Maior']];
+
+const look = {theme:'material', font:'sistema', size:'14px'};
+
+function applyLook(){
+  const h = document.documentElement;
+  h.dataset.theme = look.theme;
+  h.dataset.font  = look.font;
+  h.style.setProperty('--base', look.size);
+  try{ localStorage.setItem('acervo.look', JSON.stringify(look)); }catch(e){}
+  if(S.libDir){ S.prefs.look = {...look}; saveSoon(); }
+}
+function drawLook(){
+  $('#themelist').innerHTML = THEMES.map(t =>
+    '<button class="tsw' + (look.theme===t.id?' on':'') + '" data-theme="' + t.id + '"' +
+    ' style="--sw-bg:' + t.bg + ';--sw-ink:' + t.ink + '">' +
+    '<span class="bars">' + t.bars.map(c=>'<i style="background:'+c+'"></i>').join('') + '</span>' +
+    '<span class="nm">' + t.nm + '</span></button>').join('');
+  $('#fontlist').innerHTML = FONTS.map(f =>
+    '<button class="fbt' + (look.font===f.id?' on':'') + '" data-font="' + f.id + '">' +
+    '<span class="nm">' + f.nm + '</span><span class="sp">' + f.sp + '</span></button>').join('');
+  $('#sizelist').innerHTML = SIZES.map(([v,n]) =>
+    '<button class="' + (look.size===v?'on':'') + '" data-size="' + v + '">' + n + '</button>').join('');
+}
+const openHelp = ()=>{
+  $('#helpmodal').classList.add('on');
+  $('#hp-body').scrollTop = 0;
+  const first = $('#hp-nav').querySelector('button');
+  $('#hp-nav').querySelectorAll('button').forEach(b => b.classList.remove('on'));
+  if(first) first.classList.add('on');
+};
+$('#help').addEventListener('click', openHelp);
+$('#help2').addEventListener('click', openHelp);
+$('#hp-close').addEventListener('click', ()=> $('#helpmodal').classList.remove('on'));
+$('#helpmodal').addEventListener('click', e=>{
+  if(e.target.id === 'helpmodal') $('#helpmodal').classList.remove('on');
+});
+$('#hp-nav').addEventListener('click', e=>{
+  const b = e.target.closest('[data-go]'); if(!b) return;
+  const alvo = document.getElementById(b.dataset.go);
+  const body = $('#hp-body');
+  if(alvo) body.scrollTo({
+    top: body.scrollTop + alvo.getBoundingClientRect().top - body.getBoundingClientRect().top - 8,
+    behavior:'smooth'
+  });
+});
+/* o índice acompanha a rolagem */
+$('#hp-body').addEventListener('scroll', ()=>{
+  const body = $('#hp-body');
+  const linha = body.getBoundingClientRect().top + 60;
+  let atual = null;
+  body.querySelectorAll('section').forEach(sec=>{
+    if(sec.getBoundingClientRect().top <= linha) atual = sec.id;
+  });
+  $('#hp-nav').querySelectorAll('button').forEach(b =>
+    b.classList.toggle('on', b.dataset.go === atual));
+}, {passive:true});
+
+const openAbout = ()=> $('#aboutmodal').classList.add('on');
+$('#about').addEventListener('click', openAbout);
+$('#about2').addEventListener('click', openAbout);
+$('#ab-close').addEventListener('click', ()=> $('#aboutmodal').classList.remove('on'));
+$('#aboutmodal').addEventListener('click', e=>{
+  if(e.target.id === 'aboutmodal') $('#aboutmodal').classList.remove('on');
+});
+
+const openLook = ()=>{ drawLook(); $('#lookmodal').classList.add('on'); };
+$('#look').addEventListener('click', openLook);
+$('#look2').addEventListener('click', openLook);
+$('#l-close').addEventListener('click', ()=> $('#lookmodal').classList.remove('on'));
+$('#lookmodal').addEventListener('click', e=>{
+  if(e.target.id === 'lookmodal'){ $('#lookmodal').classList.remove('on'); return; }
+  /* pelas classes dos botões: o <html> também carrega data-theme e data-font */
+  const t = e.target.closest('.tsw'),
+        f = e.target.closest('.fbt'),
+        z = e.target.closest('#sizelist button');
+  if(t) look.theme = t.dataset.theme;
+  else if(f) look.font = f.dataset.font;
+  else if(z) look.size = z.dataset.size;
+  else return;
+  applyLook(); drawLook();
+});
+(function initLook(){
+  try{
+    const saved = JSON.parse(localStorage.getItem('acervo.look')||'null');
+    if(saved) Object.assign(look, saved);
+  }catch(e){}
+  applyLook();
+})();
+
+/* ==================================================================
+   11. Busca no texto completo
+   ================================================================== */
+const FT = {cache:new Map(), loaded:false, hits:null, snips:new Map()};
+
+async function ensureFullText(){
+  if(FT.loaded) return true;
+  let list = Object.values(S.docs).filter(d => d.hasText);
+  if(!list.length) list = Object.values(S.docs);
+  if(!list.length) return false;
+
+  S.stop = false;
+  P.show('Carregando o texto dos artigos');
+  let got = 0;
+  for(let i=0;i<list.length;i++){
+    if(S.stop) break;
+    P.set(i, list.length, list[i].file);
+    try{
+      const j = await readJSON(S.docsDir, list[i].hash + '.json');
+      if(j && j.text){
+        const o = j.text.slice(0, 400000);
+        FT.cache.set(list[i].hash, {o, n:norm(o)});
+        got++;
+      }
+    }catch(e){}
+    if(i % 30 === 29) await new Promise(r => setTimeout(r));
+  }
+  P.hide();
+  if(!got){
+    toast('Nenhum texto completo guardado. Ative a opção em Ajustes e reindexe.', 5000);
+    return false;
+  }
+  FT.loaded = !S.stop;
+  return true;
+}
+
+function ftSearch(){
+  FT.hits = null; FT.snips.clear();
+  const terms = norm(S.filter.q).split(/\s+/).filter(Boolean);
+  if(!terms.length || !FT.cache.size) return;
+  const set = new Set();
+  FT.cache.forEach((v,h)=>{
+    if(!terms.every(t => v.n.includes(t))) return;
+    set.add(h);
+    const i = v.n.indexOf(terms[0]);
+    const a = Math.max(0, i - 90);
+    const b = Math.min(v.o.length, i + terms[0].length + 150);
+    FT.snips.set(h, (a>0?'…':'') + v.o.slice(a,b).replace(/\s+/g,' ').trim() +
+                    (b < v.o.length ? '…' : ''));
+  });
+  FT.hits = set;
+}
+
+function markTerms(txt){
+  let out = esc(txt);
+  S.filter.q.trim().split(/\s+/).filter(t => t.length > 1).forEach(t=>{
+    out = out.replace(new RegExp('(' + t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','gi'), '<mark>$1</mark>');
+  });
+  return out;
+}
+
+$('#deep').addEventListener('click', async ()=>{
+  const f = S.filter;
+  if(f.deep){
+    f.deep = false; $('#deep').classList.remove('on'); render(); return;
+  }
+  $('#deep').classList.add('on');
+  if(!await ensureFullText()){ $('#deep').classList.remove('on'); return; }
+  f.deep = true;
+  ftSearch(); render();
+  if(f.q) toast(FT.hits.size + ' com o termo no corpo do texto.');
+});
+
+/* ==================================================================
+   12. Localizar dentro do artigo aberto
+   ================================================================== */
+const FD = {pages:null, hits:[], i:-1};
+
+async function buildPageText(){
+  if(FD.pages) return FD.pages;
+  const out = [];
+  for(let i=1;i<=R.pdf.numPages;i++){
+    const page = await R.pdf.getPage(i);
+    const vp   = page.getViewport({scale:1});
+    const tc   = await page.getTextContent();
+    out.push(linesFrom(tc.items, vp.width).map(l => ({
+      n: norm(l.text),
+      r: [ l.x/vp.width,
+           Math.max(0, (vp.height - l.y - l.h*0.95)/vp.height),
+           Math.min(1, (l.w || l.text.length*l.h*0.5)/vp.width),
+           (l.h*1.35)/vp.height ]
+    })));
+    page.cleanup();
+  }
+  FD.pages = out;
+  return out;
+}
+
+function paintFind(){
+  document.querySelectorAll('#rd-pages .hlLayer i.find').forEach(e => e.remove());
+  if(FD.i < 0 || !FD.hits[FD.i]) return;
+  const h  = FD.hits[FD.i];
+  const pg = document.querySelector('#rd-pages .pg[data-p="' + h.p + '"]');
+  if(!pg) return;
+  const L = pg.querySelector('.hlLayer'); if(!L) return;
+  const d = document.createElement('i');
+  d.className = 'find';
+  d.style.cssText = 'left:' + (h.r[0]*100) + '%;top:' + (h.r[1]*100) +
+                    '%;width:' + (h.r[2]*100) + '%;height:' + (h.r[3]*100) + '%';
+  L.appendChild(d);
+}
+
+function findGo(k){
+  if(!FD.hits.length) return;
+  FD.i = (k + FD.hits.length) % FD.hits.length;
+  const h = FD.hits[FD.i];
+  const pg = document.querySelector('#rd-pages .pg[data-p="' + h.p + '"]');
+  const host = $('#rd-pages');
+  if(pg) host.scrollTo({
+    top: Math.max(0, host.scrollTop + pg.getBoundingClientRect().top -
+         host.getBoundingClientRect().top + h.r[1]*pg.offsetHeight - 140),
+    behavior:'smooth'
+  });
+  paintFind();
+  $('#rd-fc').textContent = (FD.i+1) + ' de ' + FD.hits.length;
+}
+
+async function findRun(){
+  const q = norm($('#rd-fq').value);
+  FD.hits = []; FD.i = -1;
+  if(q.length < 2){ paintFind(); $('#rd-fc').textContent = ''; return; }
+  $('#rd-fc').textContent = '…';
+  const pages = await buildPageText();
+  pages.forEach((ls, pi) => ls.forEach(l => {
+    if(l.n.includes(q)) FD.hits.push({p:pi+1, r:l.r});
+  }));
+  if(!FD.hits.length){ $('#rd-fc').textContent = 'nada'; paintFind(); return; }
+  findGo(0);
+}
+
+let findT = null;
+$('#rd-fq').addEventListener('input', ()=>{ clearTimeout(findT); findT = setTimeout(findRun, 280); });
+$('#rd-fq').addEventListener('keydown', e=>{
+  if(e.key === 'Enter'){ e.preventDefault(); findGo(FD.i + (e.shiftKey ? -1 : 1)); }
+  if(e.key === 'Escape'){ e.preventDefault(); closeFind(); }
+});
+$('#rd-fn').addEventListener('click', ()=> findGo(FD.i+1));
+$('#rd-fp').addEventListener('click', ()=> findGo(FD.i-1));
+$('#rd-fx').addEventListener('click', closeFind);
+$('#rd-findbtn').addEventListener('click', openFind);
+function openFind(){
+  $('#rd-find').classList.add('on');
+  $('#rd-fq').focus(); $('#rd-fq').select();
+}
+function closeFind(){
+  $('#rd-find').classList.remove('on');
+  FD.hits = []; FD.i = -1; paintFind();
+  $('#rd-fq').value = ''; $('#rd-fc').textContent = '';
+}
+
+/* ==================================================================
+   13. BibTeX
+   ================================================================== */
+const deaccent = s => String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function bibEsc(s){
+  return deaccent(s).replace(/[\\{}]/g,' ').replace(/([&%$#_~^])/g,'\\$1').replace(/\s+/g,' ').trim();
+}
+function bibKey(d, used){
+  const fam = ((d.authors||[])[0] || '').trim().split(/\s+/).pop() ||
+              (d.file||'ref').replace(/\.pdf$/i,'');
+  const word = (d.title||'').split(/[\s:,]+/).find(w => w.length > 4) || '';
+  let k = deaccent(fam + (d.year||'') + word).replace(/[^A-Za-z0-9]/g,'').slice(0,42) || 'ref';
+  const base = k; let n = 0;
+  while(used.has(k)) k = base + 'abcdefghijklmnop'[n++];
+  used.add(k);
+  return k;
+}
+function bibLocal(d, used){
+  const conf = /proceed|conferen|symposi|workshop|congress|anais/i.test(d.journal||'');
+  const type = d.journal ? (conf ? 'inproceedings' : 'article') : (d.arxiv ? 'misc' : 'misc');
+  const f = [];
+  if(d.title)   f.push(['title', '{' + bibEsc(d.title) + '}']);
+  if((d.authors||[]).length) f.push(['author', d.authors.map(bibEsc).join(' and ')]);
+  if(d.journal) f.push([conf ? 'booktitle' : 'journal', bibEsc(d.journal)]);
+  if(d.year)    f.push(['year', d.year]);
+  if(d.doi)     f.push(['doi', d.doi]);
+  if(d.arxiv)   f.push(['eprint', d.arxiv], ['archivePrefix','arXiv']);
+  if(!d.journal && !d.arxiv) f.push(['note', 'PDF: ' + bibEsc(d.file)]);
+  return '@' + type + '{' + bibKey(d, used) + ',\n' +
+    f.map(([k,v]) => '  ' + k + ' = {' + v + '}').join(',\n') + '\n}';
+}
+async function bibCrossref(d, used){
+  if(!d.doi) return bibLocal(d, used);
+  try{
+    const r = await fetch('https://api.crossref.org/works/' + encodeURIComponent(d.doi) +
+                          '/transform/application/x-bibtex' + (S.prefs.mail ? '?mailto=' + encodeURIComponent(S.prefs.mail) : ''));
+    if(!r.ok) return bibLocal(d, used);
+    const t = (await r.text()).trim();
+    return /^@/.test(t) ? t : bibLocal(d, used);
+  }catch(e){ return bibLocal(d, used); }
+}
+
+function bibScope(){
+  const v = ($('#bb-scope').querySelector('input:checked')||{}).value;
+  if(v === 'pick') return [...S.pick].map(h => S.docs[h]).filter(Boolean);
+  if(v === 'all')  return Object.values(S.docs);
+  return visible();
+}
+function openBib(){
+  const nPick = S.pick.size, nVis = visible().length, nAll = Object.keys(S.docs).length;
+  $('#bb-scope').innerHTML =
+    (nPick ? '<label><input type="radio" name="bbscope" value="pick" checked>' +
+      '<span><b>Os ' + nPick + ' selecionados</b></span></label>' : '') +
+    '<label><input type="radio" name="bbscope" value="vis"' + (nPick?'':' checked') + '>' +
+      '<span><b>Os ' + nVis + ' do filtro atual</b> — o que está na tela agora.</span></label>' +
+    '<label><input type="radio" name="bbscope" value="all">' +
+      '<span><b>Todos os ' + nAll + '</b></span></label>';
+  $('#bib-out').value = '';
+  $('#bibmodal').classList.add('on');
+}
+$('#sel-bib').addEventListener('click', openBib);
+$('#s-bib').addEventListener('click', ()=>{ $('#modal').classList.remove('on'); openBib(); });
+$('#bb-close').addEventListener('click', ()=> $('#bibmodal').classList.remove('on'));
+$('#bibmodal').addEventListener('click', e=>{
+  if(e.target.id === 'bibmodal') $('#bibmodal').classList.remove('on');
+});
+$('#bb-gen').addEventListener('click', async ()=>{
+  const docs = bibScope();
+  if(!docs.length){ toast('Nenhum artigo nesse conjunto.'); return; }
+  const src  = ($('#bibmodal').querySelector('input[name=bbsrc]:checked')||{}).value;
+  const used = new Set();
+  const out  = [];
+  if(src === 'crossref'){
+    S.stop = false;
+    P.show('Buscando entradas no Crossref');
+    for(let i=0;i<docs.length;i++){
+      if(S.stop) break;
+      P.set(i, docs.length, docs[i].title || docs[i].file);
+      out.push(await bibCrossref(docs[i], used));
+      await new Promise(r => setTimeout(r, 90));
+    }
+    P.hide();
+  }else{
+    docs.forEach(d => out.push(bibLocal(d, used)));
+  }
+  $('#bib-out').value = out.join('\n\n') + '\n';
+  toast(out.length + (out.length===1 ? ' entrada gerada.' : ' entradas geradas.'));
+});
+$('#bb-copy').addEventListener('click', async ()=>{
+  if(!$('#bib-out').value){ toast('Gere primeiro.'); return; }
+  try{ await navigator.clipboard.writeText($('#bib-out').value); toast('Copiado.'); }
+  catch(e){ $('#bib-out').select(); toast('Selecionado — use Ctrl+C.'); }
+});
+$('#bb-save').addEventListener('click', ()=>{
+  if(!$('#bib-out').value){ toast('Gere primeiro.'); return; }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([$('#bib-out').value], {type:'application/x-bibtex'}));
+  a.download = 'acervo-' + new Date().toISOString().slice(0,10) + '.bib';
+  a.click();
+});
+
+/* ==================================================================
+   13b. Renomear arquivos  —  ANO - Título - Sobrenome e Sobrenome.pdf
+   ================================================================== */
+const REN = {rows:[]};
+/* limpa o que o Windows não aceita em nome de arquivo */
+function renClean(s){
+  return String(s||'').replace(/[<>:"/\\|?*\x00-\x1f]/g,' ').replace(/\s+/g,' ').trim()
+    .replace(/[\s.]+$/,'');
+}
+function renFamily(a){
+  a = String(a||'').trim();
+  if(a.includes(',')) a = a.split(',')[0];          /* "Silva, João" */
+  return renClean(a.split(/\s+/).pop() || '');
+}
+function renName(d){
+  if(!d.year) return {skip:'sem ano'};
+  let title = renClean(d.title);
+  if(!title) return {skip:'sem título'};
+  const fams = (d.authors||[]).map(renFamily).filter(Boolean);
+  if(!fams.length) return {skip:'sem autores'};
+  const who = fams.length === 1 ? fams[0]
+            : fams[0] + ' e ' + fams[1] + (fams.length > 2 ? ' et al.' : '');
+  if(title.length > 120)
+    title = title.slice(0,120).replace(/\s+\S*$/,'').replace(/[\s.,;:\-–—]+$/,'');
+  /* "et al." + ".pdf" daria ponto duplo; fica "et al.pdf" */
+  return {name: d.year + ' - ' + title + ' - ' + who.replace(/\.$/,'') + '.pdf'};
+}
+async function renDirOf(d){
+  const parts = d.path.split('/');
+  let dir = S.root;
+  for(let i=0;i<parts.length-1;i++) dir = await dir.getDirectoryHandle(parts[i]);
+  return dir;
+}
+async function renExists(dir, name){
+  try{ await dir.getFileHandle(name); return true; }catch(e){ return false; }
+}
+function renScope(){
+  const v = ($('#rn-scope').querySelector('input:checked')||{}).value;
+  if(v === 'pick') return [...S.pick].map(h => S.docs[h]).filter(Boolean);
+  if(v === 'all')  return Object.values(S.docs);
+  return visible();
+}
+function renPreview(){
+  const docs = renScope();
+  const taken = new Set();                     /* pasta/nome já pedido neste lote */
+  REN.rows = docs.map(d => {
+    if(d.missing) return {hash:d.hash, old:d.file, skip:'arquivo não encontrado'};
+    const r = renName(d);
+    if(r.skip) return {hash:d.hash, old:d.file, skip:r.skip};
+    if(r.name === d.file) return {hash:d.hash, old:d.file, skip:'já está no padrão'};
+    let name = r.name, n = 1;
+    const key = s => (d.dir + '/' + s).toLowerCase();
+    while(taken.has(key(name))) name = r.name.replace(/\.pdf$/i, ' (' + (++n) + ').pdf');
+    taken.add(key(name));
+    return {hash:d.hash, old:d.file, name, on:true};
+  });
+  const box = $('#ren-list');
+  if(!REN.rows.length){ box.innerHTML = '<div class="empty">Nenhum artigo nesse conjunto.</div>'; }
+  else box.innerHTML = '<table>' + REN.rows.map((r,i) =>
+    r.skip
+      ? '<tr class="skip"><td class="ck"></td><td><span class="old">' + esc(r.old) + '</span><br>' +
+        '<span class="why">' + esc(r.skip) + '</span></td></tr>'
+      : '<tr><td class="ck"><input type="checkbox" data-i="' + i + '"' + (r.on?' checked':'') + '></td>' +
+        '<td><span class="old">' + esc(r.old) + '</span><br><span class="new">' + esc(r.name) + '</span>' +
+        '<span class="st" id="ren-st-' + i + '"></span></td></tr>'
+  ).join('') + '</table>';
+  renSum();
+}
+function renSum(){
+  const ok   = REN.rows.filter(r => !r.skip);
+  const on   = ok.filter(r => r.on).length;
+  const skip = REN.rows.length - ok.length;
+  $('#ren-sum').textContent = REN.rows.length
+    ? on + (on===1?' arquivo marcado':' arquivos marcados') + ' para renomear' +
+      (skip ? ' · ' + skip + ' fora, veja o motivo na lista' : '')
+    : '';
+  $('#rn-go').disabled = !on;
+}
+function openRename(){
+  if(!S.root){ toast('Abra uma pasta primeiro.'); return; }
+  if(S.busy){ toast('Espere a indexação terminar.'); return; }
+  const nPick = S.pick.size, nVis = visible().length, nAll = Object.keys(S.docs).length;
+  $('#rn-scope').innerHTML =
+    (nPick ? '<label><input type="radio" name="rnscope" value="pick" checked>' +
+      '<span><b>Os ' + nPick + ' selecionados</b></span></label>' : '') +
+    '<label><input type="radio" name="rnscope" value="vis"' + (nPick?'':' checked') + '>' +
+      '<span><b>Os ' + nVis + ' do filtro atual</b> — o que está na tela agora.</span></label>' +
+    '<label><input type="radio" name="rnscope" value="all">' +
+      '<span><b>Todos os ' + nAll + '</b></span></label>';
+  $('#rn-go').textContent = 'Renomear';
+  delete $('#rn-go').dataset.done;
+  renPreview();
+  $('#renmodal').classList.add('on');
+}
+async function renApply(){
+  const rows = REN.rows.filter(r => !r.skip && r.on);
+  if(!rows.length){ toast('Nenhum arquivo marcado.'); return; }
+  if(!window.FileSystemFileHandle || !('move' in FileSystemFileHandle.prototype)){
+    toast('Este navegador não sabe renomear arquivos. Use o Chrome ou o Edge atualizados.', 6000); return;
+  }
+  S.busy = true; $('#rn-go').disabled = true;
+  $('#renmodal').querySelectorAll('input').forEach(i => i.disabled = true);
+  let done = 0, fail = 0;
+  for(const r of rows){
+    const st = document.getElementById('ren-st-' + REN.rows.indexOf(r));
+    const d  = S.docs[r.hash];
+    try{
+      const dir = await renDirOf(d);
+      const fh  = await dir.getFileHandle(d.file);
+      /* colisão com arquivo que já existe na pasta (fora do lote) */
+      let name = r.name, n = 1;
+      const same = s => s.toLowerCase() === d.file.toLowerCase();
+      while(!same(name) && await renExists(dir, name))
+        name = r.name.replace(/\.pdf$/i, ' (' + (++n) + ').pdf');
+      await fh.move(name);
+      const f = await fh.getFile();
+      d.file = name; d.path = d.dir ? d.dir + '/' + name : name;
+      d.mtime = f.lastModified; d.size = f.size;
+      if(st){ st.className = 'st ok'; st.textContent = name === r.name ? ' ✓' : ' ✓ como ' + name; }
+      done++;
+    }catch(e){
+      if(st){ st.className = 'st err'; st.textContent = ' — ' + String(e.message||e).slice(0,90); }
+      fail++;
+    }
+    if(done % 10 === 9) await saveIndex();
+  }
+  await saveIndex();
+  S.busy = false;
+  render(); if(S.sel) openDoc(S.sel);
+  $('#renmodal').querySelectorAll('input').forEach(i => i.disabled = false);
+  $('#ren-sum').textContent = done + (done===1?' arquivo renomeado':' arquivos renomeados') +
+    (fail ? ' · ' + fail + ' com erro, veja na lista' : '');
+  $('#rn-go').textContent = 'Fechar';
+  $('#rn-go').disabled = false;
+  $('#rn-go').dataset.done = '1';
+  toast(fail ? done + ' renomeados, ' + fail + ' com erro.' : done + ' renomeados.');
+}
+$('#s-rename').addEventListener('click', ()=>{ $('#modal').classList.remove('on'); openRename(); });
+$('#sel-rename').addEventListener('click', openRename);
+$('#rn-close').addEventListener('click', ()=>{ if(!S.busy) $('#renmodal').classList.remove('on'); });
+$('#renmodal').addEventListener('click', e=>{
+  if(e.target.id === 'renmodal' && !S.busy) $('#renmodal').classList.remove('on');
+});
+$('#rn-scope').addEventListener('change', ()=>{
+  delete $('#rn-go').dataset.done; $('#rn-go').textContent = 'Renomear'; renPreview();
+});
+$('#ren-list').addEventListener('change', e=>{
+  const i = e.target.dataset.i; if(i == null) return;
+  REN.rows[i].on = e.target.checked; renSum();
+});
+$('#rn-all').addEventListener('click', ()=>{
+  if(S.busy) return;
+  REN.rows.forEach(r => { if(!r.skip) r.on = true; });
+  $('#ren-list').querySelectorAll('input').forEach(i => i.checked = true); renSum();
+});
+$('#rn-none').addEventListener('click', ()=>{
+  if(S.busy) return;
+  REN.rows.forEach(r => { if(!r.skip) r.on = false; });
+  $('#ren-list').querySelectorAll('input').forEach(i => i.checked = false); renSum();
+});
+$('#rn-go').addEventListener('click', ()=>{
+  if($('#rn-go').dataset.done){ delete $('#rn-go').dataset.done; $('#renmodal').classList.remove('on'); return; }
+  if(S.busy) return;
+  renApply();
+});
+
+/* ==================================================================
+   14. Busca semântica (transformers.js, roda no navegador)
+   ================================================================== */
+const SEM = {
+  /* tentados em ordem: se um repositório sumir, cai para o seguinte */
+  candidates:['Xenova/multilingual-e5-small',
+              'Xenova/paraphrase-multilingual-MiniLM-L12-v2',
+              'Xenova/all-MiniLM-L6-v2'],
+  model:'Xenova/multilingual-e5-small',
+  pipe:null, device:'', vecs:new Map(), rank:null, loaded:false, busy:false
+};
+
+/* Float32Array <-> base64, para caber num JSON de tamanho razoável */
+function vecEnc(a){
+  const b = new Uint8Array(new Float32Array(a).buffer);
+  let s = '';
+  for(let i=0;i<b.length;i+=4096) s += String.fromCharCode.apply(null, b.subarray(i, i+4096));
+  return btoa(s);
+}
+function vecDec(b64){
+  const bin = atob(b64);
+  const b = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) b[i] = bin.charCodeAt(i);
+  return new Float32Array(b.buffer);
+}
+function dot(a,b){
+  let s = 0;
+  const n = Math.min(a.length, b.length);
+  for(let i=0;i<n;i++) s += a[i]*b[i];
+  return s;
+}
+
+async function semLoadVecs(){
+  if(SEM.loaded) return;
+  const j = await readJSON(S.libDir, 'vetores.json');
+  if(j && j.vecs && SEM.candidates.includes(j.model)){
+    SEM.model = j.model;   /* os vetores mandam: trocar de modelo invalidaria tudo */
+    for(const h in j.vecs) SEM.vecs.set(h, vecDec(j.vecs[h]));
+  }
+  SEM.loaded = true;
+}
+async function semSaveVecs(){
+  const o = {};
+  SEM.vecs.forEach((v,h)=>{ if(S.docs[h]) o[h] = vecEnc(v); });
+  await writeFile(S.libDir, 'vetores.json',
+    JSON.stringify({model:SEM.model, dim:SEM.vecs.size ? [...SEM.vecs.values()][0].length : 0, vecs:o}));
+}
+
+async function semPipe(){
+  if(SEM.pipe) return SEM.pipe;
+  P.show('Preparando o modelo de busca semântica');
+  P.set(0, 1, 'na primeira vez ele é baixado, cerca de 120 MB');
+  const mb = n => (n/1048576).toFixed(0) + ' MB';
+  const track = p => {
+    if(!p || p.status !== 'progress' || !p.total) return;
+    $('#p-sub').textContent = mb(p.loaded) + ' de ' + mb(p.total);
+    $('#p-fill').style.width = (p.loaded/p.total*100) + '%';
+    $('#p-file').textContent = p.file || '';
+  };
+  try{
+    const mod = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@4/+esm');
+    let device = 'wasm';
+    try{
+      if(navigator.gpu && await navigator.gpu.requestAdapter()) device = 'webgpu';
+    }catch(e){}
+
+    /* se já existem vetores, só o modelo que os gerou serve */
+    const tentar = SEM.vecs.size ? [SEM.model]
+                 : [SEM.model, ...SEM.candidates.filter(m => m !== SEM.model)];
+    let ultimo = null;
+    for(const nome of tentar){
+      for(const dev of (device === 'webgpu' ? ['webgpu','wasm'] : ['wasm'])){
+        try{
+          SEM.pipe = await mod.pipeline('feature-extraction', nome,
+            {dtype:'q8', device:dev, progress_callback:track});
+          SEM.model = nome; SEM.device = dev;
+          break;
+        }catch(err){ ultimo = err; }
+      }
+      if(SEM.pipe) break;
+    }
+    if(!SEM.pipe) throw ultimo || new Error('nenhum modelo pôde ser carregado');
+  }catch(e){
+    P.hide();
+    toast('Não consegui carregar o modelo: ' + (e.message||e).slice(0,90), 6000);
+    throw e;
+  }
+  P.hide();
+  return SEM.pipe;
+}
+
+async function embed(texts){
+  const pipe = await semPipe();
+  const out = await pipe(texts, {pooling:'mean', normalize:true});
+  return out.tolist();
+}
+
+/* o e5 espera os prefixos passage: e query: */
+function docText(d){
+  const t = ['passage:', d.title || d.file, (d.authors||[]).slice(0,4).join(', '),
+             d.journal, (d.tags||[]).join(' '), d.abstract || '']
+            .filter(Boolean).join(' ');
+  return t.replace(/\s+/g,' ').slice(0, 1800);
+}
+
+async function semIndex(force){
+  if(SEM.busy) return;
+  await semLoadVecs();
+  const todo = Object.values(S.docs).filter(d => force || !SEM.vecs.has(d.hash));
+  if(!todo.length){ toast('Todos os artigos já têm vetor.'); return; }
+
+  SEM.busy = true; S.stop = false;
+  try{ await semPipe(); }catch(e){ SEM.busy = false; return; }
+
+  P.show('Gerando os vetores');
+  const B = 8;
+  for(let i=0;i<todo.length;i+=B){
+    if(S.stop) break;
+    const lote = todo.slice(i, i+B);
+    P.set(i, todo.length, lote[0].title || lote[0].file);
+    try{
+      const vs = await embed(lote.map(docText));
+      vs.forEach((v,k) => SEM.vecs.set(lote[k].hash, new Float32Array(v)));
+    }catch(e){
+      toast('Falha ao gerar vetores: ' + (e.message||e).slice(0,80), 5000);
+      break;
+    }
+    if((i/B) % 5 === 4) await semSaveVecs();
+    await new Promise(r => setTimeout(r));
+  }
+  await semSaveVecs();
+  P.hide();
+  SEM.busy = false;
+  semStatus();
+  toast(S.stop ? 'Parei — os vetores já feitos foram salvos.'
+               : SEM.vecs.size + ' artigos prontos para busca semântica.');
+}
+
+async function semSearch(){
+  const q = S.filter.q.trim();
+  SEM.rank = null;
+  if(q.length < 3 || !SEM.vecs.size){ render(); return; }
+  try{
+    const [v] = await embed(['query: ' + q]);
+    const qv = new Float32Array(v);
+    const res = [];
+    SEM.vecs.forEach((vec,h)=>{ if(S.docs[h]) res.push([h, dot(qv, vec)]); });
+    res.sort((a,b) => b[1] - a[1]);
+    SEM.rank = new Map(res.slice(0, 80));
+  }catch(e){}
+  render();
+}
+
+function semStatus(){
+  const n = SEM.vecs.size, t = Object.keys(S.docs).length;
+  $('#sem-status').textContent = !t ? 'Nenhum artigo no acervo ainda.'
+    : n === 0 ? 'Nenhum vetor gerado ainda. ' + t + ' artigos esperando.'
+    : n >= t  ? 'Pronto: ' + n + ' artigos vetorizados' +
+                (SEM.device ? ' (' + (SEM.device === 'webgpu' ? 'na GPU' : 'na CPU') + ').' : '.')
+    : n + ' de ' + t + ' artigos vetorizados.';
+}
+
+let semT = null;
+$('#sem').addEventListener('click', async ()=>{
+  const f = S.filter;
+  if(f.sem){
+    f.sem = false; SEM.rank = null;
+    $('#sem').classList.remove('on'); render(); return;
+  }
+  await semLoadVecs();
+  if(!SEM.vecs.size){
+    toast('Antes é preciso gerar os vetores — abra Ajustes e clique em “Indexar vetores”.', 6000);
+    return;
+  }
+  f.sem = true;
+  $('#sem').classList.add('on');
+  if(f.q) semSearch(); else render();
+});
+$('#sem-idx').addEventListener('click', ()=>{ $('#modal').classList.remove('on'); semIndex(false); });
+$('#sem-re').addEventListener('click', ()=>{ $('#modal').classList.remove('on'); semIndex(true); });
+
+/* ==================================================================
+   15. Eventos
+   ================================================================== */
+$('#pick').addEventListener('click', async ()=>{
+  if(!window.showDirectoryPicker){
+    $('#w-error').hidden = false;
+    $('#w-error').textContent = 'Este navegador não sabe abrir uma pasta do disco. Use o Chrome ou o Edge.';
+    return;
+  }
+  try{
+    const h = await window.showDirectoryPicker({mode:'readwrite', id:'acervo-artigos'});
+    await start(h, true);
+  }catch(e){
+    if(e.name !== 'AbortError'){
+      $('#w-error').hidden = false;
+      $('#w-error').textContent = 'Não deu para abrir a pasta: ' + e.message;
+    }
+  }
+});
+
+$('#reopen').addEventListener('click', async ()=>{
+  const h = await idb.get('root');
+  if(h) await start(h, false);
+});
+
+async function start(handle, fresh){
+  if(!await ensurePermission(handle)){
+    $('#w-error').hidden = false;
+    $('#w-error').textContent = 'Preciso de permissão de leitura e escrita para guardar o índice dentro da pasta.';
+    return;
+  }
+  await mountRoot(handle);
+  await loadIndex();
+  if(S.prefs.look && !localStorage.getItem('acervo.look')){
+    Object.assign(look, S.prefs.look); applyLook();
+  }
+  $('#rootname').textContent = handle.name;
+  $('#welcome').style.display = 'none';
+  $('#app').classList.add('on');
+  buildRail(); render();
+  if(fresh || !Object.keys(S.docs).length) scan();
+  else toast(Object.keys(S.docs).length + ' artigos carregados do índice.');
+}
+
+$('#scan').addEventListener('click', ()=> scan());
+$('#p-stop').addEventListener('click', ()=>{ S.stop = true; });
+
+$('#q').addEventListener('input', e=>{
+  S.filter.q = e.target.value;
+  $('#qclear').hidden = !e.target.value;
+  if(S.filter.deep) ftSearch();
+  render();
+  if(S.filter.sem){ clearTimeout(semT); semT = setTimeout(semSearch, 450); }
+  if(S.sel) openDoc(S.sel);
+});
+$('#qclear').addEventListener('click', ()=>{
+  S.filter.q=''; $('#q').value=''; $('#qclear').hidden=true;
+  if(S.filter.deep) ftSearch();
+  render();
+});
+
+$('#v-grid').addEventListener('click', ()=>{
+  S.view='grid'; $('#v-grid').classList.add('on'); $('#v-list').classList.remove('on'); render();
+});
+$('#v-list').addEventListener('click', ()=>{
+  S.view='list'; $('#v-list').classList.add('on'); $('#v-grid').classList.remove('on'); render();
+});
+
+/* cliques delegados: barra lateral + filtros ativos */
+document.addEventListener('click', e=>{
+  const a = e.target.closest('[data-act]');
+  if(a){
+    const act = a.dataset.act, f = S.filter;
+    if(act === 'all'){ Object.assign(f,{folder:null,tags:[],untagged:false,year:null,fav:false,nometa:false}); }
+    else if(act === 'fav'){ f.fav = !f.fav; }
+    else if(act === 'nometa'){ f.nometa = !f.nometa; }
+    else if(act === 'untagged'){ f.untagged = !f.untagged; f.tags = []; }
+    else if(act === 'mode:and'){ f.tagMode = 'and'; }
+    else if(act === 'mode:or'){ f.tagMode = 'or'; }
+    else if(act.startsWith('edittag:')){ openTagEdit(act.slice(8)); return; }
+    else if(act === 'clearfolder'){ f.folder = null; }
+    else if(act === 'cleartags'){ f.tags = []; }
+    else if(act === 'clearyear'){ f.year = null; }
+    else if(act === 'clearq'){ f.q=''; $('#q').value=''; $('#qclear').hidden=true; }
+    else if(act.startsWith('folder:')){
+      const v = act.slice(7);
+      f.folder = (f.folder === v) ? null : v;
+    }
+    else if(act.startsWith('tag:')){
+      const v = act.slice(4);
+      f.tags = f.tags.includes(v) ? f.tags.filter(t=>t!==v) : [...f.tags, v];
+      f.untagged = false;
+    }
+    else if(act.startsWith('year:')){
+      const v = +act.slice(5);
+      f.year = (f.year === v) ? null : v;
+    }
+    buildRail(); render();
+    $('#main').scrollTop = 0;
+    return;
+  }
+  const cb = e.target.closest('[data-cb]');
+  if(cb){ togglePick(cb.dataset.cb, e.shiftKey); return; }
+  const card = e.target.closest('.card');
+  if(card) openDoc(card.dataset.h);
+});
+
+$('#d-read').addEventListener('click', ()=>{ if(S.sel) openReader(S.sel); });
+$('#d-close').addEventListener('click', closeDrawer);
+$('#d-fav').addEventListener('click', ()=>{
+  const d = S.docs[S.sel]; if(!d) return;
+  d.fav = !d.fav;
+  $('#d-fav').textContent = d.fav ? 'Favorito ★' : 'Favoritar';
+  saveSoon(); buildRail(); render();
+});
+$('#d-open').addEventListener('click', async ()=>{
+  const d = S.docs[S.sel]; if(!d) return;
+  /* a aba precisa ser aberta no clique; o endereço entra depois */
+  const tab = window.open('', '_blank');
+  try{
+    const file = await fileByPath(d.path);
+    const url  = URL.createObjectURL(file);
+    if(tab) tab.location.href = url;
+    else { const a=document.createElement('a'); a.href=url; a.target='_blank'; a.click(); }
+    setTimeout(()=>URL.revokeObjectURL(url), 120000);
+  }catch(e){
+    if(tab) tab.close();
+    toast('Não achei o arquivo em ' + d.path);
+  }
+});
+$('#d-refetch').addEventListener('click', async ()=>{
+  const d = S.docs[S.sel]; if(!d || S.busy) return;
+  toast('Consultando as bases…');
+  try{
+    const m = await resolveMeta(d.doi, d.arxiv, {title:d.title, year:d.year,
+      authors:d.authors, journal:d.journal, abstract:d.abstract, source:'pdf'});
+    const fix = d.manual || {};
+    d.title = fix.title || m.title; d.year = fix.year || m.year;
+    d.authors = fix.authors || m.authors; d.journal = fix.journal || m.journal;
+    d.abstract = fix.abstract || m.abstract; d.source = m.source;
+    await saveIndex(); render(); openDoc(d.hash);
+    toast(m.abstract ? 'Metadados atualizados.' : 'A base não tem resumo para este DOI.');
+  }catch(e){ toast('A consulta falhou: ' + e.message); }
+});
+
+/* ajustes */
+$('#settings').addEventListener('click', async ()=>{
+  await semLoadVecs(); semStatus();
+  $('#s-mail').value = S.prefs.mail || '';
+  $('#s-full').checked = !!S.prefs.fulltext;
+  $('#modal').classList.add('on');
+});
+$('#s-close').addEventListener('click', ()=> $('#modal').classList.remove('on'));
+$('#s-save').addEventListener('click', async ()=>{
+  S.prefs.mail = $('#s-mail').value.trim();
+  S.prefs.fulltext = $('#s-full').checked;
+  await saveIndex();
+  $('#modal').classList.remove('on');
+  toast('Ajustes salvos.');
+});
+$('#s-export').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify({format:'acervo/1',
+    exported:new Date().toISOString(), docs:S.docs}, null, 1)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'acervo-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+});
+$('#s-reindex').addEventListener('click', ()=>{
+  $('#modal').classList.remove('on');
+  S.covers.forEach(u=>URL.revokeObjectURL(u)); S.covers.clear();
+  scan({force:true});
+});
+$('#s-switch').addEventListener('click', ()=>{
+  $('#modal').classList.remove('on');
+  location.reload();
+});
+$('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') $('#modal').classList.remove('on'); });
+
+/* teclado */
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape'){
+    if(/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){
+      document.activeElement.blur(); return;
+    }
+    if($('#helpmodal').classList.contains('on')) $('#helpmodal').classList.remove('on');
+    else if($('#aboutmodal').classList.contains('on')) $('#aboutmodal').classList.remove('on');
+    else if($('#tagmenu').classList.contains('on')) $('#tagmenu').classList.remove('on');
+    else if($('#tagedit').classList.contains('on')) $('#tagedit').classList.remove('on');
+    else if($('#lookmodal').classList.contains('on')) $('#lookmodal').classList.remove('on');
+    else if($('#renmodal').classList.contains('on')){ if(!S.busy) $('#renmodal').classList.remove('on'); }
+    else if($('#rd-find').classList.contains('on')) closeFind();
+    else if($('#reader').classList.contains('on')) closeReader();
+    else if(S.pick.size) clearPick();
+    else if($('#modal').classList.contains('on')) $('#modal').classList.remove('on');
+    else if($('#drawer').classList.contains('on')) closeDrawer();
+  }
+  if(e.key === '/' && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){
+    e.preventDefault(); $('#q').focus();
+  }
+  if((e.ctrlKey || e.metaKey) && e.key === 'f'){
+    if($('#reader').classList.contains('on')){ e.preventDefault(); openFind(); }
+    else if($('#app').classList.contains('on')){ e.preventDefault(); $('#q').focus(); }
+  }
+});
+window.addEventListener('beforeunload', e=>{
+  if(S.busy){ e.preventDefault(); e.returnValue = ''; }
+});
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'hidden' && saveTimer && S.libDir) saveIndex();
+});
+
+/* abertura */
+(async ()=>{
+  if(!window.showDirectoryPicker){
+    $('#pick').disabled = true;
+    $('#w-error').hidden = false;
+    $('#w-error').textContent = 'Este navegador não consegue abrir uma pasta do disco. Abra no Chrome ou no Edge.';
+    return;
+  }
+  try{
+    const h = await idb.get('root');
+    if(h){
+      $('#reopen').hidden = false;
+      $('#reopen').textContent = 'Abrir “' + h.name + '” de novo';
+    }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

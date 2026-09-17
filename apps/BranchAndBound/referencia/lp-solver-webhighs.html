@@ -1,0 +1,4428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="page_title">WebHIGHS — Programação Linear</title>
+
+  <!-- CodeMirror 5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/monokai.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/nord.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
+
+  <style>
+    /* ─── Reset & variables ─────────────────────────────────────────── */
+    /* ── Dark theme (default) ── */
+    :root {
+      --bg:      #282a36;
+      --bg2:     #1e2029;
+      --bg3:     #21222c;
+      --border:  #44475a;
+      --text:    #f8f8f2;
+      --muted:   #6272a4;
+      --accent:  #bd93f9;
+      --green:   #50fa7b;
+      --red:     #ff5555;
+      --orange:  #ffb86c;
+      --yellow:  #f1fa8c;
+      --cyan:    #8be9fd;
+      --pink:    #ff79c6;
+      --shadow:  0 1px 3px rgba(0,0,0,.5);
+    }
+
+    /* ── Light theme ── */
+    html[data-theme="light"] {
+      --bg:      #ffffff;
+      --bg2:     #f3f4f8;
+      --bg3:     #e8eaf2;
+      --border:  #d1d5db;
+      --text:    #111827;
+      --muted:   #6b7280;
+      --accent:  #7c3aed;
+      --green:   #15803d;
+      --red:     #dc2626;
+      --orange:  #b45309;
+      --yellow:  #92400e;
+      --cyan:    #0369a1;
+      --pink:    #9d174d;
+      --shadow:  0 1px 3px rgba(0,0,0,.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg2);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+    }
+
+    /* ─── Toolbar ───────────────────────────────────────────────────── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .brand {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--accent);
+      letter-spacing: -0.3px;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+    .sep { width: 1px; height: 22px; background: var(--border); margin: 0 2px; flex-shrink: 0; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      transition: background 0.12s, border-color 0.12s;
+      white-space: nowrap;
+    }
+    .btn:hover:not(:disabled) { background: rgba(255,255,255,0.06); border-color: var(--muted); }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #1e1f29;
+      font-weight: 600;
+    }
+    .btn.primary:hover:not(:disabled) { background: #c9a6fa; border-color: #c9a6fa; }
+    .btn.primary.solving { background: var(--orange); border-color: var(--orange); cursor: wait; }
+
+    select.btn {
+      padding-right: 6px;
+      max-width: 170px;
+    }
+    /* Force option background/color — browsers use OS native rendering by default,
+       which ignores the parent background and leaves text unreadable in dark mode */
+    select.btn option {
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    .toolbar-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+    /* ─── Main layout ───────────────────────────────────────────────── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ─── Editor panel ──────────────────────────────────────────────── */
+    .panel-editor {
+      display: flex;
+      flex-direction: column;
+      width: 56%;
+      min-width: 260px;
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+    .panel-header {
+      padding: 5px 12px;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .panel-header span { margin-left: auto; }
+    .font-btns { display: flex; gap: 2px; margin-left: auto; align-items: center; }
+    .font-btn {
+      padding: 1px 6px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: inherit;
+      line-height: 1.4;
+      transition: color .1s, border-color .1s;
+    }
+    .font-btn:hover { color: var(--text); border-color: var(--muted); }
+    .font-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .font-btn:disabled:hover { color: var(--muted); border-color: var(--border); }
+    #font-size-display, #result-font-size-display {
+      font-size: 10px;
+      color: var(--muted);
+      min-width: 26px;
+      text-align: center;
+      user-select: none;
+    }
+
+    /* Editor color theme selector */
+    .editor-theme-select {
+      font-size: 10.5px;
+      padding: 2px 5px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--bg3);
+      color: var(--muted);
+      font-family: inherit;
+      cursor: pointer;
+      transition: color .1s, border-color .1s;
+    }
+    .editor-theme-select:hover { color: var(--text); border-color: var(--muted); }
+    .editor-theme-select option { background-color: var(--bg); color: var(--text); }
+
+    /* Language selector (toolbar) */
+    select.lang-select {
+      padding-right: 6px;
+      max-width: 130px;
+    }
+
+    /* Model format selector (LP / MathProg) — same look as the editor theme select */
+    select.model-format-select {
+      font-size: 10.5px;
+      padding: 2px 5px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--bg3);
+      color: var(--muted);
+      font-family: inherit;
+      cursor: pointer;
+      transition: color .1s, border-color .1s;
+    }
+    select.model-format-select:hover { color: var(--text); border-color: var(--muted); }
+    select.model-format-select option { background-color: var(--bg); color: var(--text); }
+
+    /* Generated-model tab (MathProg -> LP translation preview) */
+    .generated-model-note {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    .generated-model-pre {
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: var(--text);
+      max-height: calc(100vh - 260px);
+      overflow: auto;
+    }
+
+    /* ─── Editor tabs ───────────────────────────────────────────────── */
+    .tab-bar {
+      display: flex;
+      align-items: stretch;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      flex-shrink: 0;
+      scrollbar-width: thin;
+    }
+    .tab-bar::-webkit-scrollbar { height: 4px; }
+    .tab-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 6px 6px 12px;
+      font-size: 12.5px;
+      color: var(--muted);
+      border-right: 1px solid var(--border);
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+      flex-shrink: 0;
+      max-width: 180px;
+      transition: background .1s, color .1s;
+    }
+    .tab:hover { background: rgba(127,127,127,0.12); color: var(--text); }
+    .tab.active { color: var(--text); background: var(--bg); box-shadow: inset 0 -2px 0 var(--accent); }
+    .tab-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tab-close {
+      flex-shrink: 0;
+      width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1;
+    }
+    .tab-close:hover { background: rgba(255,85,85,.25); color: var(--red); }
+    .tab-add {
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      width: 30px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      user-select: none;
+    }
+    .tab-add:hover { background: rgba(127,127,127,0.12); color: var(--text); }
+
+    .cm-wrapper { flex: 1; overflow: hidden; }
+    .CodeMirror  { height: 100% !important; font-size: 13.5px; line-height: 1.65; }
+    .CodeMirror-scroll { padding-bottom: 0; }
+    /* Note: editor colors (background, gutter, syntax tokens) are fully controlled
+       by the chosen CodeMirror theme (see #editor-theme-select) — independent of
+       the page's light/dark UI toggle. No hardcoded color overrides here on purpose. */
+
+    /* Log line colors — light overrides (hardcoded dark values need fixing) */
+    html[data-theme="light"] .ll-normal  { color: #374151; }
+    html[data-theme="light"] .ll-sep     { color: #d1d5db; }
+    html[data-theme="light"] .ll-mip-row { color: #374151; }
+    html[data-theme="light"] .log-pane   { background: #f9fafb; }
+
+    /* Error line highlight */
+    .cm-error-line { background: rgba(255,85,85,.18) !important; }
+    html[data-theme="light"] .cm-error-line { background: rgba(220,38,38,.10) !important; }
+    .cm-error-gutter {
+      color: var(--red) !important;
+      font-weight: bold;
+      padding-right: 4px;
+    }
+
+
+    /* Badge colors maintain contrast on light bg */
+    html[data-theme="light"] .badge-optimal    { background: rgba(21,128,61,.08);   border-color: rgba(21,128,61,.3); }
+    html[data-theme="light"] .badge-infeasible { background: rgba(220,38,38,.08);   border-color: rgba(220,38,38,.3); }
+    html[data-theme="light"] .badge-unbounded  { background: rgba(180,83,9,.08);    border-color: rgba(180,83,9,.3); }
+    html[data-theme="light"] .badge-pending    { background: rgba(107,114,128,.08); border-color: #d1d5db; }
+
+    /* Theme toggle switch (on/off style) */
+    .theme-switch {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .theme-switch-input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .theme-switch-track {
+      width: 38px;
+      height: 20px;
+      background: var(--border);
+      border-radius: 10px;
+      position: relative;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .theme-switch-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--bg);
+      box-shadow: 0 1px 2px rgba(0,0,0,.35);
+      transition: left .2s, background .2s;
+    }
+    .theme-switch-input:checked + .theme-switch-track { background: var(--accent); }
+    .theme-switch-input:checked + .theme-switch-track .theme-switch-thumb {
+      left: 20px;
+      background: #fff;
+    }
+    .theme-switch-input:focus-visible + .theme-switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* Resize handle */
+    .resize-handle {
+      position: absolute;
+      right: -3px;
+      top: 0; bottom: 0;
+      width: 6px;
+      cursor: col-resize;
+      z-index: 10;
+    }
+    .resize-handle:hover, .resize-handle.dragging { background: var(--accent); opacity: 0.4; }
+
+    /* ─── Results panel ─────────────────────────────────────────────── */
+    .panel-results {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+    }
+    .results-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 14px 24px;
+    }
+    .results-body::-webkit-scrollbar { width: 6px; }
+    .results-body::-webkit-scrollbar-track { background: transparent; }
+    .results-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Placeholder */
+    .placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 260px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+    .placeholder svg { opacity: 0.25; }
+    kbd {
+      display: inline-block;
+      padding: 1px 5px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-size: 11px;
+      font-family: monospace;
+      background: var(--bg3);
+    }
+
+    /* Status card */
+    .status-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      margin-bottom: 14px;
+    }
+    .status-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      flex-shrink: 0;
+    }
+    .badge-optimal   { background: rgba(80,250,123,.12); color: var(--green);  border: 1px solid rgba(80,250,123,.35); }
+    .badge-infeasible{ background: rgba(255,85,85,.12);  color: var(--red);    border: 1px solid rgba(255,85,85,.35); }
+    .badge-unbounded { background: rgba(255,184,108,.12);color: var(--orange); border: 1px solid rgba(255,184,108,.35); }
+    .badge-error     { background: rgba(255,85,85,.12);  color: var(--red);    border: 1px solid rgba(255,85,85,.35); }
+    .badge-pending   { background: rgba(98,114,164,.12); color: var(--muted);  border: 1px solid var(--border); }
+
+    .obj-block { margin-left: auto; text-align: right; }
+    .obj-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .obj-value { font-size: 20px; font-weight: 700; font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; color: var(--cyan); }
+
+    /* Tabs */
+    .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 12px; gap: 0; }
+    .tab {
+      padding: 6px 14px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      border-bottom: 2px solid transparent;
+      transition: color .12s, border-color .12s;
+    }
+    .tab:hover:not(.active) { color: var(--text); }
+    .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+    /* Result tables */
+    .table-wrap { overflow-x: auto; }
+    table.result {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    table.result th {
+      padding: 5px 10px;
+      text-align: left;
+      font-size: 10.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    table.result td {
+      padding: 5px 10px;
+      border-bottom: 1px solid rgba(68,71,90,.35);
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    table.result tr:hover td { background: rgba(255,255,255,.025); }
+    table.result .num { text-align: right; }
+    table.result .varname { color: var(--cyan); }
+    table.result .bsrow  td:first-child { border-left: 2px solid var(--green); }
+    table.result .lbrow  td:first-child { border-left: 2px solid var(--muted); }
+    table.result .ubrow  td:first-child { border-left: 2px solid var(--yellow); }
+    .tag-bs { color: var(--green); }
+    .tag-lb { color: var(--muted); }
+    .tag-ub { color: var(--yellow); }
+    .tag-nb { color: var(--pink); }
+
+    /* Error message */
+    .error-msg {
+      background: rgba(255,85,85,.07);
+      border: 1px solid rgba(255,85,85,.3);
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 12px;
+      font-family: Consolas, monospace;
+      color: var(--red);
+      word-break: break-all;
+      white-space: pre-wrap;
+      margin-bottom: 10px;
+    }
+    .hint-link { color: var(--accent); font-size: 12px; font-family: inherit; }
+
+    /* Section heading inside results */
+    .result-section { margin-bottom: 6px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ─── Solver log pane ───────────────────────────────────────────── */
+    .log-pane {
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, 'Courier New', monospace;
+      font-size: 11.5px;
+      line-height: 1.55;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      overflow-y: auto;
+      max-height: 100%;
+      white-space: pre;
+    }
+    .log-pane::-webkit-scrollbar { width: 5px; }
+    .log-pane::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Log line types */
+    .ll-normal   { color: #bbc2e8; }
+    .ll-header   { color: var(--accent); }
+    .ll-section  { color: var(--cyan); font-weight: 600; }
+    .ll-sep      { color: #44475a; }
+    .ll-mip-hdr  { color: var(--muted); font-weight: 600; }
+    .ll-mip-row  { color: #e0e0e0; }
+    .ll-mip-best { color: var(--yellow); font-weight: 600; }
+    .ll-optimal  { color: var(--green); font-weight: 600; }
+    .ll-infeas   { color: var(--red); font-weight: 600; }
+    .ll-warning  { color: var(--orange); }
+    .ll-err      { color: var(--red); }
+    .ll-blank    { }
+
+    /* Live log during solve */
+    .log-live-wrap {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+      gap: 8px;
+    }
+    .log-live-wrap .log-pane {
+      flex: 1;
+      max-height: none;
+    }
+    .log-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .log-toolbar span { font-size: 11px; color: var(--muted); }
+    .log-copy-btn {
+      margin-left: auto;
+      padding: 2px 8px;
+      font-size: 11px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .log-copy-btn:hover { color: var(--text); border-color: var(--muted); }
+
+    /* ─── Options modal ──────────────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-panel {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 480px;
+      max-width: 92vw;
+      max-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 30px rgba(0,0,0,.4);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-body {
+      padding: 14px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .opt-row { display: flex; gap: 14px; }
+    .opt-row .opt-group { flex: 1; }
+    .opt-group { display: flex; flex-direction: column; gap: 4px; }
+    .opt-label { font-size: 12.5px; color: var(--text); display: flex; flex-direction: column; gap: 2px; }
+    .opt-hint { font-size: 10.5px; color: var(--muted); font-weight: 400; }
+    .opt-input {
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--bg3);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13px;
+    }
+    .opt-input:focus { outline: none; border-color: var(--accent); }
+    select.opt-input option { background-color: var(--bg); color: var(--text); }
+
+    /* ─── About modal ────────────────────────────────────────────────── */
+    .about-section + .about-section { margin-top: 4px; border-top: 1px solid var(--border); padding-top: 14px; }
+    .about-section h3 {
+      font-size: 13px;
+      margin: 0 0 6px;
+      color: var(--text);
+    }
+    .about-section p {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .about-refs {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .about-refs li {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .about-refs strong { color: var(--text); }
+    .about-refs a { color: var(--accent); text-decoration: none; }
+    .about-refs a:hover { text-decoration: underline; }
+
+    /* ─── Batch modal ────────────────────────────────────────────────── */
+    #batch-panel { width: 760px; max-width: 95vw; max-height: 88vh; }
+    .batch-pick-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .batch-pick-info { font-size: 12px; color: var(--muted); }
+    .batch-progress-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .batch-progress-wrap.show { display: flex; }
+    .batch-progress-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .batch-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width .15s ease;
+    }
+    .batch-progress-label { font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; }
+    .batch-table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: auto;
+      max-height: 42vh;
+      display: none;
+    }
+    .batch-table-wrap.show { display: block; }
+    table.batch-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    table.batch-table th, table.batch-table td {
+      padding: 6px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    table.batch-table th {
+      position: sticky; top: 0;
+      background: var(--bg3);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    table.batch-table td.batch-file { white-space: normal; word-break: break-all; max-width: 260px; }
+    table.batch-table td.batch-obj { font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; }
+    table.batch-table tr.batch-row-error td { color: var(--red); }
+    .batch-status-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .batch-status-pill.optimal    { background: rgba(80,250,123,.12);  color: var(--green); }
+    .batch-status-pill.infeasible { background: rgba(255,85,85,.12);   color: var(--red); }
+    .batch-status-pill.unbounded  { background: rgba(255,184,108,.12); color: var(--orange); }
+    .batch-status-pill.error      { background: rgba(255,85,85,.12);   color: var(--red); }
+    .batch-status-pill.pending    { background: rgba(98,114,164,.12);  color: var(--muted); }
+    .batch-status-pill.running    { background: rgba(139,233,253,.12); color: var(--cyan); }
+
+    /* ─── Status bar ────────────────────────────────────────────────── */
+    .statusbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 3px 12px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--green);
+    }
+    .dot.loading { background: var(--orange); animation: blink 1s ease-in-out infinite; }
+    .dot.error   { background: var(--red); }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+    .statusbar-right { margin-left: auto; display: flex; gap: 14px; }
+
+    /* ═══════════════════════════════════════════════════════════════════
+       Responsive layout — phones & narrow tablets (stacked panels)
+       The desktop side-by-side layout (above) is untouched; everything
+       below only kicks in under the breakpoint.
+    ═══════════════════════════════════════════════════════════════════ */
+    @media (max-width: 760px) {
+      html, body { height: 100%; }
+      body { height: 100dvh; font-size: 13.5px; }
+
+      /* Toolbar: let buttons wrap to a second row instead of overflowing */
+      .toolbar { flex-wrap: wrap; row-gap: 6px; padding: 6px 8px; }
+      .toolbar-right { margin-left: 0; flex-wrap: wrap; row-gap: 6px; }
+      .brand { font-size: 14px; }
+      select.btn { max-width: 120px; }
+      select.btn.lang-select { max-width: 92px; }
+
+      /* Stack the editor and results panels instead of side-by-side */
+      .main { flex-direction: column; overflow-y: auto; }
+      .panel-editor {
+        width: 100% !important;   /* overrides any inline width left over from desktop drag-resize */
+        min-width: 0;
+        height: 46vh;
+        flex: 0 0 auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .panel-results { flex: 1 1 auto; min-height: 280px; }
+      .resize-handle { display: none; }   /* drag-to-resize is a mouse/desktop affordance */
+
+      /* Panel headers: allow the controls to wrap onto their own row */
+      .panel-header { flex-wrap: wrap; row-gap: 4px; }
+      .panel-header > span:first-child { margin-left: 0; flex-basis: 100%; }
+
+      /* Status bar: drop the secondary keyboard-shortcut hint, it has no
+         meaning on a touch device without a physical keyboard */
+      .statusbar { font-size: 10px; gap: 8px; flex-wrap: wrap; }
+      .statusbar-right { gap: 8px; }
+      .kbd-hint { display: none; }
+
+      /* Modals: use most of the screen width/height on small phones */
+      .modal-panel { width: 96vw; max-width: 96vw; max-height: 92vh; }
+      .opt-row { flex-direction: column; gap: 14px; }
+
+      /* iOS Safari zooms the page in when focusing a text input/select
+         smaller than 16px — keep all form controls at/above that size */
+      .opt-input, select.btn, .editor-theme-select, select.lang-select, select.model-format-select { font-size: 16px; }
+    }
+
+    @media (max-width: 420px) {
+      .brand { display: none; }   /* free up space for the controls on very small phones */
+      select.btn { max-width: 100px; }
+      .btn { padding: 5px 8px; font-size: 12.5px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ── Toolbar ──────────────────────────────────────────────────────── -->
+  <div class="toolbar">
+    <span class="brand">🔺 WebHIGHS</span>
+    <div class="sep"></div>
+
+    <select class="btn" id="examples-select" data-i18n-title="tt_examples" title="Carregar modelo de exemplo">
+      <option value="" data-i18n="opt_examples_placeholder">Exemplos…</option>
+      <option value="producao" data-i18n="ex_producao">Produção (PL)</option>
+      <option value="transporte" data-i18n="ex_transporte">Transporte (PL)</option>
+      <option value="mochila" data-i18n="ex_mochila">Mochila (PLI)</option>
+      <option value="dieta" data-i18n="ex_dieta">Dieta (PL)</option>
+      <option value="mix" data-i18n="ex_mix">Mix de Produtos (PLI)</option>
+      <option value="inviavel" data-i18n="ex_inviavel">Produção Inviável (teste IIS)</option>
+      <option value="transporte_mp" data-i18n="ex_transporte_mp">Transporte (MathProg)</option>
+    </select>
+
+    <div class="sep"></div>
+    <button class="btn" id="btn-open" data-i18n-title="tt_open" title="Abrir arquivo .lp" data-i18n="btn_open">📂 Abrir</button>
+    <button class="btn" id="btn-save" data-i18n-title="tt_save" title="Salvar como .lp" data-i18n="btn_save">💾 Salvar</button>
+    <input type="file" id="file-input" accept=".lp,.txt,.mod" multiple style="display:none">
+    <input type="file" id="batch-folder-input" webkitdirectory directory multiple style="display:none">
+
+    <div class="toolbar-right">
+      <button class="btn" id="btn-batch" data-i18n-title="tt_batch" title="Resolver vários arquivos .lp/.mod de uma pasta" data-i18n="btn_batch">🗂️ Lote</button>
+      <button class="btn" id="btn-about" data-i18n-title="tt_about" title="Sobre este projeto" data-i18n="btn_about">ℹ️ Sobre</button>
+      <button class="btn" id="btn-options" data-i18n-title="tt_options" title="Opções do solver HiGHS" data-i18n="btn_options">⚙️ Opções</button>
+      <label class="theme-switch" id="theme-switch-label" title="Alternar tema claro/escuro">
+        <input type="checkbox" id="btn-theme" class="theme-switch-input">
+        <span class="theme-switch-track"><span class="theme-switch-thumb"></span></span>
+      </label>
+      <div class="sep"></div>
+      <select class="btn lang-select" id="lang-select" data-i18n-title="tt_lang_select" title="Idioma / Language">
+        <option value="pt">🇧🇷 Português</option>
+        <option value="en">🇺🇸 English</option>
+      </select>
+      <div class="sep"></div>
+      <button class="btn" id="btn-clear" data-i18n-title="tt_clear" title="Limpar editor" data-i18n="btn_clear">✕ Limpar</button>
+      <button class="btn primary" id="btn-solve" disabled data-i18n="btn_solve">▶ Resolver</button>
+    </div>
+  </div>
+
+  <!-- ── Options modal ────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="options-overlay">
+    <div class="modal-panel" id="options-panel">
+      <div class="modal-header">
+        <span data-i18n="opt_modal_title">⚙️ Opções do Solver (HiGHS)</span>
+        <button class="modal-close" id="options-close" data-i18n-title="tt_close" title="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+
+        <div class="opt-group">
+          <label class="opt-label" for="opt-time-limit">
+            <span data-i18n="opt_time_limit_label">Tempo máximo de resolução (segundos)</span>
+            <span class="opt-hint" data-i18n="opt_time_limit_hint">Em vazio = sem limite. Ao atingir o tempo, o HiGHS retorna a melhor solução encontrada até então.</span>
+          </label>
+          <input type="number" class="opt-input" id="opt-time-limit" min="0" step="1" data-i18n-placeholder="opt_time_limit_placeholder" placeholder="sem limite">
+        </div>
+
+        <div class="opt-group">
+          <label class="opt-label" for="opt-mip-rel-gap">
+            <span data-i18n="opt_mip_rel_gap_label">Gap relativo aceitável — PLI (%)</span>
+            <span class="opt-hint" data-i18n="opt_mip_rel_gap_hint">Encerra ao chegar perto do ótimo por essa margem. Padrão do HiGHS: 0,01%.</span>
+          </label>
+          <input type="number" class="opt-input" id="opt-mip-rel-gap" min="0" step="0.01" data-i18n-placeholder="opt_mip_rel_gap_placeholder" placeholder="0.01 (padrão)">
+        </div>
+
+        <div class="opt-group">
+          <label class="opt-label" for="opt-mip-abs-gap">
+            <span data-i18n="opt_mip_abs_gap_label">Gap absoluto aceitável — PLI</span>
+            <span class="opt-hint" data-i18n="opt_mip_abs_gap_hint">Mesma ideia do gap relativo, mas em unidades do valor objetivo.</span>
+          </label>
+          <input type="number" class="opt-input" id="opt-mip-abs-gap" min="0" step="0.000001" data-i18n-placeholder="opt_mip_abs_gap_placeholder" placeholder="0.000001 (padrão)">
+        </div>
+
+        <div class="opt-group">
+          <label class="opt-label" for="opt-heuristic-effort">
+            <span data-i18n="opt_heuristic_effort_label">Esforço de heurísticas — PLI (0 a 1)</span>
+            <span class="opt-hint" data-i18n="opt_heuristic_effort_hint">Fração do tempo dedicada a heurísticas para achar soluções inteiras rapidamente. Padrão: 0,05.</span>
+          </label>
+          <input type="number" class="opt-input" id="opt-heuristic-effort" min="0" max="1" step="0.05" data-i18n-placeholder="opt_heuristic_effort_placeholder" placeholder="0.05 (padrão)">
+        </div>
+
+        <div class="opt-row">
+          <div class="opt-group">
+            <label class="opt-label" for="opt-presolve" data-i18n="opt_presolve_label">Pré-processamento (presolve)</label>
+            <select class="opt-input" id="opt-presolve">
+              <option value="" data-i18n="opt_auto">Automático</option>
+              <option value="on" data-i18n="opt_on">Ativado</option>
+              <option value="off" data-i18n="opt_off">Desativado</option>
+            </select>
+          </div>
+          <div class="opt-group">
+            <label class="opt-label" for="opt-solver" data-i18n="opt_solver_label">Algoritmo (LP)</label>
+            <select class="opt-input" id="opt-solver">
+              <option value="" data-i18n="opt_auto">Automático</option>
+              <option value="simplex" data-i18n="opt_simplex">Simplex</option>
+              <option value="ipm" data-i18n="opt_ipm">Pontos Interiores</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="opt-row">
+          <div class="opt-group">
+            <label class="opt-label" for="opt-parallel" data-i18n="opt_parallel_label">Paralelismo</label>
+            <select class="opt-input" id="opt-parallel">
+              <option value="" data-i18n="opt_auto">Automático</option>
+              <option value="on" data-i18n="opt_on">Ativado</option>
+              <option value="off" data-i18n="opt_off">Desativado</option>
+            </select>
+          </div>
+          <div class="opt-group">
+            <label class="opt-label" for="opt-threads" data-i18n="opt_threads_label">Número de threads</label>
+            <input type="number" class="opt-input" id="opt-threads" min="1" step="1" data-i18n-placeholder="opt_auto_placeholder" placeholder="automático">
+          </div>
+        </div>
+
+        <div class="opt-group">
+          <label class="opt-label" for="opt-random-seed">
+            <span data-i18n="opt_random_seed_label">Semente aleatória (random seed)</span>
+            <span class="opt-hint" data-i18n="opt_random_seed_hint">Útil para reproduzir o mesmo resultado em modelos com múltiplas soluções ótimas.</span>
+          </label>
+          <input type="number" class="opt-input" id="opt-random-seed" step="1" data-i18n-placeholder="opt_auto_placeholder" placeholder="automático">
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="options-reset" data-i18n="opt_reset">Restaurar padrões</button>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn" id="options-cancel" data-i18n="opt_cancel">Cancelar</button>
+          <button class="btn primary" id="options-save" data-i18n="btn_generic_save">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── About modal ──────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="about-overlay">
+    <div class="modal-panel" id="about-panel">
+      <div class="modal-header">
+        <span data-i18n="about_modal_title">ℹ️ Sobre este projeto</span>
+        <button class="modal-close" id="about-close" data-i18n-title="tt_close" title="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+
+        <div class="about-section">
+          <h3 data-i18n="about_me_heading">Sobre mim</h3>
+          <p>
+            <strong style="color:var(--text)">Alexandre Checoli Choueiri</strong>
+            (<a href="mailto:alexandrechecoli@ufpr.br">alexandrechecoli@ufpr.br</a>)<br><br>
+            <span data-i18n="about_me_bio">Sou professor do curso de Engenharia de Produção da Universidade Federal do Paraná
+            (UFPR), e ministro a disciplina de programação linear. Desenvolvi esse aplicativo
+            baseado no programa GUSEK (desenvolvido pelo professor Leandro Magatão e Luiz Betoni)
+            para visualização de modelos de otimização. A ideia principal é usar em aulas, porém
+            pode ser usado para resolver problemas reais (respeitando a limitação de memória do
+            navegador).</span>
+          </p>
+        </div>
+
+        <div class="about-section">
+          <h3 data-i18n="about_project_heading">Sobre o projeto</h3>
+          <p data-i18n="about_project_text">
+            WebHIGHS é um editor e resolvedor de modelos de Programação Linear (PL) e
+            Programação Linear Inteira (PLI), no formato CPLEX LP, que roda inteiramente
+            no navegador — sem precisar instalar nada ou enviar o modelo para um servidor.
+          </p>
+        </div>
+
+        <div class="about-section">
+          <h3 data-i18n="about_tech_heading">Tecnologias e referências</h3>
+          <ul class="about-refs">
+            <li>
+              <strong>Gusek</strong> — <span data-i18n="about_tech_gusek">IDE para GLPK (GNU Linear Programming Kit), com editor
+              de modelos e visualização de resultados. Foi a inspiração para a criação deste
+              aplicativo.</span>
+              <br><a href="https://gusek.sourceforge.net/gusek.html#11" target="_blank" rel="noopener">gusek.sourceforge.net</a>
+            </li>
+            <li>
+              <strong>HiGHS</strong> — <span data-i18n="about_tech_highs">solver de otimização linear, inteira-mista e de
+              programação quadrática, de código aberto, que faz toda a resolução dos modelos.</span>
+              <br><a href="https://highs.dev" target="_blank" rel="noopener">highs.dev</a>
+            </li>
+            <li>
+              <strong>highs-js</strong> — <span data-i18n="about_tech_highsjs">compilação do HiGHS para WebAssembly, o que permite
+              rodar o solver inteiro dentro do navegador.</span>
+              <br><a href="https://github.com/lovasoa/highs-js" target="_blank" rel="noopener">github.com/lovasoa/highs-js</a>
+            </li>
+            <li>
+              <strong>CodeMirror 5</strong> — <span data-i18n="about_tech_codemirror">editor de texto com numeração de linhas, destaque
+              de sintaxe e temas de cores.</span>
+              <br><a href="https://codemirror.net/5/" target="_blank" rel="noopener">codemirror.net/5</a>
+            </li>
+            <li>
+              <strong>GLPK</strong> — <span data-i18n="about_tech_glpk">tradutor de modelos GNU MathProg (GMPL) para o formato LP,
+              usado neste app para dar suporte à linguagem de modelagem algébrica.</span>
+              <br><a href="https://www.gnu.org/software/glpk/" target="_blank" rel="noopener">gnu.org/software/glpk</a>
+            </li>
+            <li>
+              <strong>Claude (Anthropic)</strong> — <span data-i18n="about_tech_claude">assistente de IA muito usado no
+              desenvolvimento deste aplicativo...na verdade mesmo, trabalhei como um gerente geral do Claude.</span>
+              <br><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <div style="margin-left:auto">
+          <button class="btn primary" id="about-ok" data-i18n="btn_close_generic">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Batch modal ──────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="batch-overlay">
+    <div class="modal-panel" id="batch-panel">
+      <div class="modal-header">
+        <span data-i18n="batch_modal_title">🗂️ Resolução em lote</span>
+        <button class="modal-close" id="batch-close" data-i18n-title="tt_close" title="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+
+        <p style="margin:0;font-size:12.5px;color:var(--muted);line-height:1.6" data-i18n="batch_intro">
+          Selecione uma pasta com arquivos .lp e/ou .mod. Cada arquivo é resolvido na ordem,
+          sem alterar suas abas abertas, e o resultado (status, valor objetivo e tempo) fica
+          numa tabela que pode ser exportada em CSV.
+        </p>
+
+        <div class="batch-pick-row">
+          <button class="btn" id="batch-pick-folder" data-i18n="batch_btn_pick_folder">📁 Selecionar pasta…</button>
+          <span class="batch-pick-info" id="batch-pick-info"></span>
+        </div>
+
+        <div class="batch-pick-row" id="batch-run-row" style="display:none">
+          <button class="btn primary" id="batch-start" data-i18n="batch_btn_start">▶ Iniciar resolução</button>
+          <button class="btn" id="batch-cancel" style="display:none" data-i18n="batch_btn_cancel">⏹ Cancelar</button>
+          <button class="btn" id="batch-export-csv" style="display:none" data-i18n="batch_btn_export_csv">💾 Exportar CSV</button>
+        </div>
+
+        <div class="batch-progress-wrap" id="batch-progress-wrap">
+          <div class="batch-progress-bar"><div class="batch-progress-fill" id="batch-progress-fill"></div></div>
+          <div class="batch-progress-label">
+            <span id="batch-progress-text"></span>
+            <span id="batch-progress-current"></span>
+          </div>
+        </div>
+
+        <div class="batch-table-wrap" id="batch-table-wrap">
+          <table class="batch-table">
+            <thead>
+              <tr>
+                <th data-i18n="batch_th_file">Arquivo</th>
+                <th data-i18n="batch_th_status">Status</th>
+                <th data-i18n="batch_th_objective">Valor objetivo</th>
+                <th data-i18n="batch_th_time">Tempo (s)</th>
+              </tr>
+            </thead>
+            <tbody id="batch-table-body"></tbody>
+          </table>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <div style="margin-left:auto">
+          <button class="btn primary" id="batch-ok" data-i18n="btn_close_generic">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Main ─────────────────────────────────────────────────────────── -->
+  <div class="main" id="main">
+
+    <!-- Editor -->
+    <div class="panel-editor" id="panel-editor">
+      <div class="panel-header">
+        <span data-i18n="editor_panel_header">Modelo LP (CPLEX format)</span>
+        <span id="line-count"></span>
+        <select class="model-format-select" id="model-format-select" data-i18n-title="tt_model_format" title="Formato do modelo desta aba">
+          <option value="lp" data-i18n="format_lp">LP (CPLEX)</option>
+          <option value="mathprog" data-i18n="format_mathprog">MathProg (GLPK)</option>
+        </select>
+        <select class="editor-theme-select" id="editor-theme-select" data-i18n-title="tt_editor_theme" title="Tema de cores do editor">
+          <option value="dracula">Dracula</option>
+          <option value="monokai">Monokai</option>
+          <option value="material-darker">Material Darker</option>
+          <option value="nord">Nord</option>
+          <option value="eclipse">Eclipse</option>
+          <option value="default" data-i18n="theme_light_default">Claro (padrão)</option>
+        </select>
+        <div class="font-btns">
+          <button class="font-btn" id="font-dec" data-i18n-title="tt_font_dec" title="Diminuir fonte (Ctrl+-)">A−</button>
+          <span id="font-size-display">14px</span>
+          <button class="font-btn" id="font-inc" data-i18n-title="tt_font_inc" title="Aumentar fonte (Ctrl++)">A+</button>
+        </div>
+      </div>
+      <div class="tab-bar" id="tab-bar"></div>
+      <div class="cm-wrapper" id="cm-wrapper"></div>
+      <div class="resize-handle" id="resize-handle"></div>
+    </div>
+
+    <!-- Results -->
+    <div class="panel-results">
+      <div class="panel-header">
+        <span data-i18n="results_panel_header">Resultados</span>
+        <select class="font-btn" id="btn-export-solution" data-i18n-title="tt_export" title="Exportar solução para arquivo" disabled>
+          <option value="" data-i18n="opt_export_placeholder">💾 Exportar como…</option>
+          <option value="report" data-i18n="opt_export_report">Relatório (.txt)</option>
+          <option value="sol" data-i18n="opt_export_sol">Solução HiGHS (.sol)</option>
+        </select>
+        <div class="font-btns">
+          <button class="font-btn" id="result-font-dec" data-i18n-title="tt_result_font_dec" title="Diminuir tamanho do texto">A−</button>
+          <span id="result-font-size-display">100%</span>
+          <button class="font-btn" id="result-font-inc" data-i18n-title="tt_result_font_inc" title="Aumentar tamanho do texto">A+</button>
+        </div>
+      </div>
+      <div class="results-body" id="results">
+        <div class="placeholder" id="placeholder">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M3 9h18M9 21V9"/>
+            <path d="M14 14h2M14 17h2M7 14h2M7 17h2"/>
+          </svg>
+          <div data-i18n-html="placeholder_line1_html">Escreva ou carregue um modelo, depois clique<br>
+          <strong>▶ Resolver</strong> <span class="kbd-hint">ou pressione <kbd>Ctrl</kbd>+<kbd>Enter</kbd></span></div>
+          <div style="font-size:11px" data-i18n-html="placeholder_solver_info_html">Solver: <strong style="color:var(--accent)">HiGHS 1.8</strong> via WebAssembly · Suporta LP e PLI</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Status bar ────────────────────────────────────────────────────── -->
+  <div class="statusbar">
+    <span class="dot loading" id="dot"></span>
+    <span id="solver-msg" data-i18n="status_loading">Carregando HiGHS WebAssembly…</span>
+    <span class="statusbar-right">
+      <span data-i18n="status_highs_version">HiGHS 1.8 · WebAssembly</span>
+      <span class="kbd-hint" data-i18n-html="status_ctrl_enter_hint_html"><kbd>Ctrl+Enter</kbd> resolve</span>
+    </span>
+  </div>
+
+  <!-- ── CodeMirror ────────────────────────────────────────────────────── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+
+  <script>
+  /* ════════════════════════════════════════════════════════════════════
+     0. i18n — translation dictionary + helpers
+  ════════════════════════════════════════════════════════════════════ */
+  const LANG_KEY = 'lp-lang';
+
+  const I18N = {
+    pt: {
+      page_title: 'WebHIGHS — Programação Linear',
+
+      tt_examples: 'Carregar modelo de exemplo',
+      opt_examples_placeholder: 'Exemplos…',
+      ex_producao: 'Produção (PL)',
+      ex_transporte: 'Transporte (PL)',
+      ex_mochila: 'Mochila (PLI)',
+      ex_dieta: 'Dieta (PL)',
+      ex_mix: 'Mix de Produtos (PLI)',
+      ex_inviavel: 'Produção Inviável (teste IIS)',
+
+      tt_open: 'Abrir arquivo .lp',
+      btn_open: '📂 Abrir',
+      tt_save: 'Salvar como .lp',
+      btn_save: '💾 Salvar',
+      tt_batch: 'Resolver vários arquivos .lp/.mod de uma pasta',
+      btn_batch: '🗂️ Lote',
+      tt_about: 'Sobre este projeto',
+      btn_about: 'ℹ️ Sobre',
+      tt_options: 'Opções do solver HiGHS',
+      btn_options: '⚙️ Opções',
+      theme_switch_to_light: 'Mudar para tema claro',
+      theme_switch_to_dark: 'Mudar para tema escuro',
+      tt_lang_select: 'Idioma / Language',
+      tt_clear: 'Limpar editor',
+      btn_clear: '✕ Limpar',
+      btn_solve: '▶ Resolver',
+      btn_solving: '⏳ Resolvendo…',
+
+      opt_modal_title: '⚙️ Opções do Solver (HiGHS)',
+      tt_close: 'Fechar',
+      opt_time_limit_label: 'Tempo máximo de resolução (segundos)',
+      opt_time_limit_hint: 'Em vazio = sem limite. Ao atingir o tempo, o HiGHS retorna a melhor solução encontrada até então.',
+      opt_time_limit_placeholder: 'sem limite',
+      opt_mip_rel_gap_label: 'Gap relativo aceitável — PLI (%)',
+      opt_mip_rel_gap_hint: 'Encerra ao chegar perto do ótimo por essa margem. Padrão do HiGHS: 0,01%.',
+      opt_mip_rel_gap_placeholder: '0.01 (padrão)',
+      opt_mip_abs_gap_label: 'Gap absoluto aceitável — PLI',
+      opt_mip_abs_gap_hint: 'Mesma ideia do gap relativo, mas em unidades do valor objetivo.',
+      opt_mip_abs_gap_placeholder: '0.000001 (padrão)',
+      opt_heuristic_effort_label: 'Esforço de heurísticas — PLI (0 a 1)',
+      opt_heuristic_effort_hint: 'Fração do tempo dedicada a heurísticas para achar soluções inteiras rapidamente. Padrão: 0,05.',
+      opt_heuristic_effort_placeholder: '0.05 (padrão)',
+      opt_presolve_label: 'Pré-processamento (presolve)',
+      opt_auto: 'Automático',
+      opt_on: 'Ativado',
+      opt_off: 'Desativado',
+      opt_solver_label: 'Algoritmo (LP)',
+      opt_simplex: 'Simplex',
+      opt_ipm: 'Pontos Interiores',
+      opt_parallel_label: 'Paralelismo',
+      opt_threads_label: 'Número de threads',
+      opt_auto_placeholder: 'automático',
+      opt_random_seed_label: 'Semente aleatória (random seed)',
+      opt_random_seed_hint: 'Útil para reproduzir o mesmo resultado em modelos com múltiplas soluções ótimas.',
+      opt_reset: 'Restaurar padrões',
+      opt_cancel: 'Cancelar',
+      btn_generic_save: 'Salvar',
+
+      about_modal_title: 'ℹ️ Sobre este projeto',
+      about_me_heading: 'Sobre mim',
+      about_me_bio: 'Sou professor do curso de Engenharia de Produção da Universidade Federal do Paraná (UFPR), e ministro a disciplina de programação linear. Desenvolvi esse aplicativo baseado no programa GUSEK (desenvolvido pelo professor Leandro Magatão e Luiz Betoni) para visualização de modelos de otimização. A ideia principal é usar em aulas, porém pode ser usado para resolver problemas reais (respeitando a limitação de memória do navegador).',
+      about_project_heading: 'Sobre o projeto',
+      about_project_text: 'WebHIGHS é um editor e resolvedor de modelos de Programação Linear (PL) e Programação Linear Inteira (PLI), no formato CPLEX LP, que roda inteiramente no navegador — sem precisar instalar nada ou enviar o modelo para um servidor.',
+      about_tech_heading: 'Tecnologias e referências',
+      about_tech_gusek: 'IDE para GLPK (GNU Linear Programming Kit), com editor de modelos e visualização de resultados. Foi a inspiração para a criação deste aplicativo.',
+      about_tech_highs: 'solver de otimização linear, inteira-mista e de programação quadrática, de código aberto, que faz toda a resolução dos modelos.',
+      about_tech_highsjs: 'compilação do HiGHS para WebAssembly, o que permite rodar o solver inteiro dentro do navegador.',
+      about_tech_codemirror: 'editor de texto com numeração de linhas, destaque de sintaxe e temas de cores.',
+      about_tech_claude: 'assistente de IA muito usado no desenvolvimento deste aplicativo...na verdade mesmo, trabalhei como um gerente geral do Claude.',
+      btn_close_generic: 'Fechar',
+
+      batch_modal_title: '🗂️ Resolução em lote',
+      batch_intro: 'Selecione uma pasta com arquivos .lp e/ou .mod. Cada arquivo é resolvido na ordem, sem alterar suas abas abertas, e o resultado (status, valor objetivo e tempo) fica numa tabela que pode ser exportada em CSV.',
+      batch_btn_pick_folder: '📁 Selecionar pasta…',
+      batch_btn_pick_folder_again: '📁 Trocar pasta…',
+      batch_btn_start: '▶ Iniciar resolução',
+      batch_btn_cancel: '⏹ Cancelar',
+      batch_btn_export_csv: '💾 Exportar CSV',
+      batch_no_files: 'Nenhum arquivo .lp/.mod encontrado nessa pasta.',
+      batch_files_found: (n) => `${n} arquivo${n === 1 ? '' : 's'} (.lp/.mod) encontrado${n === 1 ? '' : 's'}.`,
+      batch_progress_text: (done, total) => `${done} de ${total} resolvidos`,
+      batch_status_pending: 'Pendente',
+      batch_status_running: 'Resolvendo…',
+      batch_status_optimal: 'Ótimo',
+      batch_status_infeasible: 'Infactível',
+      batch_status_unbounded: 'Ilimitado',
+      batch_status_error: 'Erro',
+      batch_status_other: 'Outro',
+      batch_cancelled_msg: 'Lote cancelado pelo usuário.',
+      batch_unsupported_folder: 'Seu navegador não suporta seleção de pasta nem de múltiplos arquivos. Tente o Chrome, Edge ou um navegador mais recente.',
+      batch_csv_filename: 'lote_resultados.csv',
+
+      editor_panel_header: 'Modelo LP (CPLEX format)',
+      tt_editor_theme: 'Tema de cores do editor',
+      theme_light_default: 'Claro (padrão)',
+      tt_font_dec: 'Diminuir fonte (Ctrl+-)',
+      tt_font_inc: 'Aumentar fonte (Ctrl++)',
+
+      results_panel_header: 'Resultados',
+      tt_export: 'Exportar solução para arquivo',
+      btn_export: '💾 Exportar',
+      opt_export_placeholder: '💾 Exportar como…',
+      opt_export_report: 'Relatório (.txt)',
+      opt_export_sol: 'Solução HiGHS (.sol)',
+      filetype_sol: 'Solução HiGHS',
+      export_sol_filename_suffix: '-solucao.sol',
+      export_sol_error_prefix: 'Erro ao exportar .sol: ',
+      tt_result_font_dec: 'Diminuir tamanho do texto',
+      tt_result_font_inc: 'Aumentar tamanho do texto',
+
+      placeholder_line1_html: 'Escreva ou carregue um modelo, depois clique<br><strong>▶ Resolver</strong> <span class="kbd-hint">ou pressione <kbd>Ctrl</kbd>+<kbd>Enter</kbd></span>',
+      placeholder_solver_info_html: 'Solver: <strong style="color:var(--accent)">HiGHS 1.8</strong> via WebAssembly · Suporta LP e PLI',
+
+      status_loading: 'Carregando HiGHS WebAssembly…',
+      status_highs_version: 'HiGHS 1.8 · WebAssembly',
+      status_ctrl_enter_hint_html: '<kbd>Ctrl+Enter</kbd> resolve',
+
+      status_ready: 'HiGHS pronto ✓',
+      status_load_error_prefix: 'Erro ao carregar HiGHS: ',
+      prompt_tab_rename: 'Nome da aba:',
+      tab_title_suffix: ' (duplo clique para renomear)',
+      tt_tab_close: 'Fechar aba',
+      tt_tab_add: 'Nova aba',
+      default_tab_name: 'Sem título',
+      warn_large_model: 'Modelo grande — pode deixar o editor lento e aumentar o uso de memória do navegador',
+      confirm_large_file: (name, mb) => `O arquivo "${name}" tem ${mb} MB.\n\nArquivos grandes podem deixar o editor lento e usar bastante memória do navegador (o editor de texto e o solver duplicam o conteúdo internamente várias vezes). Em casos extremos, a aba do navegador pode até travar.\n\nDeseja carregar mesmo assim?`,
+      confirm_clear_tab: 'Limpar o conteúdo desta aba?',
+      filetype_lp_model: 'Modelo LP',
+      filetype_solution_report: 'Relatório de Solução',
+      status_solving: 'Resolvendo…',
+
+      report_title: 'WebHIGHS — Relatório de Solução',
+      report_model_label: 'Modelo:',
+      report_generated_label: 'Gerado em:',
+      report_status_label: 'Status:',
+      report_objvalue_label: 'Valor Objetivo:',
+      report_variables_heading: 'Variáveis',
+      report_col_name: 'Nome',
+      report_col_value: 'Valor',
+      report_col_reducedcost: 'C.Reduzido',
+      report_col_status: 'Status',
+      report_col_inf: 'Inf.',
+      report_col_sup: 'Sup.',
+      report_col_type: 'Tipo',
+      report_no_variables: '(sem variáveis)',
+      report_constraints_heading: 'Restrições',
+      report_col_lhs: 'LHS',
+      report_col_dualvalue: 'Valor Dual',
+      report_col_rhsinf: 'RHS inf.',
+      report_col_rhssup: 'RHS sup.',
+      report_no_constraints: '(sem restrições)',
+
+      err_fatal_badge: '💥 Erro crítico do solver',
+      err_fatal_subtitle: 'O solver foi reiniciado automaticamente',
+      err_fatal_whathappened_heading: 'O que provavelmente aconteceu:',
+      err_fatal_whathappened_text: 'O modelo era grande/complexo demais e o solver (que roda em WebAssembly, com um limite de memória próprio) ficou sem memória durante a resolução. Isso não tem relação com a sintaxe do modelo.',
+      err_fatal_whattotry_heading: 'O que tentar:',
+      err_fatal_tip1: 'Reduza o tamanho do modelo (menos variáveis/restrições), se possível',
+      err_fatal_tip2_html: 'Em "⚙️ Opções", defina um <em>tempo máximo de resolução</em> — evita que o PLI explore uma árvore de busca enorme até estourar a memória',
+      err_fatal_tip3_html: 'Aumente o <em>gap relativo aceitável</em>, para o solver parar mais perto do início, próximo do ótimo, em vez de continuar refinando indefinidamente',
+      status_fatal_error: 'Erro crítico — solver reiniciado, já pode tentar de novo',
+
+      err_badge: '✗ Erro',
+      err_subtitle: 'Verifique a sintaxe do modelo',
+      err_line_highlighted: (n) => `↑ linha ${n} destacada no editor`,
+      err_tips_heading: 'Dicas comuns:',
+      err_tip1_html: 'RHS deve ser constante — <code style="color:var(--red)">x &lt;= 2 y</code> é inválido; use <code style="color:var(--green)">x - 2 y &lt;= 0</code>',
+      err_tip2_html: 'Cada restrição precisa de um único operador (<code>&lt;=</code>, <code>&gt;=</code> ou <code>=</code>)',
+      err_tip3_html: 'Seções obrigatórias: objetivo + <code>Subject To</code> + <code>End</code>',
+      err_lp_reference_link: '📖 Referência do formato LP (CPLEX)',
+      err_solver_output_label: (n) => `Output do solver (${n} linha(s)):`,
+      btn_copy: '📋 Copiar',
+      status_solve_error: 'Erro ao resolver — verifique o modelo',
+
+      status_optimal: '✓ Ótimo',
+      status_infeasible: '✗ Inviável',
+      status_unbounded: '∞ Ilimitado',
+      obj_value_label: 'Valor Objetivo',
+      tab_variables: 'Variáveis',
+      tab_constraints: 'Restrições',
+      tab_log: 'Log',
+      tab_json: 'JSON',
+      th_variable: 'Variável',
+      th_value: 'Valor',
+      th_reducedcost: 'C. Reduzido',
+      th_reducedcost_title: 'Custo Reduzido',
+      th_status: 'Status',
+      th_inf: 'Inf.',
+      th_sup: 'Sup.',
+      th_type: 'Tipo',
+      legend_var_status: 'BS = básica (ativa) · LB = no limite inferior · UB = no limite superior',
+      no_variables_msg: 'Sem variáveis',
+      th_constraint: 'Restrição',
+      th_lhs: 'LHS',
+      th_dualvalue: 'Valor Dual',
+      th_dualvalue_title: 'Valor Dual (multiplicador da restrição)',
+      th_rhsinf: 'RHS inf.',
+      th_rhssup: 'RHS sup.',
+      legend_dual_value: 'Valor dual: variação no objetivo por unidade de folga da restrição',
+      no_constraints_msg: 'Sem restrições',
+
+      iis_ask_title: 'Diagnosticar por que o modelo é inviável?',
+      iis_ask_text: 'É possível tentar isolar automaticamente o menor conjunto de restrições/limites que, juntos, tornam o modelo inviável (IIS — conjunto irredutível inviável).',
+      iis_ask_hint: 'Isso executa uma análise separada, sem limite de tempo (ignora o "Tempo máximo" configurado nas Opções) — em modelos grandes pode demorar bastante.',
+      iis_btn_run: '🔍 Diagnosticar inviabilidade',
+      iis_running_text: 'Diagnosticando inviabilidade… pode demorar bastante, sem tempo limite.',
+      iis_btn_cancel: 'Cancelar',
+      iis_result_heading: 'Conflito mínimo encontrado (IIS)',
+      iis_result_intro: 'Removendo qualquer um destes itens, o modelo deixa de ser inviável:',
+      iis_result_rows_heading: (n) => `Restrições envolvidas (${n})`,
+      iis_result_cols_heading: (n) => `Limites de variáveis envolvidos (${n})`,
+      iis_result_empty: 'Nenhum conflito específico foi isolado — o modelo pode ter deixado de ser inviável desde o último cálculo.',
+      iis_btn_retry: '🔍 Diagnosticar novamente',
+      iis_error_prefix: 'Erro ao diagnosticar inviabilidade: ',
+
+      tab_sensitivity: 'Sensibilidade',
+      sens_ask_title: 'Calcular análise de sensibilidade?',
+      sens_ask_text: 'Mostra, para cada variável, até onde o coeficiente de custo pode variar sem mudar a base ótima — e, para cada restrição, até onde o RHS pode variar mantendo o valor dual atual válido.',
+      sens_btn_run: '📊 Calcular análise de sensibilidade',
+      sens_running_text: 'Calculando análise de sensibilidade…',
+      sens_unavailable_mip: 'Análise de sensibilidade não está disponível para modelos com variáveis inteiras (PLI) — o HiGHS só calcula ranging a partir de uma base do simplex, que não existe após uma resolução por branch-and-bound.',
+      sens_result_vars_heading: 'Variáveis — faixa do coeficiente de custo',
+      sens_result_rows_heading: 'Restrições — faixa do RHS',
+      sens_th_cost: 'Custo atual',
+      sens_th_rhs: 'RHS atual',
+      sens_th_min: 'Mínimo permitido',
+      sens_th_max: 'Máximo permitido',
+      sens_th_obj_min: 'Objetivo no mínimo',
+      sens_th_obj_max: 'Objetivo no máximo',
+      sens_th_obj_min_title: 'Valor que o objetivo assumiria se o coeficiente/RHS fosse levado até o mínimo permitido',
+      sens_th_obj_max_title: 'Valor que o objetivo assumiria se o coeficiente/RHS fosse levado até o máximo permitido',
+      sens_legend: 'Faixa dentro da qual o coeficiente/RHS pode variar sem alterar a base ótima atual (mantendo válidos os valores duais e custos reduzidos já mostrados nas outras abas). As colunas "Objetivo no mínimo/máximo" mostram o valor que o objetivo assumiria nesses extremos.',
+      sens_btn_retry: '📊 Recalcular',
+      sens_error_prefix: 'Erro ao calcular a análise de sensibilidade: ',
+
+      log_lines_count: (n) => `${n} linha(s) de output`,
+      btn_copied: '✓ Copiado!',
+      status_var_abbrev: 'var',
+      status_constr_abbrev: 'restrições',
+      status_solved_summary_parts: (p) => `${p.badgeText} · ${p.nvars} var · ${p.nrows} restrições · obj = ${p.obj}`,
+
+      tag_basic: 'Básica',
+      tag_lb: 'Inf',
+      tag_ub: 'Sup',
+      tag_nonbasic: 'Não-básica',
+
+      log_no_output: 'Nenhum output capturado. O HiGHS pode estar em modo silencioso.',
+      err_line_title: (n) => `Erro na linha ${n}`,
+      live_badge_solving: '⏳ Resolvendo…',
+      log_live_label: 'Output do solver (ao vivo):',
+      too_large_to_persist: '⌐ Este modelo era grande demais para ser salvo automaticamente.\n⌐ Abra o arquivo novamente em 📂 Abrir.',
+      line_count_singular: 'linha',
+      line_count_plural: 'linhas',
+      export_filename_suffix: '-solucao.txt',
+      tt_model_format: 'Formato do modelo desta aba',
+      format_lp: 'LP (CPLEX)',
+      format_mathprog: 'MathProg (GLPK)',
+      ex_transporte_mp: 'Transporte (MathProg)',
+      tab_generated: 'Modelo Gerado',
+      generated_model_note: 'Traduzido automaticamente do MathProg para LP pelo GLPK, antes de ser resolvido pelo HiGHS.',
+      status_loading_translator: 'Carregando tradutor MathProg (GLPK)…',
+      status_translating: 'Traduzindo MathProg…',
+      status_translate_error: 'Erro ao traduzir MathProg — verifique o modelo',
+      err_mathprog_badge: '✗ Erro de tradução (MathProg)',
+      err_mathprog_subtitle: 'Verifique a sintaxe do modelo MathProg',
+      err_mathprog_tip1_html: 'Toda seção de dados vem depois da palavra-chave <code>data;</code>',
+      err_mathprog_tip2_html: 'Cada instrução termina com <code>;</code>',
+      err_mathprog_tip3_html: 'O modelo precisa terminar com <code>end;</code>',
+      err_mathprog_reference_link: '📖 Referência da linguagem GNU MathProg',
+      about_tech_glpk: 'tradutor de modelos GNU MathProg (GMPL) para o formato LP, usado neste app para dar suporte à linguagem de modelagem algébrica.',
+    },
+
+    en: {
+      page_title: 'WebHIGHS — Linear Programming',
+
+      tt_examples: 'Load example model',
+      opt_examples_placeholder: 'Examples…',
+      ex_producao: 'Production (LP)',
+      ex_transporte: 'Transportation (LP)',
+      ex_mochila: 'Knapsack (MILP)',
+      ex_dieta: 'Diet (LP)',
+      ex_mix: 'Product Mix (MILP)',
+      ex_inviavel: 'Infeasible Production (IIS test)',
+
+      tt_open: 'Open .lp file',
+      btn_open: '📂 Open',
+      tt_save: 'Save as .lp',
+      btn_save: '💾 Save',
+      tt_batch: 'Solve multiple .lp/.mod files from a folder',
+      btn_batch: '🗂️ Batch',
+      tt_about: 'About this project',
+      btn_about: 'ℹ️ About',
+      tt_options: 'HiGHS solver options',
+      btn_options: '⚙️ Options',
+      theme_switch_to_light: 'Switch to light theme',
+      theme_switch_to_dark: 'Switch to dark theme',
+      tt_lang_select: 'Idioma / Language',
+      tt_clear: 'Clear editor',
+      btn_clear: '✕ Clear',
+      btn_solve: '▶ Solve',
+      btn_solving: '⏳ Solving…',
+
+      opt_modal_title: '⚙️ Solver Options (HiGHS)',
+      tt_close: 'Close',
+      opt_time_limit_label: 'Maximum solve time (seconds)',
+      opt_time_limit_hint: 'Empty = no limit. When the time is reached, HiGHS returns the best solution found so far.',
+      opt_time_limit_placeholder: 'no limit',
+      opt_mip_rel_gap_label: 'Acceptable relative gap — MILP (%)',
+      opt_mip_rel_gap_hint: 'Stops once it gets within this margin of the optimum. HiGHS default: 0.01%.',
+      opt_mip_rel_gap_placeholder: '0.01 (default)',
+      opt_mip_abs_gap_label: 'Acceptable absolute gap — MILP',
+      opt_mip_abs_gap_hint: 'Same idea as the relative gap, but in objective-value units.',
+      opt_mip_abs_gap_placeholder: '0.000001 (default)',
+      opt_heuristic_effort_label: 'Heuristics effort — MILP (0 to 1)',
+      opt_heuristic_effort_hint: 'Fraction of time spent on heuristics to find integer solutions quickly. Default: 0.05.',
+      opt_heuristic_effort_placeholder: '0.05 (default)',
+      opt_presolve_label: 'Presolve',
+      opt_auto: 'Automatic',
+      opt_on: 'On',
+      opt_off: 'Off',
+      opt_solver_label: 'Algorithm (LP)',
+      opt_simplex: 'Simplex',
+      opt_ipm: 'Interior Point',
+      opt_parallel_label: 'Parallelism',
+      opt_threads_label: 'Number of threads',
+      opt_auto_placeholder: 'automatic',
+      opt_random_seed_label: 'Random seed',
+      opt_random_seed_hint: 'Useful to reproduce the same result on models with multiple optimal solutions.',
+      opt_reset: 'Restore defaults',
+      opt_cancel: 'Cancel',
+      btn_generic_save: 'Save',
+
+      about_modal_title: 'ℹ️ About this project',
+      about_me_heading: 'About me',
+      about_me_bio: 'I am a professor in the Production Engineering program at the Federal University of Paraná (UFPR), where I teach linear programming. I built this app based on the GUSEK program (developed by professor Leandro Magatão and Luiz Betoni) for visualizing optimization models. The main idea is to use it in class, but it can also be used to solve real problems (within the browser\'s memory limits).',
+      about_project_heading: 'About the project',
+      about_project_text: 'WebHIGHS is an editor and solver for Linear Programming (LP) and Mixed-Integer Linear Programming (MILP) models, in CPLEX LP format, that runs entirely in the browser — no installation and no model sent to a server.',
+      about_tech_heading: 'Technologies and references',
+      about_tech_gusek: 'IDE for GLPK (GNU Linear Programming Kit), with a model editor and results visualization. The inspiration for building this app.',
+      about_tech_highs: 'open-source solver for linear, mixed-integer and quadratic programming, which does all the actual model solving.',
+      about_tech_highsjs: 'compilation of HiGHS to WebAssembly, which makes it possible to run the whole solver inside the browser.',
+      about_tech_codemirror: 'text editor with line numbering, syntax highlighting and color themes.',
+      about_tech_claude: 'AI assistant heavily used in the development of this app... actually, I worked as Claude\'s general manager.',
+      btn_close_generic: 'Close',
+
+      batch_modal_title: '🗂️ Batch solving',
+      batch_intro: 'Select a folder with .lp and/or .mod files. Each file is solved in order, without touching your open tabs, and the result (status, objective value and time) goes into a table you can export as CSV.',
+      batch_btn_pick_folder: '📁 Select folder…',
+      batch_btn_pick_folder_again: '📁 Change folder…',
+      batch_btn_start: '▶ Start solving',
+      batch_btn_cancel: '⏹ Cancel',
+      batch_btn_export_csv: '💾 Export CSV',
+      batch_no_files: 'No .lp/.mod files found in that folder.',
+      batch_files_found: (n) => `${n} file${n === 1 ? '' : 's'} (.lp/.mod) found.`,
+      batch_progress_text: (done, total) => `${done} of ${total} solved`,
+      batch_status_pending: 'Pending',
+      batch_status_running: 'Solving…',
+      batch_status_optimal: 'Optimal',
+      batch_status_infeasible: 'Infeasible',
+      batch_status_unbounded: 'Unbounded',
+      batch_status_error: 'Error',
+      batch_status_other: 'Other',
+      batch_cancelled_msg: 'Batch cancelled by the user.',
+      batch_unsupported_folder: 'Your browser doesn\'t support folder or multiple-file selection. Try Chrome, Edge, or a more recent browser.',
+      batch_csv_filename: 'batch_results.csv',
+
+      editor_panel_header: 'LP Model (CPLEX format)',
+      tt_editor_theme: 'Editor color theme',
+      theme_light_default: 'Light (default)',
+      tt_font_dec: 'Decrease font (Ctrl+-)',
+      tt_font_inc: 'Increase font (Ctrl++)',
+
+      results_panel_header: 'Results',
+      tt_export: 'Export solution to file',
+      btn_export: '💾 Export',
+      opt_export_placeholder: '💾 Export as…',
+      opt_export_report: 'Report (.txt)',
+      opt_export_sol: 'HiGHS solution (.sol)',
+      filetype_sol: 'HiGHS Solution',
+      export_sol_filename_suffix: '-solution.sol',
+      export_sol_error_prefix: 'Error exporting .sol: ',
+      tt_result_font_dec: 'Decrease text size',
+      tt_result_font_inc: 'Increase text size',
+
+      placeholder_line1_html: 'Write or load a model, then click<br><strong>▶ Solve</strong> <span class="kbd-hint">or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd></span>',
+      placeholder_solver_info_html: 'Solver: <strong style="color:var(--accent)">HiGHS 1.8</strong> via WebAssembly · Supports LP and MILP',
+
+      status_loading: 'Loading HiGHS WebAssembly…',
+      status_highs_version: 'HiGHS 1.8 · WebAssembly',
+      status_ctrl_enter_hint_html: '<kbd>Ctrl+Enter</kbd> solves',
+
+      status_ready: 'HiGHS ready ✓',
+      status_load_error_prefix: 'Error loading HiGHS: ',
+      prompt_tab_rename: 'Tab name:',
+      tab_title_suffix: ' (double-click to rename)',
+      tt_tab_close: 'Close tab',
+      tt_tab_add: 'New tab',
+      default_tab_name: 'Untitled',
+      warn_large_model: 'Large model — may slow down the editor and increase browser memory usage',
+      confirm_large_file: (name, mb) => `The file "${name}" is ${mb} MB.\n\nLarge files can slow down the editor and use a lot of browser memory (the text editor and the solver both duplicate the content internally several times). In extreme cases, the browser tab can even freeze.\n\nLoad it anyway?`,
+      confirm_clear_tab: 'Clear the contents of this tab?',
+      filetype_lp_model: 'LP Model',
+      filetype_solution_report: 'Solution Report',
+      status_solving: 'Solving…',
+
+      report_title: 'WebHIGHS — Solution Report',
+      report_model_label: 'Model:',
+      report_generated_label: 'Generated on:',
+      report_status_label: 'Status:',
+      report_objvalue_label: 'Objective Value:',
+      report_variables_heading: 'Variables',
+      report_col_name: 'Name',
+      report_col_value: 'Value',
+      report_col_reducedcost: 'RedCost',
+      report_col_status: 'Status',
+      report_col_inf: 'Lower',
+      report_col_sup: 'Upper',
+      report_col_type: 'Type',
+      report_no_variables: '(no variables)',
+      report_constraints_heading: 'Constraints',
+      report_col_lhs: 'LHS',
+      report_col_dualvalue: 'Dual Value',
+      report_col_rhsinf: 'RHS lower',
+      report_col_rhssup: 'RHS upper',
+      report_no_constraints: '(no constraints)',
+
+      err_fatal_badge: '💥 Critical solver error',
+      err_fatal_subtitle: 'The solver was automatically restarted',
+      err_fatal_whathappened_heading: 'What probably happened:',
+      err_fatal_whathappened_text: 'The model was too large/complex and the solver (which runs in WebAssembly, with its own memory limit) ran out of memory while solving. This is unrelated to the model\'s syntax.',
+      err_fatal_whattotry_heading: 'What to try:',
+      err_fatal_tip1: 'Reduce the size of the model (fewer variables/constraints), if possible',
+      err_fatal_tip2_html: 'In "⚙️ Options", set a <em>maximum solve time</em> — this stops the MILP from exploring a huge search tree until it runs out of memory',
+      err_fatal_tip3_html: 'Increase the <em>acceptable relative gap</em>, so the solver stops earlier, close to the optimum, instead of refining indefinitely',
+      status_fatal_error: 'Critical error — solver restarted, you can try again',
+
+      err_badge: '✗ Error',
+      err_subtitle: 'Check the model syntax',
+      err_line_highlighted: (n) => `↑ line ${n} highlighted in the editor`,
+      err_tips_heading: 'Common tips:',
+      err_tip1_html: 'RHS must be a constant — <code style="color:var(--red)">x &lt;= 2 y</code> is invalid; use <code style="color:var(--green)">x - 2 y &lt;= 0</code>',
+      err_tip2_html: 'Each constraint needs a single operator (<code>&lt;=</code>, <code>&gt;=</code> or <code>=</code>)',
+      err_tip3_html: 'Required sections: objective + <code>Subject To</code> + <code>End</code>',
+      err_lp_reference_link: '📖 LP format reference (CPLEX)',
+      err_solver_output_label: (n) => `Solver output (${n} line(s)):`,
+      btn_copy: '📋 Copy',
+      status_solve_error: 'Error solving — check the model',
+
+      status_optimal: '✓ Optimal',
+      status_infeasible: '✗ Infeasible',
+      status_unbounded: '∞ Unbounded',
+      obj_value_label: 'Objective Value',
+      tab_variables: 'Variables',
+      tab_constraints: 'Constraints',
+      tab_log: 'Log',
+      tab_json: 'JSON',
+      th_variable: 'Variable',
+      th_value: 'Value',
+      th_reducedcost: 'Red. Cost',
+      th_reducedcost_title: 'Reduced Cost',
+      th_status: 'Status',
+      th_inf: 'Lower',
+      th_sup: 'Upper',
+      th_type: 'Type',
+      legend_var_status: 'BS = basic (active) · LB = at lower bound · UB = at upper bound',
+      no_variables_msg: 'No variables',
+      th_constraint: 'Constraint',
+      th_lhs: 'LHS',
+      th_dualvalue: 'Dual Value',
+      th_dualvalue_title: 'Dual Value (constraint multiplier)',
+      th_rhsinf: 'RHS lower',
+      th_rhssup: 'RHS upper',
+      legend_dual_value: 'Dual value: change in the objective per unit of constraint slack',
+      no_constraints_msg: 'No constraints',
+
+      iis_ask_title: 'Diagnose why the model is infeasible?',
+      iis_ask_text: 'HiGHS can try to automatically isolate the smallest set of constraints/bounds that, together, make the model infeasible (IIS — irreducible infeasible subsystem).',
+      iis_ask_hint: 'This runs a separate analysis with no time limit (ignores the "Max time" set in Options) — can take a long time on large models.',
+      iis_btn_run: '🔍 Diagnose infeasibility',
+      iis_running_text: 'Diagnosing infeasibility… this can take a long time, with no time limit.',
+      iis_btn_cancel: 'Cancel',
+      iis_result_heading: 'Minimal conflicting subset found (IIS)',
+      iis_result_intro: 'Removing any one of these makes the model feasible again:',
+      iis_result_rows_heading: (n) => `Constraints involved (${n})`,
+      iis_result_cols_heading: (n) => `Variable bounds involved (${n})`,
+      iis_result_empty: 'No specific conflict could be isolated — the model may no longer be infeasible since the last solve.',
+      iis_btn_retry: '🔍 Diagnose again',
+      iis_error_prefix: 'Error diagnosing infeasibility: ',
+
+      tab_sensitivity: 'Sensitivity',
+      sens_ask_title: 'Compute sensitivity analysis?',
+      sens_ask_text: 'Shows, for each variable, how far the cost coefficient can move without changing the optimal basis — and, for each constraint, how far the RHS can move while the current dual value stays valid.',
+      sens_btn_run: '📊 Compute sensitivity analysis',
+      sens_running_text: 'Computing sensitivity analysis…',
+      sens_unavailable_mip: 'Sensitivity analysis is not available for models with integer variables (MILP) — HiGHS can only compute ranging from a simplex basis, which does not exist after a branch-and-bound solve.',
+      sens_result_vars_heading: 'Variables — cost coefficient range',
+      sens_result_rows_heading: 'Constraints — RHS range',
+      sens_th_cost: 'Current cost',
+      sens_th_rhs: 'Current RHS',
+      sens_th_min: 'Allowable minimum',
+      sens_th_max: 'Allowable maximum',
+      sens_th_obj_min: 'Objective at minimum',
+      sens_th_obj_max: 'Objective at maximum',
+      sens_th_obj_min_title: 'Objective value if the coefficient/RHS were pushed to the allowable minimum',
+      sens_th_obj_max_title: 'Objective value if the coefficient/RHS were pushed to the allowable maximum',
+      sens_legend: 'Range within which the coefficient/RHS can move without changing the current optimal basis (keeping the dual values and reduced costs shown in the other tabs valid). The "Objective at minimum/maximum" columns show what the objective would become at those extremes.',
+      sens_btn_retry: '📊 Recompute',
+      sens_error_prefix: 'Error computing sensitivity analysis: ',
+
+      log_lines_count: (n) => `${n} line(s) of output`,
+      btn_copied: '✓ Copied!',
+      status_var_abbrev: 'var',
+      status_constr_abbrev: 'constraints',
+      status_solved_summary_parts: (p) => `${p.badgeText} · ${p.nvars} var · ${p.nrows} constraints · obj = ${p.obj}`,
+
+      tag_basic: 'Basic',
+      tag_lb: 'Lower',
+      tag_ub: 'Upper',
+      tag_nonbasic: 'Non-basic',
+
+      log_no_output: 'No output captured. HiGHS may be running in silent mode.',
+      err_line_title: (n) => `Error on line ${n}`,
+      live_badge_solving: '⏳ Solving…',
+      log_live_label: 'Solver output (live):',
+      too_large_to_persist: '⌐ This model was too large to be saved automatically.\n⌐ Open the file again with 📂 Open.',
+      line_count_singular: 'line',
+      line_count_plural: 'lines',
+      export_filename_suffix: '-solution.txt',
+      tt_model_format: 'Model format for this tab',
+      format_lp: 'LP (CPLEX)',
+      format_mathprog: 'MathProg (GLPK)',
+      ex_transporte_mp: 'Transportation (MathProg)',
+      tab_generated: 'Generated model',
+      generated_model_note: 'Automatically translated from MathProg to LP by GLPK, before being solved by HiGHS.',
+      status_loading_translator: 'Loading MathProg translator (GLPK)…',
+      status_translating: 'Translating MathProg…',
+      status_translate_error: 'Error translating MathProg — check the model',
+      err_mathprog_badge: '✗ Translation error (MathProg)',
+      err_mathprog_subtitle: 'Check the MathProg model syntax',
+      err_mathprog_tip1_html: 'Every data section comes after the <code>data;</code> keyword',
+      err_mathprog_tip2_html: 'Every statement ends with <code>;</code>',
+      err_mathprog_tip3_html: 'The model must end with <code>end;</code>',
+      err_mathprog_reference_link: '📖 GNU MathProg language reference',
+      about_tech_glpk: 'translator from GNU MathProg (GMPL) models to LP format, used in this app to support the algebraic modeling language.',
+    },
+  };
+
+  function detectInitialLang() {
+    try {
+      const saved = localStorage.getItem(LANG_KEY);
+      if (saved === 'pt' || saved === 'en') return saved;
+    } catch (_) {}
+    const nav = ((navigator.language || navigator.userLanguage || '') + '').toLowerCase();
+    return nav.startsWith('pt') ? 'pt' : 'en';
+  }
+
+  let currentLang = detectInitialLang();
+
+  // t(key) or t(key, arg) — if the dictionary value is a function, call it with arg(s)
+  function t(key, ...args) {
+    const dict = I18N[currentLang] || I18N.pt;
+    const fallback = I18N.pt;
+    let entry = (key in dict) ? dict[key] : fallback[key];
+    if (entry === undefined) return key;
+    return (typeof entry === 'function') ? entry(...args) : entry;
+  }
+
+  function applyTranslations() {
+    document.documentElement.lang = (currentLang === 'pt') ? 'pt-BR' : 'en';
+    document.title = t('page_title');
+
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+
+    const langSel = document.getElementById('lang-select');
+    if (langSel) langSel.value = currentLang;
+  }
+
+  applyTranslations();
+
+  /* ════════════════════════════════════════════════════════════════════
+     1. LP Syntax Mode for CodeMirror
+  ════════════════════════════════════════════════════════════════════ */
+  CodeMirror.defineMode('lp', function () {
+    // Section keywords (case-insensitive)
+    const kw = /^(Minimize|Maximize|Minimum|Maximum|Min|Max|Subject\s+To|Such\s+That|s\.t\.|Bounds?|Generals?|Integers?|Binaries|Binary|Free|End)\b/i;
+
+    return {
+      startState: () => ({ section: null }),
+      token(stream, state) {
+        // Skip leading whitespace
+        if (stream.eatSpace()) return null;
+
+        // Comments: backslash to end of line
+        if (stream.peek() === '\\') { stream.skipToEnd(); return 'comment'; }
+
+        // Section keywords
+        if (stream.match(kw)) { return 'keyword'; }
+
+        // Constraint / variable label  (identifier followed by colon)
+        // But NOT inside Bounds section numbers like "0 <= x <= 1"
+        if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_.]*\s*:/)) { return 'def'; }
+
+        // Numbers (including scientific notation, negative handled by operator)
+        if (stream.match(/^\d+(\.\d+)?([eE][+-]?\d+)?/)) { return 'number'; }
+
+        // Operators
+        if (stream.match(/^(<=|>=|=)/)) { return 'operator'; }
+        if (stream.match(/^[+\-]/))     { return 'operator'; }
+
+        // Identifiers (variables)
+        if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_.']*/)) { return 'variable'; }
+
+        stream.next();
+        return null;
+      }
+    };
+  });
+
+  /* ════════════════════════════════════════════════════════════════════
+     1b. MathProg (GNU GMPL) Syntax Mode for CodeMirror
+  ════════════════════════════════════════════════════════════════════ */
+  CodeMirror.defineMode('mathprog', function () {
+    const kw = /^(set|param|var|arc|maximize|minimize|subject\s+to|s\.t\.|subj\s+to|data|end|integer|binary|free|for|in|if|then|else|while|repeat|until|printf|display|check|solve|table|param\s+default|default)\b/i;
+    const builtin = /^(abs|ceil|floor|exp|log|log10|sqrt|sin|cos|atan|round|trunc|card|sum|prod|min|max|exists|forall|length|substr|str2time|time2str|gmtime|Irand224|Uniform01|Uniform|Normal01|Normal)\b/i;
+
+    return {
+      startState: () => ({ inBlockComment: false }),
+      token(stream, state) {
+        if (state.inBlockComment) {
+          if (stream.match(/^[\s\S]*?\*\//)) { state.inBlockComment = false; }
+          else { stream.skipToEnd(); }
+          return 'comment';
+        }
+
+        if (stream.eatSpace()) return null;
+
+        // Block comments /* ... */
+        if (stream.match('/*')) {
+          if (!stream.match(/^[\s\S]*?\*\//)) { state.inBlockComment = true; stream.skipToEnd(); }
+          return 'comment';
+        }
+
+        // Line comments (some MathProg dialects use # too)
+        if (stream.match('#')) { stream.skipToEnd(); return 'comment'; }
+
+        // Strings
+        if (stream.match(/^"(?:[^"\\]|\\.)*"/)) return 'string';
+        if (stream.match(/^'(?:[^'\\]|\\.)*'/)) return 'string';
+
+        // Keywords / sections
+        if (stream.match(kw)) return 'keyword';
+        if (stream.match(builtin)) return 'builtin';
+
+        // Numbers
+        if (stream.match(/^\d+(\.\d+)?([eE][+-]?\d+)?/)) return 'number';
+
+        // Operators / punctuation
+        if (stream.match(/^(<=|>=|<>|==|!=|:=|\.\.|[+\-*\/^=<>,;:{}()\[\]])/)) return 'operator';
+
+        // Identifiers
+        if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_]*/)) return 'variable';
+
+        stream.next();
+        return null;
+      }
+    };
+  });
+
+  /* ════════════════════════════════════════════════════════════════════
+     2. Example models
+  ════════════════════════════════════════════════════════════════════ */
+  const EXAMPLES = {
+    producao: `\\ Problema de Produção
+\\ Maximizar lucro fabricando dois produtos (P1 e P2)
+\\ P1 usa 6h máquina + 1h mão-de-obra, P2 usa 4h + 2h
+\\ Lucro: R$5/P1, R$4/P2
+
+Maximize
+  obj: 5 x1 + 4 x2
+
+Subject To
+  maquina:    6 x1 + 4 x2 <= 24
+  mao_obra:   x1  + 2 x2  <= 6
+
+Bounds
+  x1 >= 0
+  x2 >= 0
+
+End`,
+
+    transporte: `\\ Problema de Transporte
+\\ Minimizar custo de transporte de 2 origens para 3 destinos
+\\   xij = quantidade enviada da origem i para destino j
+
+Minimize
+  obj: 2 x11 + 3 x12 + 1 x13
+     + 5 x21 + 4 x22 + 8 x23
+
+Subject To
+  \\ Capacidade das origens
+  origem1: x11 + x12 + x13 <= 120
+  origem2: x21 + x22 + x23 <= 80
+
+  \\ Demanda dos destinos
+  dest1: x11 + x21 >= 50
+  dest2: x12 + x22 >= 70
+  dest3: x13 + x23 >= 60
+
+Bounds
+  x11 >= 0
+  x12 >= 0
+  x13 >= 0
+  x21 >= 0
+  x22 >= 0
+  x23 >= 0
+
+End`,
+
+    mochila: `\\ Problema da Mochila (Programação Linear Inteira)
+\\ Selecionar itens para maximizar valor total com peso <= 15kg
+\\   Item  Peso  Valor
+\\   a     5kg   10
+\\   b     3kg   6
+\\   c     7kg   12
+\\   d     2kg   3
+\\   e     4kg   8
+
+Maximize
+  obj: 10 a + 6 b + 12 c + 3 d + 8 e
+
+Subject To
+  peso: 5 a + 3 b + 7 c + 2 d + 4 e <= 15
+
+Bounds
+  0 <= a <= 1
+  0 <= b <= 1
+  0 <= c <= 1
+  0 <= d <= 1
+  0 <= e <= 1
+
+Generals
+  a b c d e
+
+End`,
+
+    dieta: `\\ Problema da Dieta
+\\ Minimizar custo satisfazendo requisitos nutricionais diários
+\\ Alimentos: feijao(x1), laranja(x2), frango(x3), leite(x4)
+\\ Preço (R$/porção): 0.60, 0.35, 0.90, 1.50
+
+Minimize
+  obj: 0.6 x1 + 0.35 x2 + 0.9 x3 + 1.5 x4
+
+Subject To
+  \\ Calorias: 2000-2500 kcal
+  cal_min: 295 x1 + 110 x2 + 330 x3 +  80 x4 >= 2000
+  cal_max: 295 x1 + 110 x2 + 330 x3 +  80 x4 <= 2500
+  \\ Proteína >= 55g
+  proteina:  60 x1 +  20 x2 +  70 x3 +  15 x4 >= 55
+  \\ Ferro >= 100% VD
+  ferro:     20 x1 +   0 x2 +  10 x3 +  15 x4 >= 100
+  \\ Cálcio >= 100% VD
+  calcio:   110 x1 +   0 x2 +  30 x3 +   0 x4 >= 100
+  \\ Vitamina C >= 100% VD
+  vitc:       0 x1 + 120 x2 +   0 x3 +   0 x4 >= 100
+
+Bounds
+  x1 >= 0
+  x2 >= 0
+  x3 >= 0
+  x4 >= 0
+
+End`,
+
+    mix: `\\ Mix de Produtos com Capacidade Inteira
+\\ Empresa pode produzir até 3 linhas de produtos.
+\\ Decide quantas máquinas alocar (variáveis inteiras) e
+\\ quanto produzir em cada linha (contínuo).
+\\
+\\ Nota LP format: o RHS deve ser constante.
+\\   ERRADO:  p1 <= 100 m1
+\\   CORRETO: p1 - 100 m1 <= 0
+
+Maximize
+  obj: 15 p1 + 25 p2 + 20 p3 - 8 m1 - 12 m2 - 10 m3
+
+Subject To
+  \\ Cada máquina produz até 100 unidades: p_i - 100*m_i <= 0
+  cap1: p1 - 100 m1 <= 0
+  cap2: p2 - 100 m2 <= 0
+  cap3: p3 - 100 m3 <= 0
+
+  \\ Mão de obra total: 240h/dia
+  mao_obra: 2 p1 + 3 p2 + 2.5 p3 <= 240
+
+  \\ Máximo 3 máquinas no total
+  total_maq: m1 + m2 + m3 <= 3
+
+  \\ Demanda máxima
+  dem1: p1 <= 150
+  dem2: p2 <= 120
+  dem3: p3 <= 80
+
+Bounds
+  p1 >= 0
+  p2 >= 0
+  p3 >= 0
+  0 <= m1 <= 2
+  0 <= m2 <= 2
+  0 <= m3 <= 2
+
+Generals
+  m1 m2 m3
+
+End`,
+
+    inviavel: `\\ Produção Inviável — modelo de teste para o diagnóstico de IIS
+\\ O contrato de venda exige entregar pelo menos 100 unidades
+\\ (P1 + P2), mas a capacidade de máquina só permite produzir
+\\ até 60. As duas restrições, juntas, não têm solução.
+\\ Use "Resolver" e depois "🔍 Diagnosticar inviabilidade".
+
+Minimize
+  obj: 3 x1 + 5 x2
+
+Subject To
+  capacidade: x1 + x2 <= 60
+  contrato:   x1 + x2 >= 100
+
+Bounds
+  x1 >= 0
+  x2 >= 0
+
+End`
+  };
+
+  // MathProg (GNU GMPL) example — same data as EXAMPLES.transporte above,
+  // written algebraically with sets/sums instead of one line per route.
+  const EXAMPLES_MATHPROG = {
+    transporte_mp: `/* Problema de Transporte — versão MathProg (GLPK) */
+/* Mesma instância do exemplo "Transporte (PL)", escrita de forma algébrica */
+
+set ORIGENS;
+set DESTINOS;
+
+param custo{ORIGENS, DESTINOS};
+param oferta{ORIGENS};
+param demanda{DESTINOS};
+
+var x{ORIGENS, DESTINOS} >= 0;
+
+minimize obj: sum{i in ORIGENS, j in DESTINOS} custo[i,j] * x[i,j];
+
+s.t. capacidade{i in ORIGENS}:
+  sum{j in DESTINOS} x[i,j] <= oferta[i];
+
+s.t. atendimento{j in DESTINOS}:
+  sum{i in ORIGENS} x[i,j] >= demanda[j];
+
+data;
+
+set ORIGENS := origem1 origem2;
+set DESTINOS := dest1 dest2 dest3;
+
+param custo : dest1 dest2 dest3 :=
+  origem1     2      3      1
+  origem2     5      4      8 ;
+
+param oferta := origem1 120  origem2 80;
+param demanda := dest1 50  dest2 70  dest3 60;
+
+end;`
+  };
+
+  /* ════════════════════════════════════════════════════════════════════
+     3. Tabs + CodeMirror setup
+     Each tab keeps its own CodeMirror.Doc, which preserves undo history,
+     cursor/scroll position and error markers independently per tab.
+     Solving always acts on the doc of the currently active tab.
+  ════════════════════════════════════════════════════════════════════ */
+  let savedEditorTheme = 'dracula';
+  try { savedEditorTheme = localStorage.getItem('lp-editor-theme') || 'dracula'; } catch (_) {}
+
+  let tabs = [];
+  let activeTabId = null;
+  let tabSeq = 0;
+
+  function makeTab(name, content, id, format) {
+    const fmt = (format === 'mathprog') ? 'mathprog' : 'lp';
+    return {
+      id: id || ('tab-' + (++tabSeq) + '-' + Date.now().toString(36)),
+      name: name || t('default_tab_name'),
+      format: fmt,
+      doc: new CodeMirror.Doc(content || '', fmt),
+      errorLine: -1
+    };
+  }
+
+  function getActiveTab() {
+    return tabs.find(t => t.id === activeTabId) || null;
+  }
+
+  // Restore tabs saved from a previous session, if any
+  (function restoreTabs() {
+    try {
+      const raw = localStorage.getItem('lp-tabs');
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (saved && Array.isArray(saved.tabs) && saved.tabs.length) {
+        tabSeq = saved.tabSeq || 0;
+        saved.tabs.forEach(savedTab => {
+          if (savedTab.tooLargeToPersist) {
+            // The model was too big to keep in localStorage between sessions —
+            // restore an empty placeholder tab instead of silently losing it.
+            tabs.push(makeTab(savedTab.name, t('too_large_to_persist'), savedTab.id, savedTab.format));
+          } else {
+            tabs.push(makeTab(savedTab.name, savedTab.content, savedTab.id, savedTab.format));
+          }
+        });
+        if (saved.activeTabId && tabs.some(t => t.id === saved.activeTabId)) {
+          activeTabId = saved.activeTabId;
+        }
+      }
+    } catch (_) {}
+  })();
+
+  if (!tabs.length) {
+    tabs.push(makeTab(t('ex_producao'), EXAMPLES.producao));
+  }
+  if (!activeTabId || !tabs.some(t => t.id === activeTabId)) {
+    activeTabId = tabs[0].id;
+  }
+
+  let _persistTimer = null;
+  const PERSIST_MAX_CHARS = 1_000_000;   // ~1 MB of text — beyond this, skip auto-saving the content
+
+  function persistTabs() {
+    clearTimeout(_persistTimer);
+    _persistTimer = setTimeout(() => {
+      try {
+        localStorage.setItem('lp-tabs', JSON.stringify({
+          activeTabId,
+          tabSeq,
+          tabs: tabs.map(t => {
+            const content = t.doc.getValue();
+            // Very large models are intentionally NOT auto-saved to localStorage:
+            // re-serializing megabytes of text on every keystroke is itself a
+            // source of the "uso elevado de memória" warnings, and localStorage
+            // has a small quota (a few MB) anyway. The tab stays open normally
+            // in this session — it just won't be restored after a reload.
+            if (content.length > PERSIST_MAX_CHARS) {
+              return { id: t.id, name: t.name, format: t.format, tooLargeToPersist: true };
+            }
+            return { id: t.id, name: t.name, format: t.format, content };
+          })
+        }));
+      } catch (_) {
+        // Quota exceeded or similar — silently skip persistence rather than crash
+      }
+    }, 400);
+  }
+
+  function sanitizeFileName(name) {
+    return (name || 'modelo').replace(/[\\/:*?"<>|]/g, '_').trim() || 'modelo';
+  }
+
+  function renderTabBar() {
+    const bar = document.getElementById('tab-bar');
+    bar.innerHTML = '';
+    tabs.forEach(tab => {
+      const el = document.createElement('div');
+      el.className = 'tab' + (tab.id === activeTabId ? ' active' : '');
+      el.title = tab.name + t('tab_title_suffix');
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'tab-name';
+      nameSpan.textContent = tab.name;
+
+      const closeBtn = document.createElement('span');
+      closeBtn.className = 'tab-close';
+      closeBtn.textContent = '×';
+      closeBtn.title = t('tt_tab_close');
+
+      el.appendChild(nameSpan);
+      el.appendChild(closeBtn);
+
+      el.addEventListener('click', e => {
+        if (e.target === closeBtn) return;
+        activateTab(tab.id);
+      });
+      closeBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        closeTab(tab.id);
+      });
+      el.addEventListener('dblclick', e => {
+        if (e.target === closeBtn) return;
+        renameTab(tab.id);
+      });
+
+      bar.appendChild(el);
+    });
+
+    const addBtn = document.createElement('div');
+    addBtn.className = 'tab-add';
+    addBtn.title = t('tt_tab_add');
+    addBtn.textContent = '+';
+    addBtn.addEventListener('click', () => newTab());
+    bar.appendChild(addBtn);
+  }
+
+  function syncModelFormatSelect() {
+    const sel = document.getElementById('model-format-select');
+    const tab = getActiveTab();
+    if (sel && tab) sel.value = tab.format || 'lp';
+  }
+
+  function activateTab(id) {
+    if (id === activeTabId) return;
+    const tab = tabs.find(t => t.id === id);
+    if (!tab) return;
+    activeTabId = id;
+    editor.swapDoc(tab.doc);
+    updateLineCount();
+    renderTabBar();
+    syncModelFormatSelect();
+    editor.refresh();
+    editor.focus();
+    persistTabs();
+  }
+
+  function closeTab(id) {
+    const idx = tabs.findIndex(t => t.id === id);
+    if (idx === -1) return;
+    const wasActive = id === activeTabId;
+    tabs.splice(idx, 1);
+
+    if (!tabs.length) {
+      tabs.push(makeTab(t('default_tab_name'), ''));
+    }
+
+    if (wasActive) {
+      const nextIdx = Math.min(idx, tabs.length - 1);
+      activeTabId = tabs[nextIdx].id;
+      editor.swapDoc(tabs[nextIdx].doc);
+      updateLineCount();
+      editor.refresh();
+    }
+    renderTabBar();
+    persistTabs();
+  }
+
+  function newTab(name, content, format) {
+    const tab = makeTab(name, content, null, format);
+    tabs.push(tab);
+    activateTab(tab.id);
+    return tab;
+  }
+
+  function renameTab(id) {
+    const tab = tabs.find(t => t.id === id);
+    if (!tab) return;
+    const newName = prompt(t('prompt_tab_rename'), tab.name);
+    if (newName && newName.trim()) {
+      tab.name = newName.trim();
+      renderTabBar();
+      persistTabs();
+    }
+  }
+
+  const editor = CodeMirror(document.getElementById('cm-wrapper'), {
+    value: getActiveTab().doc,
+    mode: 'lp',
+    theme: savedEditorTheme,
+    lineNumbers: true,
+    lineWrapping: false,
+    autofocus: true,
+    tabSize: 2,
+    indentWithTabs: false,
+    extraKeys: {
+      'Ctrl-Enter': () => solve(),
+      'Cmd-Enter':  () => solve()
+    }
+  });
+  editor.setSize('100%', '100%');
+  renderTabBar();
+
+  // Re-measure CodeMirror after viewport changes (phone rotation, the toolbar
+  // wrapping to a second row, etc.) — the layout can change size without the
+  // editor's own container firing any event CodeMirror listens to natively.
+  let _resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(() => editor.refresh(), 150);
+  });
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => editor.refresh(), 250);
+  });
+
+  // Line count in header
+  const LARGE_MODEL_WARN_LINES = 20000;   // editor performance/memory tends to suffer past this
+
+  function updateLineCount() {
+    const n = editor.lineCount();
+    const el = document.getElementById('line-count');
+    el.textContent = n + ' ' + t(n !== 1 ? 'line_count_plural' : 'line_count_singular');
+    el.title = (n > LARGE_MODEL_WARN_LINES)
+      ? t('warn_large_model')
+      : '';
+    el.style.color = (n > LARGE_MODEL_WARN_LINES) ? 'var(--orange)' : '';
+    el.textContent = (n > LARGE_MODEL_WARN_LINES ? '⚠️ ' : '') + el.textContent;
+  }
+  editor.on('change', updateLineCount);
+  editor.on('change', persistTabs);
+  updateLineCount();
+
+  /* ════════════════════════════════════════════════════════════════════
+     4. Resizable split panel
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const handle = document.getElementById('resize-handle');
+    const panelL = document.getElementById('panel-editor');
+    const main   = document.getElementById('main');
+    let dragging = false, startX, startW;
+
+    handle.addEventListener('mousedown', e => {
+      dragging = true;
+      startX = e.clientX;
+      startW = panelL.offsetWidth;
+      handle.classList.add('dragging');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    });
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const totalW = main.offsetWidth;
+      const newW = Math.max(200, Math.min(totalW - 220, startW + dx));
+      panelL.style.width = newW + 'px';
+    });
+    document.addEventListener('mouseup', () => {
+      if (!dragging) return;
+      dragging = false;
+      handle.classList.remove('dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      editor.refresh();
+    });
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     5. File open / save
+  ════════════════════════════════════════════════════════════════════ */
+  document.getElementById('btn-open').addEventListener('click', () => {
+    document.getElementById('file-input').click();
+  });
+  const LARGE_FILE_WARN_BYTES = 2 * 1024 * 1024;   // 2 MB — warn before loading into the editor
+
+  document.getElementById('file-input').addEventListener('change', function () {
+    const files = Array.from(this.files || []);
+    if (!files.length) return;
+    files.forEach(file => {
+      if (file.size > LARGE_FILE_WARN_BYTES) {
+        const mb = (file.size / (1024 * 1024)).toFixed(1);
+        const proceed = confirm(t('confirm_large_file', file.name, mb));
+        if (!proceed) return;
+      }
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const isMathProg = /\.mod$/i.test(file.name);
+        const name = file.name.replace(/\.(lp|txt|mod)$/i, '');
+        newTab(name, ev.target.result, isMathProg ? 'mathprog' : 'lp');
+      };
+      reader.readAsText(file);
+    });
+    this.value = '';
+  });
+  document.getElementById('btn-save').addEventListener('click', async () => {
+    const tab = getActiveTab();
+    const content = editor.getValue();
+    const isMathProg = tab && tab.format === 'mathprog';
+    const ext = isMathProg ? '.mod' : '.lp';
+    const suggested = sanitizeFileName(tab ? tab.name : 'modelo') + ext;
+
+    // Navegadores compatíveis (Chrome/Edge) abrem um diálogo nativo "Salvar como…"
+    // que deixa escolher pasta e nome do arquivo.
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: suggested,
+          types: [{
+            description: isMathProg ? t('format_mathprog') : t('filetype_lp_model'),
+            accept: { 'text/plain': [ext] }
+          }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(content);
+        await writable.close();
+        // Mantém o nome da aba sincronizado com o arquivo salvo
+        if (tab && handle.name) {
+          tab.name = handle.name.replace(/\.(lp|txt|mod)$/i, '');
+          renderTabBar();
+          persistTabs();
+        }
+      } catch (err) {
+        // Usuário cancelou o diálogo — não faz nada
+        if (err.name !== 'AbortError') {
+          console.error(currentLang === 'pt' ? 'Erro ao salvar:' : 'Error saving:', err);
+          downloadFallback(content, suggested);
+        }
+      }
+      return;
+    }
+
+    // Fallback (Firefox, Safari, etc.): faz o download direto na pasta padrão
+    downloadFallback(content, suggested);
+  });
+
+  function downloadFallback(content, filename) {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename || 'modelo.lp';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    if (confirm(t('confirm_clear_tab'))) {
+      editor.setValue('');
+      editor.focus();
+      setPlaceholder();
+    }
+  });
+
+  /* ════════════════════════════════════════════════════════════════════
+     6. Examples selector
+  ════════════════════════════════════════════════════════════════════ */
+  document.getElementById('examples-select').addEventListener('change', function () {
+    const label = this.options[this.selectedIndex].textContent;
+    if (EXAMPLES[this.value]) {
+      newTab(label, EXAMPLES[this.value], 'lp');
+      setPlaceholder();
+    } else if (EXAMPLES_MATHPROG[this.value]) {
+      newTab(label, EXAMPLES_MATHPROG[this.value], 'mathprog');
+      setPlaceholder();
+    }
+    this.value = '';
+  });
+
+  /* ════════════════════════════════════════════════════════════════════
+     6b. Export solution to file
+  ════════════════════════════════════════════════════════════════════ */
+  function buildSolutionReport(sol, modelName) {
+    const vars = Object.values(sol.Columns || {});
+    const rows = sol.Rows || [];
+    const sep  = '─'.repeat(64);
+    const now  = new Date().toLocaleString(currentLang === 'pt' ? 'pt-BR' : 'en-US');
+
+    const pad = (s, n) => String(s).padEnd(n);
+
+    let out = '';
+    out += '═'.repeat(64) + '\n';
+    out += ' ' + t('report_title') + '\n';
+    out += '═'.repeat(64) + '\n';
+    out += `${t('report_model_label')}  ${modelName}\n`;
+    out += `${t('report_generated_label')}  ${now}\n`;
+    out += `${t('report_status_label')}  ${sol.Status}\n`;
+    if (sol.Status === 'Optimal') {
+      out += `${t('report_objvalue_label')}  ${fmt(sol.ObjectiveValue)}\n`;
+    }
+    out += '\n';
+
+    out += sep + '\n';
+    out += ` ${t('report_variables_heading')} (${vars.length})\n`;
+    out += sep + '\n';
+    if (vars.length) {
+      out += pad(t('report_col_name'), 16) + pad(t('report_col_value'), 14) + pad(t('report_col_reducedcost'), 14) + pad(t('report_col_status'), 8) + pad(t('report_col_inf'), 12) + pad(t('report_col_sup'), 12) + t('report_col_type') + '\n';
+      vars.forEach(v => {
+        out += pad(v.Name, 16) + pad(fmt(v.Primal), 14) + pad(fmt(v.Dual), 14) + pad(v.Status || '—', 8) +
+               pad(fmt(v.Lower), 12) + pad(fmt(v.Upper), 12) + (v.Type || '—') + '\n';
+      });
+    } else {
+      out += t('report_no_variables') + '\n';
+    }
+    out += '\n';
+
+    out += sep + '\n';
+    out += ` ${t('report_constraints_heading')} (${rows.length})\n`;
+    out += sep + '\n';
+    if (rows.length) {
+      out += pad(t('report_col_name'), 16) + pad(t('report_col_lhs'), 14) + pad(t('report_col_dualvalue'), 14) + pad(t('report_col_status'), 8) + pad(t('report_col_rhsinf'), 12) + t('report_col_rhssup') + '\n';
+      rows.forEach(r => {
+        out += pad(r.Name || ('r' + r.Index), 16) + pad(fmt(r.Primal), 14) + pad(fmt(r.Dual), 14) + pad(r.Status || '—', 8) +
+               pad(fmt(r.Lower), 12) + fmt(r.Upper) + '\n';
+      });
+    } else {
+      out += t('report_no_constraints') + '\n';
+    }
+
+    return out;
+  }
+
+  async function saveTextFile(content, suggestedName, typeDescription, mimeType, extensions) {
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName,
+          types: [{ description: typeDescription, accept: { [mimeType]: extensions } }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(content);
+        await writable.close();
+        return;
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        console.error(currentLang === 'pt' ? 'Erro ao exportar arquivo:' : 'Error exporting file:', err);
+      }
+    }
+    downloadFallback(content, suggestedName);
+  }
+
+  function exportSolutionReport() {
+    const tab = getActiveTab();
+    const modelName = tab ? tab.name : 'modelo';
+    const content = buildSolutionReport(lastSolution, modelName);
+    const suggested = sanitizeFileName(modelName) + t('export_filename_suffix');
+    saveTextFile(content, suggested, t('filetype_solution_report'), 'text/plain', ['.txt']);
+  }
+
+  function exportSolutionSolFile() {
+    if (!lastSolvedLpText) return;
+    const tab = getActiveTab();
+    const modelName = tab ? tab.name : 'modelo';
+    const suggested = sanitizeFileName(modelName) + t('export_sol_filename_suffix');
+
+    const w = spawnRawWorker();
+    w.onmessage = function ({ data }) {
+      switch (data.type) {
+        case 'ready':
+          w.postMessage({ action: 'export_sol', lp: lastSolvedLpText, options: getSolverOptions() });
+          break;
+        case 'export_sol_result':
+          saveTextFile(data.sol, suggested, t('filetype_sol'), 'text/plain', ['.sol']);
+          w.terminate();
+          break;
+        case 'export_sol_error':
+        case 'init_error':
+        case 'fatal_error':
+          alert(t('export_sol_error_prefix') + data.message);
+          w.terminate();
+          break;
+        // 'log' messages are ignored here — this worker has no live log pane
+      }
+    };
+    w.onerror = function (err) {
+      alert(t('export_sol_error_prefix') + ((err && err.message) || String(err)));
+      w.terminate();
+    };
+  }
+
+  document.getElementById('btn-export-solution').addEventListener('change', function () {
+    if (!lastSolution) { this.value = ''; return; }
+    if (this.value === 'report') exportSolutionReport();
+    else if (this.value === 'sol') exportSolutionSolFile();
+    this.value = '';
+  });
+
+  /* ════════════════════════════════════════════════════════════════════
+     7. HiGHS Web Worker (inline blob)
+  ════════════════════════════════════════════════════════════════════ */
+  // Resolved to an absolute URL (not a relative path) because the worker is
+  // spawned from a blob: URL, whose own origin would otherwise be used to
+  // resolve relative importScripts()/locateFile() lookups.
+  const HIGHS_BASE = new URL('.', location.href).href;
+
+  const workerSrc = `
+importScripts('${HIGHS_BASE}highs.js');
+
+let highs = null;
+let dead  = false;   // true once a fatal WASM/Emscripten error has occurred
+
+// A normal HiGHS error (e.g. bad LP syntax) is just a thrown JS Error with a
+// message — the WASM instance keeps working fine afterwards. A *fatal* error
+// (out of memory, Emscripten abort()) leaves the WASM instance corrupted, so
+// it must be told apart and reported as such, since the worker needs to be
+// thrown away and recreated by the main thread in that case.
+function isFatalWasmError(err) {
+  const msg = String((err && err.message) || err || '');
+  return (err && err.name === 'RuntimeError') ||
+         /abort\\(|Aborted|out of memory|Cannot enlarge memory|WebAssembly\\.Memory|memory access out of bounds|RuntimeError/i.test(msg);
+}
+
+// Catches errors that escape any try/catch (e.g. thrown from inside
+// Emscripten's own internal callbacks while growing the heap).
+self.addEventListener('error', function (e) {
+  dead = true;
+  try { postMessage({ type: 'fatal_error', message: (e && e.message) || String(e) }); } catch (_) {}
+});
+self.addEventListener('unhandledrejection', function (e) {
+  dead = true;
+  const reason = e && e.reason;
+  try { postMessage({ type: 'fatal_error', message: (reason && reason.message) || String(reason) }); } catch (_) {}
+});
+
+// Capture all HiGHS stdout/stderr via Emscripten callbacks and stream to main thread
+Module({
+  locateFile: f => '${HIGHS_BASE}' + f,
+  print:    line => postMessage({ type: 'log', line, isErr: false }),
+  printErr: line => postMessage({ type: 'log', line, isErr: true })
+})
+  .then(h => {
+    highs = h;
+    postMessage({ type: 'ready' });
+  })
+  .catch(err => {
+    postMessage({ type: 'init_error', message: err.toString() });
+  });
+
+onmessage = async function({ data }) {
+  if (dead) return;   // this worker instance is already corrupted; main thread is replacing it
+  if (!highs) {
+    await new Promise(res => {
+      const t = setInterval(() => { if (highs) { clearInterval(t); res(); } }, 50);
+    });
+  }
+  // IIS (irreducible infeasible subsystem) diagnosis: a separate, on-demand
+  // analysis the user explicitly asked for after seeing an "Infeasible"
+  // result. It re-solves the model internally (needed to seed the search)
+  // and then runs HiGHS's own deletion/elastic-filter algorithm, which can
+  // require many re-solves of reduced versions of the model — so, unlike a
+  // normal solve, it deliberately ignores the user's configured time limit
+  // and is allowed to run for as long as it takes.
+  if (data.action === 'iis') {
+    let model = null;
+    try {
+      model = highs.createModel({ format: 'lp', data: data.lp });
+      // iis_strategy defaults to 0, which makes Highs_getIis() report
+      // "Unknown" and return nothing — a non-default strategy is required
+      // to actually run the deletion/elastic-filter search (verified
+      // empirically: 0 = no-op, 1 = errors on this build, 2/3 = work).
+      const opts = Object.assign({ output_flag: false, iis_strategy: 2 }, data.options || {});
+      delete opts.time_limit;
+      model.options.set(opts);
+      model.run();
+      const iis = model.getIis();
+      // rowIndex/colIndex are typed Int32Arrays — .map() on those coerces
+      // object results back to numbers, so convert to a plain array first.
+      const rows = Array.from(iis.rowIndex).map(idx => ({ index: idx, name: model.getRowName(idx) }));
+      const cols = Array.from(iis.colIndex).map(idx => ({ index: idx, name: model.getColName(idx) }));
+      postMessage({ type: 'iis_result', rows, cols });
+    } catch (err) {
+      if (isFatalWasmError(err)) {
+        dead = true;
+        postMessage({ type: 'fatal_error', message: err.toString() });
+      } else {
+        postMessage({ type: 'iis_error', message: err.toString() });
+      }
+    } finally {
+      if (model) { try { model.dispose(); } catch (_) {} }
+    }
+    return;
+  }
+
+  // Sensitivity/ranging analysis: cheap, closed-form post-optimal analysis
+  // from the final simplex basis (not an iterative search like IIS), so it
+  // runs with the same options/time limit as a normal solve. Only valid for
+  // pure LPs — HiGHS has no simplex basis to compute ranging from after a
+  // MIP's branch-and-bound, and getRanging() throws in that case.
+  if (data.action === 'ranging') {
+    let model = null;
+    try {
+      model = highs.createModel({ format: 'lp', data: data.lp });
+      const opts = Object.assign({ output_flag: false }, data.options || {});
+      model.options.set(opts);
+      model.run();
+      const rg = model.getRanging();
+      const dims = model.getDimensions();
+      const costs = dims.numCols > 0
+        ? model.getCols({ kind: 'range', from: 0, to: dims.numCols - 1 }).cost
+        : [];
+      const cols = Array.from(rg.colCostDown.value).map((down, i) => ({
+        name: model.getColName(i),
+        cost: costs[i],
+        min: down,
+        max: rg.colCostUp.value[i],
+        objAtMin: rg.colCostDown.objective[i],
+        objAtMax: rg.colCostUp.objective[i]
+      }));
+      const rows = Array.from(rg.rowBoundDown.value).map((down, i) => ({
+        name: model.getRowName(i),
+        min: down,
+        max: rg.rowBoundUp.value[i],
+        objAtMin: rg.rowBoundDown.objective[i],
+        objAtMax: rg.rowBoundUp.objective[i]
+      }));
+      postMessage({ type: 'ranging_result', cols, rows });
+    } catch (err) {
+      if (isFatalWasmError(err)) {
+        dead = true;
+        postMessage({ type: 'fatal_error', message: err.toString() });
+      } else {
+        postMessage({ type: 'ranging_error', message: err.toString() });
+      }
+    } finally {
+      if (model) { try { model.dispose(); } catch (_) {} }
+    }
+    return;
+  }
+
+  // Native HiGHS .sol export (raw/machine-readable style) — like ranging,
+  // a cheap post-solve export, so it uses the normal solve options/time limit.
+  if (data.action === 'export_sol') {
+    let model = null;
+    try {
+      model = highs.createModel({ format: 'lp', data: data.lp });
+      const opts = Object.assign({ output_flag: false }, data.options || {});
+      model.options.set(opts);
+      model.run();
+      const sol = model.exportSolution(false);
+      postMessage({ type: 'export_sol_result', sol });
+    } catch (err) {
+      if (isFatalWasmError(err)) {
+        dead = true;
+        postMessage({ type: 'fatal_error', message: err.toString() });
+      } else {
+        postMessage({ type: 'export_sol_error', message: err.toString() });
+      }
+    } finally {
+      if (model) { try { model.dispose(); } catch (_) {} }
+    }
+    return;
+  }
+
+  try {
+    // output_flag: true ensures HiGHS writes to stdout (captured by print above)
+    // Extra options (time_limit, mip_rel_gap, presolve, etc.) come from the
+    // "Opções do Solver" panel and are merged in by the main thread.
+    const opts = Object.assign({ output_flag: true }, data.options || {});
+    const solution = highs.solve(data.lp, opts);
+    postMessage({ type: 'solution', solution });
+  } catch (err) {
+    if (isFatalWasmError(err)) {
+      dead = true;
+      postMessage({ type: 'fatal_error', message: err.toString() });
+    } else {
+      postMessage({ type: 'error', message: err.toString() });
+    }
+  }
+};
+`;
+
+  let worker = null;
+  let solverReady = false;
+  let solving = false;
+  let logLines = [];   // { line, isErr } – accumulated for current/last solve
+  let lastSolution = null;   // last solved result, kept for the export button
+  let lastErrorMessage = null;   // last solve error, kept to re-render on language change
+  let lastFatalMessage = null;   // last fatal worker error, kept to re-render on language change
+  let lastMathProgError = null;  // last MathProg translation error, kept to re-render on language change
+  let lastGeneratedLp = null;    // last MathProg -> LP translation result, shown in the "Modelo Gerado" tab
+  let lastSolvedLpText = null;   // exact .lp text behind the last solve, used to (re)run the IIS diagnosis
+  let lastMsgFn = null;   // closure that re-computes the current status-bar message in the active language
+
+  let iisWorker = null;
+  let iisRunning = false;
+  let sensWorker = null;
+  let sensRunning = false;
+
+  function spawnRawWorker() {
+    const blob = new Blob([workerSrc], { type: 'application/javascript' });
+    return new Worker(URL.createObjectURL(blob));
+  }
+
+  function spawnWorker() {
+    const w = spawnRawWorker();
+
+    w.onmessage = function ({ data }) {
+      switch (data.type) {
+        case 'ready':
+          solverReady = true;
+          setDot('ok');
+          setMsgKey('status_ready');
+          document.getElementById('btn-solve').disabled = false;
+          document.getElementById('btn-solve').textContent = t('btn_solve');
+          break;
+
+        case 'init_error':
+          setDot('error');
+          lastMsgFn = () => t('status_load_error_prefix') + data.message;
+          setMsg(lastMsgFn());
+          break;
+
+        case 'log': {
+          // Stream each line into the live log pane (if visible) and buffer it
+          logLines.push({ line: data.line, isErr: data.isErr });
+          const live = document.getElementById('log-live');
+          if (live) {
+            const el = document.createElement('div');
+            el.className = logLineClass(data.line, data.isErr);
+            el.textContent = data.line;
+            live.appendChild(el);
+            // Auto-scroll unless user has scrolled up
+            const atBottom = live.scrollHeight - live.clientHeight - live.scrollTop < 40;
+            if (atBottom) live.scrollTop = live.scrollHeight;
+          }
+          // Update live node/gap counters in status card
+          updateLiveStats(data.line);
+          break;
+        }
+
+        case 'solution':
+          solving = false;
+          renderSolution(data.solution);
+          setSolveBtn(false);
+          setDot('ok');
+          break;
+
+        case 'error':
+          solving = false;
+          renderError(data.message);
+          setSolveBtn(false);
+          setDot('ok');
+          break;
+
+        case 'fatal_error':
+          handleFatalWorkerError(data.message);
+          break;
+      }
+    };
+
+    w.onerror = function (err) {
+      // A genuinely uncaught error in the worker thread itself (rare — most
+      // cases are already caught and reported as 'fatal_error' from inside
+      // the worker). Treat it the same way: the WASM instance can no longer
+      // be trusted, so it gets replaced.
+      handleFatalWorkerError((err && err.message) || String(err));
+    };
+
+    return w;
+  }
+
+  function handleFatalWorkerError(message) {
+    solving = false;
+    setSolveBtn(false);
+    setDot('error');
+    document.getElementById('btn-solve').disabled = true;
+
+    renderFatalError(message);
+
+    try { worker.terminate(); } catch (_) {}
+    worker = spawnWorker();
+  }
+
+  function renderFatalError(message) {
+    lastSolution = null;
+    lastErrorMessage = null;
+    lastFatalMessage = message;
+    lastMathProgError = null;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = true;
+
+    document.getElementById('results').innerHTML = `
+      <div class="status-card" style="border-color:rgba(255,85,85,.4)">
+        <div class="status-badge badge-error">${t('err_fatal_badge')}</div>
+        <div style="margin-left:8px;color:var(--muted);font-size:12px">${t('err_fatal_subtitle')}</div>
+      </div>
+      <div class="error-msg">${escHtml(message)}</div>
+      <div style="margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--text)">${t('err_fatal_whathappened_heading')}</strong><br>
+        ${t('err_fatal_whathappened_text')}
+      </div>
+      <div style="margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--text)">${t('err_fatal_whattotry_heading')}</strong><br>
+        • ${t('err_fatal_tip1')}<br>
+        • ${t('err_fatal_tip2_html')}<br>
+        • ${t('err_fatal_tip3_html')}
+      </div>`;
+
+    setMsgKey('status_fatal_error');
+  }
+
+  worker = spawnWorker();
+
+  /* ════════════════════════════════════════════════════════════════════
+     7b. Solver options modal (time limit, MIP gap, heuristics, etc.)
+  ════════════════════════════════════════════════════════════════════ */
+  const OPT_FIELDS = [
+    { id: 'opt-time-limit',       key: 'time_limit',          type: 'float' },
+    { id: 'opt-mip-rel-gap',      key: 'mip_rel_gap',         type: 'percent' }, // stored as fraction
+    { id: 'opt-mip-abs-gap',      key: 'mip_abs_gap',         type: 'float' },
+    { id: 'opt-heuristic-effort', key: 'mip_heuristic_effort', type: 'float' },
+    { id: 'opt-presolve',         key: 'presolve',            type: 'string' },
+    { id: 'opt-solver',           key: 'solver',              type: 'string' },
+    { id: 'opt-parallel',         key: 'parallel',            type: 'string' },
+    { id: 'opt-threads',          key: 'threads',             type: 'int' },
+    { id: 'opt-random-seed',      key: 'random_seed',         type: 'int' },
+  ];
+
+  function getSolverOptions() {
+    try {
+      const raw = localStorage.getItem('lp-solver-options');
+      return raw ? JSON.parse(raw) : {};
+    } catch (_) {
+      return {};
+    }
+  }
+
+  function saveSolverOptions(opts) {
+    try { localStorage.setItem('lp-solver-options', JSON.stringify(opts)); } catch (_) {}
+  }
+
+  function fillOptionsForm(opts) {
+    OPT_FIELDS.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (!el) return;
+      const v = opts[f.key];
+      if (v === undefined || v === null) { el.value = ''; return; }
+      el.value = (f.type === 'percent') ? (v * 100) : v;
+    });
+  }
+
+  function readOptionsForm() {
+    const opts = {};
+    OPT_FIELDS.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (!el) return;
+      const raw = el.value.trim();
+      if (raw === '') return; // not set → use HiGHS default
+      if (f.type === 'string') {
+        opts[f.key] = raw;
+      } else if (f.type === 'int') {
+        const n = parseInt(raw, 10);
+        if (!isNaN(n)) opts[f.key] = n;
+      } else if (f.type === 'percent') {
+        const n = parseFloat(raw);
+        if (!isNaN(n)) opts[f.key] = n / 100;
+      } else {
+        const n = parseFloat(raw);
+        if (!isNaN(n)) opts[f.key] = n;
+      }
+    });
+    return opts;
+  }
+
+  (function () {
+    const overlay  = document.getElementById('options-overlay');
+    const btnOpen  = document.getElementById('btn-options');
+    const btnClose = document.getElementById('options-close');
+    const btnCancel = document.getElementById('options-cancel');
+    const btnSave  = document.getElementById('options-save');
+    const btnReset = document.getElementById('options-reset');
+
+    function openModal() {
+      fillOptionsForm(getSolverOptions());
+      overlay.classList.add('open');
+    }
+    function closeModal() { overlay.classList.remove('open'); }
+
+    btnOpen.addEventListener('click', openModal);
+    btnClose.addEventListener('click', closeModal);
+    btnCancel.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+
+    btnSave.addEventListener('click', () => {
+      saveSolverOptions(readOptionsForm());
+      closeModal();
+    });
+
+    btnReset.addEventListener('click', () => {
+      fillOptionsForm({});
+      saveSolverOptions({});
+    });
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     7c. About modal
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const overlay  = document.getElementById('about-overlay');
+    const btnOpen  = document.getElementById('btn-about');
+    const btnClose = document.getElementById('about-close');
+    const btnOk    = document.getElementById('about-ok');
+
+    function openModal()  { overlay.classList.add('open'); }
+    function closeModal() { overlay.classList.remove('open'); }
+
+    btnOpen.addEventListener('click', openModal);
+    btnClose.addEventListener('click', closeModal);
+    btnOk.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     7d. Batch modal — solve every .lp/.mod file in a folder, one by one,
+     reporting only status / objective value / time per file. Runs against
+     a *dedicated* HiGHS worker (spawnWorker()) so it never touches the
+     interactive worker/editor state, and reuses the existing MathProg
+     translation queue (translateMathProg) for .mod files.
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const overlay      = document.getElementById('batch-overlay');
+    const btnOpenMain   = document.getElementById('btn-batch');
+    const btnClose      = document.getElementById('batch-close');
+    const btnOk         = document.getElementById('batch-ok');
+    const btnPickFolder = document.getElementById('batch-pick-folder');
+    const folderInput   = document.getElementById('batch-folder-input');
+    const pickInfo       = document.getElementById('batch-pick-info');
+    const runRow         = document.getElementById('batch-run-row');
+    const btnStart        = document.getElementById('batch-start');
+    const btnCancel       = document.getElementById('batch-cancel');
+    const btnExportCsv    = document.getElementById('batch-export-csv');
+    const progressWrap    = document.getElementById('batch-progress-wrap');
+    const progressFill    = document.getElementById('batch-progress-fill');
+    const progressText    = document.getElementById('batch-progress-text');
+    const progressCurrent = document.getElementById('batch-progress-current');
+    const tableWrap        = document.getElementById('batch-table-wrap');
+    const tableBody         = document.getElementById('batch-table-body');
+
+    const BATCH_FILE_RE = /\.(lp|mod)$/i;
+
+    let batchFiles = [];      // [{ name, relPath, file: File }]
+    let batchResults = [];    // [{ name, status, objective, time, error }] — same order as batchFiles
+    let batchWorker = null;   // dedicated HiGHS worker for this modal
+    let batchRunning = false;
+    let batchCancelled = false;
+
+    function openModal()  { overlay.classList.add('open'); }
+    function closeModal() {
+      if (batchRunning) {
+        const proceed = confirm(currentLang === 'pt'
+          ? 'A resolução em lote ainda está rodando. Cancelar e fechar?'
+          : 'The batch is still running. Cancel and close?');
+        if (!proceed) return;
+        cancelBatch();
+      }
+      overlay.classList.remove('open');
+    }
+
+    btnOpenMain.addEventListener('click', openModal);
+    btnClose.addEventListener('click', closeModal);
+    btnOk.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+
+    function resetBatchUI() {
+      batchResults = [];
+      tableBody.innerHTML = '';
+      tableWrap.classList.remove('show');
+      progressWrap.classList.remove('show');
+      btnExportCsv.style.display = 'none';
+      btnCancel.style.display = 'none';
+      btnStart.style.display = '';
+      btnStart.disabled = batchFiles.length === 0;
+    }
+
+    // ── Folder selection ────────────────────────────────────────────────
+    btnPickFolder.addEventListener('click', async () => {
+      if (window.showDirectoryPicker) {
+        try {
+          const dirHandle = await window.showDirectoryPicker();
+          const collected = [];
+          await collectFilesFromDirHandle(dirHandle, '', collected);
+          applyPickedFiles(collected);
+        } catch (err) {
+          if (err && err.name !== 'AbortError') {
+            // Some environments (e.g. sandboxed iframes) throw a generic
+            // SecurityError for showDirectoryPicker — fall back silently.
+            folderInput.click();
+          }
+        }
+        return;
+      }
+      if ('webkitdirectory' in folderInput) {
+        folderInput.click();
+        return;
+      }
+      alert(t('batch_unsupported_folder'));
+    });
+
+    async function collectFilesFromDirHandle(dirHandle, prefix, out) {
+      for await (const [name, handle] of dirHandle.entries()) {
+        if (handle.kind === 'file') {
+          if (BATCH_FILE_RE.test(name)) {
+            const file = await handle.getFile();
+            out.push({ name, relPath: prefix + name, file });
+          }
+        } else if (handle.kind === 'directory') {
+          await collectFilesFromDirHandle(handle, prefix + name + '/', out);
+        }
+      }
+    }
+
+    folderInput.addEventListener('change', function () {
+      const picked = Array.from(this.files || [])
+        .filter(f => BATCH_FILE_RE.test(f.name))
+        .map(f => ({ name: f.name, relPath: f.webkitRelativePath || f.name, file: f }));
+      applyPickedFiles(picked);
+      this.value = '';
+    });
+
+    function applyPickedFiles(list) {
+      // Sort by path so results read in a predictable order.
+      list.sort((a, b) => a.relPath.localeCompare(b.relPath, undefined, { numeric: true }));
+      batchFiles = list;
+      btnPickFolder.textContent = t('batch_btn_pick_folder_again');
+      pickInfo.textContent = batchFiles.length
+        ? t('batch_files_found', batchFiles.length)
+        : t('batch_no_files');
+      resetBatchUI();
+      runRow.style.display = batchFiles.length ? 'flex' : 'none';
+    }
+
+    // ── Table rendering ─────────────────────────────────────────────────
+    function statusPillClass(status) {
+      switch (status) {
+        case 'Optimal':    return 'optimal';
+        case 'Infeasible': return 'infeasible';
+        case 'Unbounded':  return 'unbounded';
+        case 'Error':      return 'error';
+        case 'Running':    return 'running';
+        case 'Pending':    return 'pending';
+        default:           return 'pending';
+      }
+    }
+    function statusLabel(status) {
+      switch (status) {
+        case 'Optimal':    return t('batch_status_optimal');
+        case 'Infeasible': return t('batch_status_infeasible');
+        case 'Unbounded':  return t('batch_status_unbounded');
+        case 'Error':      return t('batch_status_error');
+        case 'Running':    return t('batch_status_running');
+        case 'Pending':    return t('batch_status_pending');
+        default:           return status || t('batch_status_other');
+      }
+    }
+
+    function renderTableRows() {
+      tableBody.innerHTML = batchResults.map((r, i) => {
+        const objText = (r.objective !== null && r.objective !== undefined) ? fmt(r.objective) : '—';
+        const timeText = (r.time !== null && r.time !== undefined) ? r.time.toFixed(3) : '—';
+        const rowClass = r.status === 'Error' ? ' class="batch-row-error"' : '';
+        const title = r.error ? ` title="${escHtml(r.error)}"` : '';
+        return `<tr id="batch-row-${i}"${rowClass}${title}>
+          <td class="batch-file">${escHtml(r.name)}</td>
+          <td><span class="batch-status-pill ${statusPillClass(r.status)}">${statusLabel(r.status)}</span></td>
+          <td class="batch-obj">${objText}</td>
+          <td>${timeText}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function updateProgress(done, total) {
+      progressFill.style.width = total ? Math.round(done / total * 100) + '%' : '0%';
+      progressText.textContent = t('batch_progress_text', done, total);
+    }
+
+    // ── Dedicated HiGHS worker for the batch (never the interactive one) ─
+    function ensureBatchWorker() {
+      if (batchWorker) { try { batchWorker.terminate(); } catch (_) {} }
+      batchWorker = spawnWorker();
+      return batchWorker;
+    }
+
+    // Solves a single LP-text model on the batch worker, resolving with
+    // { status, objective } or rejecting with an Error on solve failure.
+    // A fresh listener is attached/detached per call since solves run
+    // strictly one at a time (no need for request correlation).
+    function solveLpOnBatchWorker(lpText) {
+      return new Promise((resolve, reject) => {
+        const onMessage = ({ data }) => {
+          if (data.type === 'solution') {
+            batchWorker.removeEventListener('message', onMessage);
+            resolve({ status: data.solution.Status, objective: data.solution.ObjectiveValue });
+          } else if (data.type === 'error') {
+            batchWorker.removeEventListener('message', onMessage);
+            reject(new Error(data.message));
+          } else if (data.type === 'fatal_error') {
+            batchWorker.removeEventListener('message', onMessage);
+            reject(new Error(data.message));
+          }
+          // 'log' / 'ready' messages are ignored here — no live log in the batch view.
+        };
+        batchWorker.addEventListener('message', onMessage);
+        batchWorker.postMessage({ lp: lpText, options: getSolverOptions() });
+      });
+    }
+
+    async function runBatch() {
+      batchRunning = true;
+      batchCancelled = false;
+      btnStart.style.display = 'none';
+      btnCancel.style.display = '';
+      btnExportCsv.style.display = 'none';
+      btnPickFolder.disabled = true;
+      progressWrap.classList.add('show');
+      tableWrap.classList.add('show');
+
+      batchResults = batchFiles.map(f => ({
+        name: f.relPath, status: 'Pending', objective: null, time: null, error: null
+      }));
+      renderTableRows();
+      updateProgress(0, batchFiles.length);
+
+      ensureBatchWorker();
+
+      for (let i = 0; i < batchFiles.length; i++) {
+        if (batchCancelled) break;
+
+        batchResults[i].status = 'Running';
+        renderTableRows();
+        progressCurrent.textContent = batchFiles[i].relPath;
+
+        const startedAt = performance.now();
+        try {
+          const text = await batchFiles[i].file.text();
+          const isMathProg = /\.mod$/i.test(batchFiles[i].name);
+          let lpText = text;
+
+          if (isMathProg) {
+            const translated = await translateMathProg(text);
+            if (batchCancelled) break;
+            if (!translated.ok) {
+              throw new Error(translated.error || 'MathProg translation error');
+            }
+            lpText = translated.lp;
+          }
+
+          const result = await solveLpOnBatchWorker(lpText);
+          if (batchCancelled) break;
+          batchResults[i].status = result.status || 'Other';
+          batchResults[i].objective = (result.status === 'Optimal') ? result.objective : null;
+        } catch (err) {
+          batchResults[i].status = 'Error';
+          batchResults[i].error = (err && err.message) ? err.message : String(err);
+          // A solve error can leave the dedicated worker mid-recovery on its
+          // own (it self-reports fatal errors); give it a fresh instance so
+          // one bad file never silently breaks the rest of the batch.
+          ensureBatchWorker();
+        }
+        batchResults[i].time = (performance.now() - startedAt) / 1000;
+        renderTableRows();
+        updateProgress(i + 1, batchFiles.length);
+      }
+
+      batchRunning = false;
+      btnCancel.style.display = 'none';
+      btnPickFolder.disabled = false;
+      btnExportCsv.style.display = batchResults.some(r => r.status !== 'Pending') ? '' : 'none';
+      btnStart.style.display = '';
+      btnStart.textContent = t('batch_btn_start');
+      btnStart.disabled = false;
+
+      if (batchCancelled) {
+        progressCurrent.textContent = t('batch_cancelled_msg');
+      } else {
+        progressCurrent.textContent = '';
+      }
+
+      if (batchWorker) { try { batchWorker.terminate(); } catch (_) {} batchWorker = null; }
+    }
+
+    function cancelBatch() {
+      batchCancelled = true;
+    }
+
+    btnStart.addEventListener('click', () => {
+      if (!batchFiles.length || batchRunning) return;
+      runBatch();
+    });
+    btnCancel.addEventListener('click', cancelBatch);
+
+    // Exposed so setLanguage() can refresh dynamic (non data-i18n) text
+    // such as the folder-info line and the results table on language switch.
+    window.__refreshBatchLabels = function () {
+      if (batchFiles.length) {
+        btnPickFolder.textContent = t('batch_btn_pick_folder_again');
+        pickInfo.textContent = batchFiles.length
+          ? t('batch_files_found', batchFiles.length)
+          : t('batch_no_files');
+      }
+      if (batchResults.length) {
+        renderTableRows();
+        updateProgress(batchResults.filter(r => r.status !== 'Pending' && r.status !== 'Running').length, batchFiles.length);
+      }
+      if (batchCancelled && !batchRunning) progressCurrent.textContent = t('batch_cancelled_msg');
+    };
+
+
+    // ── CSV export ───────────────────────────────────────────────────────
+    function csvEscape(s) {
+      s = String(s == null ? '' : s);
+      return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }
+    btnExportCsv.addEventListener('click', async () => {
+      const header = ['file', 'status', 'objective_value', 'time_seconds', 'error'];
+      const lines = [header.join(',')];
+      batchResults.forEach(r => {
+        lines.push([
+          csvEscape(r.name),
+          csvEscape(r.status),
+          r.objective !== null && r.objective !== undefined ? r.objective : '',
+          r.time !== null && r.time !== undefined ? r.time.toFixed(3) : '',
+          csvEscape(r.error || '')
+        ].join(','));
+      });
+      const csvText = lines.join('\n');
+      const suggested = t('batch_csv_filename');
+
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: suggested,
+            types: [{ description: 'CSV', accept: { 'text/csv': ['.csv'] } }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(csvText);
+          await writable.close();
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+          // fall through to the download fallback below
+        }
+      }
+      const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = suggested;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     8. Solve trigger
+  ════════════════════════════════════════════════════════════════════ */
+  document.getElementById('btn-solve').addEventListener('click', solve);
+
+  /* ════════════════════════════════════════════════════════════════════
+     MathProg (GLPK) translator — a separate worker, loaded on demand.
+     Ships as two extra files that must sit next to this HTML file:
+       glpsol.worker.js + glpsol.wasm
+     (see the "Sobre" modal for where this build comes from). This worker
+     only TRANSLATES a MathProg/.mod model into CPLEX LP text — HiGHS still
+     does all of the actual solving, exactly like for plain .lp tabs.
+  ════════════════════════════════════════════════════════════════════ */
+  let glpkWorker = null;
+  let glpkWorkerFailed = false;   // true if glpsol.worker.js itself couldn't be created
+  let glpkLinked = false;         // true once a callMain call has completed successfully at least once
+  let glpkBusy = false;
+  let glpkOutLines = [];
+  let glpkCurrentModelText = null;
+  let glpkCurrentResolve = null;
+  let glpkRetriesLeft = 0;
+  let glpkQueue = [];             // [{ modelText, resolve }] — requests waiting their turn
+  const GLPK_MAX_RETRIES = 8;     // each attempt spawns a fresh worker and waits ~900ms — ~7s worst case
+
+  // Tears down any existing worker and starts a brand-new one. Calling
+  // callMain on a worker where an earlier attempt failed too early seems to
+  // leave that *specific instance* permanently broken (this build sets a
+  // global ABORT flag once something goes wrong, with no reset) — resending
+  // messages to the same worker never recovers, so each bring-up retry gets
+  // a fresh instance instead.
+  function spawnGlpkWorker() {
+    if (glpkWorker) {
+      try { glpkWorker.terminate(); } catch (_) {}
+      glpkWorker = null;
+    }
+    try {
+      glpkWorker = new Worker('glpsol.worker.js');
+    } catch (e) {
+      glpkWorkerFailed = true;
+      return false;
+    }
+    glpkWorker.onerror = function (e) {
+      if (e.preventDefault) e.preventDefault();
+      handleGlpkAttemptFailure((e && e.message) || 'unknown worker error');
+    };
+    glpkWorker.onmessage = function (ev) {
+      const d = ev.data || {};
+      if (d.target === 'stdout' || d.target === 'stderr') {
+        glpkOutLines.push({ line: String(d.content), isErr: d.target === 'stderr' });
+      } else if (d.target === 'custom' && d.command === 'callMainComplete') {
+        glpkLinked = true;
+        finishGlpkRequest();
+      }
+    };
+    // This build registers TWO internal run-dependencies at startup, left
+    // over from its --proxy-to-worker / canvas-proxying origins, and BOTH
+    // block main() from ever running until released:
+    //   1) "gl-prefetch" — normally resolved by probing a real WebGL
+    //      context on the main thread; we have no canvas, so we send the
+    //      same "no WebGL support" fallback message the original page uses.
+    //   2) "worker-init" — canvas size/position handshake; the values are
+    //      unused since nothing is ever rendered, so placeholders are fine.
+    glpkWorker.postMessage({ target: 'gl', op: 'setPrefetched', preMain: true });
+    glpkWorker.postMessage({
+      target: 'worker-init',
+      width: 0,
+      height: 0,
+      boundingClientRect: { width: 0, height: 0, top: 0, left: 0 },
+      URL: location.href,
+      currentScriptUrl: 'glpsol.worker.js',
+      preMain: true
+    });
+    return true;
+  }
+
+  function postGlpkCustom(userData, preMain) {
+    glpkWorker.postMessage({ target: 'custom', userData: userData, preMain: !!preMain });
+  }
+
+  function sendGlpkTranslateMessages(modelText) {
+    postGlpkCustom({ command: 'FS_createDataFile', dir: '.', filename: 'input_file', content: modelText }, true);
+    postGlpkCustom({ command: 'callMain', arguments: ['--math', 'input_file', '--check', '--wlp', '/dev/stdout'] }, true);
+  }
+
+  function attemptGlpkRequest(modelText) {
+    if (glpkLinked && glpkWorker) {
+      // Known-good worker from an earlier successful translation in this
+      // session — reuse it directly, no need to recreate or wait.
+      sendGlpkTranslateMessages(modelText);
+      return;
+    }
+    // First call ever, or recovering after a failed bring-up attempt:
+    // always start from a brand-new worker, and give it a moment to
+    // actually fetch + link the ~1.1MB WASM before ever touching callMain.
+    if (!spawnGlpkWorker()) {
+      handleGlpkAttemptFailure('glpsol.worker.js / glpsol.wasm not found next to this page');
+      return;
+    }
+    setTimeout(() => sendGlpkTranslateMessages(modelText), 900);
+  }
+
+  function handleGlpkAttemptFailure(reason) {
+    if (!glpkBusy) return;   // stray/late error, nothing waiting on it
+    if (glpkLinked) {
+      // It has worked before — this is a genuine failure, not a startup race.
+      glpkOutLines.push({ line: String(reason), isErr: true });
+      finishGlpkRequest();
+      return;
+    }
+    if (glpkWorkerFailed) {
+      glpkOutLines.push({ line: String(reason), isErr: true });
+      finishGlpkRequest();
+      return;
+    }
+    glpkRetriesLeft--;
+    if (glpkRetriesLeft <= 0) {
+      glpkOutLines.push({ line: String(reason), isErr: true });
+      finishGlpkRequest();
+      return;
+    }
+    glpkOutLines = [];
+    attemptGlpkRequest(glpkCurrentModelText);
+  }
+
+  // Parses glpsol's combined stdout/stderr into either the translated LP
+  // text (between the "\* Problem: ... *\" comment and the "--- Problem
+  // Characteristics ---" footer that --check prints) or an error message
+  // with the original .mod line number, taken from lines shaped like
+  // "input_file:6: syntax error in constraint statement".
+  function parseGlpkOutput(lines) {
+    const allLines = lines.map(l => l.line);
+    const text = allLines.join('\n');
+    const hasFailure = /MathProg model processing error/i.test(text);
+
+    const startIdx = allLines.findIndex(l => /^\\\* Problem:/.test(l));
+    if (!hasFailure && startIdx !== -1) {
+      let endIdx = allLines.length;
+      for (let i = startIdx + 1; i < allLines.length; i++) {
+        if (/^---/.test(allLines[i])) { endIdx = i; break; }
+      }
+      const lp = allLines.slice(startIdx, endIdx).join('\n').replace(/\n+$/, '') + '\n';
+      return { ok: true, lp, log: allLines };
+    }
+
+    let errLine = null, errMsg = null, context = null;
+    for (let i = 0; i < allLines.length; i++) {
+      const m = allLines[i].match(/^([^\s:]+):(\d+):\s*(.*)$/);
+      if (m && !/^warning:/i.test(m[3])) {
+        errLine = parseInt(m[2], 10);
+        errMsg = m[3];
+        if (allLines[i + 1] && /^Context:/i.test(allLines[i + 1])) {
+          context = allLines[i + 1].replace(/^Context:\s*/i, '').trim();
+        }
+        break;
+      }
+    }
+    if (!errMsg) {
+      errMsg = [...allLines].reverse().find(l => l.trim().length) || 'unknown MathProg processing error';
+    }
+    return { ok: false, error: errMsg, line: errLine, context, log: allLines };
+  }
+
+  function finishGlpkRequest() {
+    glpkBusy = false;
+    const result = parseGlpkOutput(glpkOutLines);
+    const resolve = glpkCurrentResolve;
+    glpkCurrentResolve = null;
+    glpkOutLines = [];
+    if (resolve) resolve(result);
+    processGlpkQueue();
+  }
+
+  function processGlpkQueue() {
+    if (glpkBusy || !glpkQueue.length) return;
+    const next = glpkQueue.shift();
+    if (glpkWorkerFailed) {
+      next.resolve({ ok: false, error: t('status_load_error_prefix') + 'glpsol.worker.js / glpsol.wasm', line: null, log: [] });
+      processGlpkQueue();
+      return;
+    }
+    glpkBusy = true;
+    glpkCurrentResolve = next.resolve;
+    glpkCurrentModelText = next.modelText;
+    glpkRetriesLeft = GLPK_MAX_RETRIES;
+    glpkOutLines = [];
+    attemptGlpkRequest(next.modelText);
+  }
+
+  function translateMathProg(modelText) {
+    return new Promise(resolve => {
+      glpkQueue.push({ modelText, resolve });
+      processGlpkQueue();
+    });
+  }
+
+  function renderMathProgError(result) {
+    lastSolution = null;
+    lastFatalMessage = null;
+    lastErrorMessage = null;
+    lastMathProgError = result;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = true;
+
+    if (result.line) markErrorLine(result.line);
+    const lineHint = result.line
+      ? `<span style="color:var(--red);font-size:12px;margin-left:auto">${t('err_line_highlighted', result.line)}</span>`
+      : '';
+    const contextHtml = result.context ? `<div class="error-msg">${escHtml(result.context)}</div>` : '';
+    const logLinesObj = (result.log || []).map(l => ({ line: l, isErr: false }));
+
+    document.getElementById('results').innerHTML = `
+      <div class="status-card" style="border-color:rgba(255,85,85,.4)">
+        <div class="status-badge badge-error">${t('err_mathprog_badge')}</div>
+        <div style="margin-left:8px;color:var(--muted);font-size:12px">${t('err_mathprog_subtitle')}</div>
+        ${lineHint}
+      </div>
+      <div class="error-msg">${escHtml(result.error)}</div>
+      ${contextHtml}
+      <div style="margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--text)">${t('err_tips_heading')}</strong><br>
+        • ${t('err_mathprog_tip1_html')}<br>
+        • ${t('err_mathprog_tip2_html')}<br>
+        • ${t('err_mathprog_tip3_html')}
+      </div>
+      <a class="hint-link" href="https://en.wikibooks.org/wiki/GLPK/GMPL_(MathProg)" target="_blank">
+        ${t('err_mathprog_reference_link')}
+      </a>
+      ${logLinesObj.length ? `
+      <div style="margin-top:14px">
+        <div class="log-toolbar">
+          <span>${t('err_solver_output_label', logLinesObj.length)}</span>
+          <button class="log-copy-btn" id="mp-err-log-copy-btn">${t('btn_copy')}</button>
+        </div>
+        <div class="log-pane" style="max-height:300px">${buildLogHTML(logLinesObj)}</div>
+      </div>` : ''}`;
+
+    const copyBtn = document.getElementById('mp-err-log-copy-btn');
+    if (copyBtn) copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText((result.log || []).join('\n'));
+    });
+
+    setMsgKey('status_translate_error');
+  }
+
+  function solve() {
+    if (!solverReady || solving) return;
+    const tab = getActiveTab();
+    const source = editor.getValue().trim();
+    if (!source) return;
+    terminateIisWorker();
+    iisRunning = false;
+    terminateSensWorker();
+    sensRunning = false;
+    solving = true;
+    lastSolution = null;
+    lastErrorMessage = null;
+    lastFatalMessage = null;
+    lastMathProgError = null;
+    lastGeneratedLp = null;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = true;
+    clearErrorMarkers();    // remove previous error highlights
+    setSolveBtn(true);
+    setDot('loading');
+
+    if (tab && tab.format === 'mathprog') {
+      setMsgKey(glpkWorker ? 'status_translating' : 'status_loading_translator');
+      document.getElementById('results').innerHTML =
+        `<div class="status-card" id="live-status-card"><div class="status-badge badge-pending">${t('live_badge_solving')}</div></div>`;
+      translateMathProg(source).then(result => {
+        if (!solving) return;   // the user cleared/switched tabs while this was in flight
+        if (result.ok) {
+          lastGeneratedLp = result.lp;
+          sendToHighs(result.lp);
+        } else {
+          solving = false;
+          setSolveBtn(false);
+          renderMathProgError(result);
+        }
+      });
+      return;
+    }
+
+    sendToHighs(source);
+  }
+
+  function sendToHighs(lpText) {
+    logLines = [];
+    lastSolvedLpText = lpText;
+    showSolvingView();
+    setDot('loading');
+    setMsgKey('status_solving');
+    worker.postMessage({ lp: lpText, options: getSolverOptions() });
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     Font size controls
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const MIN = 9, MAX = 28, STEP = 1;
+    let size = 14;
+    try { size = parseInt(localStorage.getItem('lp-font-size'), 10) || 14; } catch (_) {}
+    size = Math.min(MAX, Math.max(MIN, size));
+
+    function applySize(s) {
+      size = Math.min(MAX, Math.max(MIN, s));
+      editor.getWrapperElement().style.fontSize = size + 'px';
+      editor.refresh();
+      document.getElementById('font-size-display').textContent = size + 'px';
+      document.getElementById('font-dec').disabled = size <= MIN;
+      document.getElementById('font-inc').disabled = size >= MAX;
+      try { localStorage.setItem('lp-font-size', size); } catch (_) {}
+    }
+
+    document.getElementById('font-dec').addEventListener('click', () => applySize(size - STEP));
+    document.getElementById('font-inc').addEventListener('click', () => applySize(size + STEP));
+
+    // Ctrl+- / Ctrl+=  (reset with Ctrl+0)
+    document.addEventListener('keydown', e => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      if (e.key === '-' || e.key === '_')                            { e.preventDefault(); applySize(size - STEP); }
+      if (e.key === '+' || e.key === '=' || e.key === 'NumpadAdd')   { e.preventDefault(); applySize(size + STEP); }
+      if (e.key === '0')                                             { e.preventDefault(); applySize(14); }
+    });
+
+    applySize(size);
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     Editor color theme selector
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const sel = document.getElementById('editor-theme-select');
+    sel.value = savedEditorTheme;
+    sel.addEventListener('change', () => {
+      editor.setOption('theme', sel.value);
+      editor.refresh();
+      try { localStorage.setItem('lp-editor-theme', sel.value); } catch (_) {}
+    });
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     Model format selector (LP / MathProg) — per tab
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const sel = document.getElementById('model-format-select');
+    syncModelFormatSelect();
+    sel.addEventListener('change', () => {
+      const tab = getActiveTab();
+      if (!tab) return;
+      const newFormat = (sel.value === 'mathprog') ? 'mathprog' : 'lp';
+      if (tab.format === newFormat) return;
+      tab.format = newFormat;
+      // CodeMirror 5 ties the syntax mode to the Doc itself (modeOption);
+      // swap in a fresh Doc with the same content under the new mode so
+      // highlighting updates immediately, then re-mark it as the tab's doc.
+      const content = tab.doc.getValue();
+      tab.doc = new CodeMirror.Doc(content, newFormat);
+      editor.swapDoc(tab.doc);
+      editor.refresh();
+      setPlaceholder();
+      persistTabs();
+    });
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     Results panel — text size controls (scales the whole results area,
+     same A−/A+ idea used for the editor)
+  ════════════════════════════════════════════════════════════════════ */
+  (function () {
+    const MIN = 80, MAX = 160, STEP = 10;
+    let pct = 100;
+    try { pct = parseInt(localStorage.getItem('lp-results-zoom'), 10) || 100; } catch (_) {}
+    pct = Math.min(MAX, Math.max(MIN, pct));
+
+    const body = document.getElementById('results');
+
+    function apply(p) {
+      pct = Math.min(MAX, Math.max(MIN, p));
+      body.style.zoom = pct / 100;
+      document.getElementById('result-font-size-display').textContent = pct + '%';
+      document.getElementById('result-font-dec').disabled = pct <= MIN;
+      document.getElementById('result-font-inc').disabled = pct >= MAX;
+      try { localStorage.setItem('lp-results-zoom', pct); } catch (_) {}
+    }
+
+    document.getElementById('result-font-dec').addEventListener('click', () => apply(pct - STEP));
+    document.getElementById('result-font-inc').addEventListener('click', () => apply(pct + STEP));
+
+    apply(pct);
+  })();
+
+  // ── Error marker helpers (scoped to the active tab) ──────────────────
+  function clearErrorMarkers() {
+    const tab = getActiveTab();
+    if (tab && tab.errorLine >= 0) {
+      editor.removeLineClass(tab.errorLine, 'background', 'cm-error-line');
+      editor.setGutterMarker(tab.errorLine, 'CodeMirror-linenumbers', null);
+      tab.errorLine = -1;
+    }
+  }
+
+  function markErrorLine(lineNum) {   // lineNum is 1-based from HiGHS
+    clearErrorMarkers();
+    const idx = lineNum - 1;          // CodeMirror is 0-based
+    if (idx < 0 || idx >= editor.lineCount()) return;
+    const tab = getActiveTab();
+    if (tab) tab.errorLine = idx;
+    editor.addLineClass(idx, 'background', 'cm-error-line');
+    // Gutter marker: a small red arrow
+    const marker = document.createElement('span');
+    marker.className = 'cm-error-gutter';
+    marker.textContent = '▶';
+    marker.title = t('err_line_title', lineNum);
+    editor.setGutterMarker(idx, 'CodeMirror-linenumbers', marker);
+    editor.scrollIntoView({ line: idx, ch: 0 }, 80);
+    editor.setCursor({ line: idx, ch: 0 });
+    editor.focus();
+  }
+
+  // Extract 1-based line number from HiGHS error strings like:
+  //   "LP file error on line 12"  /  "line 12:"  /  "at line 12"
+  function extractErrorLine(msg) {
+    const m = msg.match(/(?:line|ln)[:\s]+(\d+)/i)
+           || msg.match(/\bat\s+(\d+)\b/i);
+    return m ? parseInt(m[1], 10) : null;
+  }
+
+  // ── Live view shown while the solver is running ──────────────────────
+  function showSolvingView() {
+    document.getElementById('results').innerHTML = `
+      <div class="status-card" id="live-status-card">
+        <div class="status-badge badge-pending" id="live-badge">${t('live_badge_solving')}</div>
+        <div id="live-stats" style="margin-left:auto;text-align:right;font-size:11px;color:var(--muted)"></div>
+      </div>
+      <div class="log-toolbar">
+        <span>${t('log_live_label')}</span>
+      </div>
+      <div id="log-live" class="log-pane" style="flex:1;max-height:calc(100vh - 200px)"></div>`;
+  }
+
+  // Parse MIP progress lines to update the live status card
+  // HiGHS MIP table row looks like: "   N   Q   L   Exp%   BestBound   BestSol  Gap%  ..."
+  function updateLiveStats(line) {
+    // Match lines that contain a gap percentage, e.g. "     1       0 ... 11.52%"
+    const gapMatch = line.match(/(\d+\.\d+)%\s*$/);
+    const stats = document.getElementById('live-stats');
+    if (!stats) return;
+    if (gapMatch) {
+      const gap = parseFloat(gapMatch[1]);
+      stats.innerHTML = `Gap: <strong style="color:${gap < 1 ? 'var(--green)' : gap < 10 ? 'var(--yellow)' : 'var(--orange)'}">${gap.toFixed(2)}%</strong>`;
+    }
+  }
+
+  function setSolveBtn(running) {
+    const btn = document.getElementById('btn-solve');
+    btn.disabled = running;
+    btn.className = 'btn primary' + (running ? ' solving' : '');
+    btn.textContent = running ? t('btn_solving') : t('btn_solve');
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     9. Log line classifier
+  ════════════════════════════════════════════════════════════════════ */
+  function logLineClass(line, isErr) {
+    if (isErr) return 'll-err';
+    if (!line || !line.trim()) return 'll-blank';
+    const t = line.trim();
+
+    // HiGHS version / copyright header
+    if (t.startsWith('Running HiGHS') || t.startsWith('Copyright')) return 'll-header';
+
+    // Status / conclusion lines
+    if (/\bOptimal\b/i.test(t))    return 'll-optimal';
+    if (/\bInfeasible\b/i.test(t)) return 'll-infeas';
+    if (/\bUnbounded\b/i.test(t))  return 'll-infeas';
+
+    // Warnings
+    if (/warning|warn/i.test(t)) return 'll-warning';
+
+    // Section headings (e.g. "Solving MIP model with:", "Solving report")
+    if (/^(Solving|Presolv|Running|Model|Problem|Solution|Using|Reading|Writing)/i.test(t)) return 'll-section';
+
+    // MIP B&B table header (contains "Nodes" and "B&B Tree" or "Objective")
+    if (/Nodes/.test(t) && /B&B|Objective|Leaves/.test(t)) return 'll-mip-hdr';
+    if (/Proc\.|InQueue|BestBound|BestSol/.test(t)) return 'll-mip-hdr';
+
+    // MIP progress rows: start with whitespace + digits, end with a time "0.0s"
+    // These are the main B&B rows; mark the best-update ones (prefixed with B/C/H)
+    if (/^\s*[BCHF]\s+\d/.test(line)) return 'll-mip-best';  // new incumbent found
+    if (/^\s+\d+\s+\d+.*\d+\.\d+s\s*$/.test(line)) return 'll-mip-row';
+
+    // Separator lines (-------)
+    if (/^[-=\s]+$/.test(t)) return 'll-sep';
+
+    return 'll-normal';
+  }
+
+  // Build HTML for the full log from the logLines buffer
+  function buildLogHTML(lines) {
+    if (!lines.length) return `<div class="ll-normal" style="color:var(--muted)">${t('log_no_output')}</div>`;
+    return lines.map(({ line, isErr }) => {
+      const cls = logLineClass(line, isErr);
+      return `<div class="${cls}">${escHtml(line) || '&nbsp;'}</div>`;
+    }).join('');
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     10. Render results
+  ════════════════════════════════════════════════════════════════════ */
+  function fmt(n) {
+    if (n === null || n === undefined) return '—';
+    if (typeof n !== 'number') return String(n);
+    if (!isFinite(n)) return n > 0 ? '+∞' : '−∞';
+    if (n === 0) return '0';
+    const abs = Math.abs(n);
+    if (abs >= 1e9 || (abs < 1e-5 && abs > 0)) return n.toExponential(4);
+    if (Number.isInteger(n)) return n.toString();
+    return parseFloat(n.toPrecision(7)).toString();
+  }
+
+  function statusTag(s) {
+    if (!s) return '<span class="tag-nb">—</span>';
+    const map = { BS: ['BS','tag-bs',t('tag_basic')], LB: ['LB','tag-lb',t('tag_lb')], UB: ['UB','tag-ub',t('tag_ub')], NB: ['NB','tag-nb',t('tag_nonbasic')] };
+    const [label, cls, title] = map[s.toUpperCase()] || [s, '', ''];
+    return `<span class="${cls}" title="${title}">${label}</span>`;
+  }
+
+  function rowClass(s) {
+    if (!s) return '';
+    return { BS: 'bsrow', LB: 'lbrow', UB: 'ubrow' }[s.toUpperCase()] || '';
+  }
+
+  function renderSolution(sol) {
+    lastSolution = sol;
+    lastErrorMessage = null;
+    lastFatalMessage = null;
+    lastMathProgError = null;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = false;
+
+    const res = document.getElementById('results');
+    const vars = Object.values(sol.Columns || {});
+    const rows = sol.Rows || [];
+    const isOpt = sol.Status === 'Optimal';
+    const isInf = sol.Status === 'Infeasible';
+    const isUnb = sol.Status === 'Unbounded';
+    const hasGenerated = !!lastGeneratedLp;
+
+    const badgeClass = isOpt ? 'badge-optimal' : isInf ? 'badge-infeasible' : isUnb ? 'badge-unbounded' : 'badge-pending';
+    const badgeText  = isOpt ? t('status_optimal') : isInf ? t('status_infeasible') : isUnb ? t('status_unbounded') : sol.Status;
+
+    const varRows = vars.map(v => `
+      <tr class="${rowClass(v.Status)}">
+        <td class="varname">${v.Name}</td>
+        <td class="num" style="color:${v.Primal !== 0 ? 'var(--cyan)' : ''}">${fmt(v.Primal)}</td>
+        <td class="num">${fmt(v.Dual)}</td>
+        <td>${statusTag(v.Status)}</td>
+        <td class="num">${fmt(v.Lower)}</td>
+        <td class="num">${fmt(v.Upper)}</td>
+        <td>${v.Type || '—'}</td>
+      </tr>`).join('');
+
+    const constrRows = rows.map(r => `
+      <tr class="${rowClass(r.Status)}">
+        <td class="varname">${r.Name || 'r' + r.Index}</td>
+        <td class="num">${fmt(r.Primal)}</td>
+        <td class="num" style="color:${r.Dual && r.Dual !== 0 ? 'var(--yellow)' : ''}">${fmt(r.Dual)}</td>
+        <td>${statusTag(r.Status)}</td>
+        <td class="num">${fmt(r.Lower)}</td>
+        <td class="num">${fmt(r.Upper)}</td>
+      </tr>`).join('');
+
+    res.innerHTML = `
+      <div class="status-card">
+        <div>
+          <div class="status-badge ${badgeClass}">${badgeText}</div>
+        </div>
+        ${isOpt ? `
+          <div class="obj-block">
+            <div class="obj-label">${t('obj_value_label')}</div>
+            <div class="obj-value">${fmt(sol.ObjectiveValue)}</div>
+          </div>` : ''}
+      </div>
+
+      ${isInf ? '<div id="iis-panel" style="margin-bottom:14px"></div>' : ''}
+
+      <div class="tabs" id="result-tabs">
+        <button class="tab active" data-tab="vars">
+          ${t('tab_variables')}&nbsp;<span style="color:var(--muted);font-size:11px">(${vars.length})</span>
+        </button>
+        <button class="tab" data-tab="constrs">
+          ${t('tab_constraints')}&nbsp;<span style="color:var(--muted);font-size:11px">(${rows.length})</span>
+        </button>
+        ${isOpt ? `<button class="tab" data-tab="sensitivity">${t('tab_sensitivity')}</button>` : ''}
+        <button class="tab" data-tab="log">
+          ${t('tab_log')}&nbsp;<span style="color:var(--muted);font-size:11px">(${logLines.length})</span>
+        </button>
+        <button class="tab" data-tab="raw">${t('tab_json')}</button>
+        ${hasGenerated ? `<button class="tab" data-tab="generated">${t('tab_generated')}</button>` : ''}
+      </div>
+
+      <div id="tab-vars">
+        ${vars.length ? `
+        <div class="table-wrap">
+          <table class="result">
+            <thead><tr>
+              <th>${t('th_variable')}</th><th>${t('th_value')}</th><th title="${t('th_reducedcost_title')}">${t('th_reducedcost')}</th>
+              <th>${t('th_status')}</th><th>${t('th_inf')}</th><th>${t('th_sup')}</th><th>${t('th_type')}</th>
+            </tr></thead>
+            <tbody>${varRows}</tbody>
+          </table>
+        </div>
+        <div style="margin-top:8px;font-size:10.5px;color:var(--muted)">
+          ${t('legend_var_status')}
+        </div>` : `<div style="color:var(--muted);font-size:12px;padding:8px">${t('no_variables_msg')}</div>`}
+      </div>
+
+      <div id="tab-constrs" style="display:none">
+        ${rows.length ? `
+        <div class="table-wrap">
+          <table class="result">
+            <thead><tr>
+              <th>${t('th_constraint')}</th><th>${t('th_lhs')}</th><th title="${t('th_dualvalue_title')}">${t('th_dualvalue')}</th>
+              <th>${t('th_status')}</th><th>${t('th_rhsinf')}</th><th>${t('th_rhssup')}</th>
+            </tr></thead>
+            <tbody>${constrRows}</tbody>
+          </table>
+        </div>
+        <div style="margin-top:8px;font-size:10.5px;color:var(--muted)">
+          ${t('legend_dual_value')}
+        </div>` : `<div style="color:var(--muted);font-size:12px;padding:8px">${t('no_constraints_msg')}</div>`}
+      </div>
+
+      ${isOpt ? `
+      <div id="tab-sensitivity" style="display:none">
+        <div id="sensitivity-panel"></div>
+      </div>` : ''}
+
+      <div id="tab-log" style="display:none">
+        <div class="log-toolbar">
+          <span>${t('log_lines_count', logLines.length)}</span>
+          <button class="log-copy-btn" id="log-copy-btn">${t('btn_copy')}</button>
+        </div>
+        <div class="log-pane" id="log-pane-final" style="max-height:calc(100vh - 260px)">${buildLogHTML(logLines)}</div>
+      </div>
+
+      <div id="tab-raw" style="display:none">
+        <pre style="font-size:11px;color:var(--muted);white-space:pre-wrap;word-break:break-all;background:var(--bg3);padding:10px;border-radius:6px;border:1px solid var(--border);max-height:400px;overflow:auto">${JSON.stringify(sol, (k,v) => !isFinite(v) && typeof v==='number' ? (v>0?'+Inf':'-Inf') : v, 2)}</pre>
+      </div>
+
+      ${hasGenerated ? `
+      <div id="tab-generated" style="display:none">
+        <div class="generated-model-note">${t('generated_model_note')}</div>
+        <div class="log-toolbar">
+          <span></span>
+          <button class="log-copy-btn" id="generated-copy-btn">${t('btn_copy')}</button>
+        </div>
+        <div class="generated-model-pre">${escHtml(lastGeneratedLp)}</div>
+      </div>` : ''}`;
+
+    const ALL_TABS = ['vars','constrs','log','raw']
+      .concat(isOpt ? ['sensitivity'] : [])
+      .concat(hasGenerated ? ['generated'] : []);
+
+    // Tab logic
+    document.getElementById('result-tabs').addEventListener('click', e => {
+      const btn = e.target.closest('.tab');
+      if (!btn) return;
+      document.querySelectorAll('#result-tabs .tab').forEach(tabEl => tabEl.classList.remove('active'));
+      btn.classList.add('active');
+      ALL_TABS.forEach(id => {
+        document.getElementById('tab-' + id).style.display = btn.dataset.tab === id ? '' : 'none';
+      });
+      // Scroll log pane to bottom on first open
+      if (btn.dataset.tab === 'log') {
+        const pane = document.getElementById('log-pane-final');
+        if (pane) pane.scrollTop = pane.scrollHeight;
+      }
+    });
+
+    // Copy log button
+    document.getElementById('log-copy-btn').addEventListener('click', () => {
+      const text = logLines.map(l => l.line).join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('log-copy-btn');
+        btn.textContent = t('btn_copied');
+        setTimeout(() => { btn.textContent = t('btn_copy'); }, 1500);
+      });
+    });
+
+    // Copy generated-LP button
+    const generatedCopyBtn = document.getElementById('generated-copy-btn');
+    if (generatedCopyBtn) {
+      generatedCopyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(lastGeneratedLp || '').then(() => {
+          generatedCopyBtn.textContent = t('btn_copied');
+          setTimeout(() => { generatedCopyBtn.textContent = t('btn_copy'); }, 1500);
+        });
+      });
+    }
+
+    setMsgKey('status_solved_summary_parts', { badgeText, nvars: vars.length, nrows: rows.length, obj: fmt(sol.ObjectiveValue) });
+
+    if (isInf) renderIisPanel('ask');
+
+    if (isOpt) {
+      const isMip = vars.some(v => v.Type && v.Type !== 'Continuous');
+      renderSensitivityPanel(isMip ? 'unavailable' : 'ask');
+    }
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     6c. IIS (infeasibility) diagnosis — on demand, no time limit
+  ════════════════════════════════════════════════════════════════════ */
+  function terminateIisWorker() {
+    if (iisWorker) { try { iisWorker.terminate(); } catch (_) {} iisWorker = null; }
+  }
+
+  function cancelIisDiagnosis() {
+    iisRunning = false;
+    terminateIisWorker();
+    renderIisPanel('ask');
+  }
+
+  function startIisDiagnosis() {
+    if (iisRunning || !lastSolvedLpText) return;
+    iisRunning = true;
+    renderIisPanel('running');
+
+    const w = spawnRawWorker();
+    iisWorker = w;
+
+    w.onmessage = function ({ data }) {
+      if (iisWorker !== w) return;   // a stale worker from a previous run/cancel
+      switch (data.type) {
+        case 'ready':
+          w.postMessage({ action: 'iis', lp: lastSolvedLpText, options: getSolverOptions() });
+          break;
+        case 'iis_result':
+          iisRunning = false;
+          renderIisPanel('result', { rows: data.rows, cols: data.cols });
+          terminateIisWorker();
+          break;
+        case 'iis_error':
+        case 'init_error':
+        case 'fatal_error':
+          iisRunning = false;
+          renderIisPanel('error', data.message);
+          terminateIisWorker();
+          break;
+        // 'log' messages are ignored here — this worker has no live log pane
+      }
+    };
+
+    w.onerror = function (err) {
+      if (iisWorker !== w) return;
+      iisRunning = false;
+      renderIisPanel('error', (err && err.message) || String(err));
+      terminateIisWorker();
+    };
+  }
+
+  function renderIisPanel(state, payload) {
+    const panel = document.getElementById('iis-panel');
+    if (!panel) return;   // the results view has since moved on (new solve, etc.)
+
+    if (state === 'ask') {
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(139,148,255,.06);border-color:var(--border)">
+          <div style="font-weight:600;margin-bottom:4px">${t('iis_ask_title')}</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">${t('iis_ask_text')}<br>${t('iis_ask_hint')}</div>
+          <button class="btn primary" id="iis-run-btn">${t('iis_btn_run')}</button>
+        </div>`;
+      document.getElementById('iis-run-btn').addEventListener('click', startIisDiagnosis);
+      return;
+    }
+
+    if (state === 'running') {
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(139,148,255,.06);border-color:var(--border);display:flex;align-items:center;gap:10px">
+          <span class="dot loading"></span>
+          <span style="font-size:12px">${t('iis_running_text')}</span>
+          <button class="btn" id="iis-cancel-btn" style="margin-left:auto">${t('iis_btn_cancel')}</button>
+        </div>`;
+      document.getElementById('iis-cancel-btn').addEventListener('click', cancelIisDiagnosis);
+      return;
+    }
+
+    if (state === 'error') {
+      panel.innerHTML = `
+        <div class="error-msg">${escHtml(t('iis_error_prefix') + payload)}</div>
+        <button class="btn" id="iis-retry-btn" style="margin-top:8px">${t('iis_btn_retry')}</button>`;
+      document.getElementById('iis-retry-btn').addEventListener('click', startIisDiagnosis);
+      return;
+    }
+
+    if (state === 'result') {
+      const rows = payload.rows || [];
+      const cols = payload.cols || [];
+      const rowsHtml = rows.length
+        ? `<ul style="margin:4px 0 0 18px;padding:0">${rows.map(r => `<li><code>${escHtml(r.name)}</code></li>`).join('')}</ul>`
+        : '';
+      const colsHtml = cols.length
+        ? `<ul style="margin:4px 0 0 18px;padding:0">${cols.map(c => `<li><code>${escHtml(c.name)}</code></li>`).join('')}</ul>`
+        : '';
+      const empty = (!rows.length && !cols.length)
+        ? `<div style="font-size:12px;color:var(--muted)">${t('iis_result_empty')}</div>`
+        : '';
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(255,184,108,.06);border-color:rgba(255,184,108,.35)">
+          <div style="font-weight:600;margin-bottom:4px">${t('iis_result_heading')}</div>
+          ${(rows.length || cols.length) ? `<div style="font-size:12px;color:var(--muted);margin-bottom:8px">${t('iis_result_intro')}</div>` : ''}
+          ${rows.length ? `<div style="font-size:12px;font-weight:600;margin-top:6px">${t('iis_result_rows_heading', rows.length)}</div>${rowsHtml}` : ''}
+          ${cols.length ? `<div style="font-size:12px;font-weight:600;margin-top:6px">${t('iis_result_cols_heading', cols.length)}</div>${colsHtml}` : ''}
+          ${empty}
+        </div>
+        <button class="btn" id="iis-retry-btn" style="margin-top:8px">${t('iis_btn_retry')}</button>`;
+      document.getElementById('iis-retry-btn').addEventListener('click', startIisDiagnosis);
+      return;
+    }
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     6d. Sensitivity / ranging analysis — on demand, LP only (no MIP)
+  ════════════════════════════════════════════════════════════════════ */
+  function terminateSensWorker() {
+    if (sensWorker) { try { sensWorker.terminate(); } catch (_) {} sensWorker = null; }
+  }
+
+  function startSensitivityAnalysis() {
+    if (sensRunning || !lastSolvedLpText) return;
+    sensRunning = true;
+    renderSensitivityPanel('running');
+
+    const w = spawnRawWorker();
+    sensWorker = w;
+
+    w.onmessage = function ({ data }) {
+      if (sensWorker !== w) return;   // a stale worker from a previous run
+      switch (data.type) {
+        case 'ready':
+          w.postMessage({ action: 'ranging', lp: lastSolvedLpText, options: getSolverOptions() });
+          break;
+        case 'ranging_result':
+          sensRunning = false;
+          renderSensitivityPanel('result', { cols: data.cols, rows: data.rows });
+          terminateSensWorker();
+          break;
+        case 'ranging_error':
+        case 'init_error':
+        case 'fatal_error':
+          sensRunning = false;
+          renderSensitivityPanel('error', data.message);
+          terminateSensWorker();
+          break;
+        // 'log' messages are ignored here — this worker has no live log pane
+      }
+    };
+
+    w.onerror = function (err) {
+      if (sensWorker !== w) return;
+      sensRunning = false;
+      renderSensitivityPanel('error', (err && err.message) || String(err));
+      terminateSensWorker();
+    };
+  }
+
+  function renderSensitivityPanel(state, payload) {
+    const panel = document.getElementById('sensitivity-panel');
+    if (!panel) return;   // the results view has since moved on (new solve, etc.)
+
+    if (state === 'unavailable') {
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(139,148,255,.06);border-color:var(--border)">
+          ${t('sens_unavailable_mip')}
+        </div>`;
+      return;
+    }
+
+    if (state === 'ask') {
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(139,148,255,.06);border-color:var(--border)">
+          <div style="font-weight:600;margin-bottom:4px">${t('sens_ask_title')}</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">${t('sens_ask_text')}</div>
+          <button class="btn primary" id="sens-run-btn">${t('sens_btn_run')}</button>
+        </div>`;
+      document.getElementById('sens-run-btn').addEventListener('click', startSensitivityAnalysis);
+      return;
+    }
+
+    if (state === 'running') {
+      panel.innerHTML = `
+        <div class="error-msg" style="color:var(--text);background:rgba(139,148,255,.06);border-color:var(--border);display:flex;align-items:center;gap:10px">
+          <span class="dot loading"></span>
+          <span style="font-size:12px">${t('sens_running_text')}</span>
+        </div>`;
+      return;
+    }
+
+    if (state === 'error') {
+      panel.innerHTML = `
+        <div class="error-msg">${escHtml(t('sens_error_prefix') + payload)}</div>
+        <button class="btn" id="sens-retry-btn" style="margin-top:8px">${t('sens_btn_retry')}</button>`;
+      document.getElementById('sens-retry-btn').addEventListener('click', startSensitivityAnalysis);
+      return;
+    }
+
+    if (state === 'result') {
+      const cols = payload.cols || [];
+      const rows = payload.rows || [];
+
+      const rhsByName = {};
+      ((lastSolution && lastSolution.Rows) || []).forEach(r => {
+        const name = r.Name || ('r' + r.Index);
+        rhsByName[name] = isFinite(r.Upper) ? r.Upper : (isFinite(r.Lower) ? r.Lower : null);
+      });
+
+      const colsRows = cols.map(c => `
+        <tr>
+          <td class="varname">${escHtml(c.name)}</td>
+          <td class="num">${fmt(c.cost)}</td>
+          <td class="num">${fmt(c.min)}</td>
+          <td class="num">${fmt(c.max)}</td>
+          <td class="num">${fmt(c.objAtMin)}</td>
+          <td class="num">${fmt(c.objAtMax)}</td>
+        </tr>`).join('');
+
+      const rowsRows = rows.map(r => `
+        <tr>
+          <td class="varname">${escHtml(r.name)}</td>
+          <td class="num">${fmt(rhsByName[r.name])}</td>
+          <td class="num">${fmt(r.min)}</td>
+          <td class="num">${fmt(r.max)}</td>
+          <td class="num">${fmt(r.objAtMin)}</td>
+          <td class="num">${fmt(r.objAtMax)}</td>
+        </tr>`).join('');
+
+      panel.innerHTML = `
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">${t('sens_legend')}</div>
+
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px">${t('sens_result_vars_heading')}</div>
+        <div class="table-wrap" style="margin-bottom:18px">
+          <table class="result">
+            <thead><tr>
+              <th>${t('th_variable')}</th><th>${t('sens_th_cost')}</th><th>${t('sens_th_min')}</th><th>${t('sens_th_max')}</th>
+              <th title="${t('sens_th_obj_min_title')}">${t('sens_th_obj_min')}</th><th title="${t('sens_th_obj_max_title')}">${t('sens_th_obj_max')}</th>
+            </tr></thead>
+            <tbody>${colsRows || `<tr><td colspan="6" style="color:var(--muted)">${t('no_variables_msg')}</td></tr>`}</tbody>
+          </table>
+        </div>
+
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px">${t('sens_result_rows_heading')}</div>
+        <div class="table-wrap">
+          <table class="result">
+            <thead><tr>
+              <th>${t('th_constraint')}</th><th>${t('sens_th_rhs')}</th><th>${t('sens_th_min')}</th><th>${t('sens_th_max')}</th>
+              <th title="${t('sens_th_obj_min_title')}">${t('sens_th_obj_min')}</th><th title="${t('sens_th_obj_max_title')}">${t('sens_th_obj_max')}</th>
+            </tr></thead>
+            <tbody>${rowsRows || `<tr><td colspan="6" style="color:var(--muted)">${t('no_constraints_msg')}</td></tr>`}</tbody>
+          </table>
+        </div>
+
+        <button class="btn" id="sens-retry-btn" style="margin-top:12px">${t('sens_btn_retry')}</button>`;
+      document.getElementById('sens-retry-btn').addEventListener('click', startSensitivityAnalysis);
+      return;
+    }
+  }
+
+  function renderError(msg) {
+    lastSolution = null;
+    lastErrorMessage = msg;
+    lastFatalMessage = null;
+    lastMathProgError = null;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = true;
+
+    // If this tab is in MathProg format, the LP that HiGHS actually saw was
+    // generated by GLPK — any line number in this message refers to that
+    // generated text, not to the MathProg source currently shown in the
+    // editor, so highlighting it here would point at the wrong line.
+    const tab = getActiveTab();
+    const isMathProgTab = !!(tab && tab.format === 'mathprog');
+    const errLine = isMathProgTab ? null : extractErrorLine(msg);
+    if (errLine) markErrorLine(errLine);
+
+    const lineHint = errLine
+      ? `<span style="color:var(--red);font-size:12px;margin-left:auto">${t('err_line_highlighted', errLine)}</span>`
+      : '';
+
+    document.getElementById('results').innerHTML = `
+      <div class="status-card" style="border-color:rgba(255,85,85,.4)">
+        <div class="status-badge badge-error">${t('err_badge')}</div>
+        <div style="margin-left:8px;color:var(--muted);font-size:12px">${t('err_subtitle')}</div>
+        ${lineHint}
+      </div>
+      <div class="error-msg">${escHtml(msg)}</div>
+      <div style="margin-bottom:10px;font-size:12px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--text)">${t('err_tips_heading')}</strong><br>
+        • ${t('err_tip1_html')}<br>
+        • ${t('err_tip2_html')}<br>
+        • ${t('err_tip3_html')}
+      </div>
+      <a class="hint-link" href="http://lim.univ-reunion.fr/staff/fred/Enseignement/Optim/doc/CPLEX-LP/CPLEX-LP-file-format.html" target="_blank">
+        ${t('err_lp_reference_link')}
+      </a>
+      ${logLines.length ? `
+      <div style="margin-top:14px">
+        <div class="log-toolbar">
+          <span>${t('err_solver_output_label', logLines.length)}</span>
+          <button class="log-copy-btn" id="err-log-copy-btn">${t('btn_copy')}</button>
+        </div>
+        <div class="log-pane" id="err-log-pane" style="max-height:300px">${buildLogHTML(logLines)}</div>
+      </div>` : ''}`;
+
+    if (logLines.length) {
+      const pane = document.getElementById('err-log-pane');
+      if (pane) pane.scrollTop = pane.scrollHeight;
+      document.getElementById('err-log-copy-btn').addEventListener('click', () => {
+        navigator.clipboard.writeText(logLines.map(l => l.line).join('\n'));
+      });
+    }
+    setMsgKey('status_solve_error');
+  }
+
+  function setPlaceholder() {
+    document.getElementById('results').innerHTML = document.getElementById('placeholder')?.outerHTML || '';
+    lastSolution = null;
+    lastErrorMessage = null;
+    lastFatalMessage = null;
+    lastMathProgError = null;
+    lastGeneratedLp = null;
+    const exportBtn = document.getElementById('btn-export-solution');
+    if (exportBtn) exportBtn.disabled = true;
+  }
+
+  function setDot(state) {
+    const d = document.getElementById('dot');
+    d.className = 'dot' + (state === 'loading' ? ' loading' : state === 'error' ? ' error' : '');
+  }
+  function setMsg(m) { document.getElementById('solver-msg').textContent = m; }
+  function setMsgKey(key, ...args) {
+    lastMsgFn = () => t(key, ...args);
+    setMsg(lastMsgFn());
+  }
+  function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  /* Initial loading state */
+  setDot('loading');
+
+  /* ════════════════════════════════════════════════════════════════════
+     Theme toggle
+  ════════════════════════════════════════════════════════════════════ */
+  let currentThemeName = 'dark';
+
+  function applyTheme(name) {
+    currentThemeName = name;
+    const titleKey = (name === 'dark') ? 'theme_switch_to_light' : 'theme_switch_to_dark';
+    const checkbox = document.getElementById('btn-theme');
+    const root = document.documentElement;
+    root.dataset.theme = name;
+    checkbox.checked   = (name === 'dark');
+    checkbox.title     = t(titleKey);
+    document.getElementById('theme-switch-label').title = t(titleKey);
+    try { localStorage.setItem('lp-theme', name); } catch (_) {}
+  }
+
+  (function () {
+    const checkbox = document.getElementById('btn-theme');
+
+    checkbox.addEventListener('change', () => {
+      applyTheme(checkbox.checked ? 'dark' : 'light');
+    });
+
+    // Restore saved preference, or honour OS preference as fallback
+    let saved = null;
+    try { saved = localStorage.getItem('lp-theme'); } catch (_) {}
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+  })();
+
+  /* ════════════════════════════════════════════════════════════════════
+     Language selector
+  ════════════════════════════════════════════════════════════════════ */
+  function setLanguage(lang) {
+    if (lang !== 'pt' && lang !== 'en') return;
+    currentLang = lang;
+    try { localStorage.setItem(LANG_KEY, lang); } catch (_) {}
+
+    applyTranslations();
+    updateLineCount();
+    applyTheme(currentThemeName);
+    if (lastMsgFn) setMsg(lastMsgFn());
+    if (window.__refreshBatchLabels) window.__refreshBatchLabels();
+
+    // Re-render whatever is currently shown in the results panel, in the new language
+    if (lastSolution) {
+      renderSolution(lastSolution);
+    } else if (lastErrorMessage) {
+      renderError(lastErrorMessage);
+    } else if (lastFatalMessage) {
+      renderFatalError(lastFatalMessage);
+    } else if (lastMathProgError) {
+      renderMathProgError(lastMathProgError);
+    } else if (!solving) {
+      setPlaceholder();
+    }
+  }
+
+  document.getElementById('lang-select').addEventListener('change', function () {
+    setLanguage(this.value);
+  });
+  </script>
+</body>
+</html>

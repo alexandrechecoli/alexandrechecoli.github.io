@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 11 Decomposição de Benders | Notas de aula Pesquisa Operacional</title>
+  <meta name="description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 11 Decomposição de Benders | Notas de aula Pesquisa Operacional" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 11 Decomposição de Benders | Notas de aula Pesquisa Operacional" />
+  
+  <meta name="twitter:description" content="Notas de aula da disciplina Pesquisa Operacional para o curso de Eng. de produção UFPR." />
+  
+
+<meta name="author" content="Alexandre Checoli Choueiri" />
+
+
+<meta name="date" content="2026-08-30" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="decomposição-de-benders.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Notas Pesquisa Operacional</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Modelagem</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="08-TopicosAvancados.html"><a href="#defini%C3%A7%C3%B5es"><i class="fa fa-check"></i><b>1.1</b> Definições</a></li>
+<li class="chapter" data-level="1.2" data-path="08-TopicosAvancados.html"><a href="#modelagem-matem%C3%A1tica"><i class="fa fa-check"></i><b>1.2</b> Modelagem matemática</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#premissas-da-pl"><i class="fa fa-check"></i><b>1.3</b> Premissas da PL</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#exercicios"><i class="fa fa-check"></i><b>1.4</b> Exercicios</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="index.html"><a href="index.html#exercicio-1"><i class="fa fa-check"></i><b>1.4.1</b> Exercicio 1</a></li>
+<li class="chapter" data-level="1.4.2" data-path="index.html"><a href="index.html#exercicio-2"><i class="fa fa-check"></i><b>1.4.2</b> Exercicio 2</a></li>
+<li class="chapter" data-level="1.4.3" data-path="index.html"><a href="index.html#exercicio-3"><i class="fa fa-check"></i><b>1.4.3</b> Exercicio 3</a></li>
+<li class="chapter" data-level="1.4.4" data-path="index.html"><a href="index.html#exercicio-4"><i class="fa fa-check"></i><b>1.4.4</b> Exercicio 4</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="08-TopicosAvancados.html"><a href="#revis%C3%A3o-algebra"><i class="fa fa-check"></i><b>2</b> Revisão Algebra</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="revisão-algebra.html"><a href="revisão-algebra.html"><i class="fa fa-check"></i><b>2.1</b> Sistemas lineares</a></li>
+<li class="chapter" data-level="2.2" data-path="08-TopicosAvancados.html"><a href="#resolu%C3%A7%C3%A3o-de-sistemas-lineares"><i class="fa fa-check"></i><b>2.2</b> Resolução de sistemas lineares</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="08-TopicosAvancados.html"><a href="#sistemas-can%C3%B4nicos"><i class="fa fa-check"></i><b>2.2.1</b> Sistemas canônicos</a></li>
+<li class="chapter" data-level="2.2.2" data-path="revisão-algebra.html"><a href="revisão-algebra.html#pivoteamento"><i class="fa fa-check"></i><b>2.2.2</b> Pivoteamento</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="08-TopicosAvancados.html"><a href="#representa%C3%A7%C3%A3o-de-inequa%C3%A7%C3%B5es-lineares"><i class="fa fa-check"></i><b>2.3</b> Representação de inequações lineares</a></li>
+<li class="chapter" data-level="2.4" data-path="08-TopicosAvancados.html"><a href="#vetor-gradiente-e-curvas-de-n%C3%ADvel"><i class="fa fa-check"></i><b>2.4</b> Vetor gradiente e curvas de nível</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="revisão-algebra.html"><a href="revisão-algebra.html#gradiente"><i class="fa fa-check"></i><b>2.4.1</b> Gradiente</a></li>
+<li class="chapter" data-level="2.4.2" data-path="08-TopicosAvancados.html"><a href="#curvas-de-n%C3%ADvel"><i class="fa fa-check"></i><b>2.4.2</b> Curvas de nível</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="08-TopicosAvancados.html"><a href="#m%C3%A9todo-gr%C3%A1fico-para-pl"><i class="fa fa-check"></i><b>3</b> Método gráfico para PL</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="08-TopicosAvancados.html"><a href="#m%C3%A9todo-de-resolu%C3%A7%C3%A3o"><i class="fa fa-check"></i><b>3.1</b> Método de resolução</a></li>
+<li class="chapter" data-level="3.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html"><i class="fa fa-check"></i><b>3.2</b> Casos especiais</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="08-TopicosAvancados.html"><a href="#a.-s-ilimitado-solu%C3%A7%C3%A3o-%C3%B3tima-%C3%BAnica"><i class="fa fa-check"></i><b>3.2.1</b> A. <span class="math inline">\(S\)</span> ilimitado, solução ótima única</a></li>
+<li class="chapter" data-level="3.2.2" data-path="08-TopicosAvancados.html"><a href="#b.-infinitas-solu%C3%A7%C3%B5es-%C3%B3timas"><i class="fa fa-check"></i><b>3.2.2</b> B. Infinitas soluções ótimas</a></li>
+<li class="chapter" data-level="3.2.3" data-path="08-TopicosAvancados.html"><a href="#c.-problema-infact%C3%ADvel"><i class="fa fa-check"></i><b>3.2.3</b> C. Problema infactível</a></li>
+<li class="chapter" data-level="3.2.4" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#d.-problema-ilimitado"><i class="fa fa-check"></i><b>3.2.4</b> D. Problema ilimitado</a></li>
+<li class="chapter" data-level="3.2.5" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#d.-problema-degenerado"><i class="fa fa-check"></i><b>3.2.5</b> D. Problema degenerado</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicios-1"><i class="fa fa-check"></i><b>3.3</b> Exercicios</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicio-1-1"><i class="fa fa-check"></i><b>3.3.1</b> Exercicio 1</a></li>
+<li class="chapter" data-level="3.3.2" data-path="método-gráfico-para-pl.html"><a href="método-gráfico-para-pl.html#exercicio-2-1"><i class="fa fa-check"></i><b>3.3.2</b> Exercicio 2</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html"><i class="fa fa-check"></i><b>4</b> Simplex Fase II</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="08-TopicosAvancados.html"><a href="#a-forma-padr%C3%A3o"><i class="fa fa-check"></i><b>4.1</b> A forma padrão</a></li>
+<li class="chapter" data-level="4.2" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#o-algoritmo-simplex"><i class="fa fa-check"></i><b>4.2</b> O Algoritmo Simplex</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="simplex-fase-ii.html"><a href="simplex-fase-ii.html#exemplos"><i class="fa fa-check"></i><b>4.2.1</b> Exemplos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html"><i class="fa fa-check"></i><b>5</b> Simplex Fase I</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="simplex-fase-i.html"><a href="simplex-fase-i.html#exemplos-1"><i class="fa fa-check"></i><b>5.1</b> Exemplos</a></li>
+<li class="chapter" data-level="5.2" data-path="08-TopicosAvancados.html"><a href="#exerc%C3%ADcios"><i class="fa fa-check"></i><b>5.2</b> Exercícios</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="dualidade.html"><a href="dualidade.html"><i class="fa fa-check"></i><b>6</b> Dualidade</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="08-TopicosAvancados.html"><a href="#tabela-de-convers%C3%A3o-primal-dual"><i class="fa fa-check"></i><b>6.1</b> Tabela de conversão primal-dual</a></li>
+<li class="chapter" data-level="6.2" data-path="dualidade.html"><a href="dualidade.html#teoremas-da-dualidade"><i class="fa fa-check"></i><b>6.2</b> Teoremas da dualidade</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-1"><i class="fa fa-check"></i><b>6.2.1</b> Teorema fraco da dualidade parte 1</a></li>
+<li class="chapter" data-level="6.2.2" data-path="dualidade.html"><a href="dualidade.html#teorema-fraco-da-dualidade-parte-2"><i class="fa fa-check"></i><b>6.2.2</b> Teorema fraco da dualidade parte 2</a></li>
+<li class="chapter" data-level="6.2.3" data-path="dualidade.html"><a href="dualidade.html#teorema-das-folgas-complementares-tfc"><i class="fa fa-check"></i><b>6.2.3</b> Teorema das folgas complementares (TFC)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="InversaDimplexDualidade.html"><a href="InversaDimplexDualidade.html"><i class="fa fa-check"></i><b>7</b> A inversa, simplex e dualidade</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="08-TopicosAvancados.html"><a href="#encontrando-os-elementos-da-tabela-pelas-f%C3%B3rmulas-gen%C3%A9ricas"><i class="fa fa-check"></i><b>7.1</b> Encontrando os elementos da tabela pelas fórmulas genéricas</a></li>
+<li class="chapter" data-level="7.2" data-path="08-TopicosAvancados.html"><a href="#encontrando-a-solu%C3%A7%C3%A3o-dual-na-tabela-primal"><i class="fa fa-check"></i><b>7.2</b> Encontrando a solução dual na tabela primal</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="algoritmo-dual-simplex.html"><a href="algoritmo-dual-simplex.html"><i class="fa fa-check"></i><b>8</b> Algoritmo Dual Simplex</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="08-TopicosAvancados.html"><a href="#exerc%C3%ADcios-1"><i class="fa fa-check"></i><b>8.1</b> Exercícios</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="08-TopicosAvancados.html"><a href="#decomposi%C3%A7%C3%A3o-de-dantzig-wolfe"><i class="fa fa-check"></i><b>9</b> Decomposição de Dantzig-Wolfe</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="decomposição-de-dantzig-wolfe.html"><a href="decomposição-de-dantzig-wolfe.html"><i class="fa fa-check"></i><b>9.1</b> Exemplo inicial</a>
+<ul>
+<li class="chapter" data-level="9.1.1" data-path="decomposição-de-dantzig-wolfe.html"><a href="decomposição-de-dantzig-wolfe.html#resolvendo-o-exemplo"><i class="fa fa-check"></i><b>9.1.1</b> Resolvendo o exemplo</a></li>
+<li class="chapter" data-level="9.1.2" data-path="decomposição-de-dantzig-wolfe.html"><a href="decomposição-de-dantzig-wolfe.html#entendendo-o-que-aconteceu"><i class="fa fa-check"></i><b>9.1.2</b> Entendendo o que aconteceu</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="decomposição-de-dantzig-wolfe.html"><a href="decomposição-de-dantzig-wolfe.html#teoria"><i class="fa fa-check"></i><b>9.2</b> Teoria</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="08-TopicosAvancados.html"><a href="#decomposi%C3%A7%C3%A3o-de-benders"><i class="fa fa-check"></i><b>10</b> Decomposição de Benders</a></li>
+<li class="chapter" data-level="11" data-path="08-TopicosAvancados.html"><a href="#decomposi%C3%A7%C3%A3o-de-benders-1"><i class="fa fa-check"></i><b>11</b> Decomposição de Benders</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html"><i class="fa fa-check"></i><b>11.1</b> Parte 0 — O problema que vamos carregar o material inteiro</a></li>
+<li class="chapter" data-level="11.2" data-path="08-TopicosAvancados.html"><a href="#parte-1-teoria-a-estrutura-de-vari%C3%A1veis-complicadoras"><i class="fa fa-check"></i><b>11.2</b> Parte 1 — Teoria: a estrutura de variáveis complicadoras</a>
+<ul>
+<li class="chapter" data-level="11.2.1" data-path="08-TopicosAvancados.html"><a href="#por-que-um-limite-%C3%A9-inferior-e-o-outro-superior"><i class="fa fa-check"></i><b>11.2.1</b> Por que um limite é inferior e o outro superior</a></li>
+<li class="chapter" data-level="11.2.2" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html#aplicando-ao-exemplo"><i class="fa fa-check"></i><b>11.2.2</b> Aplicando ao exemplo</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="08-TopicosAvancados.html"><a href="#parte-1.5-diagn%C3%B3stico-visual-o-modelo-completo-em-blocos"><i class="fa fa-check"></i><b>11.3</b> Parte 1.5 — Diagnóstico visual: o modelo completo em blocos</a>
+<ul>
+<li class="chapter" data-level="11.3.1" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html#o-modelo-escrito-por-extenso"><i class="fa fa-check"></i><b>11.3.1</b> O modelo escrito por extenso</a></li>
+<li class="chapter" data-level="11.3.2" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html#a-matriz-ordenada-para-revelar-a-estrutura"><i class="fa fa-check"></i><b>11.3.2</b> A matriz, ordenada para revelar a estrutura</a></li>
+<li class="chapter" data-level="11.3.3" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html#lendo-a-estrutura"><i class="fa fa-check"></i><b>11.3.3</b> Lendo a estrutura</a></li>
+<li class="chapter" data-level="11.3.4" data-path="08-TopicosAvancados.html"><a href="#o-formato-can%C3%B4nico"><i class="fa fa-check"></i><b>11.3.4</b> O formato canônico</a></li>
+<li class="chapter" data-level="11.3.5" data-path="08-TopicosAvancados.html"><a href="#a-ordena%C3%A7%C3%A3o-importa-e-determina-qual-m%C3%A9todo-usar"><i class="fa fa-check"></i><b>11.3.5</b> A ordenação importa — e determina qual método usar</a></li>
+</ul></li>
+<li class="chapter" data-level="11.4" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html#parte-2-teoria-por-que-precisamos-do-dual"><i class="fa fa-check"></i><b>11.4</b> Parte 2 — Teoria: por que precisamos do dual</a>
+<ul>
+<li class="chapter" data-level="11.4.1" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html#aplicando-ao-exemplo-1"><i class="fa fa-check"></i><b>11.4.1</b> Aplicando ao exemplo</a></li>
+</ul></li>
+<li class="chapter" data-level="11.5" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html#parte-3-teoria-cortes-de-factibilidade"><i class="fa fa-check"></i><b>11.5</b> Parte 3 — Teoria: cortes de factibilidade</a>
+<ul>
+<li class="chapter" data-level="11.5.1" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html#aplicando-ao-exemplo-2"><i class="fa fa-check"></i><b>11.5.1</b> Aplicando ao exemplo</a></li>
+</ul></li>
+<li class="chapter" data-level="11.6" data-path="08-TopicosAvancados.html"><a href="#parte-4-pr%C3%A1tica-rodando-o-algoritmo-completo"><i class="fa fa-check"></i><b>11.6</b> Parte 4 — Prática: rodando o algoritmo completo</a>
+<ul>
+<li class="chapter" data-level="11.6.1" data-path="08-TopicosAvancados.html"><a href="#itera%C3%A7%C3%A3o-1"><i class="fa fa-check"></i><b>11.6.1</b> Iteração 1</a></li>
+<li class="chapter" data-level="11.6.2" data-path="08-TopicosAvancados.html"><a href="#itera%C3%A7%C3%A3o-2"><i class="fa fa-check"></i><b>11.6.2</b> Iteração 2</a></li>
+<li class="chapter" data-level="11.6.3" data-path="08-TopicosAvancados.html"><a href="#itera%C3%A7%C3%A3o-3"><i class="fa fa-check"></i><b>11.6.3</b> Iteração 3</a></li>
+<li class="chapter" data-level="11.6.4" data-path="08-TopicosAvancados.html"><a href="#itera%C3%A7%C3%A3o-4"><i class="fa fa-check"></i><b>11.6.4</b> Iteração 4</a></li>
+<li class="chapter" data-level="11.6.5" data-path="08-TopicosAvancados.html"><a href="#o-que-rastrear-numa-execu%C3%A7%C3%A3o"><i class="fa fa-check"></i><b>11.6.5</b> O que rastrear numa execução</a></li>
+</ul></li>
+<li class="chapter" data-level="11.7" data-path="08-TopicosAvancados.html"><a href="#parte-4.5-pr%C3%A1tica-voc%C3%AA-nunca-escreve-o-dual"><i class="fa fa-check"></i><b>11.7</b> Parte 4.5 — Prática: você nunca escreve o dual</a>
+<ul>
+<li class="chapter" data-level="11.7.1" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html#o-que-de-fato-extrair"><i class="fa fa-check"></i><b>11.7.1</b> O que de fato extrair</a></li>
+<li class="chapter" data-level="11.7.2" data-path="08-TopicosAvancados.html"><a href="#a-armadilha-n%C3%BAmero-um-sinal"><i class="fa fa-check"></i><b>11.7.2</b> A armadilha número um: sinal</a></li>
+<li class="chapter" data-level="11.7.3" data-path="08-TopicosAvancados.html"><a href="#quando-o-subproblema-%C3%A9-infact%C3%ADvel"><i class="fa fa-check"></i><b>11.7.3</b> Quando o subproblema é infactível</a></li>
+<li class="chapter" data-level="11.7.4" data-path="08-TopicosAvancados.html"><a href="#validade-vem-da-viabilidade-dual-n%C3%A3o-da-otimalidade"><i class="fa fa-check"></i><b>11.7.4</b> Validade vem da viabilidade dual, não da otimalidade</a></li>
+<li class="chapter" data-level="11.7.5" data-path="08-TopicosAvancados.html"><a href="#b%C3%B4nus-de-manter-o-primal"><i class="fa fa-check"></i><b>11.7.5</b> Bônus de manter o primal</a></li>
+<li class="chapter" data-level="11.7.6" data-path="08-TopicosAvancados.html"><a href="#esqueleto-do-la%C3%A7o"><i class="fa fa-check"></i><b>11.7.6</b> Esqueleto do laço</a></li>
+</ul></li>
+<li class="chapter" data-level="11.8" data-path="08-TopicosAvancados.html"><a href="#parte-5-teoria-o-caso-estoc%C3%A1stico-de-dois-est%C3%A1gios-l-shaped"><i class="fa fa-check"></i><b>11.8</b> Parte 5 — Teoria: o caso estocástico de dois estágios (L-shaped)</a>
+<ul>
+<li class="chapter" data-level="11.8.1" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html#exemplo-planejamento-de-capacidade"><i class="fa fa-check"></i><b>11.8.1</b> Exemplo: planejamento de capacidade</a></li>
+</ul></li>
+<li class="chapter" data-level="11.9" data-path="08-TopicosAvancados.html"><a href="#parte-6-teoria-quando-benders-n%C3%A3o-se-aplica-e-as-sa%C3%ADdas"><i class="fa fa-check"></i><b>11.9</b> Parte 6 — Teoria: quando Benders <strong>não</strong> se aplica (e as saídas)</a></li>
+<li class="chapter" data-level="11.10" data-path="08-TopicosAvancados.html"><a href="#parte-7-pr%C3%A1tica-o-que-d%C3%B3i-na-implementa%C3%A7%C3%A3o-real"><i class="fa fa-check"></i><b>11.10</b> Parte 7 — Prática: o que dói na implementação real</a></li>
+<li class="chapter" data-level="11.11" data-path="08-TopicosAvancados.html"><a href="#parte-8-c%C3%B3digo-completo"><i class="fa fa-check"></i><b>11.11</b> Parte 8 — Código completo</a></li>
+<li class="chapter" data-level="11.12" data-path="decomposição-de-benders-1.html"><a href="decomposição-de-benders-1.html#checklist-de-aplicabilidade"><i class="fa fa-check"></i><b>11.12</b> Checklist de aplicabilidade</a></li>
+<li class="chapter" data-level="11.13" data-path="08-TopicosAvancados.html"><a href="#refer%C3%AAncias"><i class="fa fa-check"></i><b>11.13</b> Referências</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notas de aula Pesquisa Operacional</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="decomposição-de-benders-1" class="section level1 hasAnchor" number="11">
+<h1><span class="header-section-number">Chapter 11</span> Decomposição de Benders<a href="#decomposi%C3%A7%C3%A3o-de-benders-1" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<blockquote>
+<p>Cada bloco de teoria é seguido imediatamente por sua aplicação num exemplo numérico pequeno o bastante para ser feito à mão. Todos os números foram verificados por implementação.</p>
+</blockquote>
+<hr />
+<div id="parte-0-o-problema-que-vamos-carregar-o-material-inteiro" class="section level2 hasAnchor" number="11.1">
+<h2><span class="header-section-number">11.1</span> Parte 0 — O problema que vamos carregar o material inteiro<a href="decomposição-de-benders-1.html#parte-0-o-problema-que-vamos-carregar-o-material-inteiro" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Antes da teoria, o exemplo. Assim cada conceito novo já nasce com um lugar para pousar.</p>
+<p><strong>Localização de instalações (facility location) sem capacidade.</strong></p>
+<p>Temos 2 locais candidatos para abrir depósitos e 3 clientes que precisam ser atendidos.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Custo fixo de abrir</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Depósito 1</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>Depósito 2</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th>Custo de atender</th>
+<th>Cliente A</th>
+<th>Cliente B</th>
+<th>Cliente C</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>do Depósito 1</td>
+<td>1</td>
+<td>3</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<td>do Depósito 2</td>
+<td>5</td>
+<td>2</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>Formulação:</p>
+<p><span class="math display">\[\min_{y,x}\; \underbrace{\sum_i f_i y_i}_{\text{abrir}} + \underbrace{\sum_{i,j} c_{ij} x_{ij}}_{\text{atender}}\]</span></p>
+<p>sujeito a</p>
+<p><span class="math display">\[\sum_i x_{ij} = 1 \;\;\forall j, \qquad x_{ij} \le y_i \;\;\forall i,j, \qquad x \ge 0,\;\; y \in \{0,1\}^2\]</span></p>
+<p>Aqui <span class="math inline">\(y_i\)</span> = abrir ou não o depósito <span class="math inline">\(i\)</span>; <span class="math inline">\(x_{ij}\)</span> = fração da demanda do cliente <span class="math inline">\(j\)</span> atendida por <span class="math inline">\(i\)</span>.</p>
+<p>Como só há 4 combinações de <span class="math inline">\(y\)</span>, sabemos a resposta por força bruta: o ótimo custa <strong>12</strong>, atingido tanto por <span class="math inline">\(y=(0,1)\)</span> quanto por <span class="math inline">\(y=(1,1)\)</span>. Guarde esse número — ele é o gabarito contra o qual Benders vai ser conferido.</p>
+<hr />
+</div>
+<div id="parte-1-teoria-a-estrutura-de-variáveis-complicadoras" class="section level2 hasAnchor" number="11.2">
+<h2><span class="header-section-number">11.2</span> Parte 1 — Teoria: a estrutura de variáveis complicadoras<a href="#parte-1-teoria-a-estrutura-de-vari%C3%A1veis-complicadoras" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Benders só faz sentido quando o problema tem a forma</p>
+<p><span class="math display">\[\min_{x,y}\; c^Ty + f^Tx \quad \text{s.a.}\quad Ay \ge b,\;\; By + Cx \ge d,\;\; y \in Y,\; x \ge 0\]</span></p>
+<p>onde <span class="math inline">\(y\)</span> são as <strong>variáveis complicadoras</strong> — fixá-las torna o resto fácil — e <span class="math inline">\(x\)</span> as variáveis fáceis.</p>
+<p>A ideia é reescrever o problema como</p>
+<p><span class="math display">\[\min_{y \in Y}\; \Big\{ c^Ty + \mathcal{Q}(y) \Big\}, \qquad \mathcal{Q}(y) = \min_{x \ge 0}\{ f^Tx : Cx \ge d - By \}\]</span></p>
+<p><span class="math inline">\(\mathcal{Q}(y)\)</span> é a <strong>função valor do subproblema</strong>. Não temos fórmula fechada para ela, mas — e esse é o ponto central — ela é <strong>convexa e linear por partes</strong> em <span class="math inline">\(y\)</span> quando o subproblema é um LP. Logo pode ser aproximada por baixo por um envelope de hiperplanos. Cada hiperplano é um <strong>corte de Benders</strong>.</p>
+<p>O algoritmo alterna:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Mestre</strong>: resolve <span class="math inline">\(\min\{c^Ty + \eta\}\)</span> com os cortes acumulados. Dá um <strong>limite inferior (LB)</strong>.</li>
+<li><strong>Subproblema</strong>: fixa <span class="math inline">\(\bar y\)</span>, resolve o LP, gera um corte novo. Dá um <strong>limite superior (UB)</strong>.</li>
+<li>Repete até <span class="math inline">\(UB - LB \le \varepsilon\)</span>.</li>
+</ol>
+<div id="por-que-um-limite-é-inferior-e-o-outro-superior" class="section level3 hasAnchor" number="11.2.1">
+<h3><span class="header-section-number">11.2.1</span> Por que um limite é inferior e o outro superior<a href="#por-que-um-limite-%C3%A9-inferior-e-o-outro-superior" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Os dois lados não são metades simétricas do mesmo cálculo. O mestre resolve um problema <strong>relaxado sobre todos os <span class="math inline">\(y\)</span></strong>; o subproblema <strong>avalia exatamente um <span class="math inline">\(y\)</span></strong>. Essa assimetria é a fonte dos dois limites.</p>
+<p><strong>O mestre é otimista.</strong> Todo corte <span class="math inline">\(\eta \ge (d - By)^T\bar u\)</span> vale para <em>todo</em> <span class="math inline">\(y\)</span>, não só para o <span class="math inline">\(\bar y\)</span> que o gerou (é o que a Parte 2 vai provar). Logo, se <span class="math inline">\(\eta_k(y)\)</span> é o máximo dos cortes acumulados até a iteração <span class="math inline">\(k\)</span>, vale</p>
+<p><span class="math display">\[\eta_k(y) \le \mathcal{Q}(y) \qquad \forall y\]</span></p>
+<p>O mestre minimiza <span class="math inline">\(c^Ty + \eta_k(y)\)</span>, uma função que está por baixo de <span class="math inline">\(c^Ty + \mathcal{Q}(y)\)</span> em toda parte. Minimizar uma função menor devolve um valor menor: <span class="math inline">\(LB_k \le z^*\)</span>.</p>
+<p>A leitura geométrica é a mesma: o problema verdadeiro minimiza sobre o epígrafo <span class="math inline">\(\{(y,t) : t \ge \mathcal{Q}(y)\}\)</span>, e o mestre substitui esse conjunto por um poliedro que o <strong>contém</strong>, definido por finitos hiperplanos. Região viável maior, mínimo menor. Os cortes de factibilidade não estragam o argumento porque só removem valores de <span class="math inline">\(y\)</span> para os quais o problema original é genuinamente inviável — o ótimo nunca é cortado fora.</p>
+<p><strong>O subproblema é pessimista.</strong> Aqui não há relaxação nenhuma. Fixa-se <span class="math inline">\(\bar y\)</span>, resolve-se o LP e obtém-se <span class="math inline">\(\bar x\)</span>. O par <span class="math inline">\((\bar y, \bar x)\)</span> é uma solução <strong>viável do problema original completo</strong>, com <span class="math inline">\(y\)</span> inteiro e todas as restrições satisfeitas. E o custo de qualquer solução viável é, por definição, maior ou igual ao da melhor:</p>
+<p><span class="math display">\[c^T\bar y + \mathcal{Q}(\bar y) \;\ge\; z^*\]</span></p>
+<p>Dois detalhes que costumam passar batido:</p>
+<ul>
+<li><span class="math inline">\(UB\)</span> é o <strong>melhor encontrado até agora</strong>, <span class="math inline">\(UB_k = \min_{j \le k}\{c^T\bar y_j + \mathcal{Q}(\bar y_j)\}\)</span>. É só por isso que ele nunca sobe. Uma iteração pode perfeitamente produzir um custo pior que o UB corrente — nesse caso o UB simplesmente não é atualizado.</li>
+<li>Iteração com subproblema inviável não produz UB nenhum. Enquanto isso acontecer, <span class="math inline">\(UB = \infty\)</span>: ainda não existe solução viável conhecida.</li>
+</ul>
+<p><strong>O gap é o erro da aproximação no ponto escolhido.</strong> Essa é a leitura que amarra tudo. Na iteração <span class="math inline">\(k\)</span> o mestre devolve o par <span class="math inline">\((\bar y_k, \eta_k)\)</span>, e:</p>
+<p><span class="math display">\[\underbrace{c^T\bar y_k + \mathcal{Q}(\bar y_k)}_{\text{custo real desse } \bar y} \;-\; \underbrace{(c^T\bar y_k + \eta_k)}_{LB_k} \;=\; \mathcal{Q}(\bar y_k) - \eta_k\]</span></p>
+<p>O termo <span class="math inline">\(c^T\bar y_k\)</span> cancela. O que sobra é exatamente <strong>quanto o envelope de cortes subestima <span class="math inline">\(\mathcal{Q}\)</span> no ponto que o próprio mestre escolheu</strong>. O gap reportado, <span class="math inline">\(UB_k - LB_k\)</span>, é menor ou igual a isso, já que o UB pode vir de uma iteração anterior melhor.</p>
+<p>Parar com <span class="math inline">\(UB - LB \le \varepsilon\)</span> não é, portanto, dois números se encontrando por coincidência: é a afirmação de que a aproximação já ficou exata onde ela importa. E como o corte gerado na iteração <span class="math inline">\(k\)</span> é apertado em <span class="math inline">\(\bar y_k\)</span> — toca <span class="math inline">\(\mathcal{Q}\)</span> exatamente ali —, o mestre não consegue devolver aquele mesmo <span class="math inline">\(\bar y\)</span> de novo com um <span class="math inline">\(\eta\)</span> otimista demais. Com <span class="math inline">\(Y\)</span> finito, é isso que garante terminação em número finito de iterações.</p>
+<blockquote>
+<p><strong>Detalhe de implementação:</strong> o <span class="math inline">\(\eta \ge 0\)</span> do mestre inicial não é decoração. Sem algum limite inferior para <span class="math inline">\(\eta\)</span>, o mestre da primeira iteração é ilimitado e <span class="math inline">\(LB = -\infty\)</span>. Usa-se 0 quando os custos de recurso são não-negativos, ou qualquer bound válido conhecido.</p>
+</blockquote>
+</div>
+<div id="aplicando-ao-exemplo" class="section level3 hasAnchor" number="11.2.2">
+<h3><span class="header-section-number">11.2.2</span> Aplicando ao exemplo<a href="decomposição-de-benders-1.html#aplicando-ao-exemplo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Quem são os complicadores? As binárias <span class="math inline">\(y\)</span>. Se eu decidir quais depósitos abrir, o que sobra é:</p>
+<p><span class="math display">\[\mathcal{Q}(\bar y) = \min_x \sum_{ij} c_{ij}x_{ij} \;\;\text{s.a.}\;\; \sum_i x_{ij} = 1,\;\; x_{ij} \le \bar y_i,\;\; x \ge 0\]</span></p>
+<p>um LP puro — na verdade, trivial: cada cliente vai ao depósito aberto mais barato. Fixar <span class="math inline">\(y\)</span> eliminou toda a combinatória. <strong>Essa é exatamente a condição que autoriza Benders.</strong></p>
+<hr />
+</div>
+</div>
+<div id="parte-1.5-diagnóstico-visual-o-modelo-completo-em-blocos" class="section level2 hasAnchor" number="11.3">
+<h2><span class="header-section-number">11.3</span> Parte 1.5 — Diagnóstico visual: o modelo completo em blocos<a href="#parte-1.5-diagn%C3%B3stico-visual-o-modelo-completo-em-blocos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>O argumento acima foi verbal. Existe um teste mais confiável: <strong>escrever a matriz de coeficientes inteira e olhar para ela.</strong> Se a estrutura de Benders existir, ela salta aos olhos — desde que as variáveis e restrições estejam na ordem certa.</p>
+<div id="o-modelo-escrito-por-extenso" class="section level3 hasAnchor" number="11.3.1">
+<h3><span class="header-section-number">11.3.1</span> O modelo escrito por extenso<a href="decomposição-de-benders-1.html#o-modelo-escrito-por-extenso" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>São 8 variáveis e 9 restrições. Objetivo:</p>
+<p><span class="math display">\[\min\; 4y_1 + 3y_2 + 1x_{1A} + 5x_{2A} + 3x_{1B} + 2x_{2B} + 6x_{1C} + 2x_{2C}\]</span></p>
+<p>Restrições:</p>
+<p><span class="math display">\[
+\begin{array}{llll}
+\text{(atrib. A)} &amp; x_{1A} + x_{2A} = 1 &amp;\quad \text{(lig. 1A)} &amp; x_{1A} - y_1 \le 0 \\
+\text{(atrib. B)} &amp; x_{1B} + x_{2B} = 1 &amp;\quad \text{(lig. 2A)} &amp; x_{2A} - y_2 \le 0 \\
+\text{(atrib. C)} &amp; x_{1C} + x_{2C} = 1 &amp;\quad \text{(lig. 1B)} &amp; x_{1B} - y_1 \le 0 \\
+&amp; &amp;\quad \text{(lig. 2B)} &amp; x_{2B} - y_2 \le 0 \\
+&amp; &amp;\quad \text{(lig. 1C)} &amp; x_{1C} - y_1 \le 0 \\
+&amp; &amp;\quad \text{(lig. 2C)} &amp; x_{2C} - y_2 \le 0
+\end{array}
+\]</span></p>
+</div>
+<div id="a-matriz-ordenada-para-revelar-a-estrutura" class="section level3 hasAnchor" number="11.3.2">
+<h3><span class="header-section-number">11.3.2</span> A matriz, ordenada para revelar a estrutura<a href="decomposição-de-benders-1.html#a-matriz-ordenada-para-revelar-a-estrutura" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>A ordenação é o truque. Colunas: primeiro as complicadoras <span class="math inline">\(y\)</span>, depois as variáveis <span class="math inline">\(x\)</span> <strong>agrupadas por cliente</strong>. Linhas: agrupadas pelo mesmo critério.</p>
+<table>
+<colgroup>
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><span class="math inline">\(y_1\)</span></th>
+<th><span class="math inline">\(y_2\)</span></th>
+<th><span class="math inline">\(x_{1A}\)</span></th>
+<th><span class="math inline">\(x_{2A}\)</span></th>
+<th><span class="math inline">\(x_{1B}\)</span></th>
+<th><span class="math inline">\(x_{2B}\)</span></th>
+<th><span class="math inline">\(x_{1C}\)</span></th>
+<th><span class="math inline">\(x_{2C}\)</span></th>
+<th></th>
+<th>RHS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>custo</strong></td>
+<td>4</td>
+<td>3</td>
+<td>1</td>
+<td>5</td>
+<td>3</td>
+<td>2</td>
+<td>6</td>
+<td>2</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>atrib. A</td>
+<td>·</td>
+<td>·</td>
+<td><strong>1</strong></td>
+<td><strong>1</strong></td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>=</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>lig. 1A</td>
+<td>−1</td>
+<td>·</td>
+<td><strong>1</strong></td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>≤</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>lig. 2A</td>
+<td>·</td>
+<td>−1</td>
+<td>·</td>
+<td><strong>1</strong></td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>≤</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>atrib. B</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td><strong>1</strong></td>
+<td><strong>1</strong></td>
+<td>·</td>
+<td>·</td>
+<td>=</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>lig. 1B</td>
+<td>−1</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td><strong>1</strong></td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>≤</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>lig. 2B</td>
+<td>·</td>
+<td>−1</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td><strong>1</strong></td>
+<td>·</td>
+<td>·</td>
+<td>≤</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>atrib. C</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td><strong>1</strong></td>
+<td><strong>1</strong></td>
+<td>=</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>lig. 1C</td>
+<td>−1</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td><strong>1</strong></td>
+<td>·</td>
+<td>≤</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>lig. 2C</td>
+<td>·</td>
+<td>−1</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td>·</td>
+<td><strong>1</strong></td>
+<td>≤</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p><em>(pontos = zeros, omitidos para deixar o padrão visível)</em></p>
+</div>
+<div id="lendo-a-estrutura" class="section level3 hasAnchor" number="11.3.3">
+<h3><span class="header-section-number">11.3.3</span> Lendo a estrutura<a href="decomposição-de-benders-1.html#lendo-a-estrutura" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Três fatos ficam evidentes só de olhar:</p>
+<p><strong>1. As colunas de <span class="math inline">\(y\)</span> são densas; as de <span class="math inline">\(x\)</span> são esparsas e agrupadas.</strong> As colunas <span class="math inline">\(y_1\)</span> e <span class="math inline">\(y_2\)</span> tocam linhas espalhadas pelos três grupos — elas <em>acoplam</em> tudo. As colunas de <span class="math inline">\(x\)</span> ficam confinadas ao seu grupo. Isso é a assinatura de variável complicadora: <strong>poucas colunas com entradas espalhadas por todos os blocos.</strong></p>
+<p><strong>2. O bloco de <span class="math inline">\(x\)</span> é diagonal por blocos.</strong> Ignorando as duas primeiras colunas, sobra:</p>
+<p><span class="math display">\[
+C = \begin{bmatrix} C_A &amp; &amp; \\ &amp; C_B &amp; \\ &amp; &amp; C_C \end{bmatrix}, \qquad
+C_A = C_B = C_C = \begin{bmatrix} 1 &amp; 1 \\ 1 &amp; 0 \\ 0 &amp; 1 \end{bmatrix}
+\]</span></p>
+<p>Três blocos idênticos, sem nada fora da diagonal. <strong>Fixando <span class="math inline">\(y\)</span>, o subproblema se parte em 3 LPs independentes — um por cliente.</strong> É por isso que a solução do subproblema é aquela regra trivial “cada cliente vai ao depósito aberto mais barato”: os clientes não se falam.</p>
+<p><strong>3. <span class="math inline">\(y\)</span> aparece só na coluna, nunca multiplicando <span class="math inline">\(x\)</span>.</strong> Ao fixar <span class="math inline">\(y = \bar y\)</span>, os termos <span class="math inline">\(-y_i\)</span> migram para o lado direito:</p>
+<p><span class="math display">\[x_{1A} \le \bar y_1, \quad x_{2A} \le \bar y_2, \quad \dots\]</span></p>
+<p>O RHS vira <span class="math inline">\(d - B\bar y\)</span> e a matriz <span class="math inline">\(C\)</span> fica intacta. <strong>Esse é o requisito da Parte 2</strong> (região viável do dual independente de <span class="math inline">\(y\)</span>), agora visível como um fato geométrico da matriz, não como uma afirmação abstrata.</p>
+</div>
+<div id="o-formato-canônico" class="section level3 hasAnchor" number="11.3.4">
+<h3><span class="header-section-number">11.3.4</span> O formato canônico<a href="#o-formato-can%C3%B4nico" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>O que vimos instancia o gabarito de Benders:</p>
+<p><span class="math display">\[
+\left[\begin{array}{c|c} A &amp; 0 \\ \hline B &amp; C \end{array}\right]
+\begin{bmatrix} y \\ x \end{bmatrix}
+\;\gtrless\;
+\begin{bmatrix} b \\ d \end{bmatrix}
+\]</span></p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Bloco</th>
+<th>O que é</th>
+<th>No nosso exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(A\)</span></td>
+<td>restrições só de <span class="math inline">\(y\)</span> → <strong>ficam no mestre</strong></td>
+<td>vazio (só <span class="math inline">\(y \in \{0,1\}^2\)</span>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathbf{0}\)</span></td>
+<td><strong>tem que ser zero</strong> — se não for, não é Benders</td>
+<td>✓</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(B\)</span></td>
+<td>acoplamento de <span class="math inline">\(y\)</span> nas linhas do subproblema</td>
+<td>as entradas <span class="math inline">\(-1\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(C\)</span></td>
+<td>subproblema puro → <strong>quanto mais diagonal, melhor</strong></td>
+<td>3 blocos idênticos</td>
+</tr>
+</tbody>
+</table>
+<p>O bloco <span class="math inline">\(\mathbf{0}\)</span> no canto superior direito é a condição estrutural inegociável. Ele diz: <em>existem restrições que envolvem apenas as complicadoras</em>. Se as variáveis <span class="math inline">\(x\)</span> aparecessem lá, não haveria como separar mestre e subproblema.</p>
+<p>Se acrescentássemos uma regra como “abra no máximo um depósito” (<span class="math inline">\(y_1 + y_2 \le 1\)</span>), ela entraria como uma linha no bloco <span class="math inline">\(A\)</span>:</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><span class="math inline">\(y_1\)</span></th>
+<th><span class="math inline">\(y_2\)</span></th>
+<th><span class="math inline">\(x_{1A}\)</span></th>
+<th>⋯</th>
+<th></th>
+<th>RHS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>máx. 1 depósito</td>
+<td>1</td>
+<td>1</td>
+<td>·</td>
+<td>⋯</td>
+<td>≤</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>Zeros à direita da barra — vai direto para o mestre, sem tocar no subproblema. Os cortes de Benders, aliás, também são linhas adicionadas a esse bloco <span class="math inline">\(A\)</span> (mais a coluna de <span class="math inline">\(\eta\)</span>): <strong>o algoritmo constrói <span class="math inline">\(A\)</span> incrementalmente.</strong></p>
+</div>
+<div id="a-ordenação-importa-e-determina-qual-método-usar" class="section level3 hasAnchor" number="11.3.5">
+<h3><span class="header-section-number">11.3.5</span> A ordenação importa — e determina qual método usar<a href="#a-ordena%C3%A7%C3%A3o-importa-e-determina-qual-m%C3%A9todo-usar" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se as colunas fossem agrupadas por <em>depósito</em> em vez de por <em>cliente</em> (<span class="math inline">\(y_1, y_2 \mid x_{1A}, x_{1B}, x_{1C} \mid x_{2A}, x_{2B}, x_{2C}\)</span>), as linhas de atribuição passariam a cruzar os dois blocos e a diagonal desapareceria. O padrão vira outro: blocos independentes por depósito, ligados por <strong>linhas</strong> de acoplamento.</p>
+<p>Isso não é um erro — é uma estrutura diferente, e ela aponta para outro método:</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Padrão na matriz</th>
+<th>Acoplamento</th>
+<th>Método natural</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Poucas <strong>colunas</strong> densas</td>
+<td>variáveis complicadoras</td>
+<td><strong>Benders</strong></td>
+</tr>
+<tr class="even">
+<td>Poucas <strong>linhas</strong> densas</td>
+<td>restrições complicadoras</td>
+<td><strong>Dantzig-Wolfe / geração de colunas</strong></td>
+</tr>
+</tbody>
+</table>
+<p>A mesma matriz admite as duas leituras. Vale testar permutações antes de concluir que não há estrutura aproveitável — o que parece uma matriz sem padrão frequentemente só está com as linhas e colunas na ordem errada. Na prática, para modelos grandes, use as ferramentas de visualização de esparsidade do seu solver ou simplesmente plote a matriz (<code>plt.spy(A)</code> em Python) e olhe o desenho.</p>
+<hr />
+</div>
+</div>
+<div id="parte-2-teoria-por-que-precisamos-do-dual" class="section level2 hasAnchor" number="11.4">
+<h2><span class="header-section-number">11.4</span> Parte 2 — Teoria: por que precisamos do dual<a href="decomposição-de-benders-1.html#parte-2-teoria-por-que-precisamos-do-dual" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>O problema é que <span class="math inline">\(\mathcal{Q}(\bar y)\)</span> nos dá um único ponto da função, e um ponto não é um corte. Precisamos de um hiperplano válido para <strong>todo</strong> <span class="math inline">\(y\)</span>, não só para <span class="math inline">\(\bar y\)</span>.</p>
+<p>É aqui que entra a dualidade. O dual do subproblema é</p>
+<p><span class="math display">\[\mathcal{Q}(\bar y) = \max_{u \ge 0}\; (d - B\bar y)^T u \quad \text{s.a.}\quad C^Tu \le f\]</span></p>
+<p>Repare no detalhe decisivo: <strong><span class="math inline">\(\bar y\)</span> aparece só na função objetivo, nunca nas restrições</strong>. A região viável do dual, <span class="math inline">\(\{u \ge 0 : C^Tu \le f\}\)</span>, é a mesma independentemente de qual <span class="math inline">\(y\)</span> tenhamos fixado.</p>
+<p>Consequência: se <span class="math inline">\(\bar u\)</span> é viável no dual para um <span class="math inline">\(\bar y\)</span>, ele é viável para todos. E por dualidade fraca, para qualquer <span class="math inline">\(y\)</span>:</p>
+<p><span class="math display">\[\mathcal{Q}(y) \ge (d - By)^T\bar u\]</span></p>
+<p>Isso é um corte válido. O lado direito é <strong>afim em <span class="math inline">\(y\)</span></strong> — um hiperplano de suporte da função convexa <span class="math inline">\(\mathcal{Q}\)</span>.</p>
+<blockquote>
+<p><strong>Requisito estrutural que emerge daqui:</strong> a região viável do dual não pode depender de <span class="math inline">\(y\)</span>. Se <span class="math inline">\(y\)</span> aparecesse nas restrições do subproblema de forma a mudar as restrições do dual, os cortes deixariam de ser válidos globalmente. É por isso que Benders clássico exige que <span class="math inline">\(y\)</span> entre no subproblema apenas pelo lado direito (<span class="math inline">\(d - By\)</span>).</p>
+</blockquote>
+<div id="aplicando-ao-exemplo-1" class="section level3 hasAnchor" number="11.4.1">
+<h3><span class="header-section-number">11.4.1</span> Aplicando ao exemplo<a href="decomposição-de-benders-1.html#aplicando-ao-exemplo-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Associe <span class="math inline">\(u_j\)</span> (livre) a <span class="math inline">\(\sum_i x_{ij} = 1\)</span> e <span class="math inline">\(w_{ij} \ge 0\)</span> a <span class="math inline">\(x_{ij} \le y_i\)</span>. O dual fica:</p>
+<p><span class="math display">\[\max_{u,w}\; \sum_j u_j - \sum_{i,j} \bar y_i\, w_{ij} \quad\text{s.a.}\quad u_j - w_{ij} \le c_{ij},\;\; w_{ij} \ge 0\]</span></p>
+<p>Confirme: <span class="math inline">\(\bar y\)</span> só está no objetivo. As restrições <span class="math inline">\(u_j - w_{ij} \le c_{ij}\)</span> são fixas. ✓</p>
+<p>E há solução fechada:
+- <span class="math inline">\(u_j = \min_{i \text{ aberto}} c_{ij}\)</span> (custo de atender <span class="math inline">\(j\)</span> com a configuração atual)
+- <span class="math inline">\(w_{ij} = \max(0,\; u_j - c_{ij})\)</span> (o quanto se economizaria se <span class="math inline">\(i\)</span> estivesse aberto)</p>
+<p>O corte resultante:</p>
+<p><span class="math display">\[\boxed{\;\eta \;\ge\; \sum_j u_j \;-\; \sum_i \Big(\sum_j w_{ij}\Big) y_i\;}\]</span></p>
+<p>Leitura econômica: “o custo de atendimento é <span class="math inline">\(\sum_j u_j\)</span>, <strong>descontado</strong> de quanto cada depósito ainda fechado economizaria se fosse aberto”. O corte carrega informação sobre configurações que ainda nem testamos — é isso que faz o método funcionar.</p>
+<hr />
+</div>
+</div>
+<div id="parte-3-teoria-cortes-de-factibilidade" class="section level2 hasAnchor" number="11.5">
+<h2><span class="header-section-number">11.5</span> Parte 3 — Teoria: cortes de factibilidade<a href="decomposição-de-benders-1.html#parte-3-teoria-cortes-de-factibilidade" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Se o subproblema for <strong>infactível</strong> para um dado <span class="math inline">\(\bar y\)</span>, o dual é ilimitado (dualidade forte). Existe então um <strong>raio extremo</strong> <span class="math inline">\(r \ge 0\)</span> com <span class="math inline">\(C^Tr \le 0\)</span> e <span class="math inline">\((d - B\bar y)^Tr &gt; 0\)</span>.</p>
+<p>Para que o subproblema seja factível, é necessário que nenhum raio dê objetivo positivo:</p>
+<p><span class="math display">\[(d - By)^T r \le 0\]</span></p>
+<p>Esse é um <strong>corte de factibilidade</strong>. Não envolve <span class="math inline">\(\eta\)</span> — apenas elimina regiões de <span class="math inline">\(y\)</span> que tornam o problema impossível.</p>
+<div id="aplicando-ao-exemplo-2" class="section level3 hasAnchor" number="11.5.1">
+<h3><span class="header-section-number">11.5.1</span> Aplicando ao exemplo<a href="decomposição-de-benders-1.html#aplicando-ao-exemplo-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Se nenhum depósito abre (<span class="math inline">\(y = (0,0)\)</span>), nenhum cliente pode ser atendido: infactível. O raio: tome <span class="math inline">\(u_j = 1\)</span> para todo <span class="math inline">\(j\)</span> e <span class="math inline">\(w_{ij} = 1\)</span> para todo <span class="math inline">\(i,j\)</span> (satisfaz <span class="math inline">\(u_j - w_{ij} \le 0\)</span>). O objetivo dual na direção do raio:</p>
+<p><span class="math display">\[3 - 3(y_1 + y_2)\]</span></p>
+<p>Impor <span class="math inline">\(\le 0\)</span> dá o corte de factibilidade:</p>
+<p><span class="math display">\[y_1 + y_2 \ge 1\]</span></p>
+<p>“Abra pelo menos um depósito.” Óbvio para nós — mas o algoritmo o <strong>derivou</strong>, não o recebeu.</p>
+<hr />
+</div>
+</div>
+<div id="parte-4-prática-rodando-o-algoritmo-completo" class="section level2 hasAnchor" number="11.6">
+<h2><span class="header-section-number">11.6</span> Parte 4 — Prática: rodando o algoritmo completo<a href="#parte-4-pr%C3%A1tica-rodando-o-algoritmo-completo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Visão geral antes do detalhamento:</p>
+<table>
+<thead>
+<tr class="header">
+<th>It</th>
+<th><span class="math inline">\(y\)</span> do mestre</th>
+<th>LB</th>
+<th>Subproblema</th>
+<th>UB</th>
+<th>Corte gerado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>(0,0)</td>
+<td>0.00</td>
+<td><strong>infactível</strong></td>
+<td>∞</td>
+<td><span class="math inline">\(y_1 + y_2 \ge 1\)</span></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>(0,1)</td>
+<td>3.00</td>
+<td><span class="math inline">\(Q = 9\)</span></td>
+<td>12.00</td>
+<td><span class="math inline">\(\eta \ge 9 - 4y_1\)</span></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>(1,0)</td>
+<td>9.00</td>
+<td><span class="math inline">\(Q = 10\)</span></td>
+<td>12.00</td>
+<td><span class="math inline">\(\eta \ge 10 - 5y_2\)</span></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>(0,1)</td>
+<td><strong>12.00</strong></td>
+<td><span class="math inline">\(Q = 9\)</span></td>
+<td><strong>12.00</strong></td>
+<td>LB = UB → <strong>parar</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ótimo: abrir só o depósito 2, custo total 12.</strong> Bate com a força bruta. ✓</p>
+<p>Abaixo, cada iteração com os dois modelos escritos por extenso — exatamente o que um solver receberia — mais a solução dual usada para montar o corte.</p>
+<p>Notação dos duais, fixada uma vez: <span class="math inline">\(u_j\)</span> (livre) associado a <span class="math inline">\(\sum_i x_{ij} = 1\)</span>, e <span class="math inline">\(w_{ij} \ge 0\)</span> associado a <span class="math inline">\(x_{ij} \le y_i\)</span>.</p>
+<hr />
+<div id="iteração-1" class="section level3 hasAnchor" number="11.6.1">
+<h3><span class="header-section-number">11.6.1</span> Iteração 1<a href="#itera%C3%A7%C3%A3o-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Mestre.</strong> Nenhum corte ainda; <span class="math inline">\(\eta\)</span> só tem seu bound inicial.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\min\;\; &amp; 4y_1 + 3y_2 + \eta \\
+\text{s.a.}\;\; &amp; \eta \ge 0 \\
+&amp; y \in \{0,1\}^2
+\end{aligned}
+\]</span></p>
+<p>Enumerando as quatro configurações (com <span class="math inline">\(\eta = 0\)</span>, pois nada o força a subir):</p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(y\)</span></th>
+<th>custo fixo</th>
+<th><span class="math inline">\(\eta\)</span></th>
+<th>total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>(0,0)</strong></td>
+<td>0</td>
+<td>0</td>
+<td><strong>0.00</strong> ←</td>
+</tr>
+<tr class="even">
+<td>(0,1)</td>
+<td>3</td>
+<td>0</td>
+<td>3.00</td>
+</tr>
+<tr class="odd">
+<td>(1,0)</td>
+<td>4</td>
+<td>0</td>
+<td>4.00</td>
+</tr>
+<tr class="even">
+<td>(1,1)</td>
+<td>7</td>
+<td>0</td>
+<td>7.00</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(\bar y = (0,0)\)</span>, <span class="math inline">\(\bar\eta = 0\)</span>, <span class="math inline">\(\;LB = 0\)</span>.</p>
+<p><strong>Subproblema</strong> com <span class="math inline">\(\bar y = (0,0)\)</span> substituído no lado direito:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\min\;\; &amp; x_{1A} + 5x_{2A} + 3x_{1B} + 2x_{2B} + 6x_{1C} + 2x_{2C} \\
+\text{s.a.}\;\; &amp; x_{1A} + x_{2A} = 1 &amp;&amp; (u_A) \\
+&amp; x_{1B} + x_{2B} = 1 &amp;&amp; (u_B) \\
+&amp; x_{1C} + x_{2C} = 1 &amp;&amp; (u_C) \\
+&amp; x_{1A} \le 0,\;\; x_{1B} \le 0,\;\; x_{1C} \le 0 &amp;&amp; (w_{1j}) \\
+&amp; x_{2A} \le 0,\;\; x_{2B} \le 0,\;\; x_{2C} \le 0 &amp;&amp; (w_{2j}) \\
+&amp; x \ge 0
+\end{aligned}
+\]</span></p>
+<p>Todas as variáveis são forçadas a zero pelas ligações, mas as três atribuições exigem soma 1. <strong>Infactível.</strong></p>
+<p><strong>Dual.</strong> Não existe solução dual ótima para coletar — o dual é ilimitado. O que existe é um <strong>raio extremo</strong>: <span class="math inline">\(u = (1,1,1)\)</span>, <span class="math inline">\(w_{ij} = 1\)</span> para todo <span class="math inline">\(i,j\)</span>, que satisfaz <span class="math inline">\(u_j - w_{ij} \le 0 \le c_{ij}\)</span> e é uma direção de recessão do dual.</p>
+<p>Objetivo dual ao longo do raio, como função de <span class="math inline">\(y\)</span>:</p>
+<p><span class="math display">\[\sum_j u_j - \sum_i \Big(\sum_j w_{ij}\Big) y_i \;=\; 3 - 3y_1 - 3y_2\]</span></p>
+<p>Impor <span class="math inline">\(\le 0\)</span> dá o <strong>corte de factibilidade</strong> <span class="math inline">\(\;y_1 + y_2 \ge 1\)</span>. Sem UB: nenhuma solução viável foi encontrada, <span class="math inline">\(UB = \infty\)</span>.</p>
+<hr />
+</div>
+<div id="iteração-2" class="section level3 hasAnchor" number="11.6.2">
+<h3><span class="header-section-number">11.6.2</span> Iteração 2<a href="#itera%C3%A7%C3%A3o-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Mestre.</strong> Agora com o corte de factibilidade:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\min\;\; &amp; 4y_1 + 3y_2 + \eta \\
+\text{s.a.}\;\; &amp; y_1 + y_2 \ge 1 &amp;&amp; \text{(factib., it. 1)} \\
+&amp; \eta \ge 0 \\
+&amp; y \in \{0,1\}^2
+\end{aligned}
+\]</span></p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(y\)</span></th>
+<th>custo fixo</th>
+<th><span class="math inline">\(\eta\)</span></th>
+<th>total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(0,0)</td>
+<td>—</td>
+<td>—</td>
+<td>cortado</td>
+</tr>
+<tr class="even">
+<td><strong>(0,1)</strong></td>
+<td>3</td>
+<td>0</td>
+<td><strong>3.00</strong> ←</td>
+</tr>
+<tr class="odd">
+<td>(1,0)</td>
+<td>4</td>
+<td>0</td>
+<td>4.00</td>
+</tr>
+<tr class="even">
+<td>(1,1)</td>
+<td>7</td>
+<td>0</td>
+<td>7.00</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(\bar y = (0,1)\)</span>, <span class="math inline">\(\bar\eta = 0\)</span>, <span class="math inline">\(\;LB = 3\)</span>.</p>
+<p><strong>Subproblema</strong> com <span class="math inline">\(\bar y = (0,1)\)</span>: as ligações do depósito 1 viram <span class="math inline">\(\le 0\)</span>, as do depósito 2 viram <span class="math inline">\(\le 1\)</span>.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\min\;\; &amp; x_{1A} + 5x_{2A} + 3x_{1B} + 2x_{2B} + 6x_{1C} + 2x_{2C} \\
+\text{s.a.}\;\; &amp; x_{1A} + x_{2A} = 1 &amp;&amp; (u_A) \\
+&amp; x_{1B} + x_{2B} = 1 &amp;&amp; (u_B) \\
+&amp; x_{1C} + x_{2C} = 1 &amp;&amp; (u_C) \\
+&amp; x_{1A} \le 0,\;\; x_{1B} \le 0,\;\; x_{1C} \le 0 &amp;&amp; (w_{1j}) \\
+&amp; x_{2A} \le 1,\;\; x_{2B} \le 1,\;\; x_{2C} \le 1 &amp;&amp; (w_{2j}) \\
+&amp; x \ge 0
+\end{aligned}
+\]</span></p>
+<p>Solução primal: <span class="math inline">\(x_{2A} = x_{2B} = x_{2C} = 1\)</span>, demais zero. <span class="math inline">\(\;\mathcal{Q}(\bar y) = 5 + 2 + 2 = 9\)</span>.</p>
+<p><strong>Solução dual:</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th><span class="math inline">\(\textstyle\sum_j\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(u_j\)</span></td>
+<td>5</td>
+<td>2</td>
+<td>2</td>
+<td>9</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(w_{1j}\)</span></td>
+<td><strong>4</strong></td>
+<td>0</td>
+<td>0</td>
+<td><strong>4</strong></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(w_{2j}\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Conferência (sempre faça esta): objetivo dual <span class="math inline">\(= \sum_j u_j - \bar y_1 \sum_j w_{1j} - \bar y_2 \sum_j w_{2j} = 9 - 0\cdot 4 - 1\cdot 0 = 9 = \mathcal{Q}(\bar y)\)</span>. ✓</p>
+<p><strong>Corte de otimalidade:</strong></p>
+<p><span class="math display">\[\eta \;\ge\; 9 - 4y_1 - 0\,y_2\]</span></p>
+<p>Leitura: “com essa configuração o atendimento custa 9; abrir o depósito 1 pode economizar até 4, todo ele no cliente A”. O único <span class="math inline">\(w\)</span> não nulo é <span class="math inline">\(w_{1A} = \max(0,\,5-1) = 4\)</span> — o cliente A hoje paga 5 e pagaria 1 no depósito 1.</p>
+<p><strong>UB.</strong> <span class="math inline">\((\bar y, \bar x)\)</span> é viável no problema original, custo <span class="math inline">\(3 + 9 = 12\)</span>. Logo <span class="math inline">\(UB = 12\)</span>.</p>
+<p>Erro da aproximação em <span class="math inline">\(\bar y\)</span>: <span class="math inline">\(\mathcal{Q}(\bar y) - \bar\eta = 9 - 0 = 9\)</span>. Enorme, porque o mestre ainda era cego.</p>
+<hr />
+</div>
+<div id="iteração-3" class="section level3 hasAnchor" number="11.6.3">
+<h3><span class="header-section-number">11.6.3</span> Iteração 3<a href="#itera%C3%A7%C3%A3o-3" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Mestre.</strong> Agora com o corte de otimalidade da iteração 2:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\min\;\; &amp; 4y_1 + 3y_2 + \eta \\
+\text{s.a.}\;\; &amp; y_1 + y_2 \ge 1 &amp;&amp; \text{(factib., it. 1)} \\
+&amp; \eta \ge 9 - 4y_1 &amp;&amp; \text{(otim., it. 2)} \\
+&amp; \eta \ge 0 \\
+&amp; y \in \{0,1\}^2
+\end{aligned}
+\]</span></p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(y\)</span></th>
+<th>custo fixo</th>
+<th><span class="math inline">\(\eta = \max(0,\,9-4y_1)\)</span></th>
+<th>total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(0,0)</td>
+<td>—</td>
+<td>—</td>
+<td>cortado</td>
+</tr>
+<tr class="even">
+<td>(0,1)</td>
+<td>3</td>
+<td>9</td>
+<td>12.00</td>
+</tr>
+<tr class="odd">
+<td><strong>(1,0)</strong></td>
+<td>4</td>
+<td>5</td>
+<td><strong>9.00</strong> ←</td>
+</tr>
+<tr class="even">
+<td>(1,1)</td>
+<td>7</td>
+<td>5</td>
+<td>12.00</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(\bar y = (1,0)\)</span>, <span class="math inline">\(\bar\eta = 5\)</span>, <span class="math inline">\(\;LB = 9\)</span>. Repare que foi o corte que apontou o depósito 1 como promissor — o mestre nunca tinha testado essa configuração.</p>
+<p><strong>Subproblema</strong> com <span class="math inline">\(\bar y = (1,0)\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\min\;\; &amp; x_{1A} + 5x_{2A} + 3x_{1B} + 2x_{2B} + 6x_{1C} + 2x_{2C} \\
+\text{s.a.}\;\; &amp; x_{1A} + x_{2A} = 1 &amp;&amp; (u_A) \\
+&amp; x_{1B} + x_{2B} = 1 &amp;&amp; (u_B) \\
+&amp; x_{1C} + x_{2C} = 1 &amp;&amp; (u_C) \\
+&amp; x_{1A} \le 1,\;\; x_{1B} \le 1,\;\; x_{1C} \le 1 &amp;&amp; (w_{1j}) \\
+&amp; x_{2A} \le 0,\;\; x_{2B} \le 0,\;\; x_{2C} \le 0 &amp;&amp; (w_{2j}) \\
+&amp; x \ge 0
+\end{aligned}
+\]</span></p>
+<p>Solução primal: <span class="math inline">\(x_{1A} = x_{1B} = x_{1C} = 1\)</span>. <span class="math inline">\(\;\mathcal{Q}(\bar y) = 1 + 3 + 6 = 10\)</span>.</p>
+<p><strong>Solução dual:</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th><span class="math inline">\(\textstyle\sum_j\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(u_j\)</span></td>
+<td>1</td>
+<td>3</td>
+<td>6</td>
+<td>10</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(w_{1j}\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(w_{2j}\)</span></td>
+<td>0</td>
+<td><strong>1</strong></td>
+<td><strong>4</strong></td>
+<td><strong>5</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Conferência: <span class="math inline">\(10 - 1\cdot 0 - 0\cdot 5 = 10 = \mathcal{Q}(\bar y)\)</span>. ✓</p>
+<p><strong>Corte de otimalidade:</strong></p>
+<p><span class="math display">\[\eta \;\ge\; 10 - 0\,y_1 - 5y_2\]</span></p>
+<p>Leitura: abrir o depósito 2 economizaria 1 no cliente B (3 → 2) e 4 no cliente C (6 → 2).</p>
+<p><strong>UB.</strong> Custo dessa solução: <span class="math inline">\(4 + 10 = 14 &gt; 12\)</span>. <strong>O UB não é atualizado</strong> — continua 12, herdado da iteração anterior. É exatamente o caso em que o subproblema produz uma solução viável pior que a incumbente.</p>
+<p>Erro da aproximação em <span class="math inline">\(\bar y\)</span>: <span class="math inline">\(10 - 5 = 5\)</span>, que é justamente <span class="math inline">\(14 - 9\)</span>.</p>
+<hr />
+</div>
+<div id="iteração-4" class="section level3 hasAnchor" number="11.6.4">
+<h3><span class="header-section-number">11.6.4</span> Iteração 4<a href="#itera%C3%A7%C3%A3o-4" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Mestre.</strong> Com os três cortes acumulados:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\min\;\; &amp; 4y_1 + 3y_2 + \eta \\
+\text{s.a.}\;\; &amp; y_1 + y_2 \ge 1 &amp;&amp; \text{(factib., it. 1)} \\
+&amp; \eta \ge 9 - 4y_1 &amp;&amp; \text{(otim., it. 2)} \\
+&amp; \eta \ge 10 - 5y_2 &amp;&amp; \text{(otim., it. 3)} \\
+&amp; \eta \ge 0 \\
+&amp; y \in \{0,1\}^2
+\end{aligned}
+\]</span></p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(y\)</span></th>
+<th>custo fixo</th>
+<th><span class="math inline">\(9-4y_1\)</span></th>
+<th><span class="math inline">\(10-5y_2\)</span></th>
+<th><span class="math inline">\(\eta\)</span></th>
+<th>total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(0,0)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>cortado</td>
+</tr>
+<tr class="even">
+<td><strong>(0,1)</strong></td>
+<td>3</td>
+<td>9</td>
+<td>5</td>
+<td>9</td>
+<td><strong>12.00</strong> ←</td>
+</tr>
+<tr class="odd">
+<td>(1,0)</td>
+<td>4</td>
+<td>5</td>
+<td>10</td>
+<td>10</td>
+<td>14.00</td>
+</tr>
+<tr class="even">
+<td>(1,1)</td>
+<td>7</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>12.00</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(\bar y = (0,1)\)</span>, <span class="math inline">\(\bar\eta = 9\)</span>, <span class="math inline">\(\;LB = 12\)</span>. Há empate com <span class="math inline">\((1,1)\)</span> em 12 — coerente com a Parte 0, onde os dois são ótimos; a enumeração devolve o primeiro encontrado.</p>
+<p><strong>Subproblema</strong> com <span class="math inline">\(\bar y = (0,1)\)</span>: idêntico ao da iteração 2, mesma solução primal e mesmo dual. <span class="math inline">\(\mathcal{Q}(\bar y) = 9\)</span>, <span class="math inline">\(u = (5,2,2)\)</span>, <span class="math inline">\(w_{1A} = 4\)</span> e os demais nulos.</p>
+<p><strong>Parada.</strong> Custo real <span class="math inline">\(= 3 + 9 = 12 = UB\)</span>, e <span class="math inline">\(LB = 12\)</span>. Gap zero.</p>
+<p>Erro da aproximação em <span class="math inline">\(\bar y\)</span>: <span class="math inline">\(\mathcal{Q}(\bar y) - \bar\eta = 9 - 9 = 0\)</span>. O corte que seria gerado agora, <span class="math inline">\(\eta \ge 9 - 4y_1\)</span>, é <strong>idêntico ao da iteração 2</strong> — nada novo a aprender neste ponto. Esse é o mecanismo de terminação em ação: uma vez que o corte de <span class="math inline">\(\bar y\)</span> está na base, o mestre não consegue mais devolver aquele mesmo <span class="math inline">\(\bar y\)</span> com um <span class="math inline">\(\eta\)</span> otimista demais.</p>
+<hr />
+</div>
+<div id="o-que-rastrear-numa-execução" class="section level3 hasAnchor" number="11.6.5">
+<h3><span class="header-section-number">11.6.5</span> O que rastrear numa execução<a href="#o-que-rastrear-numa-execu%C3%A7%C3%A3o" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Note que <strong>LB sobe monotonicamente</strong> (0 → 3 → 9 → 12) enquanto <strong>UB desce ou fica</strong> (∞ → 12 → 12 → 12). O primeiro sobe porque cortes só se acumulam, e acrescentar restrições a um problema de minimização só pode aumentar o ótimo. O segundo desce porque guardamos o melhor de todas as iterações.</p>
+<p>A coluna mais informativa para depurar, e que não aparece na tabela-resumo, é o <strong>erro da aproximação</strong> <span class="math inline">\(\mathcal{Q}(\bar y_k) - \bar\eta_k\)</span>: 9 → 5 → 0. Se ela não cair, seus cortes estão fracos ou errados. Se ela der negativa em algum momento, você tem um bug grave — significa que um corte cortou parte do epígrafo verdadeiro, e o algoritmo vai convergir silenciosamente para a resposta errada.</p>
+<hr />
+</div>
+</div>
+<div id="parte-4.5-prática-você-nunca-escreve-o-dual" class="section level2 hasAnchor" number="11.7">
+<h2><span class="header-section-number">11.7</span> Parte 4.5 — Prática: você nunca escreve o dual<a href="#parte-4.5-pr%C3%A1tica-voc%C3%AA-nunca-escreve-o-dual" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>As Partes 2 e 3 escreveram o dual por extenso, e a Parte 4 exibiu suas soluções. Isso pode dar a impressão de que a implementação precisa de dois modelos por subproblema. <strong>Não precisa.</strong> Praticamente toda implementação real resolve o <strong>primal</strong> com <span class="math inline">\(\bar y\)</span> fixo e lê os multiplicadores das restrições direto do solver. O dual existe para <em>provar</em> que o corte é válido para todo <span class="math inline">\(y\)</span> — não para ser codado.</p>
+<div id="o-que-de-fato-extrair" class="section level3 hasAnchor" number="11.7.1">
+<h3><span class="header-section-number">11.7.1</span> O que de fato extrair<a href="decomposição-de-benders-1.html#o-que-de-fato-extrair" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Só os duais das restrições em que <span class="math inline">\(y\)</span> aparece no lado direito, isto é, as linhas <span class="math inline">\(Cx \ge d - B\bar y\)</span>. No exemplo, são as seis ligações <span class="math inline">\(x_{ij} \le y_i\)</span>, cujos duais são os <span class="math inline">\(w_{ij}\)</span>. Os duais das restrições que não dependem de <span class="math inline">\(y\)</span> — as atribuições, no nosso caso — entram no termo constante do corte, mas não nos coeficientes.</p>
+<p>Você também precisa da matriz <span class="math inline">\(B\)</span> explicitamente do seu lado, porque o coeficiente de <span class="math inline">\(y\)</span> no corte é <span class="math inline">\(-B^T\bar u\)</span>. No exemplo isso se materializou como “some os <span class="math inline">\(w_{ij}\)</span> ao longo de <span class="math inline">\(j\)</span> para obter o coeficiente de <span class="math inline">\(y_i\)</span>”.</p>
+</div>
+<div id="a-armadilha-número-um-sinal" class="section level3 hasAnchor" number="11.7.2">
+<h3><span class="header-section-number">11.7.2</span> A armadilha número um: sinal<a href="#a-armadilha-n%C3%BAmero-um-sinal" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Cada solver tem sua convenção de sinal para os multiplicadores, dependendo de o modelo ser de minimização ou maximização e de a restrição ser <span class="math inline">\(\le\)</span>, <span class="math inline">\(\ge\)</span> ou <span class="math inline">\(=\)</span>. Errar isso produz cortes que parecem plausíveis mas cortam o ótimo fora, e o algoritmo converge para o número errado sem emitir nenhum alerta.</p>
+<p>Existe um teste de sanidade barato que pega isso já na primeira iteração:</p>
+<blockquote>
+<p>Monte o corte e <strong>avalie-o no próprio <span class="math inline">\(\bar y\)</span> que acabou de gerá-lo</strong>. O resultado tem que dar exatamente <span class="math inline">\(\mathcal{Q}(\bar y)\)</span>, o valor objetivo do subproblema recém-resolvido.</p>
+</blockquote>
+<p>É a conferência que aparece em cada iteração da Parte 4. Se der outra coisa, é sinal trocado ou linha errada. Deixe esse <code>assert</code> ligado durante o desenvolvimento inteiro.</p>
+</div>
+<div id="quando-o-subproblema-é-infactível" class="section level3 hasAnchor" number="11.7.3">
+<h3><span class="header-section-number">11.7.3</span> Quando o subproblema é infactível<a href="#quando-o-subproblema-%C3%A9-infact%C3%ADvel" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Aqui a receita “leia os duais” quebra: não existe solução dual ótima, e o que você precisa é de um raio extremo. Duas saídas:</p>
+<p><strong>Pedir o certificado de Farkas ao solver.</strong> <code>FarkasDual</code> no Gurobi (com <code>InfUnbdInfo=1</code>), <code>dualFarkas</code> no CPLEX, raio dual no HiGHS. Funciona, mas é API específica de cada solver e às vezes frágil.</p>
+<p><strong>Nunca deixar o subproblema ficar infactível.</strong> Acrescente variáveis artificiais nas restrições de acoplamento e minimize a soma das infactibilidades:</p>
+<p><span class="math display">\[
+\min_{x,s \ge 0}\; \mathbf{1}^Ts \quad \text{s.a.}\quad Cx + s \ge d - B\bar y
+\]</span></p>
+<p>Esse LP é sempre viável, logo sempre devolve duais. Se o ótimo é 0, o <span class="math inline">\(\bar y\)</span> é viável e você resolve o subproblema normal para gerar o corte de otimalidade. Se é positivo, os duais desse LP elástico já são exatamente o que você precisa para o corte de factibilidade. Uma única rotina, sem tratamento de exceção, sem dependência de API de raio. É a opção que eu recomendaria como padrão.</p>
+</div>
+<div id="validade-vem-da-viabilidade-dual-não-da-otimalidade" class="section level3 hasAnchor" number="11.7.4">
+<h3><span class="header-section-number">11.7.4</span> Validade vem da viabilidade dual, não da otimalidade<a href="#validade-vem-da-viabilidade-dual-n%C3%A3o-da-otimalidade" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Uma sutileza que vale internalizar: <strong>qualquer</strong> <span class="math inline">\(\bar u\)</span> que satisfaça <span class="math inline">\(C^Tu \le f\)</span>, <span class="math inline">\(u \ge 0\)</span> produz um corte válido, porque por dualidade fraca <span class="math inline">\(\mathcal{Q}(y) \ge (d - By)^T\bar u\)</span> vale para todo <span class="math inline">\(y\)</span>. A otimalidade do dual serve para deixar o corte <strong>apertado</strong> em <span class="math inline">\(\bar y\)</span> — tocando <span class="math inline">\(\mathcal{Q}\)</span> exatamente naquele ponto.</p>
+<p>Duas consequências práticas:</p>
+<ul>
+<li>Se você usa método de barreira sem <em>crossover</em>, os duais não são de vértice, mas ainda são duais ótimos. O corte continua válido e apertado. Não há problema.</li>
+<li>Em caso de <strong>degenerescência</strong>, existem vários duais ótimos, o solver escolhe um arbitrariamente, e cortes diferentes saem de execuções diferentes com a mesma matemática. Todos são válidos e apertados em <span class="math inline">\(\bar y\)</span>, mas alguns são muito melhores longe dele. É precisamente esse buraco que os cortes Pareto-ótimos de Magnanti &amp; Wong (Parte 7) preenchem, resolvendo um segundo LP para escolher o melhor entre os duais ótimos empatados.</li>
+</ul>
+</div>
+<div id="bônus-de-manter-o-primal" class="section level3 hasAnchor" number="11.7.5">
+<h3><span class="header-section-number">11.7.5</span> Bônus de manter o primal<a href="#b%C3%B4nus-de-manter-o-primal" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Como só o lado direito muda de uma iteração para outra, o subproblema é o caso ideal para <strong>simplex dual com warm start</strong>. Construa o modelo do subproblema uma única vez, fora do laço, e a cada iteração apenas atualize os RHS e re-otimize. Em instâncias grandes isso costuma valer mais que qualquer refinamento de corte.</p>
+</div>
+<div id="esqueleto-do-laço" class="section level3 hasAnchor" number="11.7.6">
+<h3><span class="header-section-number">11.7.6</span> Esqueleto do laço<a href="#esqueleto-do-la%C3%A7o" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="decomposição-de-benders-1.html#cb1-1" tabindex="-1"></a><span class="co"># Fora do laço: construa uma vez.</span></span>
+<span id="cb1-2"><a href="decomposição-de-benders-1.html#cb1-2" tabindex="-1"></a>sub <span class="op">=</span> Model()</span>
+<span id="cb1-3"><a href="decomposição-de-benders-1.html#cb1-3" tabindex="-1"></a>x   <span class="op">=</span> sub.addVars(..., lb<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb1-4"><a href="decomposição-de-benders-1.html#cb1-4" tabindex="-1"></a>atr <span class="op">=</span> sub.addConstrs(quicksum(x[i, j] <span class="cf">for</span> i <span class="kw">in</span> I) <span class="op">==</span> <span class="dv">1</span> <span class="cf">for</span> j <span class="kw">in</span> J)</span>
+<span id="cb1-5"><a href="decomposição-de-benders-1.html#cb1-5" tabindex="-1"></a>lig <span class="op">=</span> sub.addConstrs(x[i, j] <span class="op">&lt;=</span> <span class="dv">0</span> <span class="cf">for</span> i <span class="kw">in</span> I <span class="cf">for</span> j <span class="kw">in</span> J)   <span class="co"># RHS atualizado a cada it.</span></span>
+<span id="cb1-6"><a href="decomposição-de-benders-1.html#cb1-6" tabindex="-1"></a>sub.setObjective(quicksum(c[i][j] <span class="op">*</span> x[i, j] <span class="cf">for</span> i <span class="kw">in</span> I <span class="cf">for</span> j <span class="kw">in</span> J), MINIMIZE)</span>
+<span id="cb1-7"><a href="decomposição-de-benders-1.html#cb1-7" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="decomposição-de-benders-1.html#cb1-8" tabindex="-1"></a><span class="co"># Dentro do laço:</span></span>
+<span id="cb1-9"><a href="decomposição-de-benders-1.html#cb1-9" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> I:</span>
+<span id="cb1-10"><a href="decomposição-de-benders-1.html#cb1-10" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> J:</span>
+<span id="cb1-11"><a href="decomposição-de-benders-1.html#cb1-11" tabindex="-1"></a>        lig[i, j].RHS <span class="op">=</span> ybar[i]        <span class="co"># só o RHS muda → warm start do simplex dual</span></span>
+<span id="cb1-12"><a href="decomposição-de-benders-1.html#cb1-12" tabindex="-1"></a>sub.optimize()</span>
+<span id="cb1-13"><a href="decomposição-de-benders-1.html#cb1-13" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="decomposição-de-benders-1.html#cb1-14" tabindex="-1"></a>u <span class="op">=</span> {j: atr[j].Pi <span class="cf">for</span> j <span class="kw">in</span> J}          <span class="co"># duais das linhas sem y</span></span>
+<span id="cb1-15"><a href="decomposição-de-benders-1.html#cb1-15" tabindex="-1"></a>w <span class="op">=</span> {(i, j): <span class="op">-</span>lig[i, j].Pi <span class="cf">for</span> i <span class="kw">in</span> I <span class="cf">for</span> j <span class="kw">in</span> J}   <span class="co"># CONFIRA O SINAL</span></span>
+<span id="cb1-16"><a href="decomposição-de-benders-1.html#cb1-16" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="decomposição-de-benders-1.html#cb1-17" tabindex="-1"></a>const <span class="op">=</span> <span class="bu">sum</span>(u[j] <span class="cf">for</span> j <span class="kw">in</span> J)</span>
+<span id="cb1-18"><a href="decomposição-de-benders-1.html#cb1-18" tabindex="-1"></a>coef  <span class="op">=</span> {i: <span class="bu">sum</span>(w[i, j] <span class="cf">for</span> j <span class="kw">in</span> J) <span class="cf">for</span> i <span class="kw">in</span> I}</span>
+<span id="cb1-19"><a href="decomposição-de-benders-1.html#cb1-19" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="decomposição-de-benders-1.html#cb1-20" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">abs</span>((const <span class="op">-</span> <span class="bu">sum</span>(coef[i] <span class="op">*</span> ybar[i] <span class="cf">for</span> i <span class="kw">in</span> I)) <span class="op">-</span> sub.ObjVal) <span class="op">&lt;</span> <span class="fl">1e-6</span></span>
+<span id="cb1-21"><a href="decomposição-de-benders-1.html#cb1-21" tabindex="-1"></a>mestre.addConstr(eta <span class="op">&gt;=</span> const <span class="op">-</span> quicksum(coef[i] <span class="op">*</span> y[i] <span class="cf">for</span> i <span class="kw">in</span> I))</span></code></pre></div>
+<p>O <code>assert</code> é a linha mais importante do bloco.</p>
+<hr />
+</div>
+</div>
+<div id="parte-5-teoria-o-caso-estocástico-de-dois-estágios-l-shaped" class="section level2 hasAnchor" number="11.8">
+<h2><span class="header-section-number">11.8</span> Parte 5 — Teoria: o caso estocástico de dois estágios (L-shaped)<a href="#parte-5-teoria-o-caso-estoc%C3%A1stico-de-dois-est%C3%A1gios-l-shaped" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Aqui Benders é mais natural ainda. O problema:</p>
+<p><span class="math display">\[\min_{y}\; c^Ty + \sum_s p_s\, Q_s(y), \qquad Q_s(y) = \min_{x_s \ge 0}\{ f^Tx_s : W x_s \ge h_s - T_s y \}\]</span></p>
+<p>Decide-se <span class="math inline">\(y\)</span> <strong>antes</strong> de saber qual cenário <span class="math inline">\(s\)</span> ocorre; <span class="math inline">\(x_s\)</span> é a decisão de recurso, tomada depois.</p>
+<p>Ao fixar <span class="math inline">\(\bar y\)</span>, o subproblema <strong>se separa completamente por cenário</strong> — <span class="math inline">\(N\)</span> LPs pequenos e independentes, paralelizáveis. Essa é a vantagem estrutural que faz Benders ser o método padrão aqui (variante conhecida como <strong>método L-shaped</strong>, de Van Slyke &amp; Wets, 1969).</p>
+<p>O corte agregado usa a média dos duais:</p>
+<p><span class="math display">\[\eta \;\ge\; \sum_s p_s\, (h_s - T_s y)^T \bar u_s\]</span></p>
+<div id="exemplo-planejamento-de-capacidade" class="section level3 hasAnchor" number="11.8.1">
+<h3><span class="header-section-number">11.8.1</span> Exemplo: planejamento de capacidade<a href="decomposição-de-benders-1.html#exemplo-planejamento-de-capacidade" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>Decide-se capacidade <span class="math inline">\(x \ge 0\)</span> a custo 2/unidade, antes de conhecer a demanda.</li>
+<li>Demanda: 10 ou 20, cada uma com probabilidade 0.5.</li>
+<li>Demanda não atendida custa 5/unidade de penalidade.</li>
+</ul>
+<p>Segundo estágio: <span class="math inline">\(Q(x,d) = \min\{5z : z \ge d - x,\; z \ge 0\}\)</span>, com dual <span class="math inline">\(\max\{(d-x)\pi : 0 \le \pi \le 5\}\)</span>.</p>
+<p>Logo <span class="math inline">\(\pi^* = 5\)</span> se <span class="math inline">\(d &gt; x\)</span> (capacidade escassa, cada unidade extra vale 5) e <span class="math inline">\(\pi^* = 0\)</span> caso contrário (capacidade sobrando, unidade extra vale nada). O dual é literalmente o <strong>preço-sombra da capacidade</strong>.</p>
+<table>
+<thead>
+<tr class="header">
+<th>It</th>
+<th><span class="math inline">\(x\)</span></th>
+<th>LB</th>
+<th><span class="math inline">\(\pi\)</span> por cenário</th>
+<th><span class="math inline">\(Q\)</span> esperado</th>
+<th>UB</th>
+<th>Corte</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>(5, 5)</td>
+<td>75.00</td>
+<td>75.00</td>
+<td><span class="math inline">\(\eta \ge 75 - 5x\)</span></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>15.00</td>
+<td>30.00</td>
+<td>(0, 5)</td>
+<td>12.50</td>
+<td>42.50</td>
+<td><span class="math inline">\(\eta \ge 50 - 2.5x\)</span></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>20.00</td>
+<td><strong>40.00</strong></td>
+<td>(0, 0)</td>
+<td>0.00</td>
+<td><strong>40.00</strong></td>
+<td>parar</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Capacidade ótima: 20, custo esperado 40.</strong></p>
+<p>Acompanhe a lógica: começa em <span class="math inline">\(x=0\)</span> (ambos os cenários com falta, preço-sombra 5 nos dois), o corte é agressivo e empurra a capacidade para cima. Em <span class="math inline">\(x=15\)</span> o cenário de demanda baixa já está coberto e seu preço-sombra cai a zero — o corte fica menos inclinado, refletindo que agora só metade dos cenários pressiona por mais capacidade. Em <span class="math inline">\(x=20\)</span> ninguém tem falta e o processo converge.</p>
+<p>Cada corte é uma resposta à pergunta “quanto vale, em média, uma unidade a mais de capacidade <strong>nesta região</strong>?”.</p>
+<hr />
+</div>
+</div>
+<div id="parte-6-teoria-quando-benders-não-se-aplica-e-as-saídas" class="section level2 hasAnchor" number="11.9">
+<h2><span class="header-section-number">11.9</span> Parte 6 — Teoria: quando Benders <strong>não</strong> se aplica (e as saídas)<a href="#parte-6-teoria-quando-benders-n%C3%A3o-se-aplica-e-as-sa%C3%ADdas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situação</th>
+<th>Problema</th>
+<th>Saída</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Subproblema tem variáveis inteiras</td>
+<td>Sem dualidade forte; os cortes podem cortar o ótimo</td>
+<td><strong>Logic-based Benders</strong> (Hooker &amp; Ottosson): usa “dual de inferência” em vez de dual LP</td>
+</tr>
+<tr class="even">
+<td>Subproblema não-linear mas convexo</td>
+<td>Dual LP não se aplica diretamente</td>
+<td><strong>Generalized Benders</strong> (Geoffrion, 1972)</td>
+</tr>
+<tr class="odd">
+<td>Subproblema não-convexo</td>
+<td>Cortes inválidos — <strong>erro silencioso</strong>, o mais perigoso</td>
+<td>Reformular, ou usar decomposição não-convexa especializada</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(y\)</span> aparece nas restrições do dual</td>
+<td>Cortes não são válidos globalmente</td>
+<td>Reformular movendo o acoplamento para o RHS</td>
+</tr>
+<tr class="odd">
+<td>Fixar <span class="math inline">\(y\)</span> não simplifica nada</td>
+<td>Sem ganho computacional</td>
+<td>Não use Benders</td>
+</tr>
+</tbody>
+</table>
+<p>Sobre a terceira linha: essa é a armadilha clássica. Se o subproblema for não-convexo, o algoritmo <strong>converge normalmente</strong> e devolve uma resposta errada, sem sinal de alerta. Sempre verifique a convexidade antes de confiar no resultado.</p>
+<hr />
+</div>
+<div id="parte-7-prática-o-que-dói-na-implementação-real" class="section level2 hasAnchor" number="11.10">
+<h2><span class="header-section-number">11.10</span> Parte 7 — Prática: o que dói na implementação real<a href="#parte-7-pr%C3%A1tica-o-que-d%C3%B3i-na-implementa%C3%A7%C3%A3o-real" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>O algoritmo de livro raramente é competitivo direto. Os problemas típicos:</p>
+<p><strong>Tailing off.</strong> LB sobe rápido no início e depois arrasta por centenas de iterações. Sintoma de que os cortes estão redundantes.</p>
+<p><strong>Cortes fracos por degenerescência.</strong> Quando o dual tem múltiplos ótimos, alguns geram cortes muito mais informativos que outros (ver Parte 4.5, “validade vem da viabilidade dual”). A técnica de <strong>cortes Pareto-ótimos</strong> (Magnanti &amp; Wong, 1981) escolhe, entre os duais ótimos, o que domina os demais — resolvendo um segundo LP com um ponto-núcleo de referência.</p>
+<p><strong>Reconstruir a árvore B&amp;B toda iteração.</strong> No esquema clássico, o mestre inteiro é resolvido do zero a cada rodada. A solução moderna é <strong>branch-and-Benders-cut</strong>: uma única árvore de branch-and-bound, com cortes gerados via <em>lazy constraint callback</em> nos nós. Todo solver sério (CPLEX, Gurobi, SCIP) suporta isso, e costuma ser a diferença entre horas e minutos.</p>
+<p><strong>Início ruim.</strong> Nas primeiras iterações o mestre é essencialmente cego. Vale adicionar cortes iniciais de uma solução heurística e restrições válidas conhecidas (no nosso exemplo, <span class="math inline">\(y_1 + y_2 \ge 1\)</span> poderia ter sido incluída de saída).</p>
+<p><strong>Outras alavancas úteis:</strong> <em>multi-cut</em> (um corte por cenário em vez de um agregado — mais informação, mestre maior); estabilização por região de confiança ou <em>level method</em>; normalização de cortes de factibilidade.</p>
+<hr />
+</div>
+<div id="parte-8-código-completo" class="section level2 hasAnchor" number="11.11">
+<h2><span class="header-section-number">11.11</span> Parte 8 — Código completo<a href="#parte-8-c%C3%B3digo-completo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Implementação didática do exemplo de localização. Sem dependências externas: o mestre é resolvido por enumeração (só 2 binárias) e o subproblema em forma fechada. Para instâncias reais, troque o mestre por um MILP em Gurobi/CPLEX/PuLP e o subproblema por um LP.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="decomposição-de-benders-1.html#cb2-1" tabindex="-1"></a><span class="im">from</span> itertools <span class="im">import</span> product</span>
+<span id="cb2-2"><a href="decomposição-de-benders-1.html#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="decomposição-de-benders-1.html#cb2-3" tabindex="-1"></a>F <span class="op">=</span> [<span class="fl">4.0</span>, <span class="fl">3.0</span>]                        <span class="co"># custo fixo de abrir cada depósito</span></span>
+<span id="cb2-4"><a href="decomposição-de-benders-1.html#cb2-4" tabindex="-1"></a>C <span class="op">=</span> [[<span class="fl">1.0</span>, <span class="fl">3.0</span>, <span class="fl">6.0</span>],                 <span class="co"># custo de atender cliente j a partir de i</span></span>
+<span id="cb2-5"><a href="decomposição-de-benders-1.html#cb2-5" tabindex="-1"></a>     [<span class="fl">5.0</span>, <span class="fl">2.0</span>, <span class="fl">2.0</span>]]</span>
+<span id="cb2-6"><a href="decomposição-de-benders-1.html#cb2-6" tabindex="-1"></a>nI, nJ <span class="op">=</span> <span class="bu">len</span>(F), <span class="bu">len</span>(C[<span class="dv">0</span>])</span>
+<span id="cb2-7"><a href="decomposição-de-benders-1.html#cb2-7" tabindex="-1"></a>BIG <span class="op">=</span> <span class="bu">float</span>(<span class="st">&quot;inf&quot;</span>)</span>
+<span id="cb2-8"><a href="decomposição-de-benders-1.html#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="decomposição-de-benders-1.html#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="decomposição-de-benders-1.html#cb2-10" tabindex="-1"></a><span class="kw">def</span> subproblem(y):</span>
+<span id="cb2-11"><a href="decomposição-de-benders-1.html#cb2-11" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;LP de atendimento com y fixo. None se infactível.&quot;&quot;&quot;</span></span>
+<span id="cb2-12"><a href="decomposição-de-benders-1.html#cb2-12" tabindex="-1"></a>    abertos <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(nI) <span class="cf">if</span> y[i] <span class="op">&gt;</span> <span class="fl">0.5</span>]</span>
+<span id="cb2-13"><a href="decomposição-de-benders-1.html#cb2-13" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> abertos:</span>
+<span id="cb2-14"><a href="decomposição-de-benders-1.html#cb2-14" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span>                                    <span class="co"># → corte de factibilidade</span></span>
+<span id="cb2-15"><a href="decomposição-de-benders-1.html#cb2-15" tabindex="-1"></a>    u <span class="op">=</span> [<span class="bu">min</span>(C[i][j] <span class="cf">for</span> i <span class="kw">in</span> abertos) <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(nJ)]</span>
+<span id="cb2-16"><a href="decomposição-de-benders-1.html#cb2-16" tabindex="-1"></a>    w <span class="op">=</span> [[<span class="bu">max</span>(<span class="fl">0.0</span>, u[j] <span class="op">-</span> C[i][j]) <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(nJ)] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(nI)]</span>
+<span id="cb2-17"><a href="decomposição-de-benders-1.html#cb2-17" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(u), u, w</span>
+<span id="cb2-18"><a href="decomposição-de-benders-1.html#cb2-18" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="decomposição-de-benders-1.html#cb2-19" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="decomposição-de-benders-1.html#cb2-20" tabindex="-1"></a><span class="kw">def</span> solve_master(opt_cuts, feas_cuts):</span>
+<span id="cb2-21"><a href="decomposição-de-benders-1.html#cb2-21" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Mestre por enumeração. Devolve (y*, eta*, valor) = limite inferior.&quot;&quot;&quot;</span></span>
+<span id="cb2-22"><a href="decomposição-de-benders-1.html#cb2-22" tabindex="-1"></a>    best <span class="op">=</span> (<span class="va">None</span>, <span class="va">None</span>, BIG)</span>
+<span id="cb2-23"><a href="decomposição-de-benders-1.html#cb2-23" tabindex="-1"></a>    <span class="cf">for</span> y <span class="kw">in</span> product([<span class="dv">0</span>, <span class="dv">1</span>], repeat<span class="op">=</span>nI):</span>
+<span id="cb2-24"><a href="decomposição-de-benders-1.html#cb2-24" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">any</span>(<span class="bu">sum</span>(a[i] <span class="op">*</span> y[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(nI)) <span class="op">&lt;</span> b <span class="op">-</span> <span class="fl">1e-9</span></span>
+<span id="cb2-25"><a href="decomposição-de-benders-1.html#cb2-25" tabindex="-1"></a>               <span class="cf">for</span> a, b <span class="kw">in</span> feas_cuts):</span>
+<span id="cb2-26"><a href="decomposição-de-benders-1.html#cb2-26" tabindex="-1"></a>            <span class="cf">continue</span></span>
+<span id="cb2-27"><a href="decomposição-de-benders-1.html#cb2-27" tabindex="-1"></a>        eta <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb2-28"><a href="decomposição-de-benders-1.html#cb2-28" tabindex="-1"></a>        <span class="cf">for</span> const, coef <span class="kw">in</span> opt_cuts:                   <span class="co"># eta &gt;= const - coef·y</span></span>
+<span id="cb2-29"><a href="decomposição-de-benders-1.html#cb2-29" tabindex="-1"></a>            eta <span class="op">=</span> <span class="bu">max</span>(eta, const <span class="op">-</span> <span class="bu">sum</span>(coef[i] <span class="op">*</span> y[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(nI)))</span>
+<span id="cb2-30"><a href="decomposição-de-benders-1.html#cb2-30" tabindex="-1"></a>        val <span class="op">=</span> <span class="bu">sum</span>(F[i] <span class="op">*</span> y[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(nI)) <span class="op">+</span> eta</span>
+<span id="cb2-31"><a href="decomposição-de-benders-1.html#cb2-31" tabindex="-1"></a>        <span class="cf">if</span> val <span class="op">&lt;</span> best[<span class="dv">2</span>] <span class="op">-</span> <span class="fl">1e-9</span>:</span>
+<span id="cb2-32"><a href="decomposição-de-benders-1.html#cb2-32" tabindex="-1"></a>            best <span class="op">=</span> (y, eta, val)</span>
+<span id="cb2-33"><a href="decomposição-de-benders-1.html#cb2-33" tabindex="-1"></a>    <span class="cf">return</span> best</span>
+<span id="cb2-34"><a href="decomposição-de-benders-1.html#cb2-34" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="decomposição-de-benders-1.html#cb2-35" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="decomposição-de-benders-1.html#cb2-36" tabindex="-1"></a><span class="kw">def</span> benders(max_iter<span class="op">=</span><span class="dv">20</span>, tol<span class="op">=</span><span class="fl">1e-6</span>):</span>
+<span id="cb2-37"><a href="decomposição-de-benders-1.html#cb2-37" tabindex="-1"></a>    opt_cuts, feas_cuts <span class="op">=</span> [], []</span>
+<span id="cb2-38"><a href="decomposição-de-benders-1.html#cb2-38" tabindex="-1"></a>    UB, best_y <span class="op">=</span> BIG, <span class="va">None</span></span>
+<span id="cb2-39"><a href="decomposição-de-benders-1.html#cb2-39" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, max_iter <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb2-40"><a href="decomposição-de-benders-1.html#cb2-40" tabindex="-1"></a>        y, eta, LB <span class="op">=</span> solve_master(opt_cuts, feas_cuts)</span>
+<span id="cb2-41"><a href="decomposição-de-benders-1.html#cb2-41" tabindex="-1"></a>        res <span class="op">=</span> subproblem(y)</span>
+<span id="cb2-42"><a href="decomposição-de-benders-1.html#cb2-42" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="decomposição-de-benders-1.html#cb2-43" tabindex="-1"></a>        <span class="cf">if</span> res <span class="kw">is</span> <span class="va">None</span>:                                <span class="co"># infactível</span></span>
+<span id="cb2-44"><a href="decomposição-de-benders-1.html#cb2-44" tabindex="-1"></a>            feas_cuts.append(([<span class="fl">1.0</span>] <span class="op">*</span> nI, <span class="fl">1.0</span>))        <span class="co"># y1 + y2 &gt;= 1</span></span>
+<span id="cb2-45"><a href="decomposição-de-benders-1.html#cb2-45" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f&quot;it </span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">: y=</span><span class="sc">{</span>y<span class="sc">}</span><span class="ss"> LB=</span><span class="sc">{</span>LB<span class="sc">:7.2f}</span><span class="ss"> UB=</span><span class="sc">{</span>UB<span class="sc">:7.2f}</span><span class="ss"> -&gt; corte FACTIBILIDADE&quot;</span>)</span>
+<span id="cb2-46"><a href="decomposição-de-benders-1.html#cb2-46" tabindex="-1"></a>            <span class="cf">continue</span></span>
+<span id="cb2-47"><a href="decomposição-de-benders-1.html#cb2-47" tabindex="-1"></a></span>
+<span id="cb2-48"><a href="decomposição-de-benders-1.html#cb2-48" tabindex="-1"></a>        qval, u, w <span class="op">=</span> res</span>
+<span id="cb2-49"><a href="decomposição-de-benders-1.html#cb2-49" tabindex="-1"></a>        total <span class="op">=</span> <span class="bu">sum</span>(F[i] <span class="op">*</span> y[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(nI)) <span class="op">+</span> qval</span>
+<span id="cb2-50"><a href="decomposição-de-benders-1.html#cb2-50" tabindex="-1"></a>        <span class="cf">if</span> total <span class="op">&lt;</span> UB:                                 <span class="co"># solução factível → UB</span></span>
+<span id="cb2-51"><a href="decomposição-de-benders-1.html#cb2-51" tabindex="-1"></a>            UB, best_y <span class="op">=</span> total, y</span>
+<span id="cb2-52"><a href="decomposição-de-benders-1.html#cb2-52" tabindex="-1"></a></span>
+<span id="cb2-53"><a href="decomposição-de-benders-1.html#cb2-53" tabindex="-1"></a>        coef <span class="op">=</span> [<span class="bu">sum</span>(w[i][j] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(nJ)) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(nI)]</span>
+<span id="cb2-54"><a href="decomposição-de-benders-1.html#cb2-54" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;it </span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">: y=</span><span class="sc">{</span>y<span class="sc">}</span><span class="ss"> LB=</span><span class="sc">{</span>LB<span class="sc">:7.2f}</span><span class="ss"> UB=</span><span class="sc">{</span>UB<span class="sc">:7.2f}</span><span class="ss"> Q=</span><span class="sc">{</span>qval<span class="sc">:.2f}</span><span class="ss"> &quot;</span></span>
+<span id="cb2-55"><a href="decomposição-de-benders-1.html#cb2-55" tabindex="-1"></a>              <span class="ss">f&quot;-&gt; eta &gt;= </span><span class="sc">{</span><span class="bu">sum</span>(u)<span class="sc">:.2f}</span><span class="ss"> - </span><span class="sc">{</span>coef<span class="sc">}</span><span class="ss">·y&quot;</span>)</span>
+<span id="cb2-56"><a href="decomposição-de-benders-1.html#cb2-56" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="decomposição-de-benders-1.html#cb2-57" tabindex="-1"></a>        <span class="cf">if</span> UB <span class="op">-</span> LB <span class="op">&lt;=</span> tol:</span>
+<span id="cb2-58"><a href="decomposição-de-benders-1.html#cb2-58" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">ÓTIMO: y*=</span><span class="sc">{</span>best_y<span class="sc">}</span><span class="ss">  custo=</span><span class="sc">{</span>UB<span class="sc">:.2f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb2-59"><a href="decomposição-de-benders-1.html#cb2-59" tabindex="-1"></a>            <span class="cf">return</span> best_y, UB</span>
+<span id="cb2-60"><a href="decomposição-de-benders-1.html#cb2-60" tabindex="-1"></a></span>
+<span id="cb2-61"><a href="decomposição-de-benders-1.html#cb2-61" tabindex="-1"></a>        opt_cuts.append((<span class="bu">sum</span>(u), coef))</span>
+<span id="cb2-62"><a href="decomposição-de-benders-1.html#cb2-62" tabindex="-1"></a>    <span class="cf">return</span> best_y, UB</span>
+<span id="cb2-63"><a href="decomposição-de-benders-1.html#cb2-63" tabindex="-1"></a></span>
+<span id="cb2-64"><a href="decomposição-de-benders-1.html#cb2-64" tabindex="-1"></a></span>
+<span id="cb2-65"><a href="decomposição-de-benders-1.html#cb2-65" tabindex="-1"></a>benders()</span></code></pre></div>
+<p>Saída:</p>
+<pre><code>it 1: y=(0, 0) LB=   0.00 UB=    inf -&gt; corte FACTIBILIDADE
+it 2: y=(0, 1) LB=   3.00 UB=  12.00 Q=9.00  -&gt; eta &gt;= 9.00 - [4.0, 0.0]·y
+it 3: y=(1, 0) LB=   9.00 UB=  12.00 Q=10.00 -&gt; eta &gt;= 10.00 - [0.0, 5.0]·y
+it 4: y=(0, 1) LB=  12.00 UB=  12.00 Q=9.00
+
+ÓTIMO: y*=(0, 1)  custo=12.00</code></pre>
+<hr />
+</div>
+<div id="checklist-de-aplicabilidade" class="section level2 hasAnchor" number="11.12">
+<h2><span class="header-section-number">11.12</span> Checklist de aplicabilidade<a href="decomposição-de-benders-1.html#checklist-de-aplicabilidade" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Antes de investir tempo em Benders, responda:</p>
+<ol style="list-style-type: decimal">
+<li>Existe um subconjunto de variáveis cuja fixação simplifica drasticamente o problema? Se não → não use.</li>
+<li>O subproblema resultante é convexo (LP ou NLP convexo)? Se não → precisa de Logic-based ou Generalized Benders.</li>
+<li>As variáveis complicadoras aparecem no subproblema apenas no lado direito? Se não → reformule.</li>
+<li>O subproblema se decompõe em blocos independentes? Se sim → ganho grande, especialmente com paralelismo.</li>
+<li>Há muito mais variáveis fáceis do que complicadoras? Se sim → sinal forte a favor.</li>
+</ol>
+<p>Se as cinco derem verde, Benders provavelmente vale o esforço.</p>
+<hr />
+</div>
+<div id="referências" class="section level2 hasAnchor" number="11.13">
+<h2><span class="header-section-number">11.13</span> Referências<a href="#refer%C3%AAncias" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li>Benders, J. F. (1962). <em>Partitioning procedures for solving mixed-variables programming problems.</em> Numerische Mathematik.</li>
+<li>Van Slyke, R. &amp; Wets, R. (1969). <em>L-shaped linear programs with applications to optimal control and stochastic programming.</em> SIAM J. Applied Math.</li>
+<li>Geoffrion, A. M. (1972). <em>Generalized Benders decomposition.</em> JOTA.</li>
+<li>Magnanti, T. &amp; Wong, R. (1981). <em>Accelerating Benders decomposition.</em> Operations Research.</li>
+<li>Rahmaniani, R. et al. (2017). <em>The Benders decomposition algorithm: a literature review.</em> EJOR. — survey moderno, bom ponto de partida para técnicas de aceleração.</li>
+<li>Birge, J. &amp; Louveaux, F. <em>Introduction to Stochastic Programming.</em> — referência para a parte estocástica.</li>
+</ul>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="decomposição-de-benders.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/08-TopicosAvancados.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["_main.pdf", "_main.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

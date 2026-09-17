@@ -1,0 +1,308 @@
+===============================================================================
+COMO MANTER O ROADMAP DA DISCIPLINA
+Pasta: /4-prog-linear/
+Última revisão: setembro de 2026
+===============================================================================
+
+
+-------------------------------------------------------------------------------
+1. OS ARQUIVOS
+-------------------------------------------------------------------------------
+
+roadmap-dados.js    O CONTEÚDO. É aqui que você mexe no dia a dia: paradas,
+                    textos, links. 99% das alterações são só neste arquivo.
+
+roadmap.js          O MOTOR. Desenha a trilha, monta o painel, salva o
+                    progresso. Só precisa ser tocado para mudar cores ou
+                    comportamento. Não precisa entender este arquivo para
+                    manter o roteiro.
+
+prog-linear.html    A PÁGINA. Contém a lista completa de materiais (as
+                    div.tour-row) e, no começo, a seção com <div id="roadmap">.
+
+REGRA DE OURO: se a dúvida é "o que aparece", o arquivo é roadmap-dados.js.
+Se é "como aparece", é roadmap.js.
+
+
+-------------------------------------------------------------------------------
+2. ANATOMIA DE UMA PARADA
+-------------------------------------------------------------------------------
+
+Dentro de roadmap-dados.js, tudo é uma lista de blocos entre { e }, separados
+por vírgula. Um bloco típico:
+
+  {
+    id: "dualidade",
+    modulo: 2,
+    tipo: "parada",
+    curto: "Dualidade",
+    titulo: "O problema espelho",
+    texto: "Todo problema de PL carrega outro dentro de si...",
+    materiais: [
+      { tipo: "apresentacao", rotulo: "Dualidade em PL — introdução",
+        ref: "m-apres-3-0",
+        url: "https://alexandrechecoli.github.io/4-prog-linear/Materiais/Apresentacoes/3.0 - DualidadeI.pdf" }
+    ]
+  },
+
+Campo por campo:
+
+id       Identificador curto, só letras minúsculas, números e hífen. Sem
+         espaços e sem acentos. É ele que aparece no link direto
+         (#parada/dualidade) e é a chave usada para lembrar se o aluno
+         concluiu a etapa. NÃO REPITA um id já usado.
+         Atenção: se você mudar o id de uma parada existente, os alunos
+         perdem a marcação de "concluída" daquela etapa. Prefira não mexer.
+
+modulo   1, 2 ou 3 — os três blocos do semestre (Modelar, Resolver,
+         Interpretar). Aparece no painel como "Módulo 2 · Resolver".
+         Os nomes dos módulos ficam no roadmap.js, na linha que começa
+         com "var MODULOS =". São só três palavras, fáceis de trocar.
+
+tipo     "parada"   etapa normal, ganha um círculo numerado
+         "prova"    marco, ganha um losango azul-escuro, não entra na contagem
+         "chegada"  o último nó, com a estrela
+
+curto    O rótulo embaixo da bolinha. Máximo de 14 caracteres — acima disso
+         ele quebra em duas linhas e, se for muito longo, encosta no vizinho.
+         Use "Simplex II", não "Simplex fase II".
+
+titulo   O título grande no painel. Pode ser mais livre e descritivo.
+
+texto    A contextualização: 2 a 4 frases dizendo o que o aluno aprende ali e
+         o que fazer com o material. Escreva direto para o aluno.
+         CUIDADO com aspas: o texto fica entre aspas duplas, então se você
+         precisar de aspas dentro dele, use as simples ('assim') ou as
+         tipográficas (“assim”). Uma aspa dupla solta quebra o arquivo.
+
+materiais  A lista de links. Pode ser [] (vazia), como nas provas.
+
+
+-------------------------------------------------------------------------------
+3. ANATOMIA DE UM MATERIAL
+-------------------------------------------------------------------------------
+
+  { tipo: "lista", rotulo: "Lista 5 — Simplex fase II",
+    ref: "m-lista-5",
+    url: "https://alexandrechecoli.github.io/4-prog-linear/Materiais/Listas/L4_SimplexFase2.pdf" }
+
+tipo     Define a cor e o texto da etiqueta. Valores aceitos:
+           apresentacao   (etiqueta azul-escura, "APRESENTAÇÃO")
+           handout        (etiqueta cinza-violeta)
+           lista          (etiqueta azul-escura)
+           gabarito       (etiqueta cinza-violeta)
+           ferramenta     (etiqueta violeta) — GUSEK, GeoGebra, LPSolver
+           extra          (etiqueta violeta) — resumo, desafio, ementa
+         Se você escrever qualquer outra coisa, a etiqueta aparece como
+         "Material" e fica azul-escura. Não quebra nada.
+
+rotulo   O texto do link, como o aluno lê.
+
+ref      O id do link que JÁ EXISTE na lista de baixo da página. Quando o
+         roadmap acha esse id, ele lê o endereço de lá — assim a URL vive
+         num lugar só — e ainda mostra o botão "ver na lista".
+
+url      Endereço de reserva, usado só se o ref não for encontrado. Mantenha
+         os dois preenchidos: se um dia você apagar uma linha da lista de
+         baixo por engano, o roadmap continua funcionando.
+
+
+-------------------------------------------------------------------------------
+4. ADICIONAR UM MATERIAL NOVO (o caso mais comum)
+-------------------------------------------------------------------------------
+
+Exemplo: você criou a "Lista 10 — Dualidade avançada".
+
+PASSO 1 — Coloque o PDF na pasta, como sempre:
+          /4-prog-linear/Materiais/Listas/L10_DualidadeAvancada.pdf
+
+PASSO 2 — Adicione a linha na lista de baixo do prog-linear.html, copiando
+          uma div.tour-row existente. A única novidade é o id no link ABRIR:
+
+          <div class="tour-row">
+            <span class="tour-item tour-date">01.09.26</span>
+            <span class="tour-item tour-city">Lista 10</span>
+            <span class="tour-item tour-arena">Dualidade avançada</span>
+            <button type="button" class="tour-item tour-btn btn btn-primary">
+              <a style="text-decoration: none;" href="/4-prog-linear/Materiais/Listas/L10_DualidadeAvancada.pdf" download>BAIXAR</a></button>
+            <button type="button" class="tour-item tour-btn btn btn-primary">
+              <a id="m-lista-10" style="text-decoration: none;" target="_blank" href="/4-prog-linear/Materiais/Listas/L10_DualidadeAvancada.pdf">ABRIR</a>
+            </button>
+          </div>
+
+          O id vai no <a> do ABRIR. Se o material só tiver BAIXAR (como os
+          .rar do GUSEK e do GeoGebra), ponha o id nesse.
+
+          Convenção de nomes de id usada até agora:
+            m-apres-1-3   apresentações (número da apresentação)
+            m-hand-1-3    handouts
+            m-lista-5     listas
+            m-gab-5       gabaritos
+            m-lps, m-geogebra, m-lpsolver, m-resumo, m-ementa, m-desafio
+
+PASSO 3 — Em roadmap-dados.js, acrescente o material dentro da parada certa,
+          na lista "materiais", sem esquecer a vírgula separando do anterior:
+
+            { tipo: "lista", rotulo: "Lista 10 — Dualidade avançada",
+              ref: "m-lista-10",
+              url: "https://alexandrechecoli.github.io/4-prog-linear/Materiais/Listas/L10_DualidadeAvancada.pdf" }
+
+PASSO 4 — Abra a página e clique na parada para conferir.
+
+
+-------------------------------------------------------------------------------
+5. ADICIONAR UMA PARADA NOVA
+-------------------------------------------------------------------------------
+
+Copie um bloco inteiro de parada, cole na posição desejada e troque os campos.
+A ORDEM DOS BLOCOS NO ARQUIVO É A ORDEM DA TRILHA — não existe campo de
+posição, é a ordem mesmo. O layout se reorganiza sozinho: os números são
+recalculados, as bolinhas se redistribuem nas linhas e o "parada 3 de 11"
+vira "3 de 12" automaticamente.
+
+Não esqueça:
+  - vírgula entre um bloco e outro (mas não depois do último);
+  - id novo, que não exista ainda;
+  - curto com até 14 caracteres.
+
+Quantas cabem? Até uns 18 nós a trilha continua legível. Acima disso ela fica
+alta demais no celular — nesse caso, junte tópicos vizinhos em uma parada só,
+que é o que já foi feito com as três apresentações da "Inversa".
+
+
+-------------------------------------------------------------------------------
+6. REMOVER OU REORDENAR
+-------------------------------------------------------------------------------
+
+REMOVER: apague o bloco inteiro, de { até },. Confira se não sobrou vírgula
+dupla ou vírgula antes do ] final. Os alunos que já tinham marcado aquela
+parada como concluída simplesmente deixam de vê-la; nada quebra.
+
+REORDENAR: recorte o bloco e cole em outra posição. Só isso.
+
+DESATIVAR TEMPORARIAMENTE: em vez de apagar, comente o bloco colocando /*
+antes e */ depois. Assim você não perde o texto que já escreveu.
+
+
+-------------------------------------------------------------------------------
+7. QUANDO ALGO DÁ ERRADO
+-------------------------------------------------------------------------------
+
+SINTOMA: o roadmap sumiu por completo, a página segue normal.
+CAUSA:   erro de sintaxe no roadmap-dados.js. É quase sempre isso.
+COMO VER: abra a página, tecle F12, aba "Console". A mensagem aponta a linha.
+OS TRÊS ERROS MAIS COMUNS:
+   1. vírgula faltando entre dois blocos, ou vírgula sobrando antes do ]
+   2. aspas duplas dentro do texto sem escapar
+   3. chave { ou colchete [ aberto e não fechado
+
+SINTOMA: um material não aparece no painel.
+CAUSA:   nem o ref foi encontrado nem existe url. Preencha a url.
+
+SINTOMA: o botão "ver na lista" não aparece naquele material.
+CAUSA:   o id do ref não existe na página. Confira se você escreveu o mesmo
+         nome nos dois lugares — é sensível a maiúsculas e minúsculas.
+
+SINTOMA: o rótulo embaixo da bolinha está cortado ou colado no vizinho.
+CAUSA:   o "curto" está longo demais. Encurte.
+
+SINTOMA: acentos aparecem como "Ã§" e "Ã£".
+CAUSA:   o arquivo foi salvo em outra codificação. Salve sempre em UTF-8.
+         No VS Code, canto inferior direito: "UTF-8".
+
+
+-------------------------------------------------------------------------------
+8. TESTAR ANTES DE PUBLICAR
+-------------------------------------------------------------------------------
+
+Abrir o arquivo com duplo clique funciona, mas nem tudo se comporta igual.
+O ideal é subir um servidor local. Com Python instalado, no terminal, dentro
+da pasta raiz do site:
+
+    python -m http.server 8000
+
+e abrir http://localhost:8000/4-prog-linear/prog-linear.html
+
+Checklist rápido antes de publicar:
+  [ ] a trilha aparece e todas as bolinhas têm rótulo legível
+  [ ] clicar em cada parada nova mostra o texto certo
+  [ ] os links novos abrem o PDF certo
+  [ ] o "ver na lista" rola até a linha correta e ela pisca
+  [ ] estreitar a janela até a largura de um celular não quebra nada
+
+
+-------------------------------------------------------------------------------
+9. DETALHES QUE PODEM CONFUNDIR
+-------------------------------------------------------------------------------
+
+PROGRESSO SALVO: fica no navegador do aluno (localStorage), sob a chave
+"roadmap-pl-v1". Não vai para servidor nenhum, não é você que vê. Se o aluno
+trocar de navegador ou usar aba anônima, começa do zero. Para você testar do
+zero, use o botão "zerar" que aparece ao lado do contador.
+
+LINKS DIRETOS: cada parada tem endereço próprio, no formato
+    https://alexandrechecoli.github.io/4-prog-linear/prog-linear.html#parada/dualidade
+Útil para mandar no Moodle ou no grupo da turma: o aluno cai na página com
+aquela parada já aberta. O que vem depois de #parada/ é exatamente o campo id.
+
+AS PROVAS não entram na contagem de "X de 11 paradas concluídas" — só as de
+tipo "parada". Se você mudar as datas ou o número de provas, ajuste os blocos
+de tipo "prova" normalmente; a contagem se ajusta sozinha.
+
+
+-------------------------------------------------------------------------------
+10. MUDAR AS CORES
+-------------------------------------------------------------------------------
+
+No roadmap.js, logo no começo do bloco CSS, existem seis variáveis. Elas foram
+tiradas do seu style.css e do sketch.js para o roadmap não destoar do site:
+
+    --rmp-ink     #1a1a3e   títulos
+    --rmp-ink2    #4f4b75   texto secundário
+    --rmp-paper   #f7f7fc   fundo da área da trilha
+    --rmp-line    #dddcee   bordas e trilha não percorrida
+    --rmp-accent  #6059d4   progresso (é a cor das partículas do fundo)
+    --rmp-fundo   #15153f   provas, chegada e etiquetas (é a cor da navbar)
+
+Se um dia você mudar a paleta do site, troque estes seis valores e o roadmap
+acompanha. Nada mais no arquivo tem cor escrita à mão.
+
+
+-------------------------------------------------------------------------------
+11. O QUE NÃO MEXER
+-------------------------------------------------------------------------------
+
+- A primeira linha do roadmap-dados.js: "window.ROADMAP_PL = [".
+  E a última: "];". São elas que entregam os dados ao motor.
+
+- No prog-linear.html, a seção do roadmap e as duas tags de script no fim:
+
+    <section class="content-section container">
+        <h2 class="section-header">O CAMINHO DA DISCIPLINA</h2>
+        <div id="roadmap"></div>
+    </section>
+
+    <script charset="utf-8" src="/4-prog-linear/roadmap-dados.js"></script>
+    <script charset="utf-8" src="/4-prog-linear/roadmap.js"></script>
+
+  A ordem importa: os dados vêm antes do motor.
+
+- O <meta charset="utf-8"> no <head>. Sem ele, os acentos quebram quando a
+  página é aberta fora do GitHub Pages.
+
+
+-------------------------------------------------------------------------------
+12. SE QUISER IR ALÉM
+-------------------------------------------------------------------------------
+
+Ideias que ficaram de fora desta versão, em ordem de esforço:
+
+- "Você está aqui": cruzar a data de hoje com o cronograma do PlanoAula.html
+  e destacar a parada da semana atual. Exige uma tabela de datas nos dados.
+- Segunda visão da mesma trilha organizada por semana do semestre.
+- Uma pergunta rápida de autoavaliação em cada parada, antes de liberar a
+  marcação de concluída.
+- Reaproveitar o mesmo motor nas outras disciplinas: basta um roadmap-dados.js
+  diferente por pasta; o roadmap.js é o mesmo.
+
+===============================================================================
