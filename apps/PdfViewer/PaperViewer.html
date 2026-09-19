@@ -106,6 +106,7 @@ input,textarea,select{font:inherit;color:inherit}
   padding:11px 22px;border-radius:3px;
 }
 .btn-major:hover{filter:brightness(1.12)}
+.btn-major[disabled]{opacity:.45;cursor:default;filter:none}
 .btn-ghost{
   border:1px solid var(--line);padding:10px 18px;border-radius:3px;color:var(--dim);
 }
@@ -322,8 +323,8 @@ header{
 .p-actions button:hover{color:var(--text);border-color:var(--surface-3)}
 
 /* ---------- modal ---------- */
-#modal,#lookmodal,#tagedit,#bibmodal,#renmodal,#aboutmodal,#helpmodal{position:fixed;inset:0;background:var(--backdrop);z-index:60;display:none;place-items:center;padding:24px}
-#modal.on,#lookmodal.on,#tagedit.on,#bibmodal.on,#renmodal.on,#aboutmodal.on,#helpmodal.on{display:grid}
+#modal,#lookmodal,#tagedit,#bibmodal,#aboutmodal,#helpmodal,#revmodal,#protomodal,#rvexport,#aimodal{position:fixed;inset:0;background:var(--backdrop);z-index:60;display:none;place-items:center;padding:24px}
+#modal.on,#lookmodal.on,#tagedit.on,#bibmodal.on,#aboutmodal.on,#helpmodal.on,#revmodal.on,#protomodal.on,#rvexport.on,#aimodal.on{display:grid}
 .m-box{background:var(--surface);border:1px solid var(--line);border-radius:4px;
   padding:26px;width:440px;max-width:100%;max-height:86vh;overflow-y:auto}
 .m-box h2{font-family:var(--read);font-weight:400;font-size:calc(var(--base)*1.5);margin:0 0 18px}
@@ -343,6 +344,160 @@ header{
 #toast.on{display:block}
 #selbar.on ~ #toast{bottom:78px}
 #prog.on ~ #selbar{bottom:96px}
+
+/* ---------- revisão de literatura ---------- */
+#review{
+  position:fixed;inset:0;z-index:42;background:var(--bg);
+  display:none;grid-template-rows:auto 1fr;
+}
+#review.on{display:grid}
+#rv-bar{
+  display:flex;align-items:center;gap:8px;padding:0 12px;height:50px;
+  border-bottom:1px solid var(--line);background:var(--surface);min-width:0;
+}
+#rv-sel{
+  background:var(--bg);border:1px solid var(--line);border-radius:3px;
+  padding:6px 9px;max-width:260px;font-size:calc(var(--base)*0.929);
+}
+#rv-prog{font-size:calc(var(--base)*0.857);color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums}
+#rv-q{
+  background:var(--bg);border:1px solid var(--line);border-radius:3px;
+  padding:6px 10px;width:200px;font-size:calc(var(--base)*0.929);
+}
+#rv-q:focus{border-color:var(--surface-3);outline:none}
+#rv-body{overflow:auto;position:relative}
+#rv-table{border-collapse:separate;border-spacing:0;min-width:100%}
+#rv-table th,#rv-table td{border-bottom:1px solid var(--line-soft);border-right:1px solid var(--line-soft)}
+#rv-table thead th{
+  position:sticky;top:0;z-index:3;background:var(--surface);
+  padding:8px 8px 6px;text-align:left;vertical-align:bottom;
+  font-weight:500;font-size:calc(var(--base)*0.857);color:var(--text);
+  border-bottom:1px solid var(--line);min-width:96px;
+}
+#rv-table th.rv-art,#rv-table td.rv-art{
+  position:sticky;left:0;z-index:2;background:var(--surface);min-width:280px;max-width:380px;
+  border-right:1px solid var(--line);
+}
+#rv-table thead th.rv-art{z-index:4}
+.rv-th{line-height:1.3;margin-bottom:5px}
+.rv-cf{
+  width:100%;background:var(--bg);border:1px solid var(--line-soft);border-radius:2px;
+  padding:2px 4px;font-size:calc(var(--base)*0.786);color:var(--faint);
+}
+.rv-cf.on{border-color:var(--accent);color:var(--text)}
+.rv-open{display:block;width:100%;text-align:left;padding:8px 10px;line-height:1.3}
+.rv-open:hover .rv-t{color:var(--accent)}
+.rv-t{
+  display:block;font-family:var(--read);font-size:calc(var(--base)*0.964);color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.rv-m{display:block;font-size:calc(var(--base)*0.786);color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rv-table td{padding:0;background:var(--bg)}
+#rv-table tr:hover td{background:var(--surface)}
+.rv-c{
+  position:relative;display:block;width:100%;min-height:46px;padding:6px 10px;text-align:left;
+  font-size:calc(var(--base)*0.929);line-height:1.35;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;
+}
+.rv-c:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.rv-c.b-none{color:var(--faint)}
+.rv-c.b-sim{color:#4fb07a;font-weight:600}
+.rv-c.b-nao{color:var(--red);font-weight:600}
+.rv-c.b-nc{color:var(--accent);font-weight:600}
+.rv-c.ia{background:repeating-linear-gradient(45deg,transparent,transparent 6px,var(--surface-2) 6px,var(--surface-2) 7px)}
+.rv-ev{
+  position:absolute;right:5px;top:5px;width:6px;height:6px;border-radius:50%;background:var(--teal);
+}
+.rv-empty{padding:60px 30px;max-width:56ch;color:var(--dim);line-height:1.65}
+.rv-empty b{display:block;font-family:var(--read);font-weight:400;font-size:calc(var(--base)*1.43);color:var(--text);margin-bottom:10px}
+.rv-empty .btn-major{margin-top:16px}
+
+/* editor de célula */
+#rv-pop{
+  position:fixed;z-index:47;display:none;width:340px;max-height:80vh;overflow-y:auto;
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px;
+  box-shadow:0 18px 40px -16px var(--shade);
+}
+#rv-pop.on{display:block}
+.pop-h{font-size:calc(var(--base)*0.786);color:var(--faint);margin-bottom:3px}
+.pop-t{font-family:var(--read);font-size:calc(var(--base)*1.07);color:var(--text);margin-bottom:2px;line-height:1.3}
+.pop-q{font-size:calc(var(--base)*0.857);color:var(--dim);margin-bottom:12px;line-height:1.45}
+.pop-vals{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.pop-vals button{
+  flex:1;min-width:70px;padding:7px 8px;border:1px solid var(--line);border-radius:3px;
+  color:var(--dim);font-size:calc(var(--base)*0.893);
+}
+.pop-vals button.on{border-color:var(--accent);color:var(--text);box-shadow:inset 0 0 0 1px var(--accent)}
+.pop-vals button[data-v="sim"].on{border-color:#4fb07a;box-shadow:inset 0 0 0 1px #4fb07a}
+.pop-vals button[data-v="nao"].on{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+#rv-pop input,#rv-pop select,#rv-pop textarea{
+  width:100%;background:var(--bg);border:1px solid var(--line);border-radius:3px;
+  padding:6px 8px;font-size:calc(var(--base)*0.893);margin-bottom:9px;
+}
+#rv-pop textarea{resize:vertical;min-height:52px;font-family:var(--read);line-height:1.5}
+#rv-pop textarea.cit{min-height:70px}
+#rv-pop input:focus,#rv-pop select:focus,#rv-pop textarea:focus{border-color:var(--surface-3);outline:none}
+.pop-row{display:flex;gap:8px;align-items:center}
+.pop-row label{font-size:calc(var(--base)*0.786);color:var(--faint);white-space:nowrap}
+.pop-row input{width:70px;margin:0}
+.pop-acts{display:flex;gap:6px;margin-top:4px}
+.pop-acts button{
+  padding:5px 10px;border:1px solid var(--line);border-radius:3px;color:var(--dim);
+  font-size:calc(var(--base)*0.857);
+}
+.pop-acts button:hover{color:var(--text);border-color:var(--surface-3)}
+.pop-acts .spacer{flex:1}
+.pop-ia{
+  font-size:calc(var(--base)*0.786);color:var(--accent);margin-bottom:8px;
+}
+
+/* protocolo */
+.proto-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.proto-row{
+  display:grid;grid-template-columns:1fr 130px auto;gap:6px 8px;
+  padding:10px;border:1px solid var(--line);border-radius:3px;background:var(--bg);
+}
+.proto-row input,.proto-row select{
+  background:var(--surface);border:1px solid var(--line);border-radius:3px;
+  padding:5px 8px;font-size:calc(var(--base)*0.893);min-width:0;
+}
+.proto-row input:focus,.proto-row select:focus{border-color:var(--surface-3);outline:none}
+.proto-row .wide{grid-column:1/3}
+.proto-row .ops{display:flex;gap:2px;align-items:center}
+.proto-row .ops button{padding:3px 6px;color:var(--faint);border-radius:2px}
+.proto-row .ops button:hover{color:var(--text);background:var(--surface-2)}
+.proto-row .ops button.del:hover{color:var(--red)}
+.proto-hint{font-size:calc(var(--base)*0.786);color:var(--faint);grid-column:1/-1;line-height:1.45}
+.an-ev{
+  width:100%;margin-top:6px;background:var(--bg);border:1px dashed var(--line);border-radius:3px;
+  padding:4px 7px;font-size:calc(var(--base)*0.821);color:var(--dim);
+}
+.an-ev.on{border-style:solid;border-color:var(--teal);color:var(--text)}
+.ai-grid{display:grid;grid-template-columns:78px 1fr;gap:8px 10px;align-items:center}
+.ai-grid label{font-size:calc(var(--base)*0.857);color:var(--faint)}
+.ai-grid input,.ai-grid select{
+  width:100%;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:7px 9px;
+  font-size:calc(var(--base)*0.929);min-width:0;
+}
+.ai-grid input:focus,.ai-grid select:focus{border-color:var(--surface-3);outline:none}
+.ai-model-row{display:flex;gap:6px;align-items:center}
+.ax-cols{display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;margin-top:4px}
+.ax-rep{
+  margin-top:10px;padding:12px 14px;background:var(--surface-2);border-radius:3px;
+  font-size:calc(var(--base)*0.929);line-height:1.5;
+}
+#rv-bar .m-check{font-size:calc(var(--base)*0.857);color:var(--dim);white-space:nowrap;gap:5px;align-items:center}
+.pop-conf{font-size:calc(var(--base)*0.786);color:var(--faint);margin:-6px 0 10px}
+.pop-ia-cmp{
+  background:var(--surface-2);border-radius:3px;padding:8px 10px;margin-bottom:10px;
+  font-size:calc(var(--base)*0.857);line-height:1.5;color:var(--dim);
+}
+.pop-ia-cmp b{color:var(--text)}
+#rv-out{
+  width:100%;height:220px;resize:vertical;background:var(--bg);border:1px solid var(--line);
+  border-radius:3px;padding:9px 11px;font-family:ui-monospace,Consolas,monospace;
+  font-size:calc(var(--base)*0.821);line-height:1.5;white-space:pre;overflow:auto;
+}
 
 /* ---------- ajuda ---------- */
 .help-box{
@@ -441,8 +596,26 @@ header{
 .d-snip{
   font-family:var(--read);font-size:calc(var(--base)*0.964);line-height:1.6;
   color:var(--read-ink);background:var(--bg);border:1px solid var(--line-soft);
-  border-radius:3px;padding:9px 11px;
+  border-radius:3px;padding:9px 11px;margin-bottom:7px;
 }
+.d-snip.hit{cursor:pointer}
+.d-snip.hit:hover{border-color:var(--accent-soft);background:var(--surface-2)}
+.d-snip.hit::after{
+  content:'abrir no artigo';display:block;margin-top:5px;
+  font-family:var(--ui);font-size:calc(var(--base)*0.75);color:var(--faint);
+}
+.d-snip.hit:hover::after{color:var(--accent)}
+.why-pct{
+  display:inline-block;margin-right:7px;font-family:var(--ui);
+  font-size:calc(var(--base)*0.75);color:var(--accent);
+  font-variant-numeric:tabular-nums;vertical-align:1px;
+}
+.why-wait{color:var(--faint);font-size:calc(var(--base)*0.893);padding:2px 0 6px}
+.c-hits{
+  font-size:calc(var(--base)*0.75);color:var(--accent);margin-top:3px;
+  font-variant-numeric:tabular-nums;
+}
+#grid:not(.list) .c-hits{font-size:calc(var(--base)*0.714)}
 
 /* ---------- localizar no artigo ---------- */
 #rd-find{
@@ -477,24 +650,6 @@ header{
   font-family:ui-monospace,Consolas,monospace;font-size:calc(var(--base)*0.821);line-height:1.5;
   white-space:pre;overflow:auto;
 }
-
-/* ---------- renomear ---------- */
-#ren-list{
-  max-height:46vh;overflow:auto;margin-top:4px;
-  background:var(--bg);border:1px solid var(--line);border-radius:3px;
-}
-#ren-list table{width:100%;border-collapse:collapse;font-size:calc(var(--base)*0.857)}
-#ren-list td{padding:7px 8px;border-bottom:1px solid var(--line-soft);vertical-align:top;line-height:1.45}
-#ren-list tr:last-child td{border-bottom:none}
-#ren-list td.ck{width:26px;padding-right:0}
-#ren-list td.ck input{accent-color:var(--accent);margin:2px 0 0}
-#ren-list .old{color:var(--faint);word-break:break-all}
-#ren-list .new{color:var(--text);word-break:break-all}
-#ren-list .why{color:var(--faint);font-style:italic}
-#ren-list .ok{color:var(--teal)}
-#ren-list .err{color:var(--red)}
-#ren-list .empty{padding:16px;color:var(--faint);text-align:center}
-#ren-sum{font-size:calc(var(--base)*0.857);color:var(--dim);margin-top:8px;min-height:1.4em}
 
 /* ---------- marcadores ---------- */
 .chip .ed{
@@ -755,6 +910,8 @@ header{
     </div>
     <button class="tool" id="scan" title="Varrer a pasta atrás de PDFs novos">
       <span class="ic">🔄</span><span class="lb">Procurar novos</span></button>
+    <button class="tool" id="rev" title="Matriz de revisão de literatura">
+      <span class="ic">📋</span><span class="lb">Revisão</span></button>
     <button class="tool" id="help" title="Guia do aplicativo">
       <span class="ic">❔</span><span class="lb">Ajuda</span></button>
     <button class="tool" id="about" title="Sobre este projeto">
@@ -823,10 +980,35 @@ header{
         Nada é enviado para fora da sua máquina.</p>
     </div>
     <div class="m-row">
+      <label>Motor de extração (IA) — só para a matriz de revisão</label>
+      <p class="m-hint" style="margin:2px 0 10px">Cada usuário traz a própria chave. Ela fica apenas no
+        <code>localStorage</code> deste navegador — nunca no <code>index.json</code>, nunca na pasta.
+        Sem chave, tudo o mais funciona normalmente; só a extração automática fica indisponível.</p>
+      <div class="ai-grid">
+        <label for="ai-preset">Provedor</label>
+        <select id="ai-preset"></select>
+        <label for="ai-base">Endereço</label>
+        <input type="text" id="ai-base" placeholder="https://…/v1" spellcheck="false">
+        <label for="ai-model">Modelo</label>
+        <div class="ai-model-row">
+          <input type="text" id="ai-model" list="ai-models" placeholder="nome do modelo" spellcheck="false">
+          <datalist id="ai-models"></datalist>
+          <button class="btn-ghost" id="ai-list" style="padding:6px 10px;font-size:12.5px" title="Pedir ao provedor a lista de modelos">listar</button>
+        </div>
+        <label for="ai-key">Chave</label>
+        <input type="password" id="ai-key" placeholder="cole a chave de API" autocomplete="off" spellcheck="false">
+      </div>
+      <p class="m-hint" id="ai-nota" style="margin-top:8px"></p>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
+        <button class="btn-ghost" id="ai-test" style="padding:7px 13px;font-size:13px">Testar conexão</button>
+        <a id="ai-keys" href="#" target="_blank" rel="noopener" class="m-hint" style="color:var(--accent)">como criar a chave ↗</a>
+        <span class="m-hint" id="ai-status" style="margin-left:auto"></span>
+      </div>
+    </div>
+    <div class="m-row">
       <label>Manutenção</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
         <button class="btn-ghost" id="s-bib" style="padding:7px 13px;font-size:13px">Exportar BibTeX</button>
-        <button class="btn-ghost" id="s-rename" style="padding:7px 13px;font-size:13px">Renomear PDFs</button>
         <button class="btn-ghost" id="s-export" style="padding:7px 13px;font-size:13px">Exportar índice</button>
         <button class="btn-ghost" id="s-reindex" style="padding:7px 13px;font-size:13px">Reindexar tudo</button>
         <button class="btn-ghost" id="s-switch" style="padding:7px 13px;font-size:13px">Trocar de pasta</button>
@@ -861,7 +1043,7 @@ header{
       <button data-go="h10">10. Ajustes e aparência</button>
       <button data-go="h11">11. Atalhos de teclado</button>
       <button data-go="h12">12. Limites e problemas</button>
-      <button data-go="h13">13. Renomear os PDFs</button>
+      <button data-go="h13">13. Revisão de literatura</button>
     </nav>
 
     <div class="help-body" id="hp-body">
@@ -989,6 +1171,9 @@ header{
           Na primeira vez ele carrega o texto de todos os artigos na memória — alguns segundos,
           com barra de progresso — e depois cada busca é imediata. No modo lista, cada resultado
           mostra o trecho onde o termo apareceu, destacado.</p>
+        <p>Cada resultado traz o número total de ocorrências. Abrindo o artigo, a gaveta
+          mostra até quatro trechos diferentes, e <b>clicar em qualquer um abre o leitor já
+          posicionado naquela passagem</b>, com o termo destacado.</p>
         <p>Exige que a opção <b>Guardar o texto completo de cada PDF</b> esteja ativa em Ajustes.
           Se você a ativou depois de já ter indexado, é preciso reindexar uma vez.</p>
 
@@ -1000,6 +1185,16 @@ header{
         <p>Antes do primeiro uso é preciso gerar os vetores em <b>Ajustes → Indexar vetores</b>.
           Isso baixa um modelo de cerca de 120 MB, uma única vez, e o executa dentro do próprio
           navegador. Nada é enviado para fora.</p>
+
+        <h4>Por que este artigo</h4>
+        <p>Como a busca semântica compara o artigo inteiro com a sua pergunta, não existe uma
+          palavra para destacar. Por isso, ao abrir um resultado, a gaveta mostra o bloco
+          <b>Por que este artigo</b>: ele fatia aquele artigo em trechos, compara cada trecho
+          com a sua pergunta e mostra os três mais próximos, com o percentual de cada um.
+          Clicar num trecho abre o leitor naquela passagem.</p>
+        <p>Essa análise acontece só no artigo que você abriu, e não durante a indexação —
+          vetorizar todos os trechos de todos os artigos deixaria o arquivo de vetores
+          trinta vezes maior. Depende do texto completo estar guardado.</p>
         <div class="note">Os filtros de pasta, marcador e ano continuam valendo junto com
           qualquer um dos três modos. Dá para restringir a um marcador e perguntar dentro dele.</div>
       </section>
@@ -1061,6 +1256,8 @@ header{
           <li><b>Guardar o texto completo</b> — habilita a busca no corpo dos PDFs. Ocupa cerca
             de 50 KB por artigo.</li>
           <li><b>Busca semântica</b> — gera ou refaz os vetores, e mostra quantos artigos já têm.</li>
+          <li><b>Motor de extração (IA)</b> — provedor, endereço, modelo e chave para a extração
+            automática da matriz de revisão. Veja a seção 13.</li>
           <li><b>Exportar índice</b> — baixa um JSON com tudo, como cópia de segurança.</li>
           <li><b>Reindexar tudo</b> — refaz metadados e capas de todos os artigos. Notas,
             marcadores, favoritos, grifos e correções manuais são preservados.</li>
@@ -1079,6 +1276,8 @@ header{
           <tr><td><kbd>Enter</kbd></td><td>no localizar, próxima ocorrência</td></tr>
           <tr><td><kbd>Shift</kbd>+<kbd>Enter</kbd></td><td>no localizar, ocorrência anterior</td></tr>
           <tr><td><kbd>Shift</kbd>+clique</td><td>seleciona um intervalo de artigos</td></tr>
+          <tr><td><kbd>s</kbd> <kbd>n</kbd> <kbd>?</kbd></td><td>na matriz de revisão, preenchem uma célula de sim/não</td></tr>
+          <tr><td><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd></td><td>na matriz, movem entre células; <kbd>Enter</kbd> abre o editor; <kbd>Delete</kbd> limpa</td></tr>
           <tr><td><kbd>Esc</kbd></td><td>fecha o painel aberto, sai do leitor ou limpa a seleção, nessa ordem</td></tr>
         </table>
       </section>
@@ -1107,28 +1306,72 @@ header{
       </section>
 
       <section id="h13">
-        <h3>13. Renomear os PDFs</h3>
-        <p>Em <b>Ajustes → Renomear PDFs</b>, ou pelo botão <b>Renomear…</b> da barra de seleção,
-          o Acervo dá aos arquivos um nome padronizado a partir dos metadados que já tem:</p>
-        <p><code>2021 - Robust optimization for production planning - Silva e Souza.pdf</code></p>
-        <ul>
-          <li>O ano e o título saem do índice, do jeito que aparecem na gaveta de detalhe. Se
-            você corrigiu algo à mão, é a correção que vale.</li>
-          <li>Entram os sobrenomes dos dois primeiros autores, ligados por <b>e</b>. Com um autor
-            só, fica só ele. Com três ou mais, acrescenta-se <b>et al.</b></li>
-          <li>Caracteres que o Windows não aceita em nomes de arquivo (<code>: / \ ? * " &lt; &gt; |</code>)
-            são trocados por espaço, e títulos muito longos são cortados numa palavra inteira.</li>
-        </ul>
-        <h4>Nada acontece sem conferência</h4>
-        <p>A janela mostra, para cada artigo, o nome atual e o nome novo. Você escolhe o escopo
-          (selecionados, filtro atual ou todos), desmarca o que não quiser e só então clica em
-          <b>Renomear</b>. Artigos sem ano, sem título ou sem autores no índice são listados com
-          o motivo e ficam de fora; corrija os metadados na gaveta e rode de novo.</p>
-        <h4>O que é preservado</h4>
-        <p>A identidade do artigo é o conteúdo do arquivo, não o nome. Por isso grifos, notas,
-          marcadores, favoritos, capa e vetores continuam no lugar. O arquivo é movido dentro da
-          mesma pasta, sem cópia. Se já existir um arquivo com o nome pretendido, o novo recebe
-          um sufixo <code>(2)</code>.</p>
+        <h3>13. Revisão de literatura</h3>
+        <p>O botão <b>Revisão</b> abre a matriz de extração: artigos nas linhas, características
+          nas colunas, uma célula por cruzamento. É a tabela que toda revisão sistemática tem,
+          só que aqui os artigos, o leitor e os grifos estão a um clique.</p>
+
+        <h4>Criar uma revisão</h4>
+        <p>Uma revisão tem um nome e uma <b>amostra</b>, que é um marcador: todo artigo com aquele
+          marcador vira uma linha. Para incluir ou tirar um artigo depois, basta aplicar ou
+          remover o marcador no acervo. Você pode ter várias revisões, com amostras e colunas
+          diferentes — uma para a tese, outra para um survey.</p>
+
+        <h4>O protocolo</h4>
+        <p>São as colunas. Cada uma tem nome, a pergunta que ela responde e um tipo:
+          <b>sim/não</b> (sempre com a terceira opção "não está claro"), <b>categoria</b> (uma
+          lista fixa de opções que você define), <b>texto curto</b> ou <b>número</b>. Dá para
+          reordenar e editar a qualquer momento; as células já preenchidas são preservadas.</p>
+
+        <h4>Preencher</h4>
+        <p>Clicar numa célula abre o editor, com o valor, um campo de <b>evidência</b> (a citação
+          que sustenta a resposta), a página e uma nota. Para ir rápido nas colunas de sim/não,
+          use o teclado: <kbd>s</kbd>, <kbd>n</kbd>, <kbd>?</kbd> preenchem e as setas movem
+          entre células. Clicar no título de um artigo abre o leitor; ao fechá-lo você volta
+          para a matriz.</p>
+        <p><b>O grifo como evidência.</b> Dentro do leitor, quando o artigo faz parte da amostra da
+          revisão aberta, cada grifo ganha um seletor "usar como evidência de…". Escolhendo a
+          coluna, a citação e a página vão direto para a célula. É a forma mais natural de
+          preencher: lendo, grifando e apontando.</p>
+
+        <h4>Filtrar e analisar</h4>
+        <p>Os cabeçalhos das colunas de sim/não e categoria têm um filtro. Combinando dois ou três
+          ("setup = sim" e "método = meta-heurística"), a matriz vira o começo da síntese. A
+          barra do topo mostra o progresso do preenchimento.</p>
+
+        <h4>Exportar</h4>
+        <p>CSV (separado por ponto e vírgula, que o Excel em português entende direto), LaTeX
+          em formato <code>booktabs</code> com os artigos citados por <code>\citet{}</code> nas
+          mesmas chaves do BibTeX exportado, ou Markdown. Opcionalmente com as evidências e
+          páginas como colunas extras.</p>
+        <p>As revisões ficam em <code>_biblioteca/revisoes/</code>, um arquivo por revisão, e
+          viajam com a pasta.</p>
+
+        <h4>Extração automática com IA</h4>
+        <p>O botão <b>🤖 Extrair</b> preenche células usando um modelo de linguagem. Para cada
+          célula, a app recupera os três ou quatro trechos do artigo mais relacionados à pergunta
+          da coluna (usando os mesmos vetores da busca semântica), envia só esses trechos ao
+          modelo e exige uma resposta estruturada: o valor, uma <b>citação literal</b> que o
+          sustente e um grau de confiança. A página é deduzida do trecho de onde veio a citação.</p>
+        <p>Nada é aceito sem evidência, e nada é aceito sem você: a célula proposta aparece
+          <b>hachurada</b> até ser confirmada. No editor da célula há o botão "confirmar"; na
+          matriz, a tecla <kbd>c</kbd> confirma a célula focada, e "confirmar visíveis" confirma
+          todas as que estão passando pelo filtro. O filtro "só propostas da IA" isola o que ainda
+          falta revisar. Uma célula que você preencheu ou confirmou nunca é sobrescrita pelo lote.</p>
+        <p><b>Calibração.</b> Antes de confiar, preencha cinco ou seis artigos à mão e rode a
+          extração no modo "Calibração": ela não altera suas células — só registra o que a IA
+          teria respondido e mede a concordância, coluna por coluna. Concordância baixa numa
+          coluna quase sempre significa pergunta ambígua; reformule no protocolo e repita.</p>
+        <p><b>O motor.</b> Em ⚙️ Ajustes → Motor de extração você escolhe o provedor e cola a sua
+          chave. Há presets para provedores com nível gratuito sem cartão (Cerebras, Groq), para o
+          Gemini (gratuito, mas o Google usa os prompts), para OpenRouter, e para Anthropic e
+          OpenAI (pagos). Qualquer endereço compatível com a API da OpenAI funciona, inclusive um
+          Ollama local. O botão "listar" pede ao provedor os nomes de modelo disponíveis; "testar
+          conexão" faz uma chamada mínima e explica o que falhou, se falhar.</p>
+        <p>O lote é pausável e retomável. Quando um provedor gratuito bate no limite de taxa, a app
+          espera e tenta de novo sozinha; se o limite for diário, pare e continue no dia seguinte
+          com "só as vazias". A chave fica apenas no seu navegador; os trechos enviados são os
+          únicos dados que saem da sua máquina.</p>
       </section>
     </div>
 
@@ -1204,12 +1447,130 @@ header{
   </div>
 </div>
 
+<!-- ========== REVISÃO DE LITERATURA ========== -->
+<section id="review" aria-label="Matriz de revisão">
+  <div id="rv-bar">
+    <button class="tool" id="rv-close" title="Voltar ao acervo (Esc)">‹ Acervo</button>
+    <select id="rv-sel" aria-label="Revisão"></select>
+    <button class="tool" id="rv-new" title="Criar uma nova revisão">+ nova</button>
+    <button class="tool" id="rv-proto" title="Editar as colunas desta revisão">Protocolo</button>
+    <button class="tool" id="rv-export">Exportar</button>
+    <button class="tool" id="rv-ai" title="Preencher células com IA"><span class="ic">🤖</span><span class="lb">Extrair</span></button>
+    <span id="rv-prog"></span>
+    <label class="m-check"><input type="checkbox" id="rv-only-ia"> <span>só propostas da IA</span></label>
+    <button class="tool" id="rv-confirm-all" title="Confirmar todas as propostas visíveis">confirmar visíveis</button>
+    <div class="spacer"></div>
+    <input id="rv-q" placeholder="filtrar artigos" autocomplete="off">
+  </div>
+  <div id="rv-body"></div>
+</section>
+
+<div id="aimodal" class="modalbase">
+  <div class="m-box" style="width:560px" role="dialog" aria-modal="true" aria-labelledby="ax-title">
+    <h2 id="ax-title">Extrair com IA</h2>
+    <p class="m-hint" id="ax-motor" style="margin:-8px 0 14px"></p>
+    <div class="m-row">
+      <label>Quais células</label>
+      <div class="radiorow">
+        <label><input type="radio" name="axscope" value="vazias" checked>
+          <span><b>Só as vazias</b> — não toca em nada que você já preencheu.</span></label>
+        <label><input type="radio" name="axscope" value="todas">
+          <span><b>Todas, sobrescrevendo as propostas da IA</b> — preserva o que foi preenchido ou
+            confirmado por você.</span></label>
+        <label><input type="radio" name="axscope" value="calibrar">
+          <span><b>Calibração</b> — roda só nas células que você preencheu à mão, sem alterá-las, e
+            mede a concordância entre você e a IA. Faça isso com cinco ou seis artigos antes de
+            confiar no restante.</span></label>
+      </div>
+    </div>
+    <div class="m-row">
+      <label>Colunas</label>
+      <div class="ax-cols" id="ax-cols"></div>
+    </div>
+    <p class="m-hint" id="ax-est"></p>
+    <div id="ax-report"></div>
+    <div class="m-actions">
+      <button class="btn-ghost" id="ax-close">Fechar</button>
+      <button class="btn-major" id="ax-go" style="padding:10px 20px">Iniciar</button>
+    </div>
+  </div>
+</div>
+
+<div id="rv-pop" role="dialog" aria-label="Editar célula"></div>
+
+<div id="revmodal" class="modalbase">
+  <div class="m-box" style="width:460px" role="dialog" aria-modal="true" aria-labelledby="rn-title">
+    <h2 id="rn-title">Nova revisão</h2>
+    <div class="m-row">
+      <label for="rn-nome">Nome</label>
+      <input type="text" id="rn-nome" placeholder="Revisão da tese, survey de scheduling…">
+    </div>
+    <div class="m-row">
+      <label for="rn-tag">Amostra — o marcador que define quais artigos entram</label>
+      <select id="rn-tag" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:8px 10px"></select>
+      <p class="m-hint">Todo artigo com esse marcador vira uma linha da matriz. Para incluir ou tirar um
+        artigo da amostra depois, basta aplicar ou remover o marcador.</p>
+    </div>
+    <div class="m-actions">
+      <button class="btn-ghost" id="rn-cancel">Cancelar</button>
+      <button class="btn-major" id="rn-ok" style="padding:10px 20px">Criar e definir colunas</button>
+    </div>
+  </div>
+</div>
+
+<div id="protomodal" class="modalbase">
+  <div class="m-box" style="width:640px" role="dialog" aria-modal="true" aria-labelledby="pt-title">
+    <h2 id="pt-title">Protocolo — as colunas da matriz</h2>
+    <p class="m-hint" style="margin:-8px 0 14px">Cada coluna é uma característica que você quer registrar
+      de cada artigo. A pergunta é o que você (ou uma IA, depois) vai responder olhando o texto.
+      Colunas de sim/não têm sempre a terceira opção "não está claro" — use-a de verdade.</p>
+    <div class="proto-list" id="pt-list"></div>
+    <button class="btn-ghost" id="pt-add" style="padding:7px 13px;font-size:13px">+ coluna</button>
+    <div class="m-actions">
+      <button class="btn-ghost" id="pt-del" style="margin-right:auto;color:var(--red)">Excluir revisão</button>
+      <button class="btn-ghost" id="pt-cancel">Cancelar</button>
+      <button class="btn-major" id="pt-save" style="padding:10px 20px">Salvar protocolo</button>
+    </div>
+  </div>
+</div>
+
+<div id="rvexport" class="modalbase">
+  <div class="m-box" style="width:600px" role="dialog" aria-modal="true" aria-labelledby="rx-title">
+    <h2 id="rx-title">Exportar a matriz</h2>
+    <div class="m-row">
+      <label>Formato</label>
+      <div class="radiorow">
+        <label><input type="radio" name="rxfmt" value="csv" checked>
+          <span><b>CSV</b> — para planilha ou R/Python. Uma coluna extra por evidência, se marcado.</span></label>
+        <label><input type="radio" name="rxfmt" value="latex">
+          <span><b>LaTeX</b> — tabela <code>booktabs</code>, artigos citados com <code>\citet{}</code>
+            pelas mesmas chaves do BibTeX exportado.</span></label>
+        <label><input type="radio" name="rxfmt" value="md">
+          <span><b>Markdown</b> — para Obsidian, Notion ou um rascunho rápido.</span></label>
+      </div>
+    </div>
+    <div class="m-row">
+      <label class="m-check"><input type="checkbox" id="rx-ev">
+        <span>Incluir evidências e páginas (só no CSV e no Markdown)</span></label>
+    </div>
+    <div class="m-row">
+      <label for="rv-out">Resultado</label>
+      <textarea id="rv-out" spellcheck="false" placeholder="Clique em Gerar."></textarea>
+    </div>
+    <div class="m-actions">
+      <button class="btn-ghost" id="rx-close">Fechar</button>
+      <button class="btn-ghost" id="rx-copy">Copiar</button>
+      <button class="btn-ghost" id="rx-save">Salvar arquivo</button>
+      <button class="btn-major" id="rx-gen" style="padding:10px 20px">Gerar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ========== SELEÇÃO E MARCADORES ========== -->
 <div id="selbar">
   <span class="n" id="selcount"></span>
   <button id="sel-tag">Marcadores…</button>
   <button id="sel-bib">BibTeX…</button>
-  <button id="sel-rename">Renomear…</button>
   <button id="sel-fav">Favoritar</button>
   <button id="sel-unfav">Desfavoritar</button>
   <button id="sel-all">Selecionar tudo</button>
@@ -1243,30 +1604,6 @@ header{
       <button class="btn-ghost" id="bb-copy">Copiar</button>
       <button class="btn-ghost" id="bb-save">Salvar .bib</button>
       <button class="btn-major" id="bb-gen" style="padding:10px 20px">Gerar</button>
-    </div>
-  </div>
-</div>
-
-<div id="renmodal" class="modalbase">
-  <div class="m-box" style="width:680px" role="dialog" aria-modal="true" aria-labelledby="rn-title">
-    <h2 id="rn-title">Renomear os PDFs</h2>
-    <div class="m-row">
-      <label>Quais artigos</label>
-      <div class="radiorow" id="rn-scope"></div>
-      <p class="m-hint">Cada arquivo passa a se chamar <code>ANO - Título do artigo - Sobrenome e Sobrenome.pdf</code>,
-        usando os metadados que já estão no índice. Com mais de dois autores entra <code>et al.</code>
-        Grifos, notas, marcadores e capas continuam ligados ao artigo, porque a identidade é o conteúdo, não o nome.</p>
-    </div>
-    <div class="m-row">
-      <label>Conferência antes de aplicar</label>
-      <div id="ren-list"></div>
-      <div id="ren-sum"></div>
-    </div>
-    <div class="m-actions">
-      <button class="btn-ghost" id="rn-close">Fechar</button>
-      <button class="btn-ghost" id="rn-all">Marcar tudo</button>
-      <button class="btn-ghost" id="rn-none">Desmarcar tudo</button>
-      <button class="btn-major" id="rn-go" style="padding:10px 20px">Renomear</button>
     </div>
   </div>
 </div>
@@ -1565,6 +1902,9 @@ async function readPdf(file, wantFull){
       page.cleanup();
     }
     out.full = parts.join('\n\n');
+    out.pageOffsets = [];
+    let acc = 0;
+    parts.forEach(pt => { out.pageOffsets.push(acc); acc += pt.length + 2; });
   }
   return out;
 }
@@ -1869,8 +2209,9 @@ async function indexOne(f){
     const ann  = prev.annots || [];
     const txt  = S.prefs.fulltext && r.full ? r.full : (prev.text || '');
     if(txt || ann.length){
+      const offs = (S.prefs.fulltext && r.full) ? r.pageOffsets : (prev.pageOffsets || undefined);
       await writeFile(S.docsDir, f.hash + '.json',
-        JSON.stringify({hash:f.hash, text:txt, annots:ann}));
+        JSON.stringify({hash:f.hash, text:txt, pageOffsets:offs, annots:ann}));
     }
     rec.hasText = !!txt;
     rec.annots  = ann.length;
@@ -2067,7 +2408,10 @@ function render(){
       (S.filter.sem && SEM.rank && SEM.rank.has(d.hash)
         ? '<div class="c-score">' + Math.round(SEM.rank.get(d.hash)*100) + '% de aproximação</div>' : '') +
       (S.filter.deep && FT.snips.has(d.hash)
-        ? '<div class="c-snip">' + markTerms(FT.snips.get(d.hash)) + '</div>' : '') +
+        ? '<div class="c-hits">' + FT.snips.get(d.hash).n +
+          (FT.snips.get(d.hash).n === 1 ? ' ocorrência no texto' : ' ocorrências no texto') + '</div>' +
+          '<div class="c-snip">' + markTerms(FT.snips.get(d.hash).lista[0].t) + '</div>'
+        : '') +
       '</div>' +
       '<div class="l-year">' + (d.year || '') + '</div>' +
     '</button>';
@@ -2143,9 +2487,15 @@ function openDoc(hash){
         (d.doi ? ' — a base não tinha o resumo deste DOI.' : ' e nenhum DOI na primeira página.') +
         ' Você pode colar o resumo à mão no campo abaixo.</p>') +
 
-    (S.filter.deep && FT.snips.has(d.hash)
-      ? '<div class="d-sec"><div class="d-lab">Trecho no corpo do artigo</div>' +
-        '<div class="d-snip">' + markTerms(FT.snips.get(d.hash)) + '</div></div>' : '') +
+    (S.filter.deep && FT.snips.has(d.hash) ? (()=>{
+      const r = FT.snips.get(d.hash);
+      return '<div class="d-sec"><div class="d-lab">No corpo do artigo — ' + r.n +
+        (r.n === 1 ? ' ocorrência' : ' ocorrências') +
+        (r.n > r.lista.length ? ', mostrando ' + r.lista.length : '') + '</div>' +
+        r.lista.map(x => '<div class="d-snip hit" data-hit="' + esc(x.k) + '">' +
+          markTerms(x.t) + '</div>').join('') + '</div>';
+    })() : '') +
+    (S.filter.sem && S.filter.q ? '<div class="d-sec" id="d-why"></div>' : '') +
     '<div class="d-sec"><div class="d-lab">Marcadores</div>' +
       '<div class="tagrow" id="d-tags"></div></div>' +
 
@@ -2196,8 +2546,14 @@ function openDoc(hash){
   bind('#e-doi','doi');
   bind('#e-abs','abstract');
 
+  if(S.filter.sem && S.filter.q) explainSem(hash);
   render();
 }
+
+$('#d-body').addEventListener('click', e=>{
+  const h = e.target.closest('[data-hit]');
+  if(h && S.sel) openReaderAt(S.sel, h.dataset.hit);
+});
 
 function drawTags(){
   const d = S.docs[S.sel]; if(!d) return;
@@ -2483,6 +2839,7 @@ async function openReader(hash){
 function closeReader(){
   flushAnnots();
   closeFind(); FD.pages = null;
+  if($('#review').classList.contains('on')) setTimeout(revRender, 0);
   if(R.obs) R.obs.disconnect();
   $('#reader').classList.remove('on');
   $('#rd-pages').innerHTML = '';
@@ -2679,6 +3036,12 @@ function listAnnots(){
     ((a.rects[0]?a.rects[0][1]:0) - (b.rects[0]?b.rects[0][1]:0)));
   const n = R.annots.length;
   $('#rd-count').textContent = n ? n + (n===1?' anotação':' anotações') : 'sem anotações';
+  const evc = (typeof evidenceOptions === 'function') ? evidenceOptions(R.hash) : null;
+  const evSel = a => !evc ? '' :
+    '<select class="an-ev' + (a.col ? ' on' : '') + '" data-ev="' + a.id + '">' +
+    '<option value="">usar como evidência de…</option>' +
+    evc.map(c => '<option value="' + esc(c.id) + '"' + (a.col===c.id?' selected':'') + '>' + esc(c.nome) + '</option>').join('') +
+    '</select>';
   $('#rd-list').innerHTML = n ? R.annots.map(a =>
     '<div class="an' + (R.sel===a.id?' sel':'') + '" data-id="' + a.id + '">' +
       '<div class="an-top">' +
@@ -2688,6 +3051,7 @@ function listAnnots(){
       (a.text ? '<div class="an-q">' + esc(a.text) + '</div>' : '') +
       '<textarea class="an-c" data-cm="' + a.id + '" placeholder="' +
         (a.text ? 'comentário' : 'nota desta página') + '">' + esc(a.comment||'') + '</textarea>' +
+      evSel(a) +
     '</div>').join('')
     : '<div class="side-empty">Selecione um trecho do texto para grifar — aparece uma paleta de cores. ' +
       'Cada grifo aceita um comentário. Para uma nota que não se prende a um trecho, use “+ nota” ' +
@@ -2733,6 +3097,14 @@ $('#rd-list').addEventListener('click', e=>{
     selectAnnot(item.dataset.id, false);
     if(a) jumpTo(a);
   }
+});
+$('#rd-list').addEventListener('change', e=>{
+  const s = e.target.closest('[data-ev]'); if(!s) return;
+  const a = R.annots.find(x => x.id === s.dataset.ev); if(!a) return;
+  a.col = s.value || undefined;
+  s.classList.toggle('on', !!s.value);
+  setEvidence(R.hash, a, s.value);
+  saveAnnots();
 });
 $('#rd-list').addEventListener('input', e=>{
   const t = e.target.closest('[data-cm]'); if(!t) return;
@@ -2957,17 +3329,36 @@ function ftSearch(){
   FT.hits = null; FT.snips.clear();
   const terms = norm(S.filter.q).split(/\s+/).filter(Boolean);
   if(!terms.length || !FT.cache.size) return;
+  const alvo = terms.slice().sort((a,b) => b.length - a.length)[0];
   const set = new Set();
   FT.cache.forEach((v,h)=>{
     if(!terms.every(t => v.n.includes(t))) return;
     set.add(h);
-    const i = v.n.indexOf(terms[0]);
-    const a = Math.max(0, i - 90);
-    const b = Math.min(v.o.length, i + terms[0].length + 150);
-    FT.snips.set(h, (a>0?'…':'') + v.o.slice(a,b).replace(/\s+/g,' ').trim() +
-                    (b < v.o.length ? '…' : ''));
+    FT.snips.set(h, recortes(v, alvo));
   });
   FT.hits = set;
+}
+
+/* até 4 trechos sem sobreposição, mais a contagem total de ocorrências */
+function recortes(v, alvo){
+  const lista = [];
+  let de = 0, n = 0, fimAnterior = -1;
+  while(n < 600){
+    const i = v.n.indexOf(alvo, de);
+    if(i < 0) break;
+    n++;
+    if(lista.length < 4 && i > fimAnterior){
+      const a = Math.max(0, i - 110);
+      const b = Math.min(v.o.length, i + alvo.length + 170);
+      lista.push({
+        t: (a>0?'…':'') + v.o.slice(a,b).replace(/\s+/g,' ').trim() + (b < v.o.length ? '…' : ''),
+        k: v.o.slice(i, i + alvo.length)
+      });
+      fimAnterior = b;
+    }
+    de = i + alvo.length;
+  }
+  return {n, lista};
 }
 
 function markTerms(txt){
@@ -3002,13 +3393,18 @@ async function buildPageText(){
     const page = await R.pdf.getPage(i);
     const vp   = page.getViewport({scale:1});
     const tc   = await page.getTextContent();
-    out.push(linesFrom(tc.items, vp.width).map(l => ({
+    const linhas = linesFrom(tc.items, vp.width).map(l => ({
       n: norm(l.text),
       r: [ l.x/vp.width,
            Math.max(0, (vp.height - l.y - l.h*0.95)/vp.height),
            Math.min(1, (l.w || l.text.length*l.h*0.5)/vp.width),
            (l.h*1.35)/vp.height ]
-    })));
+    }));
+    /* texto corrido da página + onde cada linha começa nele, para que uma
+       expressão que atravessa a quebra de linha ainda seja encontrada */
+    let corrido = '', inicios = [];
+    linhas.forEach(l => { inicios.push(corrido.length); corrido += l.n + ' '; });
+    out.push({linhas, corrido, inicios});
     page.cleanup();
   }
   FD.pages = out;
@@ -3050,9 +3446,18 @@ async function findRun(){
   if(q.length < 2){ paintFind(); $('#rd-fc').textContent = ''; return; }
   $('#rd-fc').textContent = '…';
   const pages = await buildPageText();
-  pages.forEach((ls, pi) => ls.forEach(l => {
-    if(l.n.includes(q)) FD.hits.push({p:pi+1, r:l.r});
-  }));
+  pages.forEach((pg, pi) => {
+    let de = 0;
+    while(true){
+      const i = pg.corrido.indexOf(q, de);
+      if(i < 0) break;
+      let k = 0;
+      while(k + 1 < pg.inicios.length && pg.inicios[k+1] <= i) k++;
+      FD.hits.push({p:pi+1, r:pg.linhas[k].r});
+      de = i + Math.max(1, q.length);
+      if(FD.hits.length > 800) break;
+    }
+  });
   if(!FD.hits.length){ $('#rd-fc').textContent = 'nada'; paintFind(); return; }
   findGo(0);
 }
@@ -3070,6 +3475,14 @@ $('#rd-findbtn').addEventListener('click', openFind);
 function openFind(){
   $('#rd-find').classList.add('on');
   $('#rd-fq').focus(); $('#rd-fq').select();
+}
+async function openReaderAt(hash, termo){
+  $('#aboutmodal').classList.remove('on');
+  await openReader(hash);
+  if(!termo) return;
+  $('#rd-fq').value = termo;
+  openFind();
+  await findRun();
 }
 function closeFind(){
   $('#rd-find').classList.remove('on');
@@ -3176,172 +3589,6 @@ $('#bb-save').addEventListener('click', ()=>{
   a.href = URL.createObjectURL(new Blob([$('#bib-out').value], {type:'application/x-bibtex'}));
   a.download = 'acervo-' + new Date().toISOString().slice(0,10) + '.bib';
   a.click();
-});
-
-/* ==================================================================
-   13b. Renomear arquivos  —  ANO - Título - Sobrenome e Sobrenome.pdf
-   ================================================================== */
-const REN = {rows:[]};
-/* limpa o que o Windows não aceita em nome de arquivo */
-function renClean(s){
-  return String(s||'').replace(/[<>:"/\\|?*\x00-\x1f]/g,' ').replace(/\s+/g,' ').trim()
-    .replace(/[\s.]+$/,'');
-}
-function renFamily(a){
-  a = String(a||'').trim();
-  if(a.includes(',')) a = a.split(',')[0];          /* "Silva, João" */
-  return renClean(a.split(/\s+/).pop() || '');
-}
-function renName(d){
-  if(!d.year) return {skip:'sem ano'};
-  let title = renClean(d.title);
-  if(!title) return {skip:'sem título'};
-  const fams = (d.authors||[]).map(renFamily).filter(Boolean);
-  if(!fams.length) return {skip:'sem autores'};
-  const who = fams.length === 1 ? fams[0]
-            : fams[0] + ' e ' + fams[1] + (fams.length > 2 ? ' et al.' : '');
-  if(title.length > 120)
-    title = title.slice(0,120).replace(/\s+\S*$/,'').replace(/[\s.,;:\-–—]+$/,'');
-  /* "et al." + ".pdf" daria ponto duplo; fica "et al.pdf" */
-  return {name: d.year + ' - ' + title + ' - ' + who.replace(/\.$/,'') + '.pdf'};
-}
-async function renDirOf(d){
-  const parts = d.path.split('/');
-  let dir = S.root;
-  for(let i=0;i<parts.length-1;i++) dir = await dir.getDirectoryHandle(parts[i]);
-  return dir;
-}
-async function renExists(dir, name){
-  try{ await dir.getFileHandle(name); return true; }catch(e){ return false; }
-}
-function renScope(){
-  const v = ($('#rn-scope').querySelector('input:checked')||{}).value;
-  if(v === 'pick') return [...S.pick].map(h => S.docs[h]).filter(Boolean);
-  if(v === 'all')  return Object.values(S.docs);
-  return visible();
-}
-function renPreview(){
-  const docs = renScope();
-  const taken = new Set();                     /* pasta/nome já pedido neste lote */
-  REN.rows = docs.map(d => {
-    if(d.missing) return {hash:d.hash, old:d.file, skip:'arquivo não encontrado'};
-    const r = renName(d);
-    if(r.skip) return {hash:d.hash, old:d.file, skip:r.skip};
-    if(r.name === d.file) return {hash:d.hash, old:d.file, skip:'já está no padrão'};
-    let name = r.name, n = 1;
-    const key = s => (d.dir + '/' + s).toLowerCase();
-    while(taken.has(key(name))) name = r.name.replace(/\.pdf$/i, ' (' + (++n) + ').pdf');
-    taken.add(key(name));
-    return {hash:d.hash, old:d.file, name, on:true};
-  });
-  const box = $('#ren-list');
-  if(!REN.rows.length){ box.innerHTML = '<div class="empty">Nenhum artigo nesse conjunto.</div>'; }
-  else box.innerHTML = '<table>' + REN.rows.map((r,i) =>
-    r.skip
-      ? '<tr class="skip"><td class="ck"></td><td><span class="old">' + esc(r.old) + '</span><br>' +
-        '<span class="why">' + esc(r.skip) + '</span></td></tr>'
-      : '<tr><td class="ck"><input type="checkbox" data-i="' + i + '"' + (r.on?' checked':'') + '></td>' +
-        '<td><span class="old">' + esc(r.old) + '</span><br><span class="new">' + esc(r.name) + '</span>' +
-        '<span class="st" id="ren-st-' + i + '"></span></td></tr>'
-  ).join('') + '</table>';
-  renSum();
-}
-function renSum(){
-  const ok   = REN.rows.filter(r => !r.skip);
-  const on   = ok.filter(r => r.on).length;
-  const skip = REN.rows.length - ok.length;
-  $('#ren-sum').textContent = REN.rows.length
-    ? on + (on===1?' arquivo marcado':' arquivos marcados') + ' para renomear' +
-      (skip ? ' · ' + skip + ' fora, veja o motivo na lista' : '')
-    : '';
-  $('#rn-go').disabled = !on;
-}
-function openRename(){
-  if(!S.root){ toast('Abra uma pasta primeiro.'); return; }
-  if(S.busy){ toast('Espere a indexação terminar.'); return; }
-  const nPick = S.pick.size, nVis = visible().length, nAll = Object.keys(S.docs).length;
-  $('#rn-scope').innerHTML =
-    (nPick ? '<label><input type="radio" name="rnscope" value="pick" checked>' +
-      '<span><b>Os ' + nPick + ' selecionados</b></span></label>' : '') +
-    '<label><input type="radio" name="rnscope" value="vis"' + (nPick?'':' checked') + '>' +
-      '<span><b>Os ' + nVis + ' do filtro atual</b> — o que está na tela agora.</span></label>' +
-    '<label><input type="radio" name="rnscope" value="all">' +
-      '<span><b>Todos os ' + nAll + '</b></span></label>';
-  $('#rn-go').textContent = 'Renomear';
-  delete $('#rn-go').dataset.done;
-  renPreview();
-  $('#renmodal').classList.add('on');
-}
-async function renApply(){
-  const rows = REN.rows.filter(r => !r.skip && r.on);
-  if(!rows.length){ toast('Nenhum arquivo marcado.'); return; }
-  if(!window.FileSystemFileHandle || !('move' in FileSystemFileHandle.prototype)){
-    toast('Este navegador não sabe renomear arquivos. Use o Chrome ou o Edge atualizados.', 6000); return;
-  }
-  S.busy = true; $('#rn-go').disabled = true;
-  $('#renmodal').querySelectorAll('input').forEach(i => i.disabled = true);
-  let done = 0, fail = 0;
-  for(const r of rows){
-    const st = document.getElementById('ren-st-' + REN.rows.indexOf(r));
-    const d  = S.docs[r.hash];
-    try{
-      const dir = await renDirOf(d);
-      const fh  = await dir.getFileHandle(d.file);
-      /* colisão com arquivo que já existe na pasta (fora do lote) */
-      let name = r.name, n = 1;
-      const same = s => s.toLowerCase() === d.file.toLowerCase();
-      while(!same(name) && await renExists(dir, name))
-        name = r.name.replace(/\.pdf$/i, ' (' + (++n) + ').pdf');
-      await fh.move(name);
-      const f = await fh.getFile();
-      d.file = name; d.path = d.dir ? d.dir + '/' + name : name;
-      d.mtime = f.lastModified; d.size = f.size;
-      if(st){ st.className = 'st ok'; st.textContent = name === r.name ? ' ✓' : ' ✓ como ' + name; }
-      done++;
-    }catch(e){
-      if(st){ st.className = 'st err'; st.textContent = ' — ' + String(e.message||e).slice(0,90); }
-      fail++;
-    }
-    if(done % 10 === 9) await saveIndex();
-  }
-  await saveIndex();
-  S.busy = false;
-  render(); if(S.sel) openDoc(S.sel);
-  $('#renmodal').querySelectorAll('input').forEach(i => i.disabled = false);
-  $('#ren-sum').textContent = done + (done===1?' arquivo renomeado':' arquivos renomeados') +
-    (fail ? ' · ' + fail + ' com erro, veja na lista' : '');
-  $('#rn-go').textContent = 'Fechar';
-  $('#rn-go').disabled = false;
-  $('#rn-go').dataset.done = '1';
-  toast(fail ? done + ' renomeados, ' + fail + ' com erro.' : done + ' renomeados.');
-}
-$('#s-rename').addEventListener('click', ()=>{ $('#modal').classList.remove('on'); openRename(); });
-$('#sel-rename').addEventListener('click', openRename);
-$('#rn-close').addEventListener('click', ()=>{ if(!S.busy) $('#renmodal').classList.remove('on'); });
-$('#renmodal').addEventListener('click', e=>{
-  if(e.target.id === 'renmodal' && !S.busy) $('#renmodal').classList.remove('on');
-});
-$('#rn-scope').addEventListener('change', ()=>{
-  delete $('#rn-go').dataset.done; $('#rn-go').textContent = 'Renomear'; renPreview();
-});
-$('#ren-list').addEventListener('change', e=>{
-  const i = e.target.dataset.i; if(i == null) return;
-  REN.rows[i].on = e.target.checked; renSum();
-});
-$('#rn-all').addEventListener('click', ()=>{
-  if(S.busy) return;
-  REN.rows.forEach(r => { if(!r.skip) r.on = true; });
-  $('#ren-list').querySelectorAll('input').forEach(i => i.checked = true); renSum();
-});
-$('#rn-none').addEventListener('click', ()=>{
-  if(S.busy) return;
-  REN.rows.forEach(r => { if(!r.skip) r.on = false; });
-  $('#ren-list').querySelectorAll('input').forEach(i => i.checked = false); renSum();
-});
-$('#rn-go').addEventListener('click', ()=>{
-  if($('#rn-go').dataset.done){ delete $('#rn-go').dataset.done; $('#renmodal').classList.remove('on'); return; }
-  if(S.busy) return;
-  renApply();
 });
 
 /* ==================================================================
@@ -3489,12 +3736,67 @@ async function semSearch(){
   try{
     const [v] = await embed(['query: ' + q]);
     const qv = new Float32Array(v);
+    SEM.qv = qv;
     const res = [];
     SEM.vecs.forEach((vec,h)=>{ if(S.docs[h]) res.push([h, dot(qv, vec)]); });
     res.sort((a,b) => b[1] - a[1]);
     SEM.rank = new Map(res.slice(0, 80));
   }catch(e){}
   render();
+}
+
+/* ---------- por que este artigo: fatia o artigo aberto sob demanda ---------- */
+const SEMX = {cache:new Map()};
+
+async function docFullText(hash){
+  if(FT.cache.has(hash)) return FT.cache.get(hash).o;
+  try{
+    const j = await readJSON(S.docsDir, hash + '.json');
+    return (j && j.text) || '';
+  }catch(e){ return ''; }
+}
+function chunksOf(txt){
+  const frases = txt.replace(/\s+/g,' ').split(/(?<=[.!?])\s+/);
+  const out = [];
+  let cur = '';
+  for(const f of frases){
+    if(cur && (cur.length + f.length) > 650){ out.push(cur.trim()); cur = f; }
+    else cur += ' ' + f;
+    if(out.length >= 90) break;
+  }
+  if(cur.trim()) out.push(cur.trim());
+  return out.filter(c => c.length > 90);
+}
+/* fragmento curto o bastante para o localizar achar dentro do PDF */
+function pegada(t){
+  return t.replace(/^\W+/,'').split(/\s+/).slice(0,7).join(' ').replace(/["']/g,'');
+}
+
+async function explainSem(hash){
+  const el = $('#d-why');
+  if(!el || !SEM.qv) return;
+  let ch = SEMX.cache.get(hash);
+  if(!ch) el.innerHTML = '<div class="d-lab">Por que este artigo</div>' +
+                         '<div class="why-wait">analisando os trechos…</div>';
+  try{
+    ch = await docChunks(hash);
+    if(!ch.length || ch[0].semTexto || !ch[0].v){
+      el.innerHTML = '<div class="d-lab">Por que este artigo</div>' +
+        '<div class="why-wait">O texto completo deste PDF não está guardado, então a ' +
+        'aproximação vem só do título e do resumo.</div>';
+      return;
+    }
+    if(S.sel !== hash) return;   /* o usuário já trocou de artigo */
+    const top = ch.map(c => ({t:c.t, s:dot(SEM.qv, c.v)}))
+                  .sort((a,b) => b.s - a.s).slice(0,3);
+    el.innerHTML = '<div class="d-lab">Por que este artigo — trechos mais próximos da sua pergunta</div>' +
+      top.map(x => '<div class="d-snip hit" data-hit="' + esc(pegada(x.t)) + '">' +
+        '<span class="why-pct">' + Math.round(x.s*100) + '%</span>' +
+        esc(x.t) + '</div>').join('');
+  }catch(e){
+    el.innerHTML = '<div class="d-lab">Por que este artigo</div>' +
+      '<div class="why-wait">Não consegui analisar os trechos: ' + esc((e.message||e)+'') + '</div>';
+  }
 }
 
 function semStatus(){
@@ -3526,7 +3828,974 @@ $('#sem-idx').addEventListener('click', ()=>{ $('#modal').classList.remove('on')
 $('#sem-re').addEventListener('click', ()=>{ $('#modal').classList.remove('on'); semIndex(true); });
 
 /* ==================================================================
-   15. Eventos
+   15. Revisão de literatura — matriz de extração
+   ================================================================== */
+const REV = {dir:null, list:[], cur:null, saveT:null, pop:null, filtro:'', colFiltro:{}};
+const TIPOS = {bool:'Sim / não', cat:'Categoria', texto:'Texto curto', num:'Número'};
+const BOOLL = {sim:'sim', nao:'não', nc:'não está claro'};
+const BOOLS = {sim:'✓', nao:'✕', nc:'?'};
+
+async function revDir(){
+  if(!REV.dir) REV.dir = await S.libDir.getDirectoryHandle('revisoes', {create:true});
+  return REV.dir;
+}
+async function revList(){
+  const dir = await revDir();
+  const out = [];
+  for await (const e of dir.values()){
+    if(e.kind !== 'file' || !/\.json$/i.test(e.name)) continue;
+    try{
+      const j = JSON.parse(await (await e.getFile()).text());
+      if(j && j.id) out.push({id:j.id, nome:j.nome || j.id, atualizado:j.atualizado || ''});
+    }catch(err){}
+  }
+  out.sort((a,b) => b.atualizado.localeCompare(a.atualizado));
+  REV.list = out;
+  return out;
+}
+async function revLoad(id){
+  const j = await readJSON(await revDir(), id + '.json');
+  if(!j) return null;
+  j.colunas = j.colunas || []; j.celulas = j.celulas || {};
+  REV.cur = j; REV.colFiltro = {};
+  try{ localStorage.setItem('acervo.rev', id); }catch(e){}
+  return j;
+}
+function revSave(){ clearTimeout(REV.saveT); REV.saveT = setTimeout(revFlush, 600); }
+async function revFlush(){
+  clearTimeout(REV.saveT); REV.saveT = null;
+  if(!REV.cur) return;
+  REV.cur.atualizado = new Date().toISOString();
+  try{ await writeFile(await revDir(), REV.cur.id + '.json', JSON.stringify(REV.cur)); }
+  catch(e){ toast('Não consegui gravar a revisão: ' + e.message); }
+}
+
+/* ---------- amostra e células ---------- */
+function revAmostra(){
+  const r = REV.cur; if(!r) return [];
+  return Object.values(S.docs).filter(d => (d.tags||[]).includes(r.amostra))
+    .sort((a,b) => (a.year||0)-(b.year||0) || String(a.title).localeCompare(String(b.title),'pt'));
+}
+function revRows(){
+  let rows = revAmostra();
+  if(REV.soIA) rows = rows.filter(d => REV.cur.colunas.some(c => { const x = cell(d.hash, c.id); return x && x.origem === 'ia' && !x.rev; }));
+  const q = norm(REV.filtro);
+  if(q) rows = rows.filter(d => norm([d.title, (d.authors||[]).join(' '), d.year, d.journal].join(' ')).includes(q));
+  for(const cid in REV.colFiltro){
+    const fv = REV.colFiltro[cid];
+    if(!fv) continue;
+    rows = rows.filter(d => {
+      const c = cell(d.hash, cid), v = c ? String(c.v ?? '') : '';
+      return fv === '__vazio' ? v === '' : v === fv;
+    });
+  }
+  return rows;
+}
+function cell(h, cid, create){
+  const r = REV.cur; if(!r) return null;
+  if(create){
+    r.celulas[h] = r.celulas[h] || {};
+    r.celulas[h][cid] = r.celulas[h][cid] || {v:'', cit:'', pag:null, nota:'', origem:'manual', rev:true};
+  }
+  return (r.celulas[h] && r.celulas[h][cid]) || null;
+}
+function colById(cid){ return (REV.cur && REV.cur.colunas.find(c => c.id === cid)) || null; }
+function docInSample(hash){
+  const d = S.docs[hash];
+  return !!(REV.cur && d && (d.tags||[]).includes(REV.cur.amostra));
+}
+
+/* ---------- tela ---------- */
+async function openReview(){
+  if(!S.libDir){ toast('Abra uma pasta primeiro.'); return; }
+  $('#review').classList.add('on');
+  await revList();
+  if(!REV.cur){
+    let id = null;
+    try{ id = localStorage.getItem('acervo.rev'); }catch(e){}
+    if(id && REV.list.some(x => x.id === id)) await revLoad(id);
+    else if(REV.list.length) await revLoad(REV.list[0].id);
+  }
+  revDrawSel();
+  revRender();
+}
+function closeReview(){
+  revFlush();
+  closePop();
+  $('#review').classList.remove('on');
+  render();
+}
+function revDrawSel(){
+  const sel = $('#rv-sel');
+  sel.innerHTML = REV.list.length
+    ? REV.list.map(x => '<option value="' + esc(x.id) + '"' + (REV.cur && REV.cur.id === x.id ? ' selected' : '') + '>' + esc(x.nome) + '</option>').join('')
+    : '<option value="">nenhuma revisão ainda</option>';
+}
+
+function revRender(){
+  const host = $('#rv-body'), r = REV.cur;
+  closePop();
+  if(!r){
+    $('#rv-prog').textContent = '';
+    host.innerHTML = '<div class="rv-empty"><b>Nenhuma revisão criada.</b>' +
+      'Uma revisão é uma matriz: artigos nas linhas, características nas colunas. ' +
+      'Você define a amostra por um marcador e as colunas num protocolo.' +
+      '<br><button class="btn-major" id="rv-empty-new">Criar a primeira revisão</button></div>';
+    return;
+  }
+  const cols = r.colunas, todos = revAmostra();
+  let cheias = 0;
+  todos.forEach(d => cols.forEach(c => { const x = cell(d.hash, c.id); if(x && x.v !== '' && x.v !== null) cheias++; }));
+  const tot = todos.length * cols.length;
+  $('#rv-prog').textContent = tot
+    ? cheias + ' de ' + tot + ' células (' + Math.round(cheias/tot*100) + '%) — ' +
+      todos.length + (todos.length === 1 ? ' artigo' : ' artigos')
+    : '';
+
+  if(!cols.length){
+    host.innerHTML = '<div class="rv-empty"><b>A revisão “' + esc(r.nome) + '” ainda não tem colunas.</b>' +
+      'Defina no protocolo quais características você quer registrar de cada artigo.' +
+      '<br><button class="btn-major" id="rv-empty-proto">Definir colunas</button></div>';
+    return;
+  }
+  if(!todos.length){
+    host.innerHTML = '<div class="rv-empty"><b>Nenhum artigo com o marcador “' + esc(r.amostra) + '”.</b>' +
+      'Volte ao acervo, selecione os artigos da amostra e aplique esse marcador. Eles aparecem aqui na hora.</div>';
+    return;
+  }
+
+  const rows = revRows();
+  let h = '<table id="rv-table"><thead><tr><th class="rv-art">Artigo' +
+    (rows.length !== todos.length ? ' <span style="color:var(--faint);font-weight:400">(' + rows.length + ' de ' + todos.length + ')</span>' : '') +
+    '</th>';
+  cols.forEach(c => {
+    h += '<th title="' + esc(c.pergunta || '') + '"><div class="rv-th">' + esc(c.nome) + '</div>';
+    if(c.tipo === 'bool' || c.tipo === 'cat'){
+      const fv = REV.colFiltro[c.id] || '';
+      const ops = c.tipo === 'bool' ? [['sim','sim'],['nao','não'],['nc','não está claro']]
+                                    : (c.opcoes||[]).map(o => [o,o]);
+      h += '<select class="rv-cf' + (fv ? ' on' : '') + '" data-cf="' + c.id + '">' +
+        '<option value="">todos</option>' +
+        ops.map(([v,l]) => '<option value="' + esc(v) + '"' + (fv===v?' selected':'') + '>' + esc(l) + '</option>').join('') +
+        '<option value="__vazio"' + (fv==='__vazio'?' selected':'') + '>vazios</option></select>';
+    }
+    h += '</th>';
+  });
+  h += '</tr></thead><tbody>';
+  rows.forEach(d => {
+    const aut = (d.authors||[]).length ? (d.authors.length > 2 ? d.authors[0] + ' et al.' : d.authors.join(' e ')) : '';
+    h += '<tr><td class="rv-art"><button class="rv-open" data-h="' + d.hash + '" title="Abrir no leitor">' +
+      '<span class="rv-t">' + esc(d.title || d.file) + '</span>' +
+      '<span class="rv-m">' + esc(aut) + (d.year ? (aut ? ', ' : '') + d.year : '') + '</span></button></td>';
+    cols.forEach(c => h += cellHtml(d.hash, c));
+    h += '</tr>';
+  });
+  h += '</tbody></table>';
+  host.innerHTML = h;
+}
+
+function cellHtml(h, c){
+  const x = cell(h, c.id);
+  const v = x ? (x.v ?? '') : '';
+  let cls = 'rv-c', txt;
+  if(c.tipo === 'bool'){ cls += ' b-' + (v || 'none'); txt = BOOLS[v] || '·'; }
+  else { txt = v === '' ? '·' : esc(String(v)); if(v === '') cls += ' b-none'; }
+  if(x && x.origem === 'ia' && !x.rev) cls += ' ia';
+  const ev = x && (x.cit || x.nota) ? '<i class="rv-ev"></i>' : '';
+  return '<td><button class="' + cls + '" data-cell="' + h + '|' + c.id + '" tabindex="0">' + txt + ev + '</button></td>';
+}
+
+function setCell(h, cid, v){
+  const x = cell(h, cid, true);
+  x.v = v; x.origem = 'manual'; x.rev = true;
+  revSave();
+  const c = colById(cid);
+  const btn = document.querySelector('.rv-c[data-cell="' + h + '|' + cid + '"]');
+  if(btn && c){
+    const tmp = document.createElement('div');
+    tmp.innerHTML = cellHtml(h, c);
+    btn.replaceWith(tmp.firstChild.firstChild);
+  }
+  revProgSoon();
+}
+let progT = null;
+function revProgSoon(){ clearTimeout(progT); progT = setTimeout(()=>{ if(REV.cur) revRenderProg(); }, 300); }
+function revRenderProg(){
+  const r = REV.cur; if(!r) return;
+  const cols = r.colunas, todos = revAmostra();
+  let cheias = 0;
+  todos.forEach(d => cols.forEach(c => { const x = cell(d.hash, c.id); if(x && x.v !== '' && x.v !== null) cheias++; }));
+  const tot = todos.length * cols.length;
+  if(tot) $('#rv-prog').textContent = cheias + ' de ' + tot + ' células (' + Math.round(cheias/tot*100) + '%) — ' +
+    todos.length + (todos.length === 1 ? ' artigo' : ' artigos');
+}
+
+/* ---------- editor de célula ---------- */
+function openPop(h, cid, anchor){
+  const c = colById(cid), d = S.docs[h];
+  if(!c || !d) return;
+  const x = cell(h, cid, true);
+  REV.pop = {h, cid};
+  const pop = $('#rv-pop');
+  let ctl = '';
+  if(c.tipo === 'bool'){
+    ctl = '<div class="pop-vals">' + ['sim','nao','nc'].map(v =>
+      '<button data-v="' + v + '" class="' + (x.v===v?'on':'') + '">' + BOOLL[v] + '</button>').join('') + '</div>';
+  }else if(c.tipo === 'cat'){
+    ctl = '<select id="pop-v"><option value="">—</option>' +
+      (c.opcoes||[]).map(o => '<option' + (x.v===o?' selected':'') + '>' + esc(o) + '</option>').join('') + '</select>';
+  }else if(c.tipo === 'num'){
+    ctl = '<input id="pop-v" inputmode="decimal" value="' + esc(x.v ?? '') + '" placeholder="número">';
+  }else{
+    ctl = '<input id="pop-v" value="' + esc(x.v ?? '') + '" placeholder="texto curto">';
+  }
+  pop.innerHTML =
+    '<div class="pop-h">' + esc(c.nome) + '</div>' +
+    '<div class="pop-t">' + esc(d.title || d.file) + '</div>' +
+    (c.pergunta ? '<div class="pop-q">' + esc(c.pergunta) + '</div>' : '<div style="height:8px"></div>') +
+    (x.origem === 'ia' && !x.rev ? '<div class="pop-ia">Proposto pela IA' + (x.conf ? ', confiança ' + esc(x.conf) : '') +
+      ' — <button id="pop-ok" class="tool" style="padding:1px 8px;display:inline-flex">confirmar (c)</button></div>' : '') +
+    (x.origem === 'ia' && x.rev && x.conf ? '<div class="pop-conf">Proposto pela IA e confirmado por você.</div>' : '') +
+    (x.ia ? '<div class="pop-ia-cmp">Calibração — a IA propôs <b>' +
+      esc(c.tipo === 'bool' ? (BOOLL[x.ia.v] || x.ia.v) : String(x.ia.v)) + '</b>' +
+      (norm(String(x.ia.v)) === norm(String(x.v)) ? ' (concorda com você)' : ' (<b>diverge</b> de você)') +
+      (x.ia.cit ? '<br>“' + esc(x.ia.cit) + '”' + (x.ia.pag ? ' (p. ' + x.ia.pag + ')' : '') : '') + '</div>' : '') +
+    ctl +
+    '<div class="pop-h">Evidência — a citação que sustenta a resposta</div>' +
+    '<textarea class="cit" id="pop-cit" placeholder="Cole ou grife no leitor e escolha esta coluna.">' + esc(x.cit||'') + '</textarea>' +
+    '<div class="pop-row"><label for="pop-pag">página</label><input id="pop-pag" inputmode="numeric" value="' + esc(x.pag ?? '') + '">' +
+    (x.pag || x.cit ? '<button class="tool" id="pop-go" style="padding:4px 9px">abrir no artigo</button>' : '') + '</div>' +
+    '<div class="pop-h">Nota</div>' +
+    '<textarea id="pop-nota" placeholder="observação sua">' + esc(x.nota||'') + '</textarea>' +
+    '<div class="pop-acts"><button id="pop-clear">limpar célula</button><span class="spacer"></span>' +
+    '<button id="pop-close">fechar</button></div>';
+  pop.classList.add('on');
+  const r = anchor.getBoundingClientRect();
+  const w = pop.offsetWidth, hh = pop.offsetHeight;
+  let left = r.left, top = r.bottom + 6;
+  if(left + w > innerWidth - 8) left = innerWidth - w - 8;
+  if(top + hh > innerHeight - 8) top = Math.max(8, r.top - hh - 6);
+  pop.style.left = left + 'px'; pop.style.top = top + 'px';
+  const first = pop.querySelector('#pop-v');
+  if(first) first.focus();
+}
+function closePop(){ $('#rv-pop').classList.remove('on'); REV.pop = null; }
+
+$('#rv-pop').addEventListener('click', e=>{
+  if(!REV.pop) return;
+  const {h, cid} = REV.pop;
+  const bv = e.target.closest('[data-v]');
+  if(bv){
+    const x = cell(h, cid, true);
+    const v = x.v === bv.dataset.v ? '' : bv.dataset.v;
+    setCell(h, cid, v);
+    $('#rv-pop').querySelectorAll('[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+    return;
+  }
+  if(e.target.id === 'pop-close'){ closePop(); return; }
+  if(e.target.id === 'pop-ok'){ confirmarCelula(h, cid); closePop(); return; }
+  if(e.target.id === 'pop-clear'){
+    const r = REV.cur;
+    if(r.celulas[h]) delete r.celulas[h][cid];
+    revSave(); closePop(); revRender(); return;
+  }
+  if(e.target.id === 'pop-go'){
+    const x = cell(h, cid);
+    const frag = x && x.cit ? x.cit.replace(/^\W+/,'').split(/\s+/).slice(0,7).join(' ') : '';
+    closePop();
+    openReaderAt(h, frag).then(()=>{ if(!frag && x && x.pag) gotoPage(+x.pag, 'auto'); });
+  }
+});
+$('#rv-pop').addEventListener('input', e=>{
+  if(!REV.pop) return;
+  const {h, cid} = REV.pop;
+  const x = cell(h, cid, true);
+  if(e.target.id === 'pop-v'){ x.v = e.target.value.trim(); x.origem = 'manual'; x.rev = true; }
+  else if(e.target.id === 'pop-cit') x.cit = e.target.value;
+  else if(e.target.id === 'pop-pag') x.pag = e.target.value.trim() ? +e.target.value.trim() : null;
+  else if(e.target.id === 'pop-nota') x.nota = e.target.value;
+  else return;
+  revSave();
+  const c = colById(cid);
+  const btn = document.querySelector('.rv-c[data-cell="' + h + '|' + cid + '"]');
+  if(btn && c){ const tmp = document.createElement('div'); tmp.innerHTML = cellHtml(h, c); btn.replaceWith(tmp.firstChild.firstChild); }
+  revProgSoon();
+});
+$('#rv-pop').addEventListener('change', e=>{
+  if(REV.pop && e.target.id === 'pop-v') setCell(REV.pop.h, REV.pop.cid, e.target.value.trim());
+});
+
+/* cliques na matriz */
+$('#rv-body').addEventListener('click', e=>{
+  if(e.target.id === 'rv-empty-new'){ openNewReview(); return; }
+  if(e.target.id === 'rv-empty-proto'){ openProto(); return; }
+  const ab = e.target.closest('.rv-open');
+  if(ab){ openReaderAt(ab.dataset.h, ''); return; }
+  const cb = e.target.closest('[data-cell]');
+  if(cb){
+    const [h, cid] = cb.dataset.cell.split('|');
+    if(REV.pop && REV.pop.h === h && REV.pop.cid === cid){ closePop(); return; }
+    openPop(h, cid, cb);
+  }
+});
+$('#rv-body').addEventListener('change', e=>{
+  const cf = e.target.closest('[data-cf]'); if(!cf) return;
+  REV.colFiltro[cf.dataset.cf] = cf.value;
+  revRender();
+});
+/* teclado: s / n / ? preenchem sim-não direto; setas navegam; Delete limpa */
+$('#rv-body').addEventListener('keydown', e=>{
+  const cb = e.target.closest('[data-cell]'); if(!cb) return;
+  const [h, cid] = cb.dataset.cell.split('|');
+  const c = colById(cid); if(!c) return;
+  const k = e.key.toLowerCase();
+  if(c.tipo === 'bool' && (k === 's' || k === 'n' || k === '?' || k === '/')){
+    e.preventDefault(); e.stopPropagation();
+    setCell(h, cid, k === 's' ? 'sim' : k === 'n' ? 'nao' : 'nc');
+    const nx = document.querySelector('.rv-c[data-cell="' + h + '|' + cid + '"]'); if(nx) nx.focus();
+    return;
+  }
+  if(k === 'delete' || k === 'backspace'){
+    e.preventDefault(); e.stopPropagation(); const r = REV.cur; if(r.celulas[h]) delete r.celulas[h][cid];
+    revSave(); const tmp = document.createElement('div'); tmp.innerHTML = cellHtml(h, c);
+    cb.replaceWith(tmp.firstChild.firstChild); revProgSoon();
+    const nx = document.querySelector('.rv-c[data-cell="' + h + '|' + cid + '"]'); if(nx) nx.focus();
+    return;
+  }
+  if(k === 'enter'){ e.preventDefault(); openPop(h, cid, cb); return; }
+  if(k === 'c'){ e.preventDefault(); e.stopPropagation(); confirmarCelula(h, cid);
+    const nx = document.querySelector('.rv-c[data-cell="' + h + '|' + cid + '"]'); if(nx) nx.focus(); return; }
+  if(!/^arrow/.test(k)) return;
+  e.preventDefault();
+  const td = cb.closest('td'), tr = td.parentElement;
+  const ci = [...tr.children].indexOf(td);
+  let alvo = null;
+  if(k === 'arrowright') alvo = td.nextElementSibling;
+  else if(k === 'arrowleft') alvo = td.previousElementSibling;
+  else if(k === 'arrowdown') alvo = tr.nextElementSibling && tr.nextElementSibling.children[ci];
+  else if(k === 'arrowup') alvo = tr.previousElementSibling && tr.previousElementSibling.children[ci];
+  const b = alvo && alvo.querySelector('[data-cell]');
+  if(b){ closePop(); b.focus(); }
+});
+document.addEventListener('click', e=>{
+  if($('#rv-pop').classList.contains('on') && !e.target.closest('#rv-pop') && !e.target.closest('[data-cell]')) closePop();
+});
+
+/* ---------- barra ---------- */
+$('#rv-close').addEventListener('click', closeReview);
+$('#rv-sel').addEventListener('change', async e=>{
+  if(!e.target.value) return;
+  await revFlush(); await revLoad(e.target.value); revRender();
+});
+$('#rv-q').addEventListener('input', e=>{ REV.filtro = e.target.value; revRender(); });
+$('#rv-only-ia').addEventListener('change', e=>{ REV.soIA = e.target.checked; revRender(); });
+$('#rv-new').addEventListener('click', openNewReview);
+$('#rv-proto').addEventListener('click', ()=>{ if(REV.cur) openProto(); else openNewReview(); });
+
+/* ---------- nova revisão ---------- */
+function openNewReview(){
+  const tags = allTags();
+  $('#rn-tag').innerHTML = tags.length
+    ? tags.map(t => '<option value="' + esc(t) + '">' + esc(t) + ' (' + countTag(t) + ')</option>').join('')
+    : '<option value="">crie um marcador primeiro</option>';
+  $('#rn-nome').value = '';
+  $('#revmodal').classList.add('on');
+  $('#rn-nome').focus();
+}
+$('#rn-cancel').addEventListener('click', ()=> $('#revmodal').classList.remove('on'));
+$('#revmodal').addEventListener('click', e=>{ if(e.target.id === 'revmodal') $('#revmodal').classList.remove('on'); });
+$('#rn-ok').addEventListener('click', async ()=>{
+  const nome = $('#rn-nome').value.trim(), tag = $('#rn-tag').value;
+  if(!nome){ toast('Dê um nome à revisão.'); return; }
+  if(!tag){ toast('Escolha o marcador da amostra.'); return; }
+  await revFlush();
+  const id = 'rev-' + Date.now().toString(36);
+  REV.cur = {id, nome, amostra:tag, criado:new Date().toISOString(), atualizado:'', colunas:[], celulas:{}};
+  await revFlush();
+  await revList(); revDrawSel();
+  $('#revmodal').classList.remove('on');
+  revRender();
+  openProto();
+});
+
+/* ---------- protocolo ---------- */
+let PT = [];
+function openProto(){
+  PT = JSON.parse(JSON.stringify(REV.cur.colunas));
+  if(!PT.length) PT.push({id:uid(), nome:'', pergunta:'', tipo:'bool', opcoes:[]});
+  drawProto();
+  $('#protomodal').classList.add('on');
+}
+function drawProto(){
+  $('#pt-list').innerHTML = PT.map((c,i) =>
+    '<div class="proto-row" data-i="' + i + '">' +
+      '<input data-k="nome" value="' + esc(c.nome) + '" placeholder="nome da coluna (curto)">' +
+      '<select data-k="tipo">' + Object.keys(TIPOS).map(t => '<option value="' + t + '"' + (c.tipo===t?' selected':'') + '>' + TIPOS[t] + '</option>').join('') + '</select>' +
+      '<div class="ops">' +
+        '<button data-op="up" title="Subir">↑</button><button data-op="down" title="Descer">↓</button>' +
+        '<button data-op="del" class="del" title="Remover coluna">✕</button></div>' +
+      '<input class="wide" data-k="pergunta" value="' + esc(c.pergunta||'') + '" placeholder="pergunta que esta coluna responde">' +
+      (c.tipo === 'cat'
+        ? '<input class="wide" data-k="opcoes" value="' + esc((c.opcoes||[]).join(', ')) + '" placeholder="opções separadas por vírgula: exato, heurística, meta-heurística">'
+        : '') +
+    '</div>').join('');
+}
+$('#pt-list').addEventListener('input', e=>{
+  const row = e.target.closest('[data-i]'); if(!row) return;
+  const c = PT[+row.dataset.i], k = e.target.dataset.k;
+  if(k === 'opcoes') c.opcoes = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+  else if(k) c[k] = e.target.value;
+});
+$('#pt-list').addEventListener('change', e=>{
+  const row = e.target.closest('[data-i]'); if(!row) return;
+  if(e.target.dataset.k === 'tipo'){ PT[+row.dataset.i].tipo = e.target.value; drawProto(); }
+});
+$('#pt-list').addEventListener('click', e=>{
+  const b = e.target.closest('[data-op]'); if(!b) return;
+  const i = +b.closest('[data-i]').dataset.i;
+  if(b.dataset.op === 'del') PT.splice(i,1);
+  else if(b.dataset.op === 'up' && i > 0) [PT[i-1], PT[i]] = [PT[i], PT[i-1]];
+  else if(b.dataset.op === 'down' && i < PT.length-1) [PT[i+1], PT[i]] = [PT[i], PT[i+1]];
+  drawProto();
+});
+$('#pt-add').addEventListener('click', ()=>{
+  PT.push({id:uid(), nome:'', pergunta:'', tipo:'bool', opcoes:[]});
+  drawProto();
+  const inputs = $('#pt-list').querySelectorAll('[data-k="nome"]');
+  inputs[inputs.length-1].focus();
+});
+$('#pt-cancel').addEventListener('click', ()=> $('#protomodal').classList.remove('on'));
+$('#protomodal').addEventListener('click', e=>{ if(e.target.id === 'protomodal') $('#protomodal').classList.remove('on'); });
+$('#pt-save').addEventListener('click', ()=>{
+  const limpo = PT.filter(c => c.nome.trim()).map(c => ({...c, nome:c.nome.trim(), pergunta:(c.pergunta||'').trim()}));
+  if(!limpo.length){ toast('Dê nome a pelo menos uma coluna.'); return; }
+  REV.cur.colunas = limpo;
+  revSave();
+  $('#protomodal').classList.remove('on');
+  revRender();
+  toast('Protocolo salvo: ' + limpo.length + (limpo.length === 1 ? ' coluna.' : ' colunas.'));
+});
+$('#pt-del').addEventListener('click', async ()=>{
+  const r = REV.cur; if(!r) return;
+  if(!confirm('Excluir a revisão “' + r.nome + '” e todas as células preenchidas?\n\nOs artigos, marcadores e grifos não são afetados.')) return;
+  clearTimeout(REV.saveT);
+  try{ await (await revDir()).removeEntry(r.id + '.json'); }catch(e){}
+  REV.cur = null;
+  try{ localStorage.removeItem('acervo.rev'); }catch(e){}
+  $('#protomodal').classList.remove('on');
+  await revList();
+  if(REV.list.length) await revLoad(REV.list[0].id);
+  revDrawSel(); revRender();
+});
+
+/* ---------- grifo como evidência (usado pelo leitor) ---------- */
+function evidenceOptions(hash){
+  if(!REV.cur || !docInSample(hash) || !REV.cur.colunas.length) return null;
+  return REV.cur.colunas;
+}
+function setEvidence(hash, annot, cid){
+  if(!cid){ annot.col = undefined; return; }
+  const x = cell(hash, cid, true);
+  {
+    x.cit = annot.text || annot.comment || '';
+    x.pag = annot.page;
+    annot.col = cid;
+    toast('Evidência registrada em “' + (colById(cid)||{}).nome + '”.');
+  }
+  revSave();
+}
+
+/* ---------- exportação ---------- */
+function rvKeys(){
+  const used = new Set(), m = {};
+  revAmostra().forEach(d => m[d.hash] = bibKey(d, used));
+  return m;
+}
+function csvq(s){ s = String(s ?? ''); return /[",\n;]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; }
+function texq(s){ return bibEsc(String(s ?? '')); }
+function valorLegivel(c, x){
+  const v = x ? (x.v ?? '') : '';
+  return c.tipo === 'bool' ? (BOOLL[v] || '') : String(v);
+}
+function exportMatrix(fmt, comEv){
+  const r = REV.cur, cols = r.colunas, rows = revAmostra(), keys = rvKeys();
+  if(fmt === 'csv'){
+    const head = ['chave','titulo','autores','ano', ...cols.flatMap(c => comEv ? [c.nome, c.nome + ' (evidência)', c.nome + ' (página)'] : [c.nome])];
+    const linhas = rows.map(d => {
+      const base = [keys[d.hash], d.title, (d.authors||[]).join('; '), d.year ?? ''];
+      cols.forEach(c => {
+        const x = cell(d.hash, c.id);
+        base.push(valorLegivel(c, x));
+        if(comEv) base.push(x ? x.cit || '' : '', x && x.pag ? x.pag : '');
+      });
+      return base.map(csvq).join(';');
+    });
+    return [head.map(csvq).join(';'), ...linhas].join('\n');
+  }
+  if(fmt === 'latex'){
+    const sym = {sim:'\\checkmark', nao:'--', nc:'?', '':''};
+    const spec = 'l' + cols.map(c => c.tipo === 'bool' ? 'c' : 'l').join('');
+    let t = '% Requer no preâmbulo: \\usepackage{booktabs,amssymb,natbib}\n' +
+      '\\begin{table}[htbp]\n\\centering\n\\caption{' + texq(r.nome) + '}\n\\label{tab:' + r.id + '}\n' +
+      '\\begin{tabular}{' + spec + '}\n\\toprule\nArtigo & ' + cols.map(c => texq(c.nome)).join(' & ') + ' \\\\\n\\midrule\n';
+    rows.forEach(d => {
+      t += '\\citet{' + keys[d.hash] + '} & ' + cols.map(c => {
+        const x = cell(d.hash, c.id), v = x ? (x.v ?? '') : '';
+        return c.tipo === 'bool' ? sym[v] : texq(v);
+      }).join(' & ') + ' \\\\\n';
+    });
+    return t + '\\bottomrule\n\\end{tabular}\n\\end{table}\n';
+  }
+  /* markdown */
+  const head = '| Artigo | ' + cols.map(c => c.nome).join(' | ') + ' |\n|---|' + cols.map(()=>'---').join('|') + '|\n';
+  const body = rows.map(d => {
+    const nome = ((d.authors||[])[0] || d.file).split(/\s+/).pop() + (d.year ? ' (' + d.year + ')' : '');
+    return '| ' + nome + ' | ' + cols.map(c => {
+      const x = cell(d.hash, c.id);
+      let v = valorLegivel(c, x);
+      if(comEv && x && x.cit) v += ' — "' + x.cit.replace(/\|/g,'/').slice(0,140) + '"' + (x.pag ? ' (p. ' + x.pag + ')' : '');
+      return v.replace(/\|/g,'/');
+    }).join(' | ') + ' |';
+  }).join('\n');
+  return head + body + '\n';
+}
+$('#rv-export').addEventListener('click', ()=>{
+  if(!REV.cur || !REV.cur.colunas.length){ toast('Nada para exportar ainda.'); return; }
+  $('#rv-out').value = '';
+  $('#rvexport').classList.add('on');
+});
+$('#rx-close').addEventListener('click', ()=> $('#rvexport').classList.remove('on'));
+$('#rvexport').addEventListener('click', e=>{ if(e.target.id === 'rvexport') $('#rvexport').classList.remove('on'); });
+$('#rx-gen').addEventListener('click', ()=>{
+  const fmt = ($('#rvexport').querySelector('input[name=rxfmt]:checked')||{}).value || 'csv';
+  $('#rv-out').value = exportMatrix(fmt, $('#rx-ev').checked);
+});
+$('#rx-copy').addEventListener('click', async ()=>{
+  if(!$('#rv-out').value){ toast('Gere primeiro.'); return; }
+  try{ await navigator.clipboard.writeText($('#rv-out').value); toast('Copiado.'); }
+  catch(e){ $('#rv-out').select(); toast('Selecionado — use Ctrl+C.'); }
+});
+$('#rx-save').addEventListener('click', ()=>{
+  if(!$('#rv-out').value){ toast('Gere primeiro.'); return; }
+  const fmt = ($('#rvexport').querySelector('input[name=rxfmt]:checked')||{}).value || 'csv';
+  const ext = {csv:'csv', latex:'tex', md:'md'}[fmt];
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([$('#rv-out').value], {type:'text/plain;charset=utf-8'}));
+  a.download = (REV.cur.nome || 'revisao').replace(/[^\w\-]+/g,'_') + '.' + ext;
+  a.click();
+});
+
+$('#rev').addEventListener('click', openReview);
+
+/* ==================================================================
+   16. Extração por IA — motor genérico + lote sobre a matriz
+   ================================================================== */
+const AI_PRESETS = {
+  cerebras:  {nome:'Cerebras — grátis, sem cartão', base:'https://api.cerebras.ai/v1',
+              model:'gpt-oss-120b', keys:'https://cloud.cerebras.ai/',
+              nota:'Cerca de 1 milhão de tokens por dia no nível gratuito; não usa seus dados para treino.'},
+  groq:      {nome:'Groq — grátis, sem cartão', base:'https://api.groq.com/openai/v1',
+              model:'openai/gpt-oss-120b', keys:'https://console.groq.com/keys',
+              nota:'Cerca de 200 mil tokens por dia no nível gratuito (o lote pausa sozinho ao bater no limite); não usa seus dados para treino.'},
+  gemini:    {nome:'Google Gemini — grátis, usa seus dados', base:'https://generativelanguage.googleapis.com/v1beta/openai',
+              model:'gemini-2.5-flash', keys:'https://aistudio.google.com/apikey',
+              nota:'Generoso e de boa qualidade, mas no nível gratuito o Google usa os prompts para melhorar seus produtos.'},
+  openrouter:{nome:'OpenRouter', base:'https://openrouter.ai/api/v1',
+              model:'', keys:'https://openrouter.ai/keys',
+              nota:'Modelos com sufixo ":free" têm 50 pedidos por dia sem crédito comprado. Use "listar" para ver os nomes.'},
+  anthropic: {nome:'Anthropic (Claude) — pago', base:'https://api.anthropic.com',
+              model:'claude-sonnet-5', keys:'https://console.anthropic.com/settings/keys',
+              nota:'Alta qualidade; uma amostra de 50 artigos × 10 colunas custa na casa de US$ 2.'},
+  openai:    {nome:'OpenAI — pago', base:'https://api.openai.com/v1',
+              model:'gpt-4o-mini', keys:'https://platform.openai.com/api-keys', nota:''},
+  custom:    {nome:'Outro endereço compatível com OpenAI', base:'', model:'', keys:'',
+              nota:'Qualquer endpoint no formato /chat/completions — inclusive um Ollama local (http://localhost:11434/v1, chave qualquer).'}
+};
+const AI = {cfg:{preset:'cerebras', base:AI_PRESETS.cerebras.base, model:AI_PRESETS.cerebras.model, key:''}};
+
+function aiLoad(){
+  try{ const j = JSON.parse(localStorage.getItem('acervo.ai') || 'null'); if(j) Object.assign(AI.cfg, j); }catch(e){}
+}
+function aiSave(){ try{ localStorage.setItem('acervo.ai', JSON.stringify(AI.cfg)); }catch(e){} }
+function aiReady(){ return !!(AI.cfg.key && AI.cfg.base && AI.cfg.model); }
+aiLoad();
+
+/* ---------- ajustes ---------- */
+function aiDrawSettings(){
+  const c = AI.cfg;
+  $('#ai-preset').innerHTML = Object.keys(AI_PRESETS).map(k =>
+    '<option value="' + k + '"' + (c.preset===k?' selected':'') + '>' + AI_PRESETS[k].nome + '</option>').join('');
+  $('#ai-base').value = c.base || '';
+  $('#ai-model').value = c.model || '';
+  $('#ai-key').value = c.key || '';
+  aiNota();
+  $('#ai-status').textContent = aiReady() ? 'configurado' : 'sem chave';
+}
+function aiNota(){
+  const p = AI_PRESETS[AI.cfg.preset] || AI_PRESETS.custom;
+  $('#ai-nota').textContent = p.nota || '';
+  const a = $('#ai-keys');
+  a.href = p.keys || '#'; a.style.display = p.keys ? '' : 'none';
+}
+$('#ai-preset').addEventListener('change', e=>{
+  const p = AI_PRESETS[e.target.value];
+  AI.cfg.preset = e.target.value;
+  if(p.base) AI.cfg.base = p.base;
+  if(p.model !== undefined && p.model !== '') AI.cfg.model = p.model;
+  if(e.target.value === 'custom'){ AI.cfg.base = ''; AI.cfg.model = ''; }
+  $('#ai-base').value = AI.cfg.base; $('#ai-model').value = AI.cfg.model;
+  $('#ai-models').innerHTML = '';
+  aiNota(); aiSave();
+});
+$('#ai-base').addEventListener('input', e=>{ AI.cfg.base = e.target.value.trim(); aiSave(); });
+$('#ai-model').addEventListener('input', e=>{ AI.cfg.model = e.target.value.trim(); aiSave(); });
+$('#ai-key').addEventListener('input', e=>{ AI.cfg.key = e.target.value.trim(); aiSave();
+  $('#ai-status').textContent = aiReady() ? 'configurado' : 'sem chave'; });
+
+function aiHeaders(){
+  const c = AI.cfg;
+  if(c.preset === 'anthropic') return {
+    'Content-Type':'application/json', 'x-api-key':c.key, 'anthropic-version':'2023-06-01',
+    'anthropic-dangerous-direct-browser-access':'true'
+  };
+  const h = {'Content-Type':'application/json', 'Authorization':'Bearer ' + c.key};
+  if(c.preset === 'openrouter'){ h['HTTP-Referer'] = location.origin; h['X-Title'] = 'Acervo'; }
+  return h;
+}
+async function aiErr(r){
+  let msg = '';
+  try{ const j = await r.json(); msg = (j.error && (j.error.message || j.error)) || JSON.stringify(j); }
+  catch(e){ try{ msg = await r.text(); }catch(e2){} }
+  const err = new Error('HTTP ' + r.status + (msg ? ': ' + String(msg).slice(0,160) : ''));
+  err.status = r.status;
+  const ra = r.headers.get('retry-after');
+  if(ra) err.retry = parseFloat(ra);
+  return err;
+}
+async function aiListModels(){
+  const c = AI.cfg;
+  if(c.preset === 'anthropic'){
+    const r = await fetch(c.base.replace(/\/$/,'') + '/v1/models', {headers:aiHeaders()});
+    if(!r.ok) throw await aiErr(r);
+    return ((await r.json()).data || []).map(m => m.id);
+  }
+  const r = await fetch(c.base.replace(/\/$/,'') + '/models', {headers:aiHeaders()});
+  if(!r.ok) throw await aiErr(r);
+  const j = await r.json();
+  return (j.data || j.models || []).map(m => m.id || m.name).filter(Boolean);
+}
+$('#ai-list').addEventListener('click', async ()=>{
+  if(!AI.cfg.key || !AI.cfg.base){ toast('Preencha endereço e chave primeiro.'); return; }
+  $('#ai-status').textContent = 'consultando…';
+  try{
+    const ms = await aiListModels();
+    $('#ai-models').innerHTML = ms.map(m => '<option value="' + esc(m) + '">').join('');
+    $('#ai-status').textContent = ms.length + ' modelos — comece a digitar no campo Modelo.';
+  }catch(e){ $('#ai-status').textContent = aiExplain(e); }
+});
+$('#ai-test').addEventListener('click', async ()=>{
+  if(!aiReady()){ $('#ai-status').textContent = 'faltam endereço, modelo ou chave'; return; }
+  $('#ai-status').textContent = 'testando…';
+  const t0 = performance.now();
+  try{
+    const out = await aiChat('Responda somente com a palavra OK.', 'Teste de conexão.', 8);
+    $('#ai-status').textContent = 'funcionou em ' + Math.round(performance.now()-t0) + ' ms: “' + out.trim().slice(0,20) + '”';
+  }catch(e){ $('#ai-status').textContent = aiExplain(e); }
+});
+function aiExplain(e){
+  const m = String(e.message || e);
+  if(e.status === 401 || e.status === 403) return 'chave recusada (' + m + ')';
+  if(e.status === 404) return 'endereço ou modelo não encontrado (' + m + ')';
+  if(e.status === 429) return 'limite de taxa atingido — espere um pouco (' + m + ')';
+  if(/Failed to fetch|NetworkError|CORS/i.test(m)) return 'o navegador não conseguiu chegar ao provedor: endereço errado, sem internet, ou o provedor não aceita chamadas do navegador';
+  return 'falhou: ' + m.slice(0,140);
+}
+
+/* ---------- chamada ao modelo ---------- */
+async function aiChat(system, user, maxTokens){
+  const c = AI.cfg;
+  if(!aiReady()) throw new Error('motor de IA não configurado');
+  const base = c.base.replace(/\/$/,'');
+  if(c.preset === 'anthropic'){
+    const r = await fetch(base + '/v1/messages', {method:'POST', headers:aiHeaders(),
+      body:JSON.stringify({model:c.model, max_tokens:maxTokens || 300, temperature:0, system,
+                           messages:[{role:'user', content:user}]})});
+    if(!r.ok) throw await aiErr(r);
+    const j = await r.json();
+    return (j.content || []).map(b => b.text || '').join('');
+  }
+  const r = await fetch(base + '/chat/completions', {method:'POST', headers:aiHeaders(),
+    body:JSON.stringify({model:c.model, temperature:0, max_tokens:maxTokens || 300,
+      messages:[{role:'system', content:system}, {role:'user', content:user}]})});
+  if(!r.ok) throw await aiErr(r);
+  const j = await r.json();
+  const ch = j.choices && j.choices[0] && j.choices[0].message;
+  return (ch && (ch.content || ch.reasoning_content || '')) || '';
+}
+function aiJson(txt){
+  let t = String(txt || '').replace(/```json|```/gi, '').trim();
+  const i = t.indexOf('{'), f = t.lastIndexOf('}');
+  if(i >= 0 && f > i) t = t.slice(i, f+1);
+  try{ return JSON.parse(t); }catch(e){ return null; }
+}
+
+/* ---------- texto e trechos do artigo ---------- */
+async function docTextInfo(hash){
+  try{
+    const j = await readJSON(S.docsDir, hash + '.json');
+    return {text:(j && j.text) || '', offs:(j && j.pageOffsets) || null};
+  }catch(e){ return {text:'', offs:null}; }
+}
+function fatiar(txt){
+  const limpo = txt.replace(/\s+/g,' ');
+  const out = [];
+  let cur = '', off = 0, curOff = 0;
+  const re = /[^.!?]+[.!?]+\s*|[^.!?]+$/g;
+  let m;
+  while((m = re.exec(limpo)) && out.length < 90){
+    const f = m[0];
+    if(cur && (cur.length + f.length) > 650){ out.push({t:cur.trim(), off:curOff}); cur = ''; curOff = m.index; }
+    if(!cur) curOff = m.index;
+    cur += f;
+  }
+  if(cur.trim() && out.length < 90) out.push({t:cur.trim(), off:curOff});
+  return out.filter(c => c.t.length > 90);
+}
+function paginaDe(off, info, hash){
+  const d = S.docs[hash];
+  if(info.offs && info.offs.length){
+    let p = 1;
+    for(let i=0;i<info.offs.length;i++){ if(info.offs[i] <= off) p = i+1; else break; }
+    return p;
+  }
+  if(d && d.pages && info.text.length) return Math.max(1, Math.min(d.pages, 1 + Math.floor(off / info.text.length * d.pages)));
+  return null;
+}
+/* pedaços com vetor, em cache por artigo (compartilhado com o "por que este artigo") */
+async function docChunks(hash){
+  let ch = SEMX.cache.get(hash);
+  if(ch && ch[0] && ch[0].off !== undefined) return ch;
+  const info = await docTextInfo(hash);
+  const ped = info.text.length > 600 ? fatiar(info.text) : [];
+  if(!ped.length){
+    const d = S.docs[hash];
+    if(!d || !d.abstract) return [];
+    ped.push({t:d.abstract, off:0, semTexto:true});
+  }
+  let vs = null;
+  try{ vs = await embed(ped.map(c => 'passage: ' + c.t)); }catch(e){}
+  ch = ped.map((c,i) => ({t:c.t, off:c.off, semTexto:!!c.semTexto, v: vs ? new Float32Array(vs[i]) : null, info}));
+  SEMX.cache.set(hash, ch);
+  return ch;
+}
+async function trechosPara(hash, pergunta, n){
+  const ch = await docChunks(hash);
+  if(!ch.length) return [];
+  let qv = null;
+  try{ const [v] = await embed(['query: ' + pergunta]); qv = new Float32Array(v); }catch(e){}
+  const termos = norm(pergunta).split(/\s+/).filter(t => t.length > 3);
+  const pont = ch.map(c => {
+    let s = 0;
+    if(qv && c.v) s = dot(qv, c.v);
+    else { const nn = norm(c.t); s = termos.filter(t => nn.includes(t)).length / Math.max(1, termos.length); }
+    return {c, s};
+  }).sort((a,b) => b.s - a.s).slice(0, n || 4);
+  return pont.map(x => x.c);
+}
+
+/* ---------- uma célula ---------- */
+function tipoInstrucao(c){
+  if(c.tipo === 'bool') return 'Responda "sim", "nao" ou "nc" (não está claro nos trechos).';
+  if(c.tipo === 'cat')  return 'Responda exatamente uma destas opções: ' + (c.opcoes||[]).map(o => '"' + o + '"').join(', ') + ' — ou "nc" se os trechos não permitem decidir.';
+  if(c.tipo === 'num')  return 'Responda um número (só o número), ou "nc" se não aparece nos trechos.';
+  return 'Responda um texto curto, de até 12 palavras, ou "nc" se não aparece nos trechos.';
+}
+const AI_SYSTEM =
+  'Você extrai dados de artigos científicos para uma revisão sistemática. ' +
+  'Responda SOMENTE com um objeto JSON válido, sem texto antes ou depois, sem cercas de código. ' +
+  'Baseie-se apenas nos trechos fornecidos. Nunca invente: se os trechos não permitem responder com segurança, use "nc". ' +
+  'A citação deve ser copiada literalmente de um dos trechos (até 40 palavras), no idioma original.';
+
+async function extrairCelula(hash, col){
+  const d = S.docs[hash];
+  const trechos = await trechosPara(hash, col.pergunta || col.nome, 4);
+  if(!trechos.length) return {v:'nc', cit:'', pag:null, conf:'baixa', obs:'sem texto disponível'};
+  const user =
+    'ARTIGO: ' + (d.title || d.file) + (d.year ? ' (' + d.year + ')' : '') + '\n' +
+    'CARACTERÍSTICA: ' + col.nome + '\n' +
+    'PERGUNTA: ' + (col.pergunta || col.nome) + '\n' +
+    'FORMATO DO VALOR: ' + tipoInstrucao(col) + '\n\n' +
+    'TRECHOS DO ARTIGO:\n' +
+    trechos.map((c,i) => '[' + (i+1) + '] ' + c.t).join('\n\n') + '\n\n' +
+    'Responda com JSON exatamente neste formato:\n' +
+    '{"valor": "...", "citacao": "trecho literal que sustenta a resposta, ou vazio", "trecho": número do trecho usado ou 0, "confianca": "alta" ou "media" ou "baixa"}';
+  const out = await aiChat(AI_SYSTEM, user, 320);
+  const j = aiJson(out);
+  if(!j) throw new Error('resposta não veio em JSON: ' + out.slice(0,80));
+
+  let v = String(j.valor ?? '').trim();
+  if(col.tipo === 'bool'){
+    const nv = norm(v);
+    v = /^s/.test(nv) || nv === 'yes' || nv === 'true' ? 'sim'
+      : /^n[aã]o$|^no$|^false$/.test(nv) ? 'nao' : 'nc';
+  }else if(col.tipo === 'cat'){
+    const ok = (col.opcoes||[]).find(o => norm(o) === norm(v));
+    v = ok || 'nc';
+  }else if(col.tipo === 'num'){
+    const num = parseFloat(v.replace(',', '.'));
+    v = isNaN(num) ? 'nc' : num;
+  }
+  const cit = String(j.citacao || '').trim().slice(0, 500);
+  const k = Math.max(0, Math.min(trechos.length, parseInt(j.trecho) || 0)) - 1;
+  let fonte = k >= 0 ? trechos[k] : null;
+  if(cit){ const ach = trechos.find(c => norm(c.t).includes(norm(cit).slice(0,60))); if(ach) fonte = ach; }
+  const pag = fonte && !fonte.semTexto ? paginaDe(fonte.off, fonte.info, hash) : null;
+  const conf = /alta|media|baixa/.test(String(j.confianca||'')) ? String(j.confianca) : 'media';
+  return {v, cit, pag, conf};
+}
+
+/* ---------- o lote ---------- */
+function aiTarefas(escopo, colIds){
+  const r = REV.cur, rows = revAmostra();
+  const cols = r.colunas.filter(c => colIds.includes(c.id));
+  const t = [];
+  rows.forEach(d => cols.forEach(c => {
+    const x = cell(d.hash, c.id);
+    const preenchida = x && x.v !== '' && x.v !== null;
+    const minha = preenchida && x.origem === 'manual';
+    const confirmada = preenchida && x.origem === 'ia' && x.rev;
+    if(escopo === 'vazias'   && preenchida) return;
+    if(escopo === 'todas'    && (minha || confirmada)) return;
+    if(escopo === 'calibrar' && !minha) return;
+    t.push({h:d.hash, c});
+  }));
+  return t;
+}
+function openAI(){
+  if(!REV.cur || !REV.cur.colunas.length){ toast('Defina o protocolo antes.'); return; }
+  const p = AI_PRESETS[AI.cfg.preset] || AI_PRESETS.custom;
+  $('#ax-motor').innerHTML = aiReady()
+    ? 'Motor: <b style="color:var(--text)">' + esc(p.nome.split(' — ')[0]) + '</b>, modelo <code>' + esc(AI.cfg.model) + '</code>.'
+    : '<span style="color:var(--red)">Nenhum motor configurado.</span> Abra ⚙️ Ajustes → Motor de extração e cole uma chave.';
+  $('#ax-cols').innerHTML = REV.cur.colunas.map(c =>
+    '<label class="m-check" style="margin-bottom:4px"><input type="checkbox" checked value="' + esc(c.id) + '"> <span>' + esc(c.nome) + '</span></label>').join('');
+  $('#ax-report').innerHTML = '';
+  aiEstimar();
+  $('#aimodal').classList.add('on');
+}
+function aiEstimar(){
+  if(!REV.cur) return;
+  const escopo = ($('#aimodal').querySelector('input[name=axscope]:checked')||{}).value || 'vazias';
+  const cols = [...$('#ax-cols').querySelectorAll('input:checked')].map(i => i.value);
+  const n = aiTarefas(escopo, cols).length;
+  const tok = n * 1500;
+  $('#ax-est').textContent = n
+    ? n + (n===1 ? ' célula' : ' células') + ' — cerca de ' + (tok/1000).toFixed(0) + ' mil tokens' +
+      ' e ' + Math.ceil(n*3/60) + '–' + Math.ceil(n*8/60) + ' minutos. Pode parar e retomar a qualquer momento.'
+    : 'Nenhuma célula nesse escopo.';
+  $('#ax-go').disabled = !n || !aiReady();
+}
+$('#aimodal').addEventListener('change', aiEstimar);
+$('#ax-close').addEventListener('click', ()=> $('#aimodal').classList.remove('on'));
+$('#aimodal').addEventListener('click', e=>{ if(e.target.id === 'aimodal') $('#aimodal').classList.remove('on'); });
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
+$('#ax-go').addEventListener('click', async ()=>{
+  const escopo = ($('#aimodal').querySelector('input[name=axscope]:checked')||{}).value || 'vazias';
+  const cols = [...$('#ax-cols').querySelectorAll('input:checked')].map(i => i.value);
+  const tarefas = aiTarefas(escopo, cols);
+  if(!tarefas.length) return;
+  $('#aimodal').classList.remove('on');
+
+  S.stop = false;
+  P.show(escopo === 'calibrar' ? 'Calibrando' : 'Extraindo com IA');
+  let feitas = 0, falhas = 0, ultimoErro = '';
+  const conc = {};   /* calibração: por coluna, {n, ok} */
+
+  for(let i=0;i<tarefas.length;i++){
+    if(S.stop) break;
+    const {h, c} = tarefas[i];
+    const d = S.docs[h];
+    P.set(i, tarefas.length, (d.title || d.file).slice(0,60) + ' — ' + c.nome);
+
+    let res = null, tent = 0;
+    while(tent < 4){
+      try{ res = await extrairCelula(h, c); break; }
+      catch(e){
+        tent++;
+        if(e.status === 429 || e.status === 503 || e.status === 502){
+          const esp = Math.min(90, (e.retry || (10 * tent))) * 1000;
+          P.set(i, tarefas.length, 'limite de taxa — esperando ' + Math.round(esp/1000) + ' s');
+          await delay(esp);
+          if(S.stop) break;
+          continue;
+        }
+        ultimoErro = e.message || String(e);
+        if(e.status === 401 || e.status === 403 || e.status === 404 || /não configurado/.test(ultimoErro)){ S.stop = true; }
+        break;
+      }
+    }
+    if(!res){ falhas++; if(S.stop) break; continue; }
+
+    const x = cell(h, c.id, true);
+    if(escopo === 'calibrar'){
+      x.ia = res;
+      conc[c.id] = conc[c.id] || {n:0, ok:0, nome:c.nome};
+      conc[c.id].n++;
+      if(norm(String(x.v)) === norm(String(res.v))) conc[c.id].ok++;
+    }else{
+      x.v = res.v; x.cit = res.cit; x.pag = res.pag;
+      x.origem = 'ia'; x.rev = false; x.conf = res.conf;
+      if(res.obs) x.nota = (x.nota ? x.nota + ' ' : '') + '[' + res.obs + ']';
+      const btn = document.querySelector('.rv-c[data-cell="' + h + '|' + c.id + '"]');
+      if(btn){ const tmp = document.createElement('div'); tmp.innerHTML = cellHtml(h, c); btn.replaceWith(tmp.firstChild.firstChild); }
+    }
+    feitas++;
+    if(feitas % 5 === 0) revSave();
+    await delay(300);
+  }
+  await revFlush();
+  P.hide();
+  revRender();
+
+  if(escopo === 'calibrar'){
+    const linhas = Object.values(conc);
+    const tot = linhas.reduce((a,x) => a + x.n, 0), ok = linhas.reduce((a,x) => a + x.ok, 0);
+    $('#ax-report').innerHTML = '<div class="ax-rep"><b>Concordância entre você e a IA: ' +
+      (tot ? Math.round(ok/tot*100) : 0) + '%</b> (' + ok + ' de ' + tot + ' células)' +
+      '<table class="keys" style="margin-top:8px">' +
+      linhas.map(x => '<tr><td>' + esc(x.nome) + '</td><td>' + Math.round(x.ok/x.n*100) + '% (' + x.ok + '/' + x.n + ')</td></tr>').join('') +
+      '</table><p class="m-hint" style="margin-top:8px">Colunas com concordância baixa costumam ter a pergunta ambígua. ' +
+      'Abra uma célula divergente para ver o que a IA propôs e a citação que ela usou.</p></div>';
+    $('#aimodal').classList.add('on');
+  }else{
+    toast((S.stop ? 'Parei. ' : '') + feitas + (feitas===1 ? ' célula proposta' : ' células propostas') +
+      (falhas ? ', ' + falhas + ' falharam' : '') +
+      (ultimoErro ? ' — ' + aiExplain({message:ultimoErro}) : '') +
+      '. Revise as hachuradas e confirme.', 7000);
+  }
+});
+
+$('#rv-ai').addEventListener('click', openAI);
+
+/* confirmar propostas */
+function confirmarCelula(h, cid){
+  const x = cell(h, cid); if(!x) return;
+  x.rev = true; revSave();
+  const c = colById(cid);
+  const btn = document.querySelector('.rv-c[data-cell="' + h + '|' + cid + '"]');
+  if(btn && c){ const tmp = document.createElement('div'); tmp.innerHTML = cellHtml(h, c); btn.replaceWith(tmp.firstChild.firstChild); }
+}
+$('#rv-confirm-all').addEventListener('click', ()=>{
+  const rows = revRows(); let n = 0;
+  rows.forEach(d => REV.cur.colunas.forEach(c => { const x = cell(d.hash, c.id); if(x && x.origem === 'ia' && !x.rev){ x.rev = true; n++; } }));
+  revSave(); revRender();
+  toast(n + (n===1 ? ' célula confirmada.' : ' células confirmadas.'));
+});
+
+/* ==================================================================
+   17. Eventos
    ================================================================== */
 $('#pick').addEventListener('click', async ()=>{
   if(!window.showDirectoryPicker){
@@ -3672,7 +4941,7 @@ $('#d-refetch').addEventListener('click', async ()=>{
 
 /* ajustes */
 $('#settings').addEventListener('click', async ()=>{
-  await semLoadVecs(); semStatus();
+  await semLoadVecs(); semStatus(); aiDrawSettings();
   $('#s-mail').value = S.prefs.mail || '';
   $('#s-full').checked = !!S.prefs.fulltext;
   $('#modal').classList.add('on');
@@ -3710,14 +4979,19 @@ document.addEventListener('keydown', e=>{
     if(/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){
       document.activeElement.blur(); return;
     }
-    if($('#helpmodal').classList.contains('on')) $('#helpmodal').classList.remove('on');
+    if($('#rv-pop').classList.contains('on')) closePop();
+    else if($('#aimodal').classList.contains('on')) $('#aimodal').classList.remove('on');
+    else if($('#protomodal').classList.contains('on')) $('#protomodal').classList.remove('on');
+    else if($('#revmodal').classList.contains('on')) $('#revmodal').classList.remove('on');
+    else if($('#rvexport').classList.contains('on')) $('#rvexport').classList.remove('on');
+    else if($('#helpmodal').classList.contains('on')) $('#helpmodal').classList.remove('on');
     else if($('#aboutmodal').classList.contains('on')) $('#aboutmodal').classList.remove('on');
     else if($('#tagmenu').classList.contains('on')) $('#tagmenu').classList.remove('on');
     else if($('#tagedit').classList.contains('on')) $('#tagedit').classList.remove('on');
     else if($('#lookmodal').classList.contains('on')) $('#lookmodal').classList.remove('on');
-    else if($('#renmodal').classList.contains('on')){ if(!S.busy) $('#renmodal').classList.remove('on'); }
     else if($('#rd-find').classList.contains('on')) closeFind();
     else if($('#reader').classList.contains('on')) closeReader();
+    else if($('#review').classList.contains('on')) closeReview();
     else if(S.pick.size) clearPick();
     else if($('#modal').classList.contains('on')) $('#modal').classList.remove('on');
     else if($('#drawer').classList.contains('on')) closeDrawer();
@@ -3727,6 +5001,7 @@ document.addEventListener('keydown', e=>{
   }
   if((e.ctrlKey || e.metaKey) && e.key === 'f'){
     if($('#reader').classList.contains('on')){ e.preventDefault(); openFind(); }
+    else if($('#review').classList.contains('on')){ e.preventDefault(); $('#rv-q').focus(); }
     else if($('#app').classList.contains('on')){ e.preventDefault(); $('#q').focus(); }
   }
 });

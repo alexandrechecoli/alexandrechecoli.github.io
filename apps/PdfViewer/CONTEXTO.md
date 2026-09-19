@@ -52,6 +52,7 @@ PastaDoUsuario/
     vetores.json                     ← embeddings da busca semântica
     capas/<hash>.jpg                 ← miniatura da página 1
     docs/<hash>.json                 ← texto completo + grifos + notas
+    revisoes/<id>.json               ← matrizes de revisão de literatura
 ```
 
 ### `index.json`
@@ -77,12 +78,30 @@ PastaDoUsuario/
 
 ### `docs/<hash>.json`
 ```jsonc
-{ "hash", "text": "texto completo", "annots": [
+{ "hash", "text": "texto completo",
+  "pageOffsets": [0, 3120, …],   // deslocamento de caractere onde cada página começa (novo; docs antigos não têm → página estimada por proporção)
+  "annots": [
   { "id", "page": 3, "rects": [[x,y,w,h], ...],  // frações 0–1 da página
     "text": "trecho grifado", "comment": "", "color": "a|b|c|d|n", "at": 123 }
 ]}
 ```
 `color: "n"` = nota de página (sem `rects`).
+
+### `revisoes/<id>.json`
+```jsonc
+{ "id": "rev-…", "nome": "Revisão da tese", "amostra": "amostra-tese",   // marcador
+  "criado", "atualizado",
+  "colunas": [ { "id", "nome", "pergunta", "tipo": "bool|cat|texto|num", "opcoes": [] } ],
+  "celulas": { "<hash>": { "<colId>": {
+      "v": "sim|nao|nc" | "texto" | número,   // "" = vazio
+      "cit": "citação literal", "pag": 3, "nota": "",
+      "origem": "manual" | "ia", "rev": true,   // rev=false → proposto pela IA, não confirmado
+      "conf": "alta|media|baixa",               // só quando origem=ia
+      "ia": { "v", "cit", "pag", "conf" }       // só em calibração: proposta da IA guardada ao lado do valor manual
+  } } }
+}
+```
+Um grifo do leitor pode apontar para uma célula: `annot.col = <colId>` em `docs/<hash>.json`.
 
 ### `vetores.json`
 ```jsonc
@@ -116,15 +135,17 @@ O `<script>` está dividido em 15 seções numeradas em comentários de bloco:
 | 9 | Leitor | `openReader`, `layout`, `renderPage`/`freePage`, `drawAll`, grifos, `listAnnots`, `flushAnnots` |
 | 10 | Aparência | `THEMES`, `FONTS`, `applyLook` |
 | 11 | Texto completo | `FT`, `ensureFullText`, `ftSearch` |
-| 12 | Localizar no artigo | `FD`, `buildPageText`, `findRun`, `findGo`, `paintFind` |
+| 12 | Localizar no artigo | `FD`, `buildPageText`, `findRun`, `findGo`, `paintFind`, `openReaderAt` |
 | 13 | BibTeX | `bibLocal`, `bibCrossref`, `bibKey`, `openBib` |
-| 13b | Renomear arquivos | `renName` (monta `ANO - Título - Sobrenome e Sobrenome.pdf`), `renPreview`, `renApply` (usa `FileSystemFileHandle.move`) |
-| 14 | Busca semântica | `SEM`, `semPipe` (transformers.js), `semIndex`, `semSearch` |
-| 15 | Eventos | ligações de UI, teclado, abertura |
+| 14 | Busca semântica | `SEM`, `semPipe` (transformers.js), `semIndex`, `semSearch`, `SEMX`/`explainSem`/`chunksOf` |
+| 15 | Revisão de literatura | `REV`, `revRows`/`cell`/`setCell`, `revRender`, `openPop` (editor de célula), `openProto`, `evidenceOptions`/`setEvidence` (ponte com o leitor), `exportMatrix` |
+| 16 | Extração por IA | `AI_PRESETS`, `AI.cfg` (só `localStorage`), `aiChat` (OpenAI-compat + caminho nativo Anthropic), `docChunks`/`fatiar`/`trechosPara` (RAG por célula), `extrairCelula`, lote em `#ax-go`, `confirmarCelula` |
+| 17 | Eventos | ligações de UI, teclado, abertura |
 
 ### Estado global
 `S` (aplicação), `R` (leitor), `FT` (texto completo), `FD` (localizar),
-`SEM` (semântica), `TM` (menu de marcadores), `look` (aparência).
+`SEM` (semântica), `TM` (menu de marcadores), `look` (aparência), `REV` (revisão),
+`PT` (protocolo em edição), `AI` (motor de extração — chave em `localStorage`, nunca no índice).
 
 `S.filter` controla tudo o que `visible()` decide:
 ```js
@@ -161,10 +182,11 @@ O `<script>` está dividido em 15 seções numeradas em comentários de bloco:
 6. **Cabeçalho transbordando.** Sem `flex-wrap`, botões novos empurravam os antigos para
    fora da tela sem aviso. Hoje há `white-space:nowrap` e media queries que recolhem
    rótulos aos 1180 px e o nome da pasta aos 820 px.
-7. **Renomear PDF exige atualizar `path`, `file` e `mtime` no índice.** O `hash` não muda,
-   então grifos e capas sobrevivem; mas sem atualizar o caminho a próxima varredura marcaria
-   o artigo como `missing` e o leitor não o abriria. Arquivos sem ano/título/autores ficam de
-   fora e são listados com o motivo. Com 3+ autores o nome termina em `et al.pdf` (não `et al..pdf`).
+7. **O localizar só olhava uma linha por vez.** Uma expressão que atravessa a quebra de
+   linha nunca era encontrada. `buildPageText` agora guarda, por página, o texto corrido e
+   o deslocamento inicial de cada linha; a busca roda no texto corrido e mapeia de volta
+   para a linha onde começa. Isso também é o que torna possível clicar num trecho da busca
+   e cair na passagem certa.
 8. **Memória do leitor.** Renderizar todas as páginas de um artigo de 40 páginas
    consumia ~300 MB. `freePage` descarta canvas e camada de texto fora da viewport.
 
@@ -179,21 +201,39 @@ O `<script>` está dividido em 15 seções numeradas em comentários de bloco:
 - Marcadores coloridos com ícone de etiqueta, renomear/recolorir/excluir em massa
 - Seleção múltipla com Shift+clique, ações em lote (marcadores, favoritos, BibTeX)
 - Três modos de busca: metadados (instantânea), texto completo (cache em memória), semântica (embeddings)
+- **Evidência do resultado:** no texto completo, contagem de ocorrências e até 4 trechos;
+  na semântica, bloco "Por que este artigo" que fatia o artigo aberto sob demanda, vetoriza
+  os pedaços e mostra os 3 mais próximos da pergunta. Qualquer trecho é clicável e abre o
+  leitor naquela passagem (`openReaderAt`). A fatiagem por artigo é deliberada: vetorizar
+  todos os trechos de todos os artigos levaria `vetores.json` de 1,6 MB para ~50 MB.
 - Leitor com rolagem contínua, zoom, grifos em 4 cores, comentários, notas de página,
   localizar interno (Ctrl+F), exportação em Markdown
 - Exportação BibTeX local ou via Crossref, com escopo selecionável
-- Renomear PDFs em lote para `ANO - Título - Sobrenome e Sobrenome.pdf`, com pré-visualização,
-  escopo igual ao do BibTeX (selecionados / filtro / todos) e atualização do índice sem perder grifos
 - 6 temas, 4 conjuntos de fonte, 4 tamanhos, tudo proporcional
-- Guia de ajuda com 12 seções e painel "Sobre"
+- **Matriz de revisão de literatura** (manual): protocolo de colunas tipadas, amostra por
+  marcador, edição por teclado (s/n/?/setas), evidência + página + nota por célula, grifo do
+  leitor ligado à célula, filtros por coluna, exportação CSV/LaTeX(booktabs)/Markdown.
+  O modelo de célula já prevê `origem:'ia'`/`rev:false` para a extração automática futura.
+- **Extração automática por IA** (v1): motor genérico compatível com OpenAI com presets
+  (Cerebras, Groq, Gemini via endpoint OpenAI-compat, OpenRouter, OpenAI) e caminho nativo da
+  Anthropic (`/v1/messages` + `anthropic-dangerous-direct-browser-access`). Por célula: 4 trechos
+  por embeddings (fallback por palavras-chave se o modelo local falhar) → prompt curto → JSON
+  `{valor, citacao, trecho, confianca}` → célula `origem:'ia', rev:false` (hachurada). Lote
+  pausável, retry com backoff em 429/502/503, para em 401/403/404. Escopos: vazias / todas
+  (nunca sobrescreve manual ou confirmada) / **calibração** (grava em `x.ia` e reporta
+  concordância por coluna). Confirmar: botão no editor, tecla `c`, "confirmar visíveis".
+- Guia de ajuda com 13 seções e painel "Sobre"
 
 ---
 
 ## 8. O que ainda falta (em ordem de valor estimado)
 
+0. ~~Extração automática da matriz por API~~ — **feito** (seção 16). Pendências dela:
+   estimativa em dinheiro (hoje só em tokens); paralelismo de 2–3 chamadas nos provedores
+   pagos; os nomes de modelo nos presets envelhecem — o botão "listar" mitiga, mas vale
+   revisar `AI_PRESETS` a cada retomada. Rota Ollama descartada pelo autor (caiu em CPU).
 1. **Coletânea de anotações por marcador** — exportar os grifos de todos os artigos de um
-   marcador num documento único, agrupado por artigo. É o que transforma a ferramenta num
-   apoio real de revisão bibliográfica. Já discutido, nunca implementado.
+   marcador num documento único, agrupado por artigo. Já discutido, nunca implementado.
 2. **Endurecer a base** — gravação atômica do `index.json`, backup rotativo dentro de
    `_biblioteca/`, e **detecção de duplicatas por DOI** (o hash não pega o mesmo artigo
    baixado de fontes diferentes, o que é comum num acervo grande).
@@ -207,11 +247,12 @@ O `<script>` está dividido em 15 seções numeradas em comentários de bloco:
 
 ---
 
-## 9. Discussão em aberto: Ollama vs. navegador
+## 9. Histórico da decisão: Ollama vs. navegador vs. API
 
-Ficou decidido que **embeddings rodam no navegador** (transformers.js), porque não exigem
-instalação e a qualidade é suficiente. Para um eventual **chat com geração de texto**, a
-conclusão foi que o Ollama seria necessário, com estas ressalvas:
+**Embeddings rodam no navegador** (transformers.js). Para geração de texto, o Ollama foi
+testado e **descartado** pelo autor (set/2026): o qwen3:8b rodou em CPU apesar da GPU de
+8 GB, e a experiência foi ruim. A rota escolhida para extração automática é a **API paga**
+(ver item 0 da seção 8). Registro do que foi aprendido sobre o Ollama, caso volte à pauta:
 
 - O Ollama é gratuito, código aberto, e expõe um servidor HTTP local em
   `http://localhost:11434`. Não é biblioteca JS: conversa-se com ele por `fetch`.
