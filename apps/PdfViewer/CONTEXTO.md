@@ -95,9 +95,6 @@ PastaDoUsuario/
   "celulas": { "<hash>": { "<colId>": {
       "v": "sim|nao|nc" | "texto" | número,   // "" = vazio
       "cit": "citação literal", "pag": 3, "nota": "",
-      "origem": "manual" | "ia", "rev": true,   // rev=false → proposto pela IA, não confirmado
-      "conf": "alta|media|baixa",               // só quando origem=ia
-      "ia": { "v", "cit", "pag", "conf" }       // só em calibração: proposta da IA guardada ao lado do valor manual
   } } }
 }
 ```
@@ -139,13 +136,13 @@ O `<script>` está dividido em 15 seções numeradas em comentários de bloco:
 | 13 | BibTeX | `bibLocal`, `bibCrossref`, `bibKey`, `openBib` |
 | 14 | Busca semântica | `SEM`, `semPipe` (transformers.js), `semIndex`, `semSearch`, `SEMX`/`explainSem`/`chunksOf` |
 | 15 | Revisão de literatura | `REV`, `revRows`/`cell`/`setCell`, `revRender`, `openPop` (editor de célula), `openProto`, `evidenceOptions`/`setEvidence` (ponte com o leitor), `exportMatrix` |
-| 16 | Extração por IA | `AI_PRESETS`, `AI.cfg` (só `localStorage`), `aiChat` (OpenAI-compat + caminho nativo Anthropic), `docChunks`/`fatiar`/`trechosPara` (RAG por célula), `extrairCelula`, lote em `#ax-go`, `confirmarCelula` |
+| 16 | Extração por IA | `AI_PRESETS` (3 provedores, com passo a passo da chave), `AI.cfg` (só `localStorage`), `aiChat`, `trechosPara` (RAG por célula), `extrairCelula`, lote em `#ax-go`, calibração, `confirmarCelula` |
 | 17 | Eventos | ligações de UI, teclado, abertura |
 
 ### Estado global
 `S` (aplicação), `R` (leitor), `FT` (texto completo), `FD` (localizar),
 `SEM` (semântica), `TM` (menu de marcadores), `look` (aparência), `REV` (revisão),
-`PT` (protocolo em edição), `AI` (motor de extração — chave em `localStorage`, nunca no índice).
+`PT` (protocolo em edição), `AI` (motor de extração).
 
 `S.filter` controla tudo o que `visible()` decide:
 ```js
@@ -214,24 +211,23 @@ O `<script>` está dividido em 15 seções numeradas em comentários de bloco:
   marcador, edição por teclado (s/n/?/setas), evidência + página + nota por célula, grifo do
   leitor ligado à célula, filtros por coluna, exportação CSV/LaTeX(booktabs)/Markdown.
   O modelo de célula já prevê `origem:'ia'`/`rev:false` para a extração automática futura.
-- **Extração automática por IA** (v1): motor genérico compatível com OpenAI com presets
-  (Cerebras, Groq, Gemini via endpoint OpenAI-compat, OpenRouter, OpenAI) e caminho nativo da
-  Anthropic (`/v1/messages` + `anthropic-dangerous-direct-browser-access`). Por célula: 4 trechos
-  por embeddings (fallback por palavras-chave se o modelo local falhar) → prompt curto → JSON
-  `{valor, citacao, trecho, confianca}` → célula `origem:'ia', rev:false` (hachurada). Lote
-  pausável, retry com backoff em 429/502/503, para em 401/403/404. Escopos: vazias / todas
-  (nunca sobrescreve manual ou confirmada) / **calibração** (grava em `x.ia` e reporta
-  concordância por coluna). Confirmar: botão no editor, tecla `c`, "confirmar visíveis".
+- **Extração automática por IA** na matriz: 3 provedores pagos, RAG por célula, citação
+  obrigatória, células hachuradas até confirmação, modo de calibração com concordância por coluna.
 - Guia de ajuda com 13 seções e painel "Sobre"
 
 ---
 
 ## 8. O que ainda falta (em ordem de valor estimado)
 
-0. ~~Extração automática da matriz por API~~ — **feito** (seção 16). Pendências dela:
-   estimativa em dinheiro (hoje só em tokens); paralelismo de 2–3 chamadas nos provedores
-   pagos; os nomes de modelo nos presets envelhecem — o botão "listar" mitiga, mas vale
-   revisar `AI_PRESETS` a cada retomada. Rota Ollama descartada pelo autor (caiu em CPU).
+0. **Extração automática da matriz — restaurada (set/2026) com 3 provedores apenas:**
+   Anthropic (`/v1/messages` nativo + `anthropic-dangerous-direct-browser-access`), Gemini e
+   OpenAI (ambos OpenAI-compat). Histórico: a primeira versão tinha provedores "gratuitos" e foi
+   removida depois de três falharem — Cerebras passou a exigir cartão (402), Gemini caiu em
+   "prepayment credits depleted" (Google migrou contas para Prepay em 23/03/2026), Ollama local
+   rodou em CPU. **Não reintroduzir presets gratuitos.** Pendências: estimativa em dinheiro
+   (hoje só em tokens) e paralelismo de 2–3 chamadas. Os nomes de modelo envelhecem — o painel
+   lista os da conta e lê sugestões da mensagem de erro, então não vale caçar o nome "certo" no
+   código.
 1. **Coletânea de anotações por marcador** — exportar os grifos de todos os artigos de um
    marcador num documento único, agrupado por artigo. Já discutido, nunca implementado.
 2. **Endurecer a base** — gravação atômica do `index.json`, backup rotativo dentro de
