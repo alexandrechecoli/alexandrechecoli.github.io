@@ -196,6 +196,9 @@ O `<script>` está dividido em 15 seções numeradas em comentários de bloco:
 - Capas renderizadas, carregadas sob demanda por `IntersectionObserver`
 - Filtros combináveis: pasta (árvore), marcador (e/ou), ano, favorito, sem resumo, sem marcador
 - Marcadores coloridos com ícone de etiqueta, renomear/recolorir/excluir em massa
+- Renomear PDFs (Ajustes → Manutenção): arquivos fora de `[AAAA] - Título - Sobrenomes.pdf`
+  são renomeados a partir do índice (até 3 sobrenomes + "et al"); sem ano/autores ficam como estão.
+  Como a identidade é o hash do conteúdo, notas e marcadores seguem o arquivo; só `path`/`file` mudam
 - Seleção múltipla com Shift+clique, ações em lote (marcadores, favoritos, BibTeX)
 - Três modos de busca: metadados (instantânea), texto completo (cache em memória), semântica (embeddings)
 - **Evidência do resultado:** no texto completo, contagem de ocorrências e até 4 trechos;

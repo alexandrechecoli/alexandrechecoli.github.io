@@ -1012,9 +1012,11 @@ header{
         <button class="btn-ghost" id="s-bib" style="padding:7px 13px;font-size:13px">Exportar BibTeX</button>
         <button class="btn-ghost" id="s-export" style="padding:7px 13px;font-size:13px">Exportar índice</button>
         <button class="btn-ghost" id="s-reindex" style="padding:7px 13px;font-size:13px">Reindexar tudo</button>
+        <button class="btn-ghost" id="s-rename" style="padding:7px 13px;font-size:13px">Renomear PDFs</button>
         <button class="btn-ghost" id="s-switch" style="padding:7px 13px;font-size:13px">Trocar de pasta</button>
       </div>
       <p class="m-hint">Reindexar refaz título, ano e resumo de todos os artigos. Suas notas, marcadores e favoritos são preservados.</p>
+      <p class="m-hint">Renomear dá aos PDFs fora do padrão o nome <b>[Ano] - Título - Sobrenomes</b>, com os metadados do índice. Artigos sem ano ou sem autores ficam como estão.</p>
     </div>
     <div class="m-actions">
       <button class="btn-ghost" id="s-close">Fechar</button>
@@ -5014,6 +5016,99 @@ $('#s-switch').addEventListener('click', ()=>{
   $('#modal').classList.remove('on');
   location.reload();
 });
+$('#s-rename').addEventListener('click', ()=>{
+  $('#modal').classList.remove('on');
+  renameAll();
+});
+
+/* renomeia os PDFs para "[AAAA] - Título - Sobrenomes.pdf" */
+const RENAME_RX = /^\[\d{4}\] - .+ - .+\.pdf$/i;
+
+function safeName(s){
+  return String(s||'')
+    .replace(/[\\/:*?"<>|\u0000-\u001f]/g,' ')   /* proibidos no Windows */
+    .replace(/\s+/g,' ').trim()
+    .replace(/[. ]+$/,'');                       /* Windows não aceita ponto/espaço no fim */
+}
+
+function targetName(d){
+  const year = String(d.year||'').match(/\d{4}/);
+  const fams = (d.authors||[]).map(a => String(a).trim().split(/\s+/).pop()).filter(Boolean);
+  let title = safeName(d.title);
+  if(!year || !fams.length || !title) return null;
+  if(title.length > 120) title = title.slice(0,120).replace(/\s+\S*$/,'');
+  const aut = safeName(fams.slice(0,3).join(', ') + (fams.length > 3 ? ' et al' : ''));
+  return '[' + year[0] + '] - ' + title + ' - ' + aut + '.pdf';
+}
+
+async function dirByPath(rel){
+  let dir = S.root;
+  if(rel) for(const p of rel.split('/')) dir = await dir.getDirectoryHandle(p);
+  return dir;
+}
+
+async function exists(dir, name){
+  try{ await dir.getFileHandle(name); return true; }catch(e){ return false; }
+}
+
+async function renameAll(){
+  if(S.busy) return;
+  const docs = Object.values(S.docs).filter(d => !d.missing && d.path && !RENAME_RX.test(d.file||''));
+  const plan = [];
+  let semDados = 0;
+  for(const d of docs){
+    const nome = targetName(d);
+    if(nome) plan.push({d, nome}); else semDados++;
+  }
+  if(!plan.length){
+    toast(semDados ? 'Nada a renomear — ' + semDados + ' fora do padrão sem ano ou autores.'
+                   : 'Todos os PDFs já seguem o padrão.', 4000);
+    return;
+  }
+  if(!confirm('Renomear ' + plan.length + (plan.length===1 ? ' PDF' : ' PDFs') +
+      ' na pasta para "[Ano] - Título - Sobrenomes"?\n\nExemplo:\n' +
+      plan[0].d.file + '\n→ ' + plan[0].nome +
+      (semDados ? '\n\n' + semDados + ' sem ano ou autores ficarão como estão.' : ''))) return;
+
+  S.busy = true; S.stop = false;
+  $('#scan').disabled = true;
+  P.show('Renomeando PDFs');
+  let ok = 0; const falhas = [];
+  for(let i=0;i<plan.length;i++){
+    if(S.stop) break;
+    const {d} = plan[i];
+    P.set(i, plan.length, d.file);
+    try{
+      const dir = await dirByPath(d.dir);
+      const fh  = await dir.getFileHandle(d.file);
+      /* evita sobrescrever outro arquivo com o mesmo nome */
+      let nome = plan[i].nome, n = 2;
+      while(await exists(dir, nome)) nome = plan[i].nome.replace(/\.pdf$/i, ' (' + n++ + ').pdf');
+      if(fh.move){
+        await fh.move(nome);
+      }else{
+        await writeFile(dir, nome, await fh.getFile());
+        await dir.removeEntry(d.file);
+      }
+      const file = await (await dir.getFileHandle(nome)).getFile();
+      d.file  = nome;
+      d.path  = d.dir ? d.dir + '/' + nome : nome;
+      d.mtime = file.lastModified; d.size = file.size;
+      ok++;
+    }catch(e){
+      falhas.push(d.file + ': ' + (e.message||e));
+    }
+  }
+  P.set(plan.length, plan.length, '');
+  await saveIndex();
+  render();
+  P.hide();
+  S.busy = false; $('#scan').disabled = false;
+  if(falhas.length) console.warn('Falhas ao renomear:\n' + falhas.join('\n'));
+  toast(ok + (ok===1 ? ' PDF renomeado' : ' PDFs renomeados') +
+        (falhas.length ? ', ' + falhas.length + ' com erro (veja o console)' : '') +
+        (semDados ? ', ' + semDados + ' sem ano ou autores' : '') + '.', 5000);
+}
 $('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') $('#modal').classList.remove('on'); });
 
 /* teclado */
