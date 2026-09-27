@@ -673,6 +673,8 @@
     #batch-panel { width: 760px; max-width: 95vw; max-height: 88vh; }
     .batch-pick-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .batch-pick-info { font-size: 12px; color: var(--muted); }
+    #batch-autosave-info:empty { display: none; }
+    #batch-autosave-info.warn { color: var(--red); }
     .batch-progress-wrap {
       display: none;
       flex-direction: column;
@@ -1041,7 +1043,9 @@
         <p style="margin:0;font-size:12.5px;color:var(--muted);line-height:1.6" data-i18n="batch_intro">
           Selecione uma pasta com arquivos .lp e/ou .mod. Cada arquivo é resolvido na ordem,
           sem alterar suas abas abertas, e o resultado (status, valor objetivo e tempo) fica
-          numa tabela que pode ser exportada em CSV.
+          numa tabela. Ao iniciar, você escolhe onde salvar o CSV, que é regravado após cada
+          instância (assim nada se perde se o lote for interrompido) e inclui também a melhor
+          solução factível, o melhor bound e o gap.
         </p>
 
         <div class="batch-pick-row">
@@ -1054,6 +1058,7 @@
           <button class="btn" id="batch-cancel" style="display:none" data-i18n="batch_btn_cancel">⏹ Cancelar</button>
           <button class="btn" id="batch-export-csv" style="display:none" data-i18n="batch_btn_export_csv">💾 Exportar CSV</button>
         </div>
+        <div class="batch-pick-info" id="batch-autosave-info"></div>
 
         <div class="batch-progress-wrap" id="batch-progress-wrap">
           <div class="batch-progress-bar"><div class="batch-progress-fill" id="batch-progress-fill"></div></div>
@@ -1152,7 +1157,7 @@
     <span class="dot loading" id="dot"></span>
     <span id="solver-msg" data-i18n="status_loading">Carregando HiGHS WebAssembly…</span>
     <span class="statusbar-right">
-      <span data-i18n="status_highs_version">HiGHS 1.8 · WebAssembly</span>
+      <span id="status-engine-badge" data-i18n="status_highs_version">HiGHS 1.8 · WebAssembly</span>
       <span class="kbd-hint" data-i18n-html="status_ctrl_enter_hint_html"><kbd>Ctrl+Enter</kbd> resolve</span>
     </span>
   </div>
@@ -1241,7 +1246,7 @@
       btn_close_generic: 'Fechar',
 
       batch_modal_title: '🗂️ Resolução em lote',
-      batch_intro: 'Selecione uma pasta com arquivos .lp e/ou .mod. Cada arquivo é resolvido na ordem, sem alterar suas abas abertas, e o resultado (status, valor objetivo e tempo) fica numa tabela que pode ser exportada em CSV.',
+      batch_intro: 'Selecione uma pasta com arquivos .lp e/ou .mod. Cada arquivo é resolvido na ordem, sem alterar suas abas abertas, e o resultado (status, valor objetivo e tempo) fica numa tabela. Ao iniciar, você escolhe onde salvar o CSV, que é regravado após cada instância (assim nada se perde se o lote for interrompido) e inclui também a melhor solução factível, o melhor bound e o gap.',
       batch_btn_pick_folder: '📁 Selecionar pasta…',
       batch_btn_pick_folder_again: '📁 Trocar pasta…',
       batch_btn_start: '▶ Iniciar resolução',
@@ -1260,6 +1265,9 @@
       batch_cancelled_msg: 'Lote cancelado pelo usuário.',
       batch_unsupported_folder: 'Seu navegador não suporta seleção de pasta nem de múltiplos arquivos. Tente o Chrome, Edge ou um navegador mais recente.',
       batch_csv_filename: 'lote_resultados.csv',
+      batch_autosave_on: (name) => `💾 O CSV é gravado em "${name}" após cada instância.`,
+      batch_autosave_failed: (msg) => `⚠ Falha ao gravar o CSV (${msg}). O lote continua; use "Exportar CSV" ao final.`,
+      batch_autosave_unsupported: 'ℹ Este navegador não permite gravar o CSV durante o lote (use Chrome ou Edge). Use "Exportar CSV" ao final.',
 
       editor_panel_header: 'Modelo LP (CPLEX format)',
       tt_editor_theme: 'Tema de cores do editor',
@@ -1515,7 +1523,7 @@
       btn_close_generic: 'Close',
 
       batch_modal_title: '🗂️ Batch solving',
-      batch_intro: 'Select a folder with .lp and/or .mod files. Each file is solved in order, without touching your open tabs, and the result (status, objective value and time) goes into a table you can export as CSV.',
+      batch_intro: 'Select a folder with .lp and/or .mod files. Each file is solved in order, without touching your open tabs, and the result (status, objective value and time) goes into a table. When starting, you choose where to save the CSV, which is rewritten after each instance (so nothing is lost if the batch is interrupted) and also includes the best feasible solution, the best bound and the gap.',
       batch_btn_pick_folder: '📁 Select folder…',
       batch_btn_pick_folder_again: '📁 Change folder…',
       batch_btn_start: '▶ Start solving',
@@ -1534,6 +1542,9 @@
       batch_cancelled_msg: 'Batch cancelled by the user.',
       batch_unsupported_folder: 'Your browser doesn\'t support folder or multiple-file selection. Try Chrome, Edge, or a more recent browser.',
       batch_csv_filename: 'batch_results.csv',
+      batch_autosave_on: (name) => `💾 The CSV is written to "${name}" after each instance.`,
+      batch_autosave_failed: (msg) => `⚠ Failed to write the CSV (${msg}). The batch goes on; use "Export CSV" at the end.`,
+      batch_autosave_unsupported: 'ℹ This browser cannot write the CSV during the batch (use Chrome or Edge). Use "Export CSV" at the end.',
 
       editor_panel_header: 'LP Model (CPLEX format)',
       tt_editor_theme: 'Editor color theme',
@@ -2739,12 +2750,175 @@ onmessage = async function({ data }) {
   let sensWorker = null;
   let sensRunning = false;
 
+  /* ════════════════════════════════════════════════════════════════════
+     6b. Backend local (highs.exe via server.js) — detecção e adaptador
+     ────────────────────────────────────────────────────────────────────
+     Quando esta página é servida pelo server.js local (em vez de um
+     http.server puramente estático), um endpoint /__highs_status responde
+     e passamos a usar o highs.exe nativo (sem limite de memória do
+     navegador) através da rota /solve, em vez do Worker WASM abaixo.
+     ExeWorkerAdapter implementa a mesma interface de um Worker real
+     (onmessage/onerror, postMessage, terminate, add/removeEventListener)
+     para que todo o resto do código (solve(), o modal de lote, a
+     recuperação de erro fatal) funcione sem nenhuma alteração.
+  ════════════════════════════════════════════════════════════════════ */
+  let localBackendAvailable = false;
+  let localBackendVersion = null;
+
+  async function detectLocalBackend() {
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 800);
+      const r = await fetch('/__highs_status', { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!r.ok) return false;
+      const data = await r.json();
+      if (data && data.ok) {
+        localBackendVersion = data.version || null;
+        return true;
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  class ExeWorkerAdapter extends EventTarget {
+    constructor() {
+      super();
+      this._onmessage = null;
+      this._onerror = null;
+      this._controller = null;
+    }
+    get onmessage() { return this._onmessage; }
+    set onmessage(fn) {
+      if (this._onmessage) this.removeEventListener('message', this._onmessage);
+      this._onmessage = fn;
+      if (fn) this.addEventListener('message', fn);
+    }
+    get onerror() { return this._onerror; }
+    set onerror(fn) {
+      if (this._onerror) this.removeEventListener('error', this._onerror);
+      this._onerror = fn;
+      if (fn) this.addEventListener('error', fn);
+    }
+    terminate() {
+      if (this._controller) { try { this._controller.abort(); } catch (_) {} this._controller = null; }
+    }
+    postMessage(data) { this._solve(data); }
+    _emit(obj) { this.dispatchEvent(new MessageEvent('message', { data: obj })); }
+
+    // Reverses the '__Infinity__'/'__-Infinity__' sentinels server.js uses
+    // to get real Infinity values through JSON (which turns them into null).
+    static _reviveJson(text) {
+      return JSON.parse(text, (key, value) => {
+        if (value === '__Infinity__') return Infinity;
+        if (value === '__-Infinity__') return -Infinity;
+        return value;
+      });
+    }
+
+    async _solve(data) {
+      // IIS, ranging (sensibilidade) e export_sol dependem da API interna
+      // do HiGHS (getIis()/getRanging()), não exposta pela CLI — só
+      // disponíveis na versão WASM.
+      if (data && data.action) {
+        this._emit({
+          type: data.action + '_error',
+          message: 'Recurso não disponível no backend local (highs.exe) — use a versão WebAssembly para IIS, sensibilidade ou exportação .sol nativa.',
+        });
+        return;
+      }
+      const controller = new AbortController();
+      this._controller = controller;
+      try {
+        const resp = await fetch('/solve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lp: data.lp, options: data.options || {} }),
+          signal: controller.signal,
+        });
+        if (!resp.ok || !resp.body) {
+          const text = await resp.text().catch(() => '');
+          this._emit({ type: 'error', message: `Erro no servidor local (HTTP ${resp.status}): ${text}` });
+          return;
+        }
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = '';
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          let idx;
+          while ((idx = buf.indexOf('\n')) >= 0) {
+            const line = buf.slice(0, idx);
+            buf = buf.slice(idx + 1);
+            if (line.trim()) { try { this._emit(ExeWorkerAdapter._reviveJson(line)); } catch (_) {} }
+          }
+        }
+        if (buf.trim()) { try { this._emit(ExeWorkerAdapter._reviveJson(buf)); } catch (_) {} }
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        this._emit({ type: 'error', message: 'Falha ao conectar ao servidor local: ' + ((err && err.message) || err) });
+      } finally {
+        this._controller = null;
+      }
+    }
+  }
+
+  function spawnExeWorker() {
+    const w = new ExeWorkerAdapter();
+    // Não há WASM para carregar — sinaliza "pronto" no próximo tick.
+    setTimeout(() => w._emit({ type: 'ready' }), 0);
+    return w;
+  }
+
   function spawnRawWorker() {
     const blob = new Blob([workerSrc], { type: 'application/javascript' });
     return new Worker(URL.createObjectURL(blob));
   }
 
   function spawnWorker() {
+    if (localBackendAvailable) {
+      const w = spawnExeWorker();
+      w.onmessage = function ({ data }) {
+        switch (data.type) {
+          case 'ready':
+            solverReady = true;
+            setDot('ok');
+            setMsgKey('status_ready');
+            document.getElementById('btn-solve').disabled = false;
+            document.getElementById('btn-solve').textContent = t('btn_solve');
+            break;
+          case 'log': {
+            logLines.push({ line: data.line, isErr: data.isErr });
+            const live = document.getElementById('log-live');
+            if (live) {
+              const el = document.createElement('div');
+              el.className = logLineClass(data.line, data.isErr);
+              el.textContent = data.line;
+              live.appendChild(el);
+              const atBottom = live.scrollHeight - live.clientHeight - live.scrollTop < 40;
+              if (atBottom) live.scrollTop = live.scrollHeight;
+            }
+            updateLiveStats(data.line);
+            break;
+          }
+          case 'solution':
+            solving = false;
+            renderSolution(data.solution);
+            setSolveBtn(false);
+            setDot('ok');
+            break;
+          case 'error':
+            solving = false;
+            renderError(data.message);
+            setSolveBtn(false);
+            setDot('ok');
+            break;
+        }
+      };
+      return w;
+    }
     const w = spawnRawWorker();
 
     w.onmessage = function ({ data }) {
@@ -2852,7 +3026,17 @@ onmessage = async function({ data }) {
     setMsgKey('status_fatal_error');
   }
 
-  worker = spawnWorker();
+  (async function initWorker() {
+    localBackendAvailable = await detectLocalBackend();
+    if (localBackendAvailable) {
+      const badge = document.getElementById('status-engine-badge');
+      if (badge) {
+        badge.textContent = 'HiGHS' + (localBackendVersion ? ' ' + localBackendVersion : '') + ' · Local (.exe)';
+        delete badge.dataset.i18n;   // não sobrescrever mais em troca de idioma
+      }
+    }
+    worker = spawnWorker();
+  })();
 
   /* ════════════════════════════════════════════════════════════════════
      7b. Solver options modal (time limit, MIP gap, heuristics, etc.)
@@ -2994,14 +3178,17 @@ onmessage = async function({ data }) {
     const progressCurrent = document.getElementById('batch-progress-current');
     const tableWrap        = document.getElementById('batch-table-wrap');
     const tableBody         = document.getElementById('batch-table-body');
+    const autosaveInfo      = document.getElementById('batch-autosave-info');
 
     const BATCH_FILE_RE = /\.(lp|mod)$/i;
 
     let batchFiles = [];      // [{ name, relPath, file: File }]
-    let batchResults = [];    // [{ name, status, objective, time, error }] — same order as batchFiles
+    let batchResults = [];    // [{ name, status, objective, primalBound, dualBound, gap, time, error }] — same order as batchFiles
     let batchWorker = null;   // dedicated HiGHS worker for this modal
     let batchRunning = false;
     let batchCancelled = false;
+    let batchCsvHandle = null;        // FileSystemFileHandle the CSV is auto-saved to (null = no auto-save)
+    let batchAutosaveState = null;    // { kind: 'on', name } | { kind: 'failed', msg } | { kind: 'unsupported' } | null
 
     function openModal()  { overlay.classList.add('open'); }
     function closeModal() {
@@ -3025,6 +3212,8 @@ onmessage = async function({ data }) {
 
     function resetBatchUI() {
       batchResults = [];
+      batchAutosaveState = null;
+      renderAutosaveInfo();
       tableBody.innerHTML = '';
       tableWrap.classList.remove('show');
       progressWrap.classList.remove('show');
@@ -3130,6 +3319,16 @@ onmessage = async function({ data }) {
       }).join('');
     }
 
+    function renderAutosaveInfo() {
+      const s = batchAutosaveState;
+      autosaveInfo.classList.toggle('warn', !!s && s.kind === 'failed');
+      autosaveInfo.textContent =
+        !s                        ? '' :
+        s.kind === 'on'          ? t('batch_autosave_on', s.name) :
+        s.kind === 'failed'      ? t('batch_autosave_failed', s.msg) :
+                                   t('batch_autosave_unsupported');
+    }
+
     function updateProgress(done, total) {
       progressFill.style.width = total ? Math.round(done / total * 100) + '%' : '0%';
       progressText.textContent = t('batch_progress_text', done, total);
@@ -3142,16 +3341,52 @@ onmessage = async function({ data }) {
       return batchWorker;
     }
 
+    // Pulls the MIP bounds out of HiGHS's final "Solving report" log block,
+    // which both backends (WASM and native exe) print identically:
+    //   Primal bound      13
+    //   Dual bound        13
+    //   Gap               0% (tolerance: 0.01%)
+    // The solve() result itself carries neither bound, so the log is the only
+    // source that works for both. Values like "inf"/"Large" become null.
+    // Returns null when there is no report (pure LPs don't print one).
+    function parseMipReport(logLines) {
+      const start = logLines.lastIndexOf('Solving report');
+      if (start === -1) return null;
+      const num = s => { const v = Number(s); return Number.isFinite(v) ? v : null; };
+      const report = { primalBound: null, dualBound: null, gap: null };
+      for (const line of logLines.slice(start + 1)) {
+        let m;
+        if ((m = /^\s*Primal bound\s+(\S+)/.exec(line))) report.primalBound = num(m[1]);
+        else if ((m = /^\s*Dual bound\s+(\S+)/.exec(line))) report.dualBound = num(m[1]);
+        else if ((m = /^\s*Gap\s+([^%\s]+)%/.exec(line))) report.gap = num(m[1]);
+      }
+      return report;
+    }
+
     // Solves a single LP-text model on the batch worker, resolving with
-    // { status, objective } or rejecting with an Error on solve failure.
-    // A fresh listener is attached/detached per call since solves run
-    // strictly one at a time (no need for request correlation).
+    // { status, objective, primalBound, dualBound, gap } or rejecting with an
+    // Error on solve failure. A fresh listener is attached/detached per call
+    // since solves run strictly one at a time (no need for request correlation).
     function solveLpOnBatchWorker(lpText) {
       return new Promise((resolve, reject) => {
+        const logLines = [];
         const onMessage = ({ data }) => {
-          if (data.type === 'solution') {
+          if (data.type === 'log') {
+            logLines.push(String(data.line).replace(/\r$/, ''));
+          } else if (data.type === 'solution') {
             batchWorker.removeEventListener('message', onMessage);
-            resolve({ status: data.solution.Status, objective: data.solution.ObjectiveValue });
+            const status = data.solution.Status;
+            const objective = data.solution.ObjectiveValue;
+            const mip = parseMipReport(logLines);
+            let primalBound = null, dualBound = null, gap = null;
+            if (mip) {
+              ({ primalBound, dualBound, gap } = mip);
+            } else if (status === 'Optimal' && Number.isFinite(objective)) {
+              // Pure LP solved to optimality: both bounds are the optimum.
+              primalBound = dualBound = objective;
+              gap = 0;
+            }
+            resolve({ status, objective, primalBound, dualBound, gap });
           } else if (data.type === 'error') {
             batchWorker.removeEventListener('message', onMessage);
             reject(new Error(data.message));
@@ -3159,7 +3394,7 @@ onmessage = async function({ data }) {
             batchWorker.removeEventListener('message', onMessage);
             reject(new Error(data.message));
           }
-          // 'log' / 'ready' messages are ignored here — no live log in the batch view.
+          // 'ready' messages are ignored; logs are only kept for parseMipReport().
         };
         batchWorker.addEventListener('message', onMessage);
         batchWorker.postMessage({ lp: lpText, options: getSolverOptions() });
@@ -3177,10 +3412,12 @@ onmessage = async function({ data }) {
       tableWrap.classList.add('show');
 
       batchResults = batchFiles.map(f => ({
-        name: f.relPath, status: 'Pending', objective: null, time: null, error: null
+        name: f.relPath, status: 'Pending', objective: null,
+        primalBound: null, dualBound: null, gap: null, time: null, error: null
       }));
       renderTableRows();
       updateProgress(0, batchFiles.length);
+      await writeBatchCsv();   // creates the file right away, all rows "Pending"
 
       ensureBatchWorker();
 
@@ -3210,6 +3447,9 @@ onmessage = async function({ data }) {
           if (batchCancelled) break;
           batchResults[i].status = result.status || 'Other';
           batchResults[i].objective = (result.status === 'Optimal') ? result.objective : null;
+          batchResults[i].primalBound = result.primalBound;
+          batchResults[i].dualBound = result.dualBound;
+          batchResults[i].gap = result.gap;
         } catch (err) {
           batchResults[i].status = 'Error';
           batchResults[i].error = (err && err.message) ? err.message : String(err);
@@ -3221,7 +3461,15 @@ onmessage = async function({ data }) {
         batchResults[i].time = (performance.now() - startedAt) / 1000;
         renderTableRows();
         updateProgress(i + 1, batchFiles.length);
+        await writeBatchCsv();
       }
+
+      // A cancel mid-instance leaves that row as "Running"; it was never
+      // finished, so it goes back to "Pending" (in the table and the CSV).
+      batchResults.forEach(r => { if (r.status === 'Running') r.status = 'Pending'; });
+      renderTableRows();
+      await writeBatchCsv();
+      batchCsvHandle = null;
 
       batchRunning = false;
       btnCancel.style.display = 'none';
@@ -3244,8 +3492,30 @@ onmessage = async function({ data }) {
       batchCancelled = true;
     }
 
-    btnStart.addEventListener('click', () => {
+    // The CSV destination is asked up front (the picker needs this click's
+    // user activation) so results can be written to disk as they come in.
+    // Cancelling the picker cancels the start. Browsers without the File
+    // System Access API (e.g. Firefox) run without auto-save.
+    btnStart.addEventListener('click', async () => {
       if (!batchFiles.length || batchRunning) return;
+      batchCsvHandle = null;
+      batchAutosaveState = null;
+      if (window.showSaveFilePicker) {
+        try {
+          batchCsvHandle = await window.showSaveFilePicker({
+            suggestedName: t('batch_csv_filename'),
+            types: [{ description: 'CSV', accept: { 'text/csv': ['.csv'] } }]
+          });
+          batchAutosaveState = { kind: 'on', name: batchCsvHandle.name };
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+          batchAutosaveState = { kind: 'failed', msg: (err && err.message) || String(err) };
+        }
+      } else {
+        batchAutosaveState = { kind: 'unsupported' };
+      }
+      renderAutosaveInfo();
+      if (batchRunning) return;   // guard against a double click while the picker was open
       runBatch();
     });
     btnCancel.addEventListener('click', cancelBatch);
@@ -3264,6 +3534,7 @@ onmessage = async function({ data }) {
         updateProgress(batchResults.filter(r => r.status !== 'Pending' && r.status !== 'Running').length, batchFiles.length);
       }
       if (batchCancelled && !batchRunning) progressCurrent.textContent = t('batch_cancelled_msg');
+      renderAutosaveInfo();
     };
 
 
@@ -3272,19 +3543,52 @@ onmessage = async function({ data }) {
       s = String(s == null ? '' : s);
       return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
     }
-    btnExportCsv.addEventListener('click', async () => {
-      const header = ['file', 'status', 'objective_value', 'time_seconds', 'error'];
-      const lines = [header.join(',')];
+    // ';' as separator + ',' as decimal mark, so the file opens directly
+    // as numbers in a pt-BR Excel/LibreOffice.
+    function csvNumber(v, digits) {
+      if (v === null || v === undefined || !Number.isFinite(v)) return '';
+      return (digits === undefined ? String(v) : v.toFixed(digits)).replace('.', ',');
+    }
+    function buildBatchCsv() {
+      const header = ['file', 'status', 'objective_value', 'best_feasible', 'best_bound',
+                      'gap_percent', 'time_seconds', 'error'];
+      const lines = [header.join(';')];
       batchResults.forEach(r => {
         lines.push([
           csvEscape(r.name),
           csvEscape(r.status),
-          r.objective !== null && r.objective !== undefined ? r.objective : '',
-          r.time !== null && r.time !== undefined ? r.time.toFixed(3) : '',
+          csvNumber(r.objective),
+          csvNumber(r.primalBound),
+          csvNumber(r.dualBound),
+          csvNumber(r.gap),
+          csvNumber(r.time, 3),
           csvEscape(r.error || '')
-        ].join(','));
+        ].join(';'));
       });
-      const csvText = lines.join('\n');
+      return lines.join('\n');
+    }
+
+    // Auto-save: rewrites the whole CSV to batchCsvHandle after each instance,
+    // so a crash / power loss mid-batch keeps every finished row on disk.
+    // createWritable() writes to a temp file that only replaces the real one
+    // on close(), hence open → write → close every time (never a stale or
+    // half-written CSV). A write failure disables auto-save but never stops
+    // the batch — the manual "Export CSV" button still works at the end.
+    async function writeBatchCsv() {
+      if (!batchCsvHandle) return;
+      try {
+        const writable = await batchCsvHandle.createWritable();
+        await writable.write(buildBatchCsv());
+        await writable.close();
+      } catch (err) {
+        batchCsvHandle = null;
+        batchAutosaveState = { kind: 'failed', msg: (err && err.message) || String(err) };
+        renderAutosaveInfo();
+      }
+    }
+
+    btnExportCsv.addEventListener('click', async () => {
+      const csvText = buildBatchCsv();
       const suggested = t('batch_csv_filename');
 
       if (window.showSaveFilePicker) {
