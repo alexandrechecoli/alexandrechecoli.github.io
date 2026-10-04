@@ -26,32 +26,28 @@
 	<body class="reveal-viewport theme-font-montserrat theme-color-white-blue"">
 		<div class="reveal">
 			<div class="slides">
-				<section data-id="12668c0b0ebff0bc3deb47b1d8b06996"><div class="sl-block" data-block-type="code" data-name="code-100a79" data-block-id="d61f409b084abf28f8cf8af9266247ae" style="width: 952.579px; height: 700px; left: 0px; top: 0px;"><div class="sl-block-content notranslate" data-highlight-theme="a11y-dark" data-code-frame="osx" style="z-index: 10;"><pre style="font-size: 18px; line-height: 22px; tab-size: 4;"><code data-line-numbers="">
-Sub le_arquivo_de_texto()
-
-  ' Lê um arquivo de texto, linha a linha. O laço while
-  ' le uma linha por vez e faz a impressão
-  
+				<section data-id="12668c0b0ebff0bc3deb47b1d8b06996"><div class="sl-block" data-block-type="code" data-name="code-100a79" data-block-id="d61f409b084abf28f8cf8af9266247ae" style="width: 952.579px; height: 700px; left: 0px; top: 0px;"><div class="sl-block-content notranslate" data-highlight-theme="a11y-dark" data-code-frame="osx" style="z-index: 10;"><pre style="font-size: 18px; line-height: 22px; tab-size: 4;">
+                    <code data-line-numbers="">Sub le_arquivo_de_texto()
+                        
   Dim leitor As New FileSystemObject
   Dim arquivo As Object
   Dim caminho As String
   
   ' Coloque AQUI o caminho do arquivo que deseja ler:
-  caminho = "C:\Users\Usuario\Documents\Alexandre\Nomes.txt "
+  caminho = "G:\Meu Drive\Arquivos\UFPR\1 - Disciplinas\1 - Meta heuristicas\Codigos\2026-2\arquivos_texto\teste_leitura.txt"
   Dim line As String
-  Set arquivo = leitor.OpenTextFile(caminho,ForReading ) ' abre o arquivo
-  
-  While Not arquivo.AtEndOfStream ’ le linha a linha do arquivo
-  	line = arquivo.ReadLine ’ toda linha e armazenada em uma string 'line'
-  	Debug.Print line ’ imprimindo a linha lida
+  Set arquivo = leitor.OpenTextFile(caminho, ForReading) ' abre o arquivo
+
+  While Not arquivo.AtEndOfStream ' le linha a linha do arquivo
+    line = arquivo.ReadLine ' toda linha e armazenada em uma string 'line'
+    Debug.Print line; 'imprimindo a linha lida
   Wend
-  
-  ' Fecha o arquivo
-  arquivo.Close ’fecha o arquivo
+
+  'arquivo.Close 'remover o comentário desta linha
 End Sub
 
 Sub le_arquivo_de_texto_vetor()
-	
+    
   ' Lê um arquivo de texto, linha a linha. A cada iteração quebra a linha
   ' por um separador específico, e salva os elementos quebrados em um vetor
   ' v_split
@@ -62,20 +58,20 @@ Sub le_arquivo_de_texto_vetor()
   Dim v_split() As String
   
   ' Coloque AQUI o caminho do arquivo que deseja ler:
-  caminho = "C:\Users\Usuario\Documents\Alexandre\Nomes.txt "
+  caminho = "G:\Meu Drive\Arquivos\UFPR\1 - Disciplinas\1 - Meta heuristicas\Codigos\2026-2\arquivos_texto\teste_leitura.txt"
   Dim line As String
   
-  Set arquivo = leitor.OpenTextFile(caminho,ForReading) ’abre o arquivo
-  While Not arquivo . AtEndOfStream ’ le linha a linha do arquivo
-  	line = arquivo.ReadLine ’ toda linha e armazenada em uma string ’linha ’
+  Set arquivo = leitor.OpenTextFile(caminho, ForReading) 'abre o arquivo
+  While Not arquivo.AtEndOfStream 'le linha a linha do arquivo
+    line = arquivo.ReadLine 'toda linha e armazenada em uma string 'linha 
     ' Separa os elementos da linha por espaço, para trocar, altere o " " na função Split
-  	v_split = Split(line, " ") ’ o vetor v_split com os elementos separadosda linha
+    v_split = Split(line, " ") 'o vetor v_split com os elementos separadosda linha
+    Debug.Print v_split(0)
   Wend
   
-  arquivo . Close ’fecha o arquivo
+  'arquivo.Close 'remover o comentário desta linha
 End Sub
-
-</code></pre></div></div></section>
+				</code></pre></div></div></section>
 			</div>
 		</div>
 
