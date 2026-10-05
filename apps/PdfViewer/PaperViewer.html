@@ -323,8 +323,20 @@ header{
 .p-actions button:hover{color:var(--text);border-color:var(--surface-3)}
 
 /* ---------- modal ---------- */
-#modal,#lookmodal,#tagedit,#bibmodal,#aboutmodal,#helpmodal,#revmodal,#protomodal,#rvexport,#aimodal{position:fixed;inset:0;background:var(--backdrop);z-index:60;display:none;place-items:center;padding:24px}
-#modal.on,#lookmodal.on,#tagedit.on,#bibmodal.on,#aboutmodal.on,#helpmodal.on,#revmodal.on,#protomodal.on,#rvexport.on,#aimodal.on{display:grid}
+#modal,#lookmodal,#tagedit,#bibmodal,#aboutmodal,#helpmodal,#revmodal,#protomodal,#rvexport,#aimodal,#filesmodal{position:fixed;inset:0;background:var(--backdrop);z-index:60;display:none;place-items:center;padding:24px}
+#modal.on,#lookmodal.on,#tagedit.on,#bibmodal.on,#aboutmodal.on,#helpmodal.on,#revmodal.on,#protomodal.on,#rvexport.on,#aimodal.on,#filesmodal.on{display:grid}
+/* relatório de arquivos (renomear / varredura) */
+.fr-sec{margin-bottom:18px}
+.fr-sec h3{font-size:calc(var(--base)*0.964);font-weight:600;margin:0 0 6px}
+.fr-list{list-style:none;margin:6px 0 0;padding:0;max-height:220px;overflow-y:auto;
+  border:1px solid var(--line);border-radius:3px;background:var(--bg)}
+.fr-list li{padding:6px 10px;border-bottom:1px solid var(--line);font-size:calc(var(--base)*0.857);
+  line-height:1.5;word-break:break-word}
+.fr-list li:last-child{border-bottom:0}
+.fr-list .fr-to{color:var(--accent)}
+.fr-list .fr-why{color:var(--faint)}
+.fr-list button.fr-open{color:var(--accent);text-decoration:underline;text-align:left;padding:0}
+.fr-ok{color:var(--dim);font-size:calc(var(--base)*0.929)}
 .m-box{background:var(--surface);border:1px solid var(--line);border-radius:4px;
   padding:26px;width:440px;max-width:100%;max-height:86vh;overflow-y:auto}
 .m-box h2{font-family:var(--read);font-weight:400;font-size:calc(var(--base)*1.5);margin:0 0 18px}
@@ -1013,10 +1025,12 @@ header{
         <button class="btn-ghost" id="s-export" style="padding:7px 13px;font-size:13px">Exportar índice</button>
         <button class="btn-ghost" id="s-reindex" style="padding:7px 13px;font-size:13px">Reindexar tudo</button>
         <button class="btn-ghost" id="s-rename" style="padding:7px 13px;font-size:13px">Renomear PDFs</button>
+        <button class="btn-ghost" id="s-files" style="padding:7px 13px;font-size:13px">Relatório de arquivos</button>
         <button class="btn-ghost" id="s-switch" style="padding:7px 13px;font-size:13px">Trocar de pasta</button>
       </div>
       <p class="m-hint">Reindexar refaz título, ano e resumo de todos os artigos. Suas notas, marcadores e favoritos são preservados.</p>
-      <p class="m-hint">Renomear dá aos PDFs fora do padrão o nome <b>[Ano] - Título - Sobrenomes</b>, com os metadados do índice. Artigos sem ano ou sem autores ficam como estão.</p>
+      <p class="m-hint">Renomear dá aos PDFs fora do padrão o nome <b>[Ano] - Título - Sobrenomes</b>, com os metadados do índice. Antes, procura arquivos novos e mostra o que vai mudar. Artigos sem ano ou sem autores ficam como estão.</p>
+      <p class="m-hint">O relatório de arquivos lista PDFs que a pasta tem mas o acervo não conseguiu ler (caminho longo demais, arquivo só na nuvem) e cópias idênticas do mesmo artigo.</p>
     </div>
     <div class="m-actions">
       <button class="btn-ghost" id="s-close">Fechar</button>
@@ -1694,6 +1708,17 @@ header{
   </div>
 </div>
 
+<div id="filesmodal" class="modalbase">
+  <div class="m-box" style="width:640px" role="dialog" aria-modal="true" aria-labelledby="fr-title">
+    <h2 id="fr-title">Arquivos</h2>
+    <div id="fr-body"></div>
+    <div class="m-actions">
+      <button class="btn-ghost" id="fr-close">Fechar</button>
+      <button class="btn-major" id="fr-go" style="padding:10px 20px">Renomear</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -1773,16 +1798,22 @@ async function mountRoot(handle){
   await idb.set('root', handle);
 }
 
-/* percorre a pasta raiz e todas as subpastas atrás de PDFs */
-async function* walk(dir, rel=''){
-  for await (const entry of dir.values()){
-    if(entry.name.startsWith('.') || entry.name === LIB) continue;
-    const path = rel ? rel + '/' + entry.name : entry.name;
-    if(entry.kind === 'directory'){
-      yield* walk(entry, path);
-    }else if(/\.pdf$/i.test(entry.name)){
-      yield {handle:entry, path, dir:rel};
+/* percorre a pasta raiz e todas as subpastas atrás de PDFs.
+   Com `issues`, uma subpasta ilegível é anotada e pulada em vez de derrubar a varredura. */
+async function* walk(dir, rel='', issues=null){
+  try{
+    for await (const entry of dir.values()){
+      if(entry.name.startsWith('.') || entry.name === LIB) continue;
+      const path = rel ? rel + '/' + entry.name : entry.name;
+      if(entry.kind === 'directory'){
+        yield* walk(entry, path, issues);
+      }else if(/\.pdf$/i.test(entry.name)){
+        yield {handle:entry, path, dir:rel};
+      }
     }
+  }catch(e){
+    if(!issues || !rel) throw e;
+    issues.push({path: rel + '/', dir:true, err: e});
   }
 }
 
@@ -2081,19 +2112,20 @@ function toast(msg, ms=2800){
   clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),ms);
 }
 
-async function scan({force=false}={}){
-  if(S.busy) return;
+async function scan({force=false, quiet=false}={}){
+  if(S.busy) return false;
   S.busy=true; S.stop=false;
   $('#scan').disabled=true;
   P.show('Procurando PDFs'); P.set(0,0,'');
 
   /* 1. varre a árvore de pastas */
   const found=[];
+  const unread=[], dups=[];            /* vão para o relatório de arquivos */
   try{
-    for await (const f of walk(S.root)) found.push(f);
+    for await (const f of walk(S.root, '', unread)) found.push(f);
   }catch(e){
     toast('Não consegui ler a pasta: ' + e.message);
-    S.busy=false; $('#scan').disabled=false; P.hide(); return;
+    S.busy=false; $('#scan').disabled=false; P.hide(); return false;
   }
 
   /* 2. decide o que precisa de trabalho */
@@ -2101,24 +2133,36 @@ async function scan({force=false}={}){
   const todo = [];
   const byPath = {};
   for(const h in S.docs) byPath[S.docs[h].path] = S.docs[h];
+  const foundPaths = new Set(found.map(f=>f.path));
+  const where = new Map();             /* hash → caminho já aceito nesta varredura */
 
   P.show('Conferindo arquivos');
   for(let i=0;i<found.length;i++){
     if(S.stop) break;
     P.set(i, found.length, found[i].path);
     let file;
-    try{ file = await found[i].handle.getFile(); }catch(e){ continue; }
+    try{ file = await found[i].handle.getFile(); }
+    catch(e){ unread.push({path:found[i].path, err:e}); continue; }
 
     /* atalho: mesmo caminho, mesmo tamanho, mesma data → é o mesmo arquivo */
     const known = byPath[found[i].path];
     if(!force && known && known.mtime === file.lastModified && known.size === file.size){
-      seen.add(known.hash); known.missing = false; continue;
+      seen.add(known.hash); where.set(known.hash, found[i].path); known.missing = false; continue;
     }
 
     let hash;
-    try{ hash = await hashFile(file); }catch(e){ continue; }
-    seen.add(hash);
+    try{ hash = await hashFile(file); }
+    catch(e){ unread.push({path:found[i].path, err:e}); continue; }
     const cur = S.docs[hash];
+    /* mesmo conteúdo em dois lugares: o índice continua apontando para o caminho que já
+       tinha, e a outra cópia vai para o relatório. Antes, o caminho alternava entre as
+       cópias a cada varredura. */
+    if(where.has(hash) || (cur && cur.path !== found[i].path && foundPaths.has(cur.path))){
+      seen.add(hash);
+      dups.push({path:found[i].path, of:where.get(hash) || cur.path});
+      continue;
+    }
+    seen.add(hash); where.set(hash, found[i].path);
     if(cur){
       cur.path = found[i].path; cur.dir = found[i].dir;
       cur.mtime = file.lastModified; cur.size = file.size;
@@ -2161,10 +2205,17 @@ async function scan({force=false}={}){
     if(S.filter.deep){ await ensureFullText(); ftSearch(); render(); }
   }
 
+  S.fileIssues = {unread, dups};
+  const nprob = unread.length + dups.length;
+  const stopped = S.stop;
+  if(quiet) return !stopped;
   const n = todo.length;
-  toast(S.stop ? 'Parei. ' + n + ' na fila — é só clicar em Procurar novos para continuar.'
-               : n ? n + (n===1?' artigo indexado':' artigos indexados')
-                   : 'Nenhum arquivo novo.');
+  toast((stopped ? 'Parei. ' + n + ' na fila — é só clicar em Procurar novos para continuar.'
+                 : n ? n + (n===1?' artigo indexado':' artigos indexados')
+                     : 'Nenhum arquivo novo.') +
+        (nprob ? ' ' + nprob + (nprob===1 ? ' arquivo ficou' : ' arquivos ficaram') +
+                 ' de fora — veja Ajustes → Relatório de arquivos.' : ''), nprob ? 7000 : 2800);
+  return !stopped;
 }
 
 function blank(f){
@@ -5018,11 +5069,36 @@ $('#s-switch').addEventListener('click', ()=>{
 });
 $('#s-rename').addEventListener('click', ()=>{
   $('#modal').classList.remove('on');
-  renameAll();
+  openFiles({rename:true});
+});
+$('#s-files').addEventListener('click', ()=>{
+  $('#modal').classList.remove('on');
+  openFiles();
 });
 
 /* renomeia os PDFs para "[AAAA] - Título - Sobrenomes.pdf" */
 const RENAME_RX = /^\[\d{4}\] - .+ - .+\.pdf$/i;
+/* O navegador não conhece o caminho absoluto da pasta. O Windows recusa caminhos com mais
+   de 260 caracteres (e o Chrome então responde NotFoundError), então o caminho relativo
+   — subpasta + nome — fica em até 150, deixando ~105 para a pasta escolhida. */
+const REL_MAX = 150;
+
+const PARTICULAS = new Set(['van','von','de','da','das','do','dos','del','della','der','den',
+  'di','du','la','le','ter','ten','vanden','vander','el']);
+const SUFIXOS = /^(jr\.?|júnior|junior|filho|neto|sobrinho|ii|iii|iv)$/i;
+
+/* "Edmund K. Burke" → Burke · "Burke, Edmund" → Burke · "Greet Vanden Berghe" → Vanden Berghe
+   · "João da Silva Filho" → da Silva Filho */
+function sobrenome(nome){
+  const s = String(nome||'').trim();
+  if(!s) return '';
+  if(s.includes(',')) return s.split(',')[0].trim();
+  const t = s.split(/\s+/);
+  const suf = t.length > 2 && SUFIXOS.test(t[t.length-1]) ? ' ' + t.pop() : '';
+  let i = t.length - 1;
+  while(i > 0 && PARTICULAS.has(t[i-1].toLowerCase())) i--;
+  return t.slice(i).join(' ') + suf;
+}
 
 function safeName(s){
   return String(s||'')
@@ -5033,13 +5109,20 @@ function safeName(s){
 
 function targetName(d){
   const year = String(d.year||'').match(/\d{4}/);
-  const fams = (d.authors||[]).map(a => String(a).trim().split(/\s+/).pop()).filter(Boolean);
+  const fams = (d.authors||[]).map(a => safeName(sobrenome(a))).filter(Boolean);
   let title = safeName(d.title);
   if(!year || !fams.length || !title) return null;
-  if(title.length > 120) title = title.slice(0,120).replace(/\s+\S*$/,'');
-  const aut = safeName(fams.slice(0,3).join(', ') + (fams.length > 3 ? ' et al' : ''));
+  const dirLen = d.dir ? d.dir.length + 1 : 0;
+  let aut = fams.slice(0,3).join(', ') + (fams.length > 3 ? ' et al' : '');
+  const livre = () => REL_MAX - dirLen - ('[0000] -  - ' + aut + '.pdf').length;
+  if(livre() < 40) aut = fams[0] + (fams.length > 1 ? ' et al' : '');
+  const max = Math.max(30, Math.min(120, livre()));
+  if(title.length > max) title = safeName(title.slice(0,max).replace(/\s+\S*$/,''));
   return '[' + year[0] + '] - ' + title + ' - ' + aut + '.pdf';
 }
+
+/* "Nome (2).pdf" e "Nome.pdf" contam como o mesmo nome */
+const semSufixo = f => String(f||'').replace(/ \(\d+\)(\.pdf)$/i, '$1').toLowerCase();
 
 async function dirByPath(rel){
   let dir = S.root;
@@ -5051,64 +5134,177 @@ async function exists(dir, name){
   try{ await dir.getFileHandle(name); return true; }catch(e){ return false; }
 }
 
-async function renameAll(){
-  if(S.busy) return;
-  const docs = Object.values(S.docs).filter(d => !d.missing && d.path && !RENAME_RX.test(d.file||''));
-  const plan = [];
-  let semDados = 0;
-  for(const d of docs){
+/* traduz os erros da File System Access API para algo acionável */
+function motivoErro(e){
+  const n = e && e.name;
+  if(n === 'NotFoundError')
+    return 'o Windows não deixou abrir — o caminho completo provavelmente passa de 260 caracteres, ou o arquivo está só na nuvem do OneDrive';
+  if(n === 'NoModificationAllowedError' || n === 'InvalidModificationError' || n === 'InvalidStateError')
+    return 'arquivo em uso — o OneDrive ou outro programa estava mexendo nele; tente de novo';
+  if(n === 'NotAllowedError' || n === 'SecurityError')
+    return 'sem permissão de escrita na pasta';
+  return (e && (e.message || n)) || String(e);
+}
+
+function renamePlan(){
+  const fora = [], difer = [], semDados = [];
+  for(const d of Object.values(S.docs)){
+    if(d.missing || !d.path) continue;
     const nome = targetName(d);
-    if(nome) plan.push({d, nome}); else semDados++;
+    const noPadrao = RENAME_RX.test(d.file||'');
+    if(!nome){ if(!noPadrao) semDados.push(d); continue; }
+    if(!noPadrao) fora.push({d, nome});
+    else if(semSufixo(d.file) !== semSufixo(nome)) difer.push({d, nome});
   }
-  if(!plan.length){
-    toast(semDados ? 'Nada a renomear — ' + semDados + ' fora do padrão sem ano ou autores.'
-                   : 'Todos os PDFs já seguem o padrão.', 4000);
-    return;
+  return {fora, difer, semDados};
+}
+
+async function renameOne(d, alvo){
+  const dir = await dirByPath(d.dir);
+  const fh  = await dir.getFileHandle(d.file);
+  /* evita sobrescrever outro arquivo com o mesmo nome */
+  let nome = alvo, n = 2;
+  while(await exists(dir, nome)) nome = alvo.replace(/\.pdf$/i, ' (' + n++ + ').pdf');
+  if(fh.move){
+    await fh.move(nome);
+  }else{
+    await writeFile(dir, nome, await fh.getFile());
+    try{ await dir.removeEntry(d.file); }
+    catch(e){
+      /* sem isso sobravam duas cópias do mesmo PDF quando o original estava em uso */
+      try{ await dir.removeEntry(nome); }catch(_){}
+      throw e;
+    }
   }
-  if(!confirm('Renomear ' + plan.length + (plan.length===1 ? ' PDF' : ' PDFs') +
-      ' na pasta para "[Ano] - Título - Sobrenomes"?\n\nExemplo:\n' +
-      plan[0].d.file + '\n→ ' + plan[0].nome +
-      (semDados ? '\n\n' + semDados + ' sem ano ou autores ficarão como estão.' : ''))) return;
+  const file = await (await dir.getFileHandle(nome)).getFile();
+  d.file  = nome;
+  d.path  = d.dir ? d.dir + '/' + nome : nome;
+  d.mtime = file.lastModified; d.size = file.size;
+}
+
+/* ---------- relatório de arquivos ---------- */
+const FR = {plan:null, result:null};
+
+function frList(items, row){
+  const MAX = 300;
+  return '<ul class="fr-list">' + items.slice(0,MAX).map(row).join('') +
+    (items.length > MAX ? '<li class="fr-why">… e mais ' + (items.length-MAX) + '</li>' : '') + '</ul>';
+}
+
+function frProblems(){
+  const I = S.fileIssues || {unread:[], dups:[]};
+  let h = '';
+  if(I.unread.length){
+    h += '<div class="fr-sec"><h3>Não foi possível ler (' + I.unread.length + ')</h3>' +
+      '<p class="m-hint">Estão na pasta, mas o acervo não os enxerga — por isso nunca foram indexados nem ' +
+      'renomeados. Quase sempre é um destes: <b>caminho longo demais</b> (o Windows limita a 260 caracteres ' +
+      'contando a pasta; encurte o nome no Explorador ou mova para uma pasta mais rasa) ou <b>arquivo só na ' +
+      'nuvem</b> (ícone de nuvem no Explorador; clique com o botão direito → <i>Sempre manter neste ' +
+      'dispositivo</i>). Depois, clique em Procurar novos.</p>' +
+      frList(I.unread, x => '<li>' + esc(x.path) + (x.dir ? ' <span class="fr-why">(pasta inteira)</span>' : '') +
+        '<br><span class="fr-why">' + esc(motivoErro(x.err)) + ' · ' + x.path.length +
+        ' caracteres a partir da pasta do acervo</span></li>') + '</div>';
+  }
+  if(I.dups.length){
+    h += '<div class="fr-sec"><h3>Cópias idênticas (' + I.dups.length + ')</h3>' +
+      '<p class="m-hint">Mesmo conteúdo que outro PDF do acervo. O acervo acompanha só o segundo caminho — ' +
+      'notas, grifos e marcadores estão nele. A cópia pode ser apagada pelo Explorador.</p>' +
+      frList(I.dups, x => '<li>' + esc(x.path) + '<br><span class="fr-why">igual a</span> ' +
+        esc(x.of) + '</li>') + '</div>';
+  }
+  return h;
+}
+
+function frSemDados(list){
+  if(!list.length) return '';
+  return '<div class="fr-sec"><h3>Sem ano ou autores (' + list.length + ')</h3>' +
+    '<p class="m-hint">Ficam com o nome atual. Normalmente são artigos sem DOI na primeira página. ' +
+    'Clique para abrir e preencher em <i>Corrigir metadados</i>.</p>' +
+    frList(list, d => '<li><button class="fr-open" data-hash="' + esc(d.hash) + '">' +
+      esc(d.title || d.file) + '</button><br><span class="fr-why">' + esc(d.path) + '</span></li>') + '</div>';
+}
+
+function frDraw(){
+  const P_ = FR.plan, R_ = FR.result;
+  let h = '';
+  if(R_){
+    h += '<div class="fr-sec"><p class="fr-ok"><b>' + R_.ok + '</b> ' +
+      (R_.ok===1 ? 'PDF renomeado' : 'PDFs renomeados') + (R_.stopped ? ' (interrompido)' : '') + '.</p>';
+    if(R_.falhas.length)
+      h += '<h3>Não renomeados por erro (' + R_.falhas.length + ')</h3>' +
+        frList(R_.falhas, x => '<li>' + esc(x.path) + '<br><span class="fr-why">' + esc(x.motivo) + '</span></li>');
+    h += '</div>';
+  }else if(P_){
+    const n = P_.fora.length;
+    h += '<div class="fr-sec"><h3>' + (n ? n + (n===1 ? ' PDF fora do padrão será renomeado'
+                                                    : ' PDFs fora do padrão serão renomeados')
+                                          : 'Nenhum PDF fora do padrão') + '</h3>' +
+      (n ? frList(P_.fora, x => '<li>' + esc(x.d.file) + '<br><span class="fr-to">→ ' + esc(x.nome) + '</span></li>') : '') +
+      '</div>';
+    if(P_.difer.length)
+      h += '<div class="fr-sec"><label class="m-check"><input type="checkbox" id="fr-difer">' +
+        '<span>Atualizar também <b>' + P_.difer.length + '</b> que já estão no padrão, mas com nome ' +
+        'diferente do calculado hoje — por exemplo, sobrenome errado gerado por versões anteriores. ' +
+        'Deixe desmarcado se você nomeou algum à mão.</span></label>' +
+        frList(P_.difer, x => '<li>' + esc(x.d.file) + '<br><span class="fr-to">→ ' + esc(x.nome) + '</span></li>') +
+        '</div>';
+  }
+  if(P_) h += frSemDados(P_.semDados);
+  h += frProblems();
+  if(!h) h = '<p class="fr-ok">Nenhum problema: todos os PDFs da pasta estão no acervo, sem cópias repetidas.</p>';
+  $('#fr-body').innerHTML = h;
+  const podeRenomear = !R_ && P_ && (P_.fora.length || P_.difer.length);
+  $('#fr-go').style.display = podeRenomear ? '' : 'none';
+  $('#fr-title').textContent = R_ ? 'Renomeação concluída' : P_ ? 'Renomear PDFs' : 'Relatório de arquivos';
+}
+
+async function openFiles({rename=false}={}){
+  if(S.busy) return;
+  /* procura arquivos novos antes: a renomeação só enxerga o que está no índice */
+  const ok = await scan({quiet:true});
+  if(!ok){ toast('Varredura interrompida — nada foi alterado.'); return; }
+  FR.plan = rename ? renamePlan() : null;
+  FR.result = null;
+  frDraw();
+  $('#filesmodal').classList.add('on');
+}
+
+async function renameAll(){
+  if(S.busy || !FR.plan) return;
+  const lote = FR.plan.fora.slice();
+  if($('#fr-difer') && $('#fr-difer').checked) lote.push(...FR.plan.difer);
+  if(!lote.length) return;
+  $('#filesmodal').classList.remove('on');
 
   S.busy = true; S.stop = false;
   $('#scan').disabled = true;
   P.show('Renomeando PDFs');
   let ok = 0; const falhas = [];
-  for(let i=0;i<plan.length;i++){
+  for(let i=0;i<lote.length;i++){
     if(S.stop) break;
-    const {d} = plan[i];
-    P.set(i, plan.length, d.file);
-    try{
-      const dir = await dirByPath(d.dir);
-      const fh  = await dir.getFileHandle(d.file);
-      /* evita sobrescrever outro arquivo com o mesmo nome */
-      let nome = plan[i].nome, n = 2;
-      while(await exists(dir, nome)) nome = plan[i].nome.replace(/\.pdf$/i, ' (' + n++ + ').pdf');
-      if(fh.move){
-        await fh.move(nome);
-      }else{
-        await writeFile(dir, nome, await fh.getFile());
-        await dir.removeEntry(d.file);
-      }
-      const file = await (await dir.getFileHandle(nome)).getFile();
-      d.file  = nome;
-      d.path  = d.dir ? d.dir + '/' + nome : nome;
-      d.mtime = file.lastModified; d.size = file.size;
-      ok++;
-    }catch(e){
-      falhas.push(d.file + ': ' + (e.message||e));
-    }
+    const {d, nome} = lote[i];
+    P.set(i, lote.length, d.file);
+    try{ await renameOne(d, nome); ok++; }
+    catch(e){ falhas.push({path:d.path, motivo:motivoErro(e)}); }
   }
-  P.set(plan.length, plan.length, '');
+  P.set(lote.length, lote.length, '');
   await saveIndex();
   render();
   P.hide();
+  const stopped = S.stop;
   S.busy = false; $('#scan').disabled = false;
-  if(falhas.length) console.warn('Falhas ao renomear:\n' + falhas.join('\n'));
-  toast(ok + (ok===1 ? ' PDF renomeado' : ' PDFs renomeados') +
-        (falhas.length ? ', ' + falhas.length + ' com erro (veja o console)' : '') +
-        (semDados ? ', ' + semDados + ' sem ano ou autores' : '') + '.', 5000);
+  FR.result = {ok, falhas, stopped};
+  frDraw();
+  $('#filesmodal').classList.add('on');
 }
+
+$('#fr-go').addEventListener('click', renameAll);
+$('#fr-close').addEventListener('click', ()=> $('#filesmodal').classList.remove('on'));
+$('#filesmodal').addEventListener('click', e=>{
+  if(e.target.id === 'filesmodal'){ $('#filesmodal').classList.remove('on'); return; }
+  const b = e.target.closest('.fr-open');
+  if(b){ $('#filesmodal').classList.remove('on'); openDoc(b.dataset.hash); }
+});
 $('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') $('#modal').classList.remove('on'); });
 
 /* teclado */
@@ -5124,6 +5320,7 @@ document.addEventListener('keydown', e=>{
     else if($('#rvexport').classList.contains('on')) $('#rvexport').classList.remove('on');
     else if($('#helpmodal').classList.contains('on')) $('#helpmodal').classList.remove('on');
     else if($('#aboutmodal').classList.contains('on')) $('#aboutmodal').classList.remove('on');
+    else if($('#filesmodal').classList.contains('on')) $('#filesmodal').classList.remove('on');
     else if($('#tagmenu').classList.contains('on')) $('#tagmenu').classList.remove('on');
     else if($('#tagedit').classList.contains('on')) $('#tagedit').classList.remove('on');
     else if($('#lookmodal').classList.contains('on')) $('#lookmodal').classList.remove('on');
