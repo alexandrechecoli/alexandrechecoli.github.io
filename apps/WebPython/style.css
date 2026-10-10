@@ -1,0 +1,676 @@
+/* Visual compartilhado com o WebHIGHS (lp-solver.html): mesmas variáveis,
+   barra de ferramentas, painéis e barra de status. */
+
+/* ─── Reset & variables ─────────────────────────────────────────── */
+/* ── Dark theme (default) ── */
+:root {
+  --bg:      #282a36;
+  --bg2:     #1e2029;
+  --bg3:     #21222c;
+  --border:  #44475a;
+  --text:    #f8f8f2;
+  --muted:   #6272a4;
+  --accent:  #bd93f9;
+  --green:   #50fa7b;
+  --red:     #ff5555;
+  --orange:  #ffb86c;
+  --yellow:  #f1fa8c;
+  --cyan:    #8be9fd;
+  --pink:    #ff79c6;
+  --shadow:  0 1px 3px rgba(0,0,0,.5);
+}
+
+/* ── Light theme ── */
+html[data-theme="light"] {
+  --bg:      #ffffff;
+  --bg2:     #f3f4f8;
+  --bg3:     #e8eaf2;
+  --border:  #d1d5db;
+  --text:    #111827;
+  --muted:   #6b7280;
+  --accent:  #7c3aed;
+  --green:   #15803d;
+  --red:     #dc2626;
+  --orange:  #b45309;
+  --yellow:  #92400e;
+  --cyan:    #0369a1;
+  --pink:    #9d174d;
+  --shadow:  0 1px 3px rgba(0,0,0,.12);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg2);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+/* ─── Toolbar ───────────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  user-select: none;
+}
+.brand {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--accent);
+  letter-spacing: -0.3px;
+  margin-right: 4px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Ícones em SVG de traço, na cor do texto de quem os contém */
+.icon {
+  width: 16px; height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+/* Botão só com ícone (executar, parar, limpar, preferências) */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 26px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background .12s, color .12s;
+}
+.icon-btn:hover:not(:disabled) { background: rgba(127,127,127,0.18); color: var(--text); }
+.icon-btn:active:not(:disabled) { transform: scale(0.94); }
+.icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.icon-btn[hidden] { display: none; }
+.icon-btn.small { width: 22px; height: 20px; }
+.icon-btn.small .icon { width: 14px; height: 14px; }
+.icon-btn.run, .icon-btn.run:hover:not(:disabled) { color: var(--green); }
+.icon-btn.stop, .icon-btn.stop:hover:not(:disabled) { color: var(--red); }
+.icon-btn.run .icon, .icon-btn.stop .icon { width: 19px; height: 19px; }
+.icon-btn.stop .icon { fill: currentColor; }
+.icon.inline-run { color: var(--green); vertical-align: -3px; }
+
+/* Preferências do editor: caixa que abre abaixo do botão */
+.settings { position: relative; display: flex; }
+.popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 200;
+  min-width: 240px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  font-size: 12px;
+  color: var(--muted);
+}
+.popover[hidden] { display: none; }
+.popover-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; white-space: nowrap; }
+
+.sep { width: 1px; height: 22px; background: var(--border); margin: 0 2px; flex-shrink: 0; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  transition: background 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: rgba(255,255,255,0.06); border-color: var(--muted); }
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1e1f29;
+  font-weight: 600;
+}
+.btn.primary:hover:not(:disabled) { background: #c9a6fa; border-color: #c9a6fa; }
+.btn.primary.solving { background: var(--orange); border-color: var(--orange); cursor: wait; opacity: 1; }
+
+select.btn {
+  padding-right: 6px;
+  max-width: 220px;
+}
+/* Force option background/color — browsers use OS native rendering by default,
+   which ignores the parent background and leaves text unreadable in dark mode */
+select.btn option {
+  background-color: var(--bg);
+  color: var(--text);
+}
+.toolbar-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+/* ─── Main layout ───────────────────────────────────────────────── */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── Editor panel ──────────────────────────────────────────────── */
+.panel-editor {
+  display: flex;
+  flex-direction: column;
+  width: 56%;
+  min-width: 260px;
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+}
+.panel-header {
+  padding: 5px 12px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.panel-header span { margin-left: auto; }
+.panel-header .panel-title { margin-left: 0; }
+.font-btns { display: flex; gap: 2px; margin-left: auto; align-items: center; }
+.font-btn {
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1.4;
+  transition: color .1s, border-color .1s;
+}
+.font-btn:hover { color: var(--text); border-color: var(--muted); }
+.font-btn:disabled { opacity: .35; cursor: not-allowed; }
+.font-btn:disabled:hover { color: var(--muted); border-color: var(--border); }
+#font-size-display, #result-font-size-display {
+  font-size: 10px;
+  color: var(--muted);
+  min-width: 26px;
+  text-align: center;
+  user-select: none;
+}
+
+/* Editor color theme selector */
+.editor-theme-select {
+  font-size: 10.5px;
+  padding: 2px 5px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg3);
+  color: var(--muted);
+  font-family: inherit;
+  cursor: pointer;
+  transition: color .1s, border-color .1s;
+}
+.editor-theme-select:hover { color: var(--text); border-color: var(--muted); }
+.editor-theme-select option { background-color: var(--bg); color: var(--text); }
+
+/* ─── Editor tabs (iguais às do WebHIGHS) ───────────────────────── */
+/* Linha das abas: as abas rolam; Executar/Parar ficam fixos à direita, como no VS Code */
+.tab-row {
+  display: flex;
+  align-items: stretch;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.editor-actions {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-left: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.tab-bar {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.tab-bar::-webkit-scrollbar { height: 4px; }
+.tab-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 6px 6px 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  flex-shrink: 0;
+  max-width: 180px;
+  transition: background .1s, color .1s;
+}
+.tab:hover { background: rgba(127,127,127,0.12); color: var(--text); }
+.tab.active { color: var(--text); background: var(--bg); box-shadow: inset 0 -2px 0 var(--accent); }
+.tab-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tab-close {
+  flex-shrink: 0;
+  width: 16px; height: 16px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 3px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1;
+}
+.tab-close:hover { background: rgba(255,85,85,.25); color: var(--red); }
+.tab-add {
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  width: 30px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  user-select: none;
+}
+.tab-add:hover { background: rgba(127,127,127,0.12); color: var(--text); }
+/* Abas de dados: arquivos que o código Python lê pelo nome */
+.tab.data .tab-name::before { content: "📄 "; }
+.tab-add-data { width: auto; padding: 0 10px; font-size: 12px; white-space: nowrap; }
+
+.cm-wrapper { flex: 1; overflow: hidden; }
+.CodeMirror  { height: 100% !important; font-size: 13.5px; line-height: 1.65; }
+.CodeMirror-scroll { padding-bottom: 0; }
+/* Note: editor colors (background, gutter, syntax tokens) are fully controlled
+   by the chosen CodeMirror theme (see #editor-theme-select) — independent of
+   the page's light/dark UI toggle. No hardcoded color overrides here on purpose. */
+
+/* Linha do erro da última execução (ganha da cor da linha atual do tema) */
+.CodeMirror .CodeMirror-linebackground.cm-error-line { background: rgba(255, 85, 85, 0.28); }
+
+/* Dobra de código: marcadores discretos, na cor do próprio tema do editor */
+.CodeMirror-foldgutter-open, .CodeMirror-foldgutter-folded { opacity: 0.55; }
+.CodeMirror-foldgutter-open:hover, .CodeMirror-foldgutter-folded:hover { opacity: 1; }
+.CodeMirror-foldmarker {
+  color: inherit;
+  text-shadow: none;
+  opacity: 0.7;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 0 4px;
+  font-family: inherit;
+}
+
+/* Lista do autocompletar: fica fora do editor, então segue o tema da página */
+.CodeMirror-hints {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  box-shadow: var(--shadow);
+  font-family: 'Cascadia Code', 'Fira Code', Consolas, 'Courier New', monospace;
+  font-size: 12.5px;
+  z-index: 100;
+}
+.CodeMirror-hint { color: var(--text); padding: 2px 8px; }
+li.CodeMirror-hint-active { background: var(--accent); color: var(--bg); }
+
+/* Theme toggle switch (on/off style) */
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+}
+.theme-switch-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.theme-switch-track {
+  width: 38px;
+  height: 20px;
+  background: var(--border);
+  border-radius: 10px;
+  position: relative;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+.theme-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: 0 1px 2px rgba(0,0,0,.35);
+  transition: left .2s, background .2s;
+}
+.theme-switch-input:checked + .theme-switch-track { background: var(--accent); }
+.theme-switch-input:checked + .theme-switch-track .theme-switch-thumb {
+  left: 20px;
+  background: #fff;
+}
+.theme-switch-input:focus-visible + .theme-switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Resize handle */
+.resize-handle {
+  position: absolute;
+  right: -3px;
+  top: 0; bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 10;
+}
+.resize-handle:hover, .resize-handle.dragging { background: var(--accent); opacity: 0.4; }
+
+/* ─── Results panel ─────────────────────────────────────────────── */
+.panel-results {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.results-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 14px;
+}
+
+/* Visões do painel (Saída e Ajuda): só uma aparece por vez */
+.view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.view[hidden] { display: none; }
+
+/* Abas do cabeçalho do painel */
+.panel-tabs { display: flex; align-self: stretch; margin: -5px auto -5px -12px; }
+.panel-tab {
+  padding: 0 14px;
+  border: none;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  cursor: pointer;
+  transition: background .1s, color .1s;
+}
+.panel-tab:hover { background: rgba(127,127,127,0.12); color: var(--text); }
+.panel-tab.active { color: var(--text); background: var(--bg); box-shadow: inset 0 -2px 0 var(--accent); }
+
+/* ─── Ajuda ─────────────────────────────────────────────────────── */
+.help-bar { display: flex; align-items: center; gap: 4px; margin-bottom: 10px; flex-shrink: 0; }
+.help-search {
+  flex: 1;
+  min-width: 0;
+  margin-left: 6px;
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg3);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+}
+.help-search:focus { outline: none; border-color: var(--accent); }
+.help-content {
+  flex: 1;
+  overflow: auto;
+  padding-right: 8px;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.help-content::-webkit-scrollbar { width: 5px; height: 5px; }
+.help-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.help-content > * { max-width: 780px; }
+.help-content h1 { font-size: 20px; margin: 0 0 10px; color: var(--accent); }
+.help-content h2 { font-size: 15.5px; margin: 22px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+.help-content h3 { font-size: 13.5px; margin: 18px 0 6px; }
+.help-content p, .help-content ul, .help-content ol, .help-content table, .help-content blockquote { margin: 0 0 10px; }
+.help-content ul, .help-content ol { padding-left: 22px; }
+.help-content li { margin-bottom: 3px; }
+.help-content a { color: var(--cyan); text-decoration: none; cursor: pointer; }
+.help-content a:hover { text-decoration: underline; }
+.help-content code {
+  font-family: 'Cascadia Code', 'Fira Code', Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  /* Sem ligaduras: "<=" precisa aparecer como o aluno vai digitar, não como "≤" */
+  font-variant-ligatures: none;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+}
+.help-content h3 code { font-size: 12.5px; color: var(--green); }
+.help-content pre {
+  position: relative;
+  margin: 0 0 10px;
+  padding: 9px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+.help-content pre code { padding: 0; border: none; background: none; white-space: pre; }
+/* Avisos ("Atenção: …") */
+.help-content blockquote {
+  padding: 6px 12px;
+  border-left: 3px solid var(--orange);
+  background: var(--bg3);
+  border-radius: 0 5px 5px 0;
+}
+.help-content blockquote p:last-child { margin-bottom: 0; }
+.help-content table { border-collapse: collapse; display: block; overflow-x: auto; }
+.help-content th, .help-content td { padding: 4px 12px 4px 0; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.help-content th { color: var(--muted); font-weight: 600; font-size: 12px; }
+
+/* Botões dos blocos de código: "Copiar" aparece ao passar o mouse; "Abrir no editor" fica visível */
+.doc-btn {
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: color .1s, border-color .1s;
+}
+.doc-btn:hover { color: var(--text); border-color: var(--muted); }
+.doc-copy { position: absolute; top: 6px; right: 6px; opacity: 0; }
+.help-content pre:hover .doc-copy, .doc-copy:focus-visible { opacity: 1; }
+.doc-open { margin: -4px 0 12px; }
+.doc-open .doc-btn { color: var(--green); border-color: var(--green); padding: 3px 10px; font-size: 12px; }
+/* Link "Abrir este exemplo no editor" das páginas de exemplo: com cara de botão */
+.help-content a[href^="#exemplo-"] {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid var(--green);
+  border-radius: 4px;
+  color: var(--green);
+  font-size: 12px;
+}
+.help-content a[href^="#exemplo-"]:hover { text-decoration: none; background: rgba(127,127,127,0.12); }
+
+/* Cores do código nos blocos da ajuda: seguem o tema da página, não o do editor */
+.help-content .cm-keyword, .help-content .cm-operator { color: var(--pink); }
+.help-content .cm-string { color: var(--yellow); }
+.help-content .cm-comment { color: var(--muted); font-style: italic; }
+.help-content .cm-number { color: var(--accent); }
+.help-content .cm-builtin { color: var(--cyan); }
+.help-content .cm-def { color: var(--green); }
+
+/* Índice e resultados da busca */
+.help-list { list-style: none; padding-left: 0 !important; }
+.help-list li { margin-bottom: 7px; }
+.help-list a { font-weight: 600; }
+.help-list span { display: block; color: var(--muted); font-size: 12.5px; }
+.help-empty { color: var(--muted); }
+
+/* Placeholder */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 260px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.6;
+}
+.placeholder svg { opacity: 0.25; }
+.placeholder[hidden], .log-pane[hidden] { display: none; }
+kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 11px;
+  font-family: monospace;
+  background: var(--bg3);
+}
+
+/* ─── Output / solver log pane ──────────────────────────────────── */
+.log-pane {
+  flex: 1;
+  font-family: 'Cascadia Code', 'Fira Code', Consolas, 'Courier New', monospace;
+  font-size: 11.5px;
+  line-height: 1.55;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  overflow: auto;
+  white-space: pre;
+}
+.log-pane div { min-height: 1.55em; }
+.log-pane::-webkit-scrollbar { width: 5px; height: 5px; }
+.log-pane::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Log line types */
+.ll-normal   { color: #bbc2e8; }
+.ll-header   { color: var(--accent); }
+.ll-section  { color: var(--cyan); font-weight: 600; }
+.ll-sep      { color: #44475a; }
+.ll-mip-hdr  { color: var(--muted); font-weight: 600; }
+.ll-mip-row  { color: #e0e0e0; }
+.ll-mip-best { color: var(--yellow); font-weight: 600; }
+.ll-optimal  { color: var(--green); font-weight: 600; }
+.ll-infeas   { color: var(--red); font-weight: 600; }
+.ll-warning  { color: var(--orange); }
+.ll-err      { color: var(--red); }
+.ll-info     { color: var(--muted); font-style: italic; }
+/* Linha do traceback clicável: leva à linha do código no editor */
+.ll-link     { cursor: pointer; text-decoration: underline dotted; }
+.ll-link:hover { text-decoration-style: solid; }
+
+/* Log line colors — light overrides (hardcoded dark values need fixing) */
+html[data-theme="light"] .ll-normal  { color: #374151; }
+html[data-theme="light"] .ll-sep     { color: #d1d5db; }
+html[data-theme="light"] .ll-mip-row { color: #374151; }
+html[data-theme="light"] .log-pane   { background: #f9fafb; }
+
+/* ─── Status bar ────────────────────────────────────────────────── */
+.statusbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 3px 12px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--green);
+}
+.dot.loading { background: var(--orange); animation: blink 1s ease-in-out infinite; }
+.dot.error   { background: var(--red); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.statusbar-right { margin-left: auto; display: flex; gap: 14px; white-space: nowrap; }
+#status-cursor { font-variant-numeric: tabular-nums; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Responsive layout — phones & narrow tablets (stacked panels)
+═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 760px) {
+  body { height: 100dvh; font-size: 13.5px; }
+
+  /* Toolbar: let buttons wrap to a second row instead of overflowing */
+  .toolbar { flex-wrap: wrap; row-gap: 6px; padding: 6px 8px; }
+  .toolbar-right { margin-left: 0; flex-wrap: wrap; row-gap: 6px; }
+  .brand { font-size: 14px; }
+  select.btn { max-width: 150px; }
+
+  /* Stack the editor and results panels instead of side-by-side */
+  .main { flex-direction: column; overflow-y: auto; }
+  .panel-editor {
+    width: 100% !important;   /* overrides any inline width left over from desktop drag-resize */
+    min-width: 0;
+    height: 46vh;
+    flex: 0 0 auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-results { flex: 1 1 auto; min-height: 280px; }
+  .resize-handle { display: none; }   /* drag-to-resize is a mouse/desktop affordance */
+
+  /* A caixa de preferências ocupa a largura da tela, onde quer que o botão esteja */
+  .popover { position: fixed; top: 48px; left: 8px; right: 8px; min-width: 0; }
+
+  .statusbar { font-size: 10px; gap: 8px; flex-wrap: wrap; }
+  .statusbar-right { gap: 8px; flex-wrap: wrap; }
+  .kbd-hint { display: none; }
+
+  /* iOS Safari zooms the page in when focusing a select smaller than 16px */
+  select.btn, .editor-theme-select { font-size: 16px; }
+}
+
+@media (max-width: 420px) {
+  .brand { display: none; }   /* free up space for the controls on very small phones */
+  select.btn { max-width: 110px; }
+  .btn { padding: 5px 8px; font-size: 12.5px; }
+}
