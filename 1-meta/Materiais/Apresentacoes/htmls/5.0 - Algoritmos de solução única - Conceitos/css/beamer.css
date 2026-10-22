@@ -1,0 +1,263 @@
+/* Tema que reproduz o Beamer "Boadilla" com cor MyBlue, 11pt, 16:9.
+ * Todas as medidas estão em pt, iguais às do PDF original (453.543pt x 255.118pt).
+ * Fonte: Latin Modern Sans (a mesma do LaTeX). Para essa fonte, a linha de base de
+ * um texto fica a  L/2 + 0.4225*tamanho  do topo da caixa de linha de altura L. */
+
+@font-face { font-family: "LM Sans"; src: url(../fonts/lmsans10-regular.otf); font-weight: 400; font-style: normal; }
+@font-face { font-family: "LM Sans"; src: url(../fonts/lmsans10-bold.otf); font-weight: 700; font-style: normal; }
+@font-face { font-family: "LM Sans"; src: url(../fonts/lmsans10-oblique.otf); font-weight: 400; font-style: italic; }
+@font-face { font-family: "LM Sans"; src: url(../fonts/lmsans10-boldoblique.otf); font-weight: 700; font-style: italic; }
+@font-face { font-family: "LM Sans 12"; src: url(../fonts/lmsans12-regular.otf); }
+@font-face { font-family: "LM Sans 9"; src: url(../fonts/lmsans9-regular.otf); }
+@font-face { font-family: "LM Sans 8"; src: url(../fonts/lmsans8-regular.otf); }
+
+:root {
+  --myblue: #0061A5;
+  --brickred: #B6321D;
+  --foot-l: #1A71AE;
+  --foot-r: #E5EEF5;
+  --block-title: #CCDFED;
+  --block-body: #E6EFF6;
+  --textwidth: 403.7pt;
+  --bg: #2b2b2b;
+}
+
+html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+html:not(.ready) #deck { visibility: hidden; }
+
+#deck {
+  position: absolute; left: 50%; top: 50%;
+  width: 453.543pt; height: 255.118pt;
+  transform-origin: center center;
+}
+
+/* ---------- Frame ---------- */
+.frame {
+  position: absolute; inset: 0;
+  display: none;
+  overflow: hidden;
+  background: #fff; color: #000;
+  font-family: "LM Sans", sans-serif;
+  font-size: 10.91pt; line-height: 13.55pt;
+  text-align: left;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+}
+.frame.active { display: block; }
+
+/* Título (linha de base em 21.1pt) e subtítulo (linha de base em 35.1pt) */
+.ft { position: absolute; left: 8.5pt; right: 8.5pt; top: 0; color: var(--myblue); }
+.ft h2 { position: absolute; left: 0; top: 6.84pt; margin: 0; white-space: nowrap;
+  font: 400 14.35pt/17pt "LM Sans 12", sans-serif; }
+.ft .subtitle { position: absolute; left: 0; top: 26.11pt; white-space: nowrap;
+  font: 400 8.97pt/11pt "LM Sans 9", sans-serif; }
+
+/* Área de texto do frame (\textheight). Margens: 30pt à esquerda e 20pt à direita.
+ * Frame centralizado: o Beamer usa 1fill acima e 1.5fill abaixo do conteúdo.
+ * Frame [t]: 0.2cm acima do conteúdo. */
+.fc {
+  position: absolute; left: 29.9pt; right: 19.85pt; top: 38.9pt; bottom: 19.12pt;
+  display: flex; flex-direction: column;
+}
+.frame.only-title .fc { top: 24.9pt; }
+.frame.notitle .fc { top: 0; }
+.fc::before { content: ""; flex: 1 1 0; }
+.fc::after  { content: ""; flex: 1.5 1 0; }
+.frame.t .fc::before { flex: none; height: 5.69pt; }
+.frame.t .fc::after  { flex: 1 1 0; }
+.fc > * { flex: none; }
+
+/* Rodapé */
+.frame > footer {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 12.398pt;
+  font: 400 6.97pt/12.398pt "LM Sans 8", sans-serif;
+  white-space: nowrap;
+}
+.foot-l { position: absolute; left: 0; top: 0; bottom: 0; width: 181.415pt;
+  background: var(--foot-l); color: #fff; text-align: center; }
+.foot-r { position: absolute; left: 181.415pt; top: 0; bottom: 0; width: 317.48pt;
+  background: var(--foot-r); color: var(--myblue); text-align: center; }
+.foot-num { margin-left: 32.1pt; margin-right: 3.1pt; }
+
+/* ---------- Texto ---------- */
+p { margin: 0; }
+b, strong { font-weight: 700; }
+b i, i b { font-style: normal; }  /* cmss não tem negrito itálico: o LaTeX usa negrito reto */
+.jus { text-align: justify; hyphens: manual; -webkit-hyphens: manual; }
+.rag { text-align: left; hyphens: manual; }
+/* linhas já quebradas pelo algoritmo do TeX (js/texbreak.js) */
+.tl { white-space: nowrap; }
+.c-myblue { color: var(--myblue); }
+.c-brickred { color: var(--brickred); }
+
+/* Fórmulas inline não aumentam a altura da linha (como no TeX) */
+.katex { font-size: 1em !important; line-height: 0; }
+.katex .katex-html { display: inline-block; height: 0; line-height: 0; vertical-align: baseline; }
+.katex-display > .katex > .katex-html { display: block; height: auto; }
+
+/* Espaçamentos verticais (equivalentes às colas do TeX) */
+.fc > p:first-child { margin-top: -1.2pt; }
+
+/* Ambiente center */
+.center { text-align: center; margin: 5.8pt 0 4.5pt; display: flex; flex-direction: column; }
+.imgs { display: flex; justify-content: safe center; align-items: flex-end; flex-wrap: wrap;
+  column-gap: 3.6pt; line-height: 0; }
+.imgs img { display: block; }
+.center + p { margin-top: 6.8pt; }
+p + .center { margin-top: 8.2pt; }
+.tcb > .center:first-child { margin-top: 0; }
+.tcb > .center:last-child { margin-bottom: 0; }
+ol + p, ul + p { margin-top: 2.2pt; }
+
+/* ---------- tcolorbox ---------- */
+.tcb {
+  box-shadow: inset 0 0 0 1.42pt var(--myblue);
+  border-radius: 0.28pt;
+  background: #fff;
+  padding: 6.37pt 15.62pt 9.84pt;  /* inclui a borda de 1.42pt */
+  margin: 6.7pt 0 0;
+  display: flex; flex-direction: column;
+}
+.tcb.bs0 { padding: 3.52pt 12.77pt 6.99pt; }
+.tcb + p { margin-top: 3.9pt; }
+
+/* ---------- block (Boadilla: rounded + shadow) ---------- */
+.block {
+  margin: 6.7pt -4pt 5.5pt;
+  border-radius: 4pt;
+  box-shadow: 2.4pt 2.4pt 3pt rgba(0,0,0,0.5);
+  display: flex; flex-direction: column;
+}
+.frame.t .fc > .block:first-child { margin-top: 3.1pt; }
+.tcb + .block { margin-top: 13.8pt; }
+.block + p { margin-top: 0; }
+.block-title {
+  background: var(--block-title); color: var(--myblue);
+  border-radius: 4pt 4pt 0 0;
+  font-weight: 400; font-size: 11.96pt; line-height: 16.2pt; height: 16.7pt;
+  padding: 0 4pt; text-align: center;
+  white-space: nowrap;
+}
+.block-title .center { margin: 0; display: block; }
+.block-body {
+  background: var(--block-body);
+  border-radius: 0 0 4pt 4pt;
+  padding: 1.12pt 4pt 3.8pt;
+  display: flex; flex-direction: column;
+}
+.block-body > ol:first-child, .block-body > ul:first-child { margin-top: -1.5pt; }
+
+
+/* ---------- Listas ---------- */
+ol.enum, ul.itemz { list-style: none; margin: 3.05pt 0 0; padding: 0 0 0 21.8pt; }
+.fc > ol.enum:first-child, .fc > ul.itemz:first-child,
+.tcb > ol.enum:first-child, .tcb > ul.itemz:first-child { margin-top: 0; }
+ol.enum { counter-reset: it; }
+ol.enum > li, ul.itemz > li { position: relative; margin-top: 2.95pt; }
+ol.enum > li:first-child, ul.itemz > li:first-child { margin-top: 0; }
+ol.enum > li { counter-increment: it; }
+ol.enum > li::before {
+  content: counter(it) ".";
+  position: absolute; right: calc(100% + 5.4pt); top: 0;
+  color: var(--myblue);
+}
+ol.enum > li[data-label]::before { content: attr(data-label); }
+ul.itemz > li::before {
+  content: ""; position: absolute; right: calc(100% + 5.6pt); top: 4.6pt;
+  width: 4.1pt; height: 4.1pt; background: var(--myblue);
+}
+/* listas de 2º nível: fonte \small (10pt / 12pt) */
+li ul.itemz, li ol.enum { font-size: 9.96pt; line-height: 11.96pt; padding-left: 21.8pt; margin-top: 1.5pt; }
+li ul.itemz > li, li ol.enum > li { margin-top: 0; }
+li ul.itemz > li::before { width: 3.3pt; height: 3.3pt; top: 5pt; }
+
+/* ---------- Colunas ---------- */
+/* Beamer (sem [onlytextwidth]) distribui as colunas por toda a largura do slide */
+.columns { display: flex; align-items: center; justify-content: space-evenly; margin: 13.2pt -19.85pt 0 -29.9pt; }
+.column { display: flex; flex-direction: column; flex: none; }
+.column > .center, .column > .tcb { margin-top: 0; margin-bottom: 0; }
+
+/* ---------- Fórmulas em destaque ---------- */
+/* Como no TeX: a linha de base da fórmula fica 24.55pt (\abovedisplayskip + \baselineskip)
+ * abaixo da linha anterior e 24.55pt acima da seguinte. Uma caixa de linha de 35.55pt
+ * produz exatamente isso. Fórmulas altas aumentam a linha, como o \lineskip do TeX. */
+.eq { margin: 0; line-height: 35.55pt; text-align: center; position: relative; }
+.eq .katex-display { display: inline; margin: 0; }
+.eq .katex-display > .katex { display: inline; }
+.eq .katex-display > .katex > .katex-html { display: inline-block; height: auto; }
+.eq-row > span + span { margin-left: 0.2778em; }
+.eqno { position: absolute; right: 0; top: 0; }
+/* \abovedisplayshortskip / \belowdisplayshortskip: linha anterior curta (marcado pelo JS) */
+.eq.short { margin-top: -11pt; margin-bottom: -4.5pt; }
+
+/* ---------- Algoritmo (algorithm + algpseudocode) ---------- */
+.algorithm { margin: 11.5pt 0 0; padding: 0.8pt 0 0.4pt;
+  background:
+    linear-gradient(#000, #000) top / 100% 0.8pt no-repeat,
+    linear-gradient(#000, #000) bottom / 100% 0.4pt no-repeat; }
+.alg-cap { padding-bottom: 0.4pt;
+  background: linear-gradient(#000, #000) bottom / 100% 0.4pt no-repeat; }
+.alg-body { padding: 0 0 2.8pt; }
+.alg-body div { padding-left: 10.9pt; }
+.alg-body .l2 { padding-left: 27.3pt; }
+.alg-body .l3 { padding-left: 43.7pt; }
+.alg-body .l4 { padding-left: 60.1pt; }
+.alg-body .l5 { padding-left: 76.5pt; }
+.c-alert { color: #ff0000; }
+
+/* ---------- Páginas especiais ---------- */
+.frame.titlepage .fc { align-items: center; text-align: center; }
+.frame.titlepage .fc::before { flex: none; height: 26.5pt; }
+.tp-title { color: var(--myblue); font: 400 14.35pt/17pt "LM Sans 12", sans-serif; }
+.tp-author { margin-top: 24.2pt; }
+.tp-date { margin-top: 28.3pt; }
+.tp-img { margin-top: 17.4pt; line-height: 0; }
+
+.frame.sec .fc { align-items: center; }
+.frame.sec .fc::before { flex: 2 1 0; }
+.frame.sec .fc::after { flex: 2.5 1 0; }
+.sec-title { color: var(--myblue); font: 400 14.35pt/17pt "LM Sans 12", sans-serif; padding: 8pt; position: relative; top: -0.5pt; }
+
+.frame.toc .fc::before { flex: none; height: 38.2pt; }
+.frame.toc .fc::after { flex: 1 1 0; }
+.toc-item { color: var(--myblue); display: flex; align-items: center; height: 13.55pt; }
+.toc-item + .toc-item { margin-top: 20.75pt; }
+.toc-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 8.5pt; height: 8.5pt; border-radius: 50%;
+  background: var(--myblue); color: #fff;
+  font: 400 6.4pt/1 "LM Sans 8", sans-serif;
+  margin: 0 3.7pt 0 -2.5pt; flex: none;
+}
+
+/* ---------- Figuras animadas (js/anim/) ---------- */
+.anim { display: block; line-height: 0; }
+.anim svg { display: block; overflow: visible; }
+.cube-v { cursor: pointer; }
+.cube-v:hover circle + circle { stroke: var(--myblue); }
+.tsp-v { cursor: pointer; }
+.cont-h { cursor: grab; touch-action: none; }
+.cont-h:active { cursor: grabbing; }
+.tsp-v:hover circle + circle { stroke: var(--myblue); }
+.lo-ball { cursor: grab; touch-action: none; }
+.lo-ball:active { cursor: grabbing; }
+.s3d { position: relative; display: inline-block; line-height: 0; touch-action: none; cursor: grab; }
+.s3d:active { cursor: grabbing; }
+.s3d img { display: block; }
+.s3d-canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: none; }
+.anim[data-anim="reveal"] { display: inline-block; }
+
+/* ---------- Overlays ---------- */
+.ov-hidden { visibility: hidden !important; }
+.ov-gone { display: none !important; }
+.ov-block { display: flex; flex-direction: column; }
+
+/* ---------- Impressão: um frame por página, todos os overlays visíveis ---------- */
+@page { size: 453.543pt 255.118pt; margin: 0; }
+@media print {
+  html, body { background: #fff; overflow: visible; height: auto; }
+  #deck { position: static; transform: none !important; width: auto; height: auto; }
+  .frame { position: relative; display: block !important; width: 453.543pt; height: 255.118pt;
+    page-break-after: always; break-after: page; }
+  .ov-hidden { visibility: visible !important; }
+}

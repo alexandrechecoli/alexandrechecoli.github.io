@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="97.4pt" height="97.4pt" viewBox="0 0 97.4 97.4" version="1.2">
+<defs>
+<clipPath id="clip1">
+  <path d="M 0 0 L 96.804688 0 L 96.804688 96.804688 L 0 96.804688 Z M 0 0 "/>
+</clipPath>
+</defs>
+<g id="surface1">
+<g clip-path="url(#clip1)" clip-rule="nonzero">
+<path style="fill:none;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(100%,100%,100%);stroke-opacity:1;stroke-miterlimit:10;" d="M 63.999596 816.000404 L 63.999596 719.998575 L 160.001425 719.998575 L 160.001425 816.000404 Z M 63.999596 816.000404 " transform="matrix(0.993878,0,0,-0.993878,-62.912449,811.699796)"/>
+<path style="fill-rule:evenodd;fill:rgb(67.799377%,84.698486%,90.19928%);fill-opacity:1;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(0%,0%,54.499817%);stroke-opacity:1;stroke-miterlimit:10;" d="M 160.001425 767.99949 C 160.001425 794.509452 138.510472 816.000404 112.00051 816.000404 C 85.490548 816.000404 63.999596 794.509452 63.999596 767.99949 C 63.999596 741.489528 85.490548 719.998575 112.00051 719.998575 C 138.510472 719.998575 160.001425 741.489528 160.001425 767.99949 " transform="matrix(0.993878,0,0,-0.993878,-62.912449,811.699796)"/>
+</g>
+<path style="fill-rule:evenodd;fill:rgb(56.498718%,93.299866%,56.498718%);fill-opacity:1;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 87.998088 779.998736 L 84.000959 767.99949 L 87.998088 760.001303 L 100.001264 756.000244 L 103.998393 732.001752 L 116.001569 739.999939 L 116.001569 779.998736 L 132.001874 788.000853 L 140.000061 779.998736 L 156.000366 779.998736 L 156.000366 783.999795 L 151.999307 792.001912 L 128.000815 811.999345 L 103.998393 811.999345 L 84.000959 804.001158 L 79.999901 795.999041 L 84.000959 792.001912 L 87.998088 800.000099 L 116.001569 795.999041 L 112.00051 792.001912 L 100.001264 792.001912 L 84.000959 788.000853 L 87.998088 779.998736 " transform="matrix(0.993878,0,0,-0.993878,-62.912449,811.699796)"/>
+<path style="fill-rule:evenodd;fill:rgb(56.498718%,93.299866%,56.498718%);fill-opacity:1;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 72.001713 747.998126 L 75.998842 739.999939 L 84.000959 732.001752 L 91.999147 728.000693 L 84.000959 744.000998 L 72.001713 747.998126 " transform="matrix(0.993878,0,0,-0.993878,-62.912449,811.699796)"/>
+</g>
+</svg>

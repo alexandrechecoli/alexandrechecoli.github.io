@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metaheuristicas - 5 - Alg. de Solução Única: Conceitos</title>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<link rel="stylesheet" href="css/beamer.css">
+</head>
+<body data-author="Alexandre Checoli Choueiri" data-shorttitle="Metaheuristicas - 5 - Alg. de Solução Única: Conceitos">
+<main id="deck">
+
+<section class="frame titlepage notitle">
+<div class="fc">
+<div class="tp-title">Metaheuristicas - 5 - Alg. de Solução Única: Conceitos</div>
+<div class="tp-author">Alexandre Checoli Choueiri</div>
+<div class="tp-date">20/03/2023</div>
+<div class="tp-img"><img src="img/capa.svg" style="width:84.10pt" alt=""></div>
+</div>
+</section>
+
+<section class="frame toc notitle">
+<div class="fc">
+<div class="toc-item"><span class="toc-num">1</span>Introdução</div>
+<div class="toc-item"><span class="toc-num">2</span>Vizinhança</div>
+<div class="toc-item"><span class="toc-num">3</span>Ótimo local</div>
+<div class="toc-item"><span class="toc-num">4</span>Fitness landscape (paisagem de adaptabilidade)</div>
+<div class="toc-item"><span class="toc-num">5</span>Atividades</div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Introdução">
+<div class="fc"><div class="sec-title">Introdução</div></div>
+</section>
+
+<section class="frame" data-section="Introdução">
+<header class="ft"><h2>Introdução</h2><div class="subtitle">A ideia geral</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Como vimos, as metaheuristicas precisam de uma (ou mais) solução inicial para começarem o processo de otimização. Aprendemos os conceitos dos algoritmos gulosos para geração de soluções iniciais, de forma que podemos começar a estudar uma grande família de metaheuristicas: <b>algoritmos de solução única</b>.</p></div>
+<div data-on="2" class="tcb jus"><p>Como o nome sugere, essa família de metaheuristicas sempre trabalha com <b>uma solução</b> a cada iteração.</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Introdução">
+<header class="ft"><h2>Introdução</h2><div class="subtitle">Na Árvore de Métodos</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/ArvoreMetodos.svg" style="width:401.20pt" alt=""></p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Introdução">
+<header class="ft"><h2>Introdução</h2><div class="subtitle">A Ideia Geral</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ciclo" data-scale="1" data-from="e0" data-state="ciclo"></span></p></div>
+<p>Alguns conceitos são comuns a todos os algoritmos de solução única. Iterativamente uma heurística <span class="c-myblue">gera novas soluções</span>, e a partir delas faz a <span class="c-myblue">reposição da solução atual</span>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Introdução">
+<header class="ft"><h2>Introdução</h2><div class="subtitle">A Ideia Geral</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ciclo" data-scale="1" data-from="f" data-state="gera"></span></p></div>
+<p>Na etapa de geração, um conjunto de soluções é gerado a partir da solução atual \(s\). O conjunto \(C(s)\) é geralmente obtido a partir de transformações locais na solução \(s\).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Introdução">
+<header class="ft"><h2>Introdução</h2><div class="subtitle">A Ideia Geral</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ciclo" data-scale="1" data-from="f" data-state="sel"></span></p></div>
+<p>Na etapa de <span class="c-myblue">reposição</span>, uma seleção é feita dentre os elementos do conjunto de candidatos \(C(s)\) para substituir a solução atual \(s\), ou seja, uma solução \(s'\in C(s)\) é selecionada para ser a nova solução. O processo é repetido até que um critério de parada seja atingido.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Introdução">
+<header class="ft"><h2>Introdução</h2><div class="subtitle">A Ideia Geral</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ciclo" data-scale="1" data-from="f" data-state="mem"></span></p></div>
+<p>A geração e reposição podem ser processos <span class="c-myblue">sem memória</span>, ou seja, os dois procedimentos são baseados exclusivamente na solução atual. Do contrário, um histórico de buscas passadas é armazenado e utilizado nas fases de geração/reposição.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Introdução">
+<header class="ft"><h2>Introdução</h2><div class="subtitle">Algoritmo Genérico Solução Única</div></header>
+<div class="fc jus">
+<p>O algoritmo abaixo ilustra um <i>template</i> de alto nível para todas as metaheurísticas de solução única.</p>
+<div class="algorithm">
+<div class="alg-cap"><b>Algorithm 1</b> Template de alto nível: algoritmos de solução única</div>
+<div class="alg-body">
+<div><b>Input:</b> solução inicial \(s_0\)</div>
+<div>\(t = 0\)</div>
+<div><b>while</b> Critério de parada = Falso <b>do</b></div>
+<div class="l2">\(C =\) GeraConjunto(\(s_t\))</div>
+<div class="l2">\(s_{t+1} =\) SelecionaElemento(\(C\))</div>
+<div class="l2">\(t = t + 1\)</div>
+<div><b>end while</b></div>
+<div><b>return</b> \(s_{t+1}\)</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="frame t" data-section="Introdução">
+<header class="ft"><h2>Introdução</h2><div class="subtitle">Conceitos Comuns</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Dois conceitos são comuns a todas as metaheuristicas de solução única:</p>
+<ol class="enum rag">
+<li>A geração da solução inicial (<span class="c-brickred">já vimos uma família de algoritmos</span>).</li>
+<li>A estrutura de vizinhança.</li>
+</ol></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Vizinhança">
+<div class="fc"><div class="sec-title">Vizinhança</div></div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O que é um Vizinho?</div></header>
+<div class="fc jus">
+<div data-on="2-" class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="casas" data-state="vazio,casa1"></span></p></div>
+<p>A primeira pergunta que temos que responder é muito simples...</p>
+<div data-on="2-" class="tcb jus"><div class="center"><p><span class="c-myblue"><b>O que é um vizinho?</b></span></p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O que é um Vizinho?</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="casas" data-from="casa1" data-state="casa2"></span></p></div>
+<div class="tcb jus"><p>Considerando a casa acima, quem são seus vizinhos?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O que é um Vizinho?</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="casas" data-from="casa2" data-state="casa3"></span></p></div>
+<div class="tcb jus"><p>Em um primeiro momento podemos responder de pronto:</p>
+<ol class="enum rag">
+<li><span class="c-brickred"> Vizinho é aquele que está ao lado</span></li>
+</ol>
+<p>De forma que <b>a casa acima possui 2 vizinhos</b>.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O que é um Vizinho?</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="predio" data-from="vazio" data-state="predio1"></span></p></div>
+<div class="tcb jus"><p>E agora? Podemos usar a mesma definição de vizinho?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O que é um Vizinho?</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="predio" data-from="predio1" data-state="predio2"></span></p></div>
+<div class="tcb jus"><p>Quais são os vizinhos do apartamento acima?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O que é um vizinho?</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="predio" data-from="predio2" data-state="predio3"></span></p></div>
+<div class="tcb jus"><p>Usando a nossa primeira definição:</p>
+<ol class="enum rag">
+<li><span class="c-brickred"> Vizinho é aquele que está ao lado</span></li>
+</ol>
+<p>O apartamento acima possui somente um vizinho.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O que é um Vizinho?</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="predio" data-from="predio3" data-state="predio4"></span></p></div>
+<div class="tcb jus"><p>Porém, podemos <span class="c-myblue">alterar a nossa definição de vizinho</span>:</p>
+<ol class="enum rag">
+<li><span class="c-brickred"> Vizinho é aquele que está acima ou abaixo</span></li>
+</ol>
+<p>O que se desdobra em 2 outros vizinhos.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O que é um Vizinho?</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="predio" data-from="predio4" data-state="predio5"></span></p></div>
+<div class="tcb jus"><p>Qual poderia ser a definição de vizinho, para que os apartamentos destacados sejam considerados como vizinhos?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O que é um Vizinho?</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="predio" data-from="predio5" data-state="predio5"></span></p></div>
+<div class="tcb jus"><ol class="enum rag">
+<li><span class="c-brickred"> Vizinho é aquele que está a “1 apartamento de distância” em qualquer direção.</span></li>
+</ol></div>
+<p>Essa definição engloba os 3 apartamentos acima destacados.</p>
+</div>
+</section>
+
+<section class="frame" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O que é um Vizinho?</div></header>
+<div class="fc jus">
+<div class="block"><div class="block-title"><b>Conclusões</b></div><div class="block-body jus"><ol class="enum jus">
+<li>Vizinho ou vizinhança são conceitos que suportam mais de uma definição.</li>
+<li>Para cada definição de vizinhança, conjuntos diferentes de elementos podem ser considerados como vizinhos.</li>
+</ol></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="carta" data-from="vazio" data-state="casa_carta1"></span></p></div>
+<div class="tcb jus"><p>Com esse novo conhecimento, vamos determinar um novo jogo, chamado:</p>
+<div class="center"><p><span class="c-myblue">O JOGO DA CARTA E DO VIZINHO</span></p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="carta" data-from="casa_carta1" data-state="casa_carta2"></span></p></div>
+<div class="tcb jus"><p>Neste jogo houve um evento cataclismático na terra, e não existe mais internet. Você mora na casa indicada acima.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="carta" data-from="casa_carta2" data-state="casa_carta3"></span></p></div>
+<div class="tcb jus"><p>A única forma de comunicação é por cartas que são entregues de vizinho para vizinho, até chegar no destino.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="carta" data-from="casa_carta3" data-state="casa_carta3"></span></p></div>
+<div class="tcb jus"><p>Considerando você e onde a carta deve chegar, o jogo consiste em <span class="c-myblue"> determinar a definição de vizinhança adequada para que a carta chegue ao destino</span>. Para o exemplo acima, qual poderia ser uma definição que ganhe o jogo?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="carta" data-from="casa_carta3" data-state="casa_carta4"></span></p></div>
+<div class="tcb jus"><p>A primeira que encontramos:</p>
+<ol class="enum rag">
+<li><span class="c-brickred"> Vizinho é aquele que está ao lado</span></li>
+</ol></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="carta" data-from="casa_carta4" data-state="casa_carta5"></span></p></div>
+<div class="tcb jus"><p>Com essa definição a sua carta chega ao destino final.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="carta2" data-from="esq" data-state="casa_carta6"></span></p></div>
+<div class="tcb jus"><p>Considerando a mesma vizinhança definida anteriormente, você consegue levar a carta ao destino nesse caso?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="carta2" data-from="casa_carta6" data-state="casa_carta7"></span></p></div>
+<div class="tcb jus"><p>Não é possível! <b>Como podemos definir uma estrutura de vizinhança neste caso para vencermos o jogo</b>?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="carta2" data-from="casa_carta7" data-state="casa_carta8"></span></p></div>
+<div class="tcb jus"><ol class="enum rag">
+<li><span class="c-brickred"> Vizinho é aquele que está a “2 casas de distância” em todos os lados.</span></li>
+</ol></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="carta2" data-from="casa_carta8" data-state="casa_carta8"></span></p></div>
+<div class="tcb jus"><p>Com essa definição conseguimos alcançar o nosso objetivo.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="mundo" data-from="vazio" data-state="mundo1"></span></p></div>
+<div class="tcb jus"><p>Agora chegamos no nível <b>Dark Souls</b> do jogo da vizinhança.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="mundo" data-from="mundo1" data-state="mundo2"></span></p></div>
+<div class="tcb jus"><p>Considere a sua localização e o local onde a carta deve ser entregue.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="mundo" data-from="mundo2" data-state="mundo3"></span></p></div>
+<div class="tcb jus"><div class="center"><p><span class="c-myblue">Qual a vizinhança que ganha o jogo?</span></p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="mundo" data-from="mundo3" data-state="mundo3"></span></p></div>
+<div class="tcb jus"><p>Ora, mas essa é muito fácil, me dê uma mais difícil!</p>
+<ol class="enum rag">
+<li><span class="c-brickred"> Vizinho é aquele que está a “no máximo 6.378 km (raio da terra) de distância” em todos os lados.</span></li>
+</ol></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">O Jogo da Carta e do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="fig" data-fig="mundo" data-from="mundo3" data-state="mundo4"></span></p></div>
+<div class="tcb jus"><p>Intuitivamente não podemos aceitar essa vizinhança... <b>a vizinhança deve ser algo local/próximo do ponto considerado</b>.</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Conclusões</div></header>
+<div class="fc jus">
+<div class="block"><div class="block-title"><b>Conclusões</b></div><div class="block-body jus"><ol class="enum jus">
+<li>Vizinho ou vizinhança são conceitos que suportam mais de uma definição.</li>
+<li>Para cada definição de vizinhança, conjuntos diferentes de elementos podem ser considerados como vizinhos.</li>
+<li>A <b>distância</b> é uma parte importante na definição de uma vizinhança.</li>
+<li>De comum acordo (sem uma formalização), intuímos que uma vizinhança deve ser algo <b>próximo</b>.</li>
+</ol></div></div>
+</div>
+</section>
+
+<section class="frame" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Por quê tudo isso?</div></header>
+<div class="fc jus">
+<div class="tcb jus"><div class="center"><p><span class="c-myblue">Mas por quê estamos discutindo conceitos abstratos de vizinhança?</span></p></div></div>
+<p><span data-on="2"> Analisemos novamente a ideia geral de uma metaheurística de solução única. <b>Qual a relação de vizinhos com o esquema</b>?</span></p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Por quê tudo isso?</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ciclo" data-scale="0.95" data-from="f" data-state="gera"></span></p></div>
+<p>Na etapa de geração, um conjunto de soluções é gerado a partir da solução atual \(s\). O conjunto \(C(s)\) é geralmente obtido a partir de transformações locais na solução \(s\).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Por quê tudo isso?</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ciclo" data-scale="0.95" data-from="f" data-state="local"></span></p></div>
+<p>Na etapa de geração, um conjunto de soluções é gerado a partir da solução atual \(s\). O conjunto \(C(s)\) é geralmente obtido a partir de <b><span class="c-myblue">transformações locais na solução \(s\)</span></b>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Por quê tudo isso?</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ciclo" data-scale="0.95" data-from="f" data-state="viz"></span></p></div>
+<p>Essas <span class="c-myblue">transformações locais em \(s\)</span> podem ser pensadas como <span class="c-myblue">soluções próximas a \(s\)</span>, ou ainda,</p>
+<div class="tcb bs0 jus"><div class="center"><p><b><span class="c-myblue">soluções vizinhas de \(s\)</span></b></p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Definições Formais</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ciclo" data-scale="0.95" data-state="f"></span></p></div>
+<p>Ou seja, o conceito de vizinhança também é usado para soluções de problemas de otimização. Vejamos as definições formais.</p>
+</div>
+</section>
+
+<section class="frame" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Definições formais</div></header>
+<div class="fc jus">
+<div class="block"><div class="block-title"><b>Definição</b></div><div class="block-body jus"><p><b>Vizinhança (Neighborhood)</b>: Uma função vizinhança N é um mapeamento \(N:S \rightarrow 2^S\) que atribui a cada solução \(s\in S\) um conjunto de soluções \(N(s) \subset S\)</p></div></div>
+<div data-on="2" class="columns"><div class="column rag" style="width:201.85pt"><div class="tcb bs0 jus"><p>Você consegue estabelecer uma relação entre essa definição e o exemplo inicial dos vizinhos em um prédio?</p></div></div>
+<div class="column rag" style="width:201.85pt"><div class="center"><p class="imgs"><img class="ig" src="img/predio5.svg" style="width:82.28pt" alt=""></p></div></div></div>
+</div>
+</section>
+
+<section class="frame" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Definições formais</div></header>
+<div class="fc jus">
+<p>A definição de vizinhança depende do tipo de problema de otimização. Primeiramente ela foi definida para os problemas contínuos.</p>
+<div class="block"><div class="block-title"><b>Definição</b></div><div class="block-body jus"><p><b>Vizinhança em problemas contínuos</b>: A vizinhança \(N(s)\) em um espaço contínuo é a bola com centro \(s\) e raio igual a \(\epsilon &gt; 0\).</p></div></div>
+<p>Note que existe uma dimensão de <b>distância</b> inerente ao problema: o raio é definido em função de uma determinada distância (dentre muitas possíveis).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Definições formais</div></header>
+<div class="fc jus">
+<p>Se definirmos a distância pela <b>Norma euclidiana</b>, temos que a distância entre duas soluções \(s\) e \(s'\) é dada por:</p>
+<div class="ov-block" data-on="2-"><div class="eq">\[||s' - s|| = \sqrt{(s'_1 - s_1)^2 + (s'_2 - s_2)^2 + ... (s'_n - s_n)^2}\]</div>
+<p>Seja \(s = [2,3]\) e \(s'=[3,4]\), qual a distância entre as soluções?</p></div>
+<div data-on="3-" class="tcb jus"><div class="eq">\[||s' - s|| = \sqrt{(3-2)^2 + (4-3)^2} = \sqrt{2}\]</div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Definições formais</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="continuo" data-scale="1.8" data-from="c0" data-state="c1"></span></p></div>
+<p>Em duas dimensões, com a norma euclidiana, podemos representar a vizinhança de uma solução \(s\) simplesmente fixando uma distância \(\epsilon\), e verificando todas as soluções que não ultrapassam essa distância.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Definições formais</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="continuo" data-scale="1.8" data-from="c1" data-state="c2"></span></p></div>
+<p>O que gera de fato um raio de vizinhos de \(s\) (todas as soluções dentro do círculo na imagem acima).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Definições formais</div></header>
+<div class="fc jus">
+<p>Também podemos definir vizinhança para problemas de otimização discretos (os que vamos tratar na disciplina), como:</p>
+<div class="block"><div class="block-title">Definição</div><div class="block-body jus"><p><b>Vizinhança em problemas discretos</b>: Em um problema de otimização discreta, a vizinhança \(N(s)\) de uma solução \(s\) é representada pelo conjunto \(\{s':d(s',s)\leq \epsilon\}\), em que \(d\) é o <b>tipo de distância</b> relacionada com o <b>operador de movimento.</b></p></div></div>
+<p><span data-on="2-"> A definição de vizinhança em problemas discretos <b>depende fortemente das estruturas usadas para a representação das soluções</b>. Uma definição de distância pode <b>servir para alguns problemas e não servir para outros</b>.</span></p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Definições formais</div></header>
+<div class="fc jus">
+<p>Também podemos definir vizinhança para problemas de otimização discretos (os que vamos tratar na disciplina), como:</p>
+<div class="block"><div class="block-title">Definição</div><div class="block-body jus"><p><b>Vizinhança em problemas discretos</b>: Em um problema de otimização discreta, a vizinhança \(N(s)\) de uma solução \(s\) é representada pelo conjunto \(\{s':d(s',s)\leq \epsilon\}\), em que \(d\) é o <b>tipo de distância</b> relacionada com o <b>operador de movimento.</b></p></div></div>
+<p>O operador de movimento é definido como a operação que realizamos em uma solução \(s_1\) para transformá-la em uma nova solução \(s_2\).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Definições formais</div></header>
+<div class="fc jus">
+<p><span class="c-myblue"><b>EXEMPLO:</b></span> Considerando o problema da mochila com 4 itens e a representação binária de soluções. Podemos ter a solução \(s_1\) abaixo:</p>
+<div class="eq">\[s_1 =
+		\left[
+		\begin{array}{cccccc}
+			1&amp;0&amp;0&amp;0
+		\end{array}
+		\right]\]</div>
+<div class="ov-block" data-on="2-"><p>Uma distancia muito utilizada para problemas com representações binárias é a <b>distância de Hamming</b>. A distância de Hamming consiste na soma do número de posições em que duas soluções diferem entre si. Considerando a solução \(s_1\) e a solução \(s_2\) dada por:</p>
+<div class="eq">\[s_2 =
+		\left[
+		\begin{array}{cccccc}
+			1&amp;0&amp;0&amp;1
+		\end{array}
+		\right]\]</div>
+<p>Qual a distância entre as duas soluções?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Definições formais</div></header>
+<div class="fc jus">
+<p>Verificamos quais elementos das duas soluções são diferentes:</p>
+<div class="eq">\[s_1 =
+		\left[
+		\begin{array}{cccccc}
+			1&amp;0&amp;0&amp;{\color{#B6321D}0}
+		\end{array}
+		\right]\]</div>
+<div class="eq">\[s_2 =
+		\left[
+		\begin{array}{cccccc}
+			1&amp;0&amp;0&amp;{\color{#B6321D}1}
+		\end{array}
+		\right]\]</div>
+<p>Só existe 1 bit de diferença entre as duas soluções, de forma que \(d(s_1,s_2) = 1\). Lembre-se que a <span class="c-myblue">vizinhança de uma solução \(s\) são todas as soluções que estão a uma distância \(\leq \epsilon\)</span>. Se considerarmos a distância de <b>Hamming</b> e \(\epsilon = 1\), qual poderia ser um <b>operador de movimento</b> que ao ser aplicado em uma solução \(s\) gera uma solução vizinha \(s'\)?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Um operador de movimento clássico para problemas com codificação binária é o <b><i>flip</i></b>. O operador <i>flip</i> inverte o elemento de uma solução: por exemplo, se ele era 0 vira 1, se era 1 vira 0.</p></div>
+<div data-on="2-" class="eq eq-row"><span>\[s_1 =
+		\left[
+		\begin{array}{cccccc}
+			1&amp;0&amp;0&amp;{\color{#B6321D}0}
+		\end{array}
+		\right]\]</span><span data-on="3-">\[\rightarrow
+		\textsf{flip($s_1$,3)}\]</span><span data-on="4-">\[\rightarrow
+		\left[
+		\begin{array}{cccccc}
+			1&amp;0&amp;0&amp;{\color{#B6321D}1}
+		\end{array}
+		\right]\]</span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="cube" data-from="s0" data-state="s1"></span></p></div>
+<p><span class="c-myblue"><b>EXERCÍCIO:</b></span> Considerando a distância Hamming com \(\epsilon = 1\), o operador <i>flip</i> e a solução inicial binária \(s\) mostrada acima, quais são seus vizinhos?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="cube" data-from="s1" data-state="s2"></span></p></div>
+<p>Geramos 3 vizinhos da solução inicial. Agora quais são os vizinhos da solução \((0,0,1)\)?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="cube" data-from="s2" data-state="s3"></span></p></div>
+<p>E assim podemos gerar todas as soluções da vizinhança a partir do operador <b>flip</b>, da distancia Hamming e \(\epsilon = 1\).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="cube" data-from="s3" data-state="s4"></span></p></div>
+<p>E assim podemos gerar todas as soluções da vizinhança a partir do operador <b>flip</b>, da distancia Hamming e \(\epsilon = 1\).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="cube" data-from="s4" data-state="s41"></span></p></div>
+<div class="tcb jus"><div class="center"><p>Achou que toda aquela história do <span class="c-myblue">jogo do vizinho e da carta</span> era a toa?</p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="cube" data-from="s41" data-state="s41"></span></p></div>
+<p>Com a nossa definição de vizinhança (distancia, operador e \(\epsilon\)), é possível entregar a carta?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="cube" data-from="s41" data-state="s42"></span></p></div>
+<p>Com a nossa definição de vizinhança (distancia, operador e \(\epsilon\)), é possível entregar a carta? <b><span class="c-myblue">SIM</span></b>!</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="cube" data-state="s42"></span></p></div>
+<p>Usamos o operador <i>flip</i> nesta vizinhança. Quantos movimentos foram necessários para sairmos de \((0,0,0)\) e chegarmos a \((1,1,1)\)? <span data-on="2-"><span class="c-myblue">É possível determinar uma vizinhança em que esse caminho seja feito com 2 movimentos?</span></span></p>
+</div>
+</section>
+
+<section class="frame t" data-steps="2" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="cube" data-from="s42" data-state="s5,s5p"></span></p></div>
+<p>Se alterarmos \(\epsilon = 2\) geramos novos vizinhos, o que encurta o caminho até a solução.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo TSP</div></header>
+<div class="fc jus">
+<p><span class="c-myblue"><b>EXEMPLO:</b></span> Considere o problema do caixeiro viajante com 3 cidades. Pense em uma vizinhança para o problema (distância, \(\epsilon\), operador de movimento).</p>
+<div class="ov-block" data-on="2-"><p>Uma representação para a solução do TSP com \(n\) cidade é uma permutação de \(n\) elementos:</p>
+<div class="eq">\[\pi = \{ \pi_1, \pi_2, ...,\pi_n \}\]<span class="eqno">\((1)\)</span></div>
+<p>E pode ser modelada como um vetor de inteiros, um para cada ponto. Um operador comum em problemas permutacionais é o <b>swap</b>.</p></div>
+<div data-on="3-" class="tcb jus"><p>Dada uma permutação \(\pi\), um movimento <i>swap(i,j)</i> consiste em trocar os elementos \(\pi_i\) e \(\pi_j\) de posição.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo TSP</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tsp3" data-from="t0" data-state="t1"></span></p></div>
+<div class="tcb jus"><p>Considerando o operador swap, \(\epsilon = 2\) e a distância Hamming, <b>construa a vizinhança para o TSP com 3 cidades</b> (construa toda a vizinhança, vizinhos, vizinhos de vizinhos, etc...).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo TSP</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tsp3" data-from="t1" data-state="t2"></span></p></div>
+<div class="tcb jus"><p>Considerando o operador swap, \(\epsilon = 2\) e a distância Hamming, <b>construa a vizinhança para o TSP com 3 cidades</b> (construa toda a vizinhança, vizinhos, vizinhos de vizinhos, etc...).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo TSP</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tsp3" data-from="t2" data-state="t3"></span></p></div>
+<div class="tcb jus"><p>Considerando o operador swap, \(\epsilon = 2\) e a distância Hamming, <b>construa a vizinhança para o TSP com 3 cidades</b> (construa toda a vizinhança, vizinhos, vizinhos de vizinhos, etc...).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo TSP</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tsp3" data-from="t3" data-state="t4"></span></p></div>
+<div class="tcb jus"><p>Considerando o operador swap, \(\epsilon = 2\) e a distância Hamming, <b>construa a vizinhança para o TSP com 3 cidades</b> (construa toda a vizinhança, vizinhos, vizinhos de vizinhos, etc...).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo TSP</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tspswap" data-from="w0" data-state="w1"></span></p></div>
+<div class="tcb jus"><p>Considerando o operador swap, \(\epsilon = 2\) e a distância Hamming, <b>construa a vizinhança da solução acima</b> (somente da solução).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo TSP</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tspswap" data-from="w1" data-state="w2"></span></p></div>
+<div class="tcb jus"><p>Determine pelo menos 2 <b>caminhos</b> usando a vizinhança, partindo de \((1,2,3,4)\) até \((1,3,4,2)\). Quantos movimentos foram necessários?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo TSP</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tspswap" data-from="w2" data-state="w3"></span></p></div>
+<div class="tcb jus"><p>Desta forma 2 movimentos são necessários nos 2 caminhos. Encontre um caminho em que seja necessário pelo menos 3 movimentos.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo TSP</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tspswap" data-from="w3" data-state="w4"></span></p></div>
+<div class="tcb jus"><p>Neste caminho usamos 4 movimentos swap.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Conclusões</div></header>
+<div class="fc jus">
+<div class="block"><div class="block-title"><b>Conclusão</b></div><div class="block-body jus"><ol class="enum jus">
+<li>Ao determinar uma vizinhança, implicitamente estamos criando caminhos entre soluções vizinhas. Esses caminhos são percorridos ao executarmos o operador de movimento nas soluções. <b>Isso implica que existem diversos caminhos possíveis entre duas soluções \(s\) e \(s'\)</b>.</li>
+</ol></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ksA" data-from="k0" data-state="k1"></span></p></div>
+<p><span class="c-myblue"><b>EXEMPLO:</b></span> Considere o problema da mochila, o operador <b><i>swap</i></b>, a distância Hamming e \(\epsilon = 2\). Crie a vizinhança da solução acima.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ksA" data-from="k1" data-state="k2"></span></p></div>
+<div class="tcb jus"><p>A vizinhança da solução fica da seguinte forma.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ksA" data-from="k2" data-state="k3"></span></p></div>
+<div class="tcb jus"><p>Com essa definição de vizinhança, é possível, partindo de \(s = (0,1,1,0)\) chegar na solução \(s'=(1,1,1,0)\)?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ksA" data-from="k3" data-state="k3n"></span></p></div>
+<div class="tcb jus"><p><span class="c-brickred">NÃO</span>. Por quê isso ocorre?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ksB" data-from="b0" data-state="b1"></span></p></div>
+<div class="tcb jus"><p>Inicialmente vamos criar a vizinhança da solução \((1,1,1,0)\).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ksB" data-from="b1" data-state="b2"></span></p></div>
+<div class="tcb jus"><p>Inicialmente vamos criar a vizinhança da solução \((1,1,1,0)\).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Exemplo mochila</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="ksC" data-from="c0" data-state="c1,c2"></span></p></div>
+<div class="tcb jus"><p><span data-on="1-">Se colocarmos os dois grafos de vizinhança lado a lado...</span> <span data-on="2-">Percebemos que não existem conexões entre os elementos dos mesmos, ou seja, <span class="c-brickred">não existe caminho entre as soluções \(s\) e \(s'\)</span>.</span></p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Conclusões</div></header>
+<div class="fc jus">
+<div class="block"><div class="block-title"><b>Conclusão</b></div><div class="block-body jus"><ol class="enum jus">
+<li>Ao determinar uma vizinhança, implicitamente estamos criando caminhos entre soluções vizinhas. Esses caminhos são percorridos ao executarmos o operador de movimento nas soluções. <b>Isso implica que existem diversos caminhos possíveis entre duas soluções \(s\) e \(s'\)</b>.</li>
+<li>Dependendo da escolha de vizinhança, <b>pode não ser possível encontrar um caminho que conecte todas as soluções</b>.</li>
+</ol></div></div>
+<p><span data-on="2"> Com esse conhecimento, finalmente conseguimos entender as três características que uma boa representação de solução deve possuir (visto na apresentação “Representação de soluções”). </span></p>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Conclusões</div></header>
+<div class="fc jus">
+<div class="tcb jus"><ol class="enum jus">
+<li data-on="1-"><span class="c-myblue"><b>Completude</b></span>: todas as soluções de um problema (pelo menos as factíveis) devem ser passíveis de representação.</li>
+<li data-on="2-"><span class="c-myblue"><b>Conectividade</b></span>: é necessário que exista um <b>caminho</b> entre quaisquer duas soluções.</li>
+<li data-on="3-"><span class="c-myblue"><b>Eficiência</b></span>: a representação precisa ser de fácil manipulação pelos <b>operadores de movimento</b>. Também deve facilitar o cálculo da função objetivo e verificação de violação de restrições.</li>
+</ol></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Casos - vizinhanças diferentes</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viz" data-from="v0" data-state="v1"></span></p></div>
+<div class="tcb jus"><p>Considere que determinamos uma vizinhança \(N_1\) para um determinado problema, gerando o grafo acima.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Casos - vizinhanças diferentes</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viz" data-from="v1" data-state="v2"></span></p></div>
+<div class="tcb jus"><p>Ao determinarmos uma nova vizinhança \(N_2\) geramos um novo grafo de soluções.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Casos - vizinhanças diferentes</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viz" data-from="v2" data-state="v3"></span></p></div>
+<div class="tcb jus"><p>Sendo que pode não haver conexões entre os grafos gerados por duas vizinhanças diferentes.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Casos - não conectividade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viz" data-from="v3" data-state="v4"></span></p></div>
+<div class="tcb jus"><p>Ainda, pode acontecer de uma mesma vizinhança ser desconectada, como vimos no exemplo do problema da mochila.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Casos - infactibilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viz" data-from="v4" data-state="v5"></span></p></div>
+<div class="tcb jus"><p>Considere a vizinhança gerada para um determinado problema, em que os nós (soluções) em vermelho são <span class="c-brickred">infactíveis</span>.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Casos - infactibilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viz" data-from="v5" data-state="v6"></span></p></div>
+<div class="tcb jus"><p>Ainda, partindo da solução atual mostrada, quantos movimentos seriam necessários para chegarmos a solução ótima?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Casos - infactibilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viz" data-from="v6" data-state="v7"></span></p></div>
+<div class="tcb jus"><p>O número mínimo de movimentos para chegarmos ao ótimo é 4. Existe algo que poderíamos fazer para encurtar essa distância?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Casos - infactibilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viz" data-from="v7" data-state="v8"></span></p></div>
+<div class="tcb jus"><p>Se visitássemos uma solução infactível, <b>conseguimos chegar ao ótimo em apenas 2 movimentos</b>!</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Casos - infactibilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viz" data-from="v8" data-state="v8"></span></p></div>
+<div class="tcb jus"><p>Ainda, em alguns casos podemos resolver o problema da conectividade entre grafos de soluções justamente aceitando soluções infactíveis.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Casos - infactibilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viz" data-from="v8" data-state="v9"></span></p></div>
+<div class="tcb jus"><p>No grafo desconectado por soluções factíveis acima, <b>conseguiríamos chegar na solução ótima usando um nó infactível intermediário</b>.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Vizinhança">
+<header class="ft"><h2>Vizinhança</h2><div class="subtitle">Conclusões</div></header>
+<div class="fc jus">
+<div class="block"><div class="block-title"><b>Conclusão</b></div><div class="block-body jus"><ol class="enum jus">
+<li>Ao determinar uma vizinhança, implicitamente estamos criando caminhos entre soluções vizinhas. Esses caminhos são percorridos ao executarmos o operador de movimento nas soluções. <b>Isso implica que existem diversos caminhos possíveis entre duas soluções \(s\) e \(s'\)</b>.</li>
+<li>Dependendo da escolha de vizinhança, <b>pode não ser possível encontrar um caminho que conecte todas as soluções</b>.</li>
+<li>Em alguns casos pode fazer sentido <b>aceitar soluções infactíveis</b> para chegarmos em soluções melhores.</li>
+</ol></div></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Ótimo local">
+<div class="fc"><div class="sec-title">Ótimo local</div></div>
+</section>
+
+<section class="frame t" data-section="Ótimo local">
+<header class="ft"><h2>Ótimo local</h2><div class="subtitle">Relembrando</div></header>
+<div class="fc jus">
+<div class="block"><div class="block-title"><b>Definição</b></div><div class="block-body"><p><b>Ótimo local:</b> Relativamente a uma função de vizinhança \(N\), uma solução \(s\in S\) é um ótimo local se ela tem uma qualidade de solução melhor do que todos os seus vizinhos, ou seja, para um problema de minimização:</p>
+<div class="eq">\[f(s) \leq f(s') ,\forall s' \in N(s)\]</div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Ótimo local">
+<header class="ft"><h2>Ótimo local</h2><div class="subtitle">Relembrando</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="localopt" data-from="e0" data-state="l1"></span></p></div>
+<p>Fica mais fácil entender o conceito de ótimo local gráficamente. Lembra-se da representação que fizemos das soluções do problema do TSP vs os seus custos?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Ótimo local">
+<header class="ft"><h2>Ótimo local</h2><div class="subtitle">Relembrando</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="localopt" data-from="l1" data-state="l1"></span></p></div>
+<p>OBS: Já sabemos que a disposição das soluções no eixo \(S_i\) é muito mais complexa do que isso, bem como a função objetivo.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Ótimo local">
+<header class="ft"><h2>Ótimo local</h2><div class="subtitle">Relembrando</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="localopt" data-from="l1" data-state="l2"></span></p></div>
+<p>Podemos representar a vizinhança de uma solução (que está no eixo \(s_i\)) diretamente na função objetivo.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Ótimo local">
+<header class="ft"><h2>Ótimo local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="localopt" data-from="l2" data-state="l3"></span></p></div>
+<p>Considerando a vizinhança da solução mostrada na imagem, podemos dizer que ela é um ótimo local? Ou seja, \(f(s) \leq f(s') ,\forall s' \in N(s)\) ?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Ótimo local">
+<header class="ft"><h2>Ótimo local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="localopt" data-from="l3" data-state="l31"></span></p></div>
+<p>Não, existe uma solução melhor (na verdade existem várias, todas abaixo da solução no centro da bola).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Ótimo local">
+<header class="ft"><h2>Ótimo local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="localopt" data-from="l31" data-state="l4"></span></p></div>
+<p>Já a solução mostrada pode ser considerada um <b><span class="c-myblue">ótimo local</span></b>: nenhuma solução na vizinhança tem valor melhor do que ela. Existem mais ótimos locais no exemplo acima?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Ótimo local">
+<header class="ft"><h2>Ótimo local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="localopt" data-from="l4" data-state="l5"></span></p></div>
+<p>Existem <b>4 ótimos locais</b> no exemplo.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Ótimo local">
+<header class="ft"><h2>Ótimo local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="localopt" data-state="l5"></span></p></div>
+<div class="tcb bs0 jus"><p>Ainda, percebe-se que o <b><span class="c-myblue">ótimo global é um ótimo local</span></b>.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Ótimo local">
+<header class="ft"><h2>Ótimo local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="localopt" data-state="l5"></span></p></div>
+<div class="tcb bs0 jus"><p>O objetivo dos problemas de otimização é <b>encontrar o ótimo global</b>.</p></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<div class="fc"><div class="sec-title">Fitness landscape (paisagem de adaptabilidade)</div></div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Espaço de busca</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Finalmente, podemos definir o conceito de <b>espaço de busca</b> e <b>fitness landscape</b>.</p></div>
+<div data-on="2-" class="block"><div class="block-title"><b>Definição</b></div><div class="block-body jus"><p><b>Espaço de busca:</b> O espaço de busca é definido como um grafo \(G = (S,E)\), onde o conjunto de vértices \(S\) corresponde ao conjunto de soluções que é definida pela representação computacional, e o conjunto de arcos \(E\) corresponde ao operador de movimento usado para gerar novas soluções (vizinhança).</p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Espaço de busca</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/search_space.svg" style="width:136.86pt" alt=""></p></div>
+<div class="tcb jus"><p>A definição nada mais é do que o que estamos estudando até agora.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="block"><div class="block-title"><b>Definição</b></div><div class="block-body"><p><b><i>Fitness landscape</i>:</b> O fitness landscape (<i>paisagem de adaptabilidade</i>) pode ser definida por uma tupla \((G,f)\), em que o grafo \(G\) representa o espaço de busca e \(f\) representa a função objetivo que guia a busca por soluções.</p></div></div>
+<p><span data-on="2-"> Uma forma conveniente de descrever o <i>fitness landscape</i> é usando termos <span class="c-myblue">geográficos</span>. Assim, considerando o espaço de busca como o piso, elevamos cada solução a uma altitude equivalente a sua qualidade (função objetivo). Obtemos então uma paisagem feita de vales, colinas, penhascos, planaltos, etc...</span></p>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="flgraph" data-from="e0" data-state="f1"></span></p></div>
+<p>Com o grafo G do espaço de busca.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="flgraph" data-from="f1" data-state="f2"></span></p></div>
+<p>“Achatado” no piso.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="flgraph" data-from="f2" data-state="f3"></span></p></div>
+<p>Calculamos o custo de cada solução.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="flgraph" data-from="f3" data-state="f4"></span></p></div>
+<p>Elevando-a a uma “altitude”.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="surface3d" data-plot="plot1" data-from="spin" data-state="img"><img class="ig" src="img/Graficos/plot1.png" style="width:209.65pt" alt=""></span></p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p><span class="c-myblue">Uma metaheurística de solução única pode ser vista como uma trajetória (ou uma caminhada) na paisagem para encontrar o vale mais baixo</span> (em um problema de minimização). Duas soluções sucessivas são sempre vizinhas, e podem ser acessadas por meio do <b>operador de movimento</b>.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-steps="2" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="surface3d" data-plot="plot1.1" data-state="img,walk"><img class="ig" src="img/Graficos/plot1.1.png" style="width:198.83pt" alt=""></span></p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Visualmente, uma representação do <i>fitness landscape</i> sem os nós (círculos representando as soluções) fica mais “agradável”.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="surface3d" data-plot="plot2" data-from="mesh" data-state="img"><img class="ig" src="img/Graficos/plot2.png" style="width:208.03pt" alt=""></span></p></div>
+<p>Fica mais fácil enxergar o <i>landscape</i> planificado.</p>
+</div>
+</section>
+
+<section class="frame" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center"><p class="imgs"><span class="anim" data-anim="surface3d" data-plot="plot2" data-state="img"><img class="ig" src="img/Graficos/plot2.png" style="width:184.92pt" alt=""></span></p></div></div>
+<div class="column jus" style="width:201.85pt"><div class="tcb jus"><p><span class="c-brickred">ATENÇÃO</span>: Lembre dos grafos do espaço de busca, nada garante que todas as soluções são conectadas! Isso é uma simplificação que fazemos para ajudar na visualização do <i>landscape</i>.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="surface3d" data-plot="plot2" data-state="img"><img class="ig" src="img/Graficos/plot2.png" style="width:131.75pt" alt=""></span> <span class="anim" data-anim="surface3d" data-plot="plot3" data-state="img"><img class="ig" src="img/Graficos/plot3.png" style="width:132.04pt" alt=""></span> <span class="anim" data-anim="surface3d" data-plot="plot4" data-state="img"><img class="ig" src="img/Graficos/plot4.png" style="width:132.04pt" alt=""></span></p></div>
+<p>Cada problema de otimização gera um <i><span class="c-myblue">fitness landscape</span></i> diferente. As metaheurísticas tentam explorar o landscape de forma eficiente.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="surface3d" data-plot="plot4" data-state="img"><img class="ig" src="img/Graficos/plot4.png" style="width:132.04pt" alt=""></span> <span class="anim" data-anim="surface3d" data-plot="plot5" data-from="nocut" data-state="img"><img class="ig" src="img/Graficos/plot5.png" style="width:125.11pt" alt=""></span> <span class="anim" data-anim="reveal" data-from="hidden" data-state="img" data-delay="2800"><img class="ig" src="img/search_space3.svg" style="width:136.80pt" alt=""></span></p></div>
+<p>Vemos que a nossa simplificação do <i>fitness landscape</i> é um “corte” no modelo original.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Classificações</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="landscape" data-scale="1.1" data-from="e0" data-state="run"></span></p></div>
+<p>Os diferentes padrões de landscape vão influenciar no design das metaheurísticas.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Fitness landscape (paisagem de adaptabilidade)">
+<header class="ft"><h2>Fitness landscape</h2><div class="subtitle">Fitness landscape</div></header>
+<div class="fc jus">
+<div class="block"><div class="block-title"><b>Conclusão</b></div><div class="block-body"><ol class="enum jus">
+<li>O <i>fitness landscape</i> é a topologia de um problema de otimização.</li>
+<li>Essa topologia é o que usamos para realizar o design de metaheurísticas.</li>
+</ol></div></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Atividades">
+<div class="fc"><div class="sec-title">Atividades</div></div>
+</section>
+
+<section class="frame only-title" data-section="Atividades">
+<header class="ft"><h2>Atividade 1</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li>Explique as principais componentes de um algoritmo de solução única.</li>
+<li>Qual é a relação entre os algoritmos de solução única e o conceito de vizinhança?</li>
+<li>O que é vizinhança em um problema de otimização discreto? E operador de movimento?</li>
+<li>Considere as duas soluções abaixo:
+<div class="eq">\[s_1 =
+			\left[
+			\begin{array}{cccccc}
+				1&amp;0&amp;1&amp;0&amp;1
+			\end{array}
+			\right]
+			s_2 =
+			\left[
+			\begin{array}{cccccc}
+				0&amp;0&amp;1&amp;1&amp;1
+			\end{array}
+			\right]\]</div>
+<p>Calcule a distância entre as soluções considerando a distância Euclidiana e a Hamming.</p></li>
+<li>Como funcionam os operadores de movimento <i>flip</i> e <i>swap</i>?</li>
+<li>Considerando a solução inicial \(s_1 = [0,0,1,0,1]\) e o operador <i>flip</i>, gere os vizinhos de \(s_1\).</li>
+<li>Seja a solução inicial \(s_1 = [0,0,1,0,1]\) e a solução final \(s_2 = [1,0,1,1,1]\) com o operador <i>flip</i>. Mostre um caminho possível entre \(s_1\) e \(s_2\) gerado pela vizinhança do <i>flip</i>.</li>
+</ol>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Atividades">
+<header class="ft"><h2>Atividade 1</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li data-label="8">Considerando uma vizinhança \(N\), sempre vai existir um caminho entre duas soluções \(s\) e \(s'\)? Quais casos podem ocorrer?</li>
+<li data-label="9">Você leu um artigo de um algoritmo que usa soluções infactíveis em algumas iterações. Qual é a lógica por trás disso? Quais problemas esse tipo de abordagem espera sanar?</li>
+<li data-label="10">O que é um ótimo local? Você estuda um algoritmo que garante chegar em um ótimo local, o que pode ser dito sobre a solução global do problema?</li>
+<li data-label="11">O que é espaço de busca? Como ele se relaciona com o <i>fitness landscape</i>?</li>
+<li data-label="12">Busque 2 operadores de movimento (vizinhanças) para os seguintes problemas, e forneça um exemplo numérico da execução no movimento para cada um deles:
+<ul class="itemz rag">
+<li>TSP</li>
+<li>Mochila</li>
+<li>VRP</li>
+</ul></li>
+</ol>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Atividades">
+<header class="ft"><h2>Atividade 2</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li>Considerando o problema escolhido para ser desenvolvido na disciplina, pense em um operador de movimento e uma vizinhança para o mesmo. Em seguida busque na literatura (livros, artigos) se já existe algum operador definido para o problema (para algumas classes de problemas é muito difícil definir uma vizinhança, pela complexidade na própria representação computacional das soluções).</li>
+</ol>
+</div>
+</section>
+
+</main>
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="lib/hyphen/hyphen.js"></script>
+<script src="lib/hyphen/pt.js"></script>
+<script src="js/texbreak.js"></script>
+<script src="js/anim/core.js"></script>
+<script src="js/anim/cube.js"></script>
+<script src="js/anim/swap.js"></script>
+<script src="js/anim/dados/casas.js"></script>
+<script src="js/anim/dados/predio.js"></script>
+<script src="js/anim/dados/carta.js"></script>
+<script src="js/anim/dados/carta2.js"></script>
+<script src="js/anim/dados/mundo.js"></script>
+<script src="js/anim/fig.js"></script>
+<script src="js/anim/dados/principios.js"></script>
+<script src="js/anim/ciclo.js"></script>
+<script src="js/anim/dados/landscape.js"></script>
+<script src="js/anim/landscape.js"></script>
+<script src="js/anim/dados/continuo.js"></script>
+<script src="js/anim/continuo.js"></script>
+<script src="js/anim/localopt.js"></script>
+<script src="js/anim/flgraph.js"></script>
+<script src="js/anim/surface3d.js"></script>
+<script src="js/slides.js"></script>
+</body>
+</html>
