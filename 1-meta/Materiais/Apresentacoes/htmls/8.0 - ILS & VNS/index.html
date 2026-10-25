@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8 - Iterated Local Search (ILS) &amp;amp;  Variable Neighborhood Search (VNS)</title>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<link rel="stylesheet" href="css/beamer.css">
+<style>
+/* capa (aula 8): título em duas linhas — entrelinha 17.94 pt no PDF (linhas de base 39.30 e 57.24);
+   autor 96.24, data 138.30, figura com topo em 158.46 */
+.tp-title { line-height: 17.94pt; margin-top: -2.23pt; }
+.tp-author { margin-top: 24.7pt; }
+.tp-date { margin-top: 28.67pt; }
+.tp-img { margin-top: 18.01pt; }
+</style>
+</head>
+<body class="sansmath" data-author="Alexandre Checoli Choueiri" data-shorttitle="ILS &amp;amp; VNS">
+<main id="deck">
+
+<section class="frame titlepage notitle">
+<div class="fc">
+<div class="tp-title">8 - Iterated Local Search (ILS) &amp; <br> Variable Neighborhood Search (VNS)</div>
+<div class="tp-author">Alexandre Checoli Choueiri</div>
+<div class="tp-date">16/04/2023</div>
+<div class="tp-img"><img class="ig" src="img/capa.svg" style="width:67.28pt" alt=""></div>
+</div>
+</section>
+
+<section class="frame toc notitle">
+<div class="fc">
+<div class="toc-item"><span class="toc-num">1</span><span class="toc-txt">Iterated Local Search (ILS) - A idéia geral</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">2</span><span class="toc-txt">ILS No <i>fitness landscape</i></span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">3</span><span class="toc-txt">ILS - Pseudocódigo e design</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">4</span><span class="toc-txt">Variable Neighborhood Search (VNS) - A Ideia Geral</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">5</span><span class="toc-txt">VND No <i>Fitness Landscape</i></span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">6</span><span class="toc-txt">VND - Pseudocódigo</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">7</span><span class="toc-txt">Atividades</span></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Iterated Local Search (ILS) - A idéia geral">
+<div class="fc"><div class="sec-title">Iterated Local Search (ILS) - A idéia geral</div></div>
+</section>
+
+<section class="frame only-title" data-section="Iterated Local Search (ILS) - A idéia geral">
+<header class="ft"><h2>ILS - A idéia geral</h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="arvore" data-scale="1.3" data-from="vazio" data-state="metodo"></span></div></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Iterated Local Search (ILS) - A idéia geral">
+<header class="ft"><h2>ILS - A idéia geral</h2></header>
+<div class="fc jus">
+<div class="tcb jus"><p>A qualidade do <span class="c-myblue">ótimo local</span> obtido pela busca local é muito dependente da escolha da solução inicial, como já havíamos mencionado. A idéia do ILS (<i>Iterated Local Search</i> - busca local iterativa) é <b>gerar diversas soluções</b> iniciais com alta variabilidade, e aplicar um <b>componente de intensificação</b> (como a busca local) em cada uma delas.</p></div>
+<p>OBS: A primeira formalização e generalização do ILS está presente em: <span class="c-myblue"><i>2020 - Iterated local search - H. R. Lourenco, O. Martin, and T. Stutzle. In Handbook of Metaheuristics</i></span></p>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Iterated Local Search (ILS) - A idéia geral">
+<header class="ft"><h2>ILS - A idéia geral</h2></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Na prática,<b> o ILS não gera soluções aleatórias iniciais</b>, mas sim aplica um componente de <b>perturbação</b> no ótimo local e reaplica a <b>intensificação</b>. Dessa forma busca-se manter alguma parte do ótimo local encontrado, porém “jogá-lo” para uma outra região do <i>fitness-landscape</i>.</p></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="ILS No \textit{fitness landscape}">
+<div class="fc"><div class="sec-title">ILS No <i>fitness landscape</i></div></div>
+</section>
+
+<section class="frame t only-title" data-section="ILS No \textit{fitness landscape}">
+<header class="ft"><h2>No <i>fitness landscape</i></h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="ils" data-from="vazio" data-state="ILS1"></span></div></div>
+<p>Inicialmente geramos uma solução inicial.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="ILS No \textit{fitness landscape}">
+<header class="ft"><h2>No <i>fitness landscape</i></h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="ils" data-from="ILS1" data-state="ILS2"></span></div></div>
+<p>E aplicamos um componente de intensificação (como a <span class="c-myblue"><b>busca local</b></span>).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="ILS No \textit{fitness landscape}">
+<header class="ft"><h2>No <i>fitness landscape</i></h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="ils" data-from="ILS2" data-state="ILS3"></span></div></div>
+<p>Em seguida perturbamos o ótimo local, mandando-o a outra região do <i>fitness landscape</i>.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="ILS No \textit{fitness landscape}">
+<header class="ft"><h2>No <i>fitness landscape</i></h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="ils" data-from="ILS3" data-state="ILS4"></span></div></div>
+<p>E o componente de intensificação é novamente aplicado.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="ILS No \textit{fitness landscape}">
+<header class="ft"><h2>No <i>fitness landscape</i></h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="ils" data-from="ILS4" data-state="ILS5"></span></div></div>
+<p>O processo é repetido por um <b>número determinado</b> de iterações.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="ILS No \textit{fitness landscape}">
+<header class="ft"><h2>No <i>fitness landscape</i></h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="ils" data-from="ILS5" data-state="ILS6"></span></div></div>
+<p>E sempre a melhor solução até o momento deve ser armazenada.</p>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="ILS - Pseudocódigo e design">
+<div class="fc"><div class="sec-title">ILS - Pseudocódigo e design</div></div>
+</section>
+
+<section class="frame t only-title" data-section="ILS - Pseudocódigo e design">
+<header class="ft"><h2>Pseudocódigo</h2></header>
+<div class="fc jus">
+<p>Abaixo segue um pseudocódigo template do ILS.</p>
+<div class="algorithm">
+<div class="alg-cap"><b>Algorithm 1</b> Template genérico ILS</div>
+<div class="alg-body">
+<div class="l1">\(s_{0} = \) GeraSolInicial()<div class="alg-cmt">\(\triangleright\) Gera uma solução inicial</div></div>
+<div class="l1">\(s_{*} = \) Intensificacao(\(s_0\))<div class="alg-cmt">\(\triangleright\) Busca local</div></div>
+<div class="l1">\(s_{best} = s_*\)</div>
+<div class="l1"><b>repeat</b></div>
+<div class="l2">\(s' = \) PerturbaSol(\(s_*\))</div>
+<div class="l2">\(s'_{*} = \) Intensificacao(\(s'\))</div>
+<div class="l2">\(s_{*} = \) CriterioDeAceite(\(s_*\),\(s'_*\))<div class="alg-cmt">\(\triangleright\) Aceita \(s'_{*}\) ou não</div></div>
+<div class="l2"><b>if</b> \(f(s'_*) &lt; f(s_{best})\) <b>then</b></div>
+<div class="l3">\(s_{best} = s'_*\)</div>
+<div class="l2"><b>end if</b></div>
+<div class="l1"><b>until</b> <span class="sp"></span>Criterio de parada</div>
+<div class="l1"><b>return</b> \(s_{best}\)<div class="alg-cmt">\(\triangleright\) Melhor \(s\) deve ser armazenada</div></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="ILS - Pseudocódigo e design">
+<header class="ft"><h2>Componentes de <i>design</i></h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="comp" data-from="vazio" data-state="componentes"></span></div></div>
+<div class="tcb jus"><p>De forma geral o ILS possui 3 componentes de <i>design</i>:</p>
+<ol class="enum jus">
+<li><b>O método de perturbação:</b> é o componente de exploração do algoritmo.</li>
+<li><b>Intensificação:</b> é o componente de intensificação, pode ser uma caixa preta, ou seja, qualquer metaheuristica de solução única pode ser usada.</li>
+<li><b>Aceitação:</b> critério que decide se a nova solução intensificada será usada na próxima iteração.</li>
+</ol></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="ILS - Pseudocódigo e design">
+<header class="ft"><h2>Componentes de <i>design</i></h2></header>
+<div class="fc jus">
+<p>A premissa do ILS é que a componente de <b>perturbação</b> deve ser mais eficiente do que um <b>reinicio aleatório</b>, onde uma solução independente aleatória seria gerada em toda iteração. Perturbando <b>uma parte</b> da solução garante que estaremos explorando o espaço de busca, mas em uma região não muito afastada do ótimo local.</p>
+<p>Vale ressaltar que essa abordagem depende do <i>fitness landscape</i>, pode ser que um algoritmo com reinicio aleatório seja mais eficiente. Dessa forma, um primeiro exercício no design de um ILS é <span class="c-myblue">executar uma perturbação viesada e comparar com o reinicio totalmente aleatório.</span></p>
+</div>
+</section>
+
+<section class="frame only-title" data-section="ILS - Pseudocódigo e design">
+<header class="ft"><h2>Componentes de <i>design</i></h2></header>
+<div class="fc">
+<div class="tcb jus"><div class="center"><p><span class="c-brickred">OBSERVAÇÃO</span></p></div>
+<p>Podemos usar as próprias vizinhanças para o componente de perturbação. Por exemplo, para o TSP podemos perturbar uma solução com diversos movimentos SWAPS aleatórios. Uma boa decisão de design é usar uma vizinhança para a perturbação <b>diferente daquela usada na componente de intensificação</b>. Dessa forma a probabilidade de <span class="c-brickred">ciclagem</span> das soluções é reduzida.</p></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<div class="fc"><div class="sec-title">Variable Neighborhood Search (VNS) - A Ideia Geral</div></div>
+</section>
+
+<section class="frame only-title" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<header class="ft"><h2>VNS - A A Ideia Geral</h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="arvore" data-scale="1.3" data-from="metodo" data-state="metodo2"></span></div></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<header class="ft"><h2>VNS - A Ideia Geral</h2></header>
+<div class="fc">
+<div class="tcb jus"><p>Como no ILS, o VNS (variable neighborhood search - busca em vizinhança variável) tenta escapar de ótimos locais, porém parte das seguintes premissas:</p>
+<ol class="enum rag">
+<li>A escolha de uma vizinhança \(\mathcal{N}_1\) define um <i>fitness landscape</i> \(\mathcal{F}_1\).</li>
+<li>Todo <i>fitness landscape</i> possui um ótimo local.</li>
+<li>O ótimo global é um ótimo local, referente a alguma vizinhança \(\mathcal{N}_i\).</li>
+</ol></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<header class="ft"><h2>VNS - A Ideia Geral</h2></header>
+<div class="fc">
+<div class="tcb jus"><p>Dessa forma, a ideia do <b>VNS</b> é explorar sucessivamente um conjunto pré-definido de vizinhanças. A busca é feita de forma <b>aleatória</b> ou <b>sistemática</b> no conjunto de vizinhanças (dando origem a variantes), obtendo diferentes ótimos locais. A forma mais comum de VNS é chamada de <b>VND</b> (<i>variable neighborhood descent</i>).</p></div>
+<div class="tcb jus"><p>O VND é uma variante determinística do VNS. O VND usa sucessivas vizinhanças de forma descendente em buscas locais.</p></div>
+<p>OBS: O VNS foi proposto em <span class="c-myblue"><i>1997 - Variable neighborhood search - M. Mladenovic and P. Hansen (Computers and Operations Research)</i></span></p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<header class="ft"><h2>VND - A Ideia Geral</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li data-on="1-">Inicialmente é necessário definir um conjunto \(\mathcal{N}_l(l=1,...,l_{max})\) de vizinhanças. Seja \(\mathcal{N}_1\) a primeira vizinhança a ser usada, e \(x\) uma solução inicial.</li>
+<li data-on="2-">Se uma melhoria na solução \(x\) na vizinhança atual \(\mathcal{N}_l(x)\) não é possível, a estrutura de vizinhança é alterada de \(\mathcal{N}_l\) para \(\mathcal{N}_{l+1}\).</li>
+<li data-on="3-">Se uma melhoria na solução atual \(x\) é encontrada, retorna-se a estrutura de vizinhança \(\mathcal{N}_1(x)\), e a busca é reiniciada.</li>
+<li data-on="4-">O algoritmo termina quando nenhuma vizinhança \(\mathcal{N}_l\) melhorar a solução atual.</li>
+</ol>
+<div data-on="5-" class="tcb jus"><p><span class="c-brickred">OBS:</span> A estratégia do VND vai ser<b> mais efetiva</b> se as diferentes estruturas de vizinhanças usadas forem <b>complementares</b> entre si, no sentido de que o ótimo local para uma vizinhança \(\mathcal{N}_i\) não será um ótimo local para a vizinhança \(\mathcal{N}_j\).</p></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<header class="ft"><h2>VND - A Ideia Geral</h2></header>
+<div class="fc jus">
+<div class="center"><p><b><span class="c-myblue">Podemos visualizar esse processo mais facilmente por meio de um fluxograma.</span></b></p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<header class="ft"><h2>VND - Fluxograma</h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="vnd" data-from="vazio" data-state="VND1"></span></div></div>
+<p>A busca local é aplicada usando a vizinhança \(\mathcal{N}_1\)</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<header class="ft"><h2>VND - Dinâmica</h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="vnd" data-from="VND1" data-state="VND2"></span></div></div>
+<p>Quando a solução não pode mais ser melhorada (ótimo local), troca-se para \(\mathcal{N}_2\).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<header class="ft"><h2>VND - Dinâmica</h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="vnd" data-from="VND2" data-state="VND3"></span></div></div>
+<p>Novamente, uma busca local é executada em \(\mathcal{N}_2\). Se a solução foi melhorada, volta-se para \(\mathcal{N}_1\).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<header class="ft"><h2>VND - Dinâmica</h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="vnd" data-from="VND3" data-state="VND4"></span></div></div>
+<p>Quando tanto \(\mathcal{N}_1\) quanto \(\mathcal{N}_2\) não melhorarem \(x\), ativa-se \(\mathcal{N}_3\).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<header class="ft"><h2>VND - Dinâmica</h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="vnd" data-from="VND4" data-state="VND5"></span></div></div>
+<p>A busca segue dessa forma, até o momento em que nenhuma vizinhança conseguir melhorar a solução \(x\).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Variable Neighborhood Search (VNS) - A Ideia Geral">
+<header class="ft"><h2>VND - Dinâmica</h2></header>
+<div class="fc jus">
+<div class="figure"><div class="cline"><span class="anim" data-anim="camadas" data-fig="vnd" data-from="VND5" data-state="VND6"></span></div></div>
+<p>A busca segue dessa forma, até o momento em que nenhuma vizinhança conseguir melhorar a solução \(x\).</p>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="VND No \textit{Fitness Landscape}">
+<div class="fc"><div class="sec-title">VND No <i>Fitness Landscape</i></div></div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="vazio" data-state="VND_FL1"></span></div>
+<p>Sejam as vizinhanças \(\mathcal{N}_1\), \(\mathcal{N}_2\) e \(\mathcal{N}_3\).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL1" data-state="VND_FL2"></span></div>
+<p>Sejam as vizinhanças \(\mathcal{N}_1\), \(\mathcal{N}_2\) e \(\mathcal{N}_3\).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL2" data-state="VND_FL3"></span></div>
+<p>Sejam as vizinhanças \(\mathcal{N}_1\), \(\mathcal{N}_2\) e \(\mathcal{N}_3\).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL3" data-state="VND_FL4"></span></div>
+<p>Com uma solução inicial \(s_1\)</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VVND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL4" data-state="VND_FL5"></span></div>
+<p>Aplicamos uma busca local em \(\mathcal{N}_1(s_1)\)</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL5" data-state="VND_FL6"></span></div>
+<p>Quando o ótimo local é encontrado, ativamos \(\mathcal{N}_2\)</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL6" data-state="VND_FL7"></span></div>
+<p>E intensificamos a solução.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL7" data-state="VND_FL8"></span></div>
+<p>Como \(\mathcal{N}_2\) produziu uma melhoria, voltamos para \(\mathcal{N}_1\)</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL8" data-state="VND_FL9"></span></div>
+<p>E intensificamos novamente.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL9" data-state="VND_FL10"></span></div>
+<p>Novamente ativamos \(\mathcal{N}_2\), que não produz melhoria.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL10" data-state="VND_FL11"></span></div>
+<p>Ativamos então \(\mathcal{N}_3\).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL11" data-state="VND_FL12"></span></div>
+<p>E intensificamos, melhorando a solução.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL12" data-state="VND_FL13"></span></div>
+<p>Como houve melhoria, voltamos para \(\mathcal{N}_1\) (sem melhoria).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL13" data-state="VND_FL14"></span></div>
+<p>E em seguida para \(\mathcal{N}_2\) (sem melhoria).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="VND No \textit{Fitness Landscape}">
+<header class="ft"><h2>VND - Fitness Landscape</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim" data-anim="camadas" data-fig="fl" data-from="VND_FL14" data-state="VND_FL15"></span></div>
+<p>Assim, nenhuma das vizinhanças produziu melhoria, de forma que o algoritmo é finalizado.</p>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="VND - Pseudocódigo">
+<div class="fc"><div class="sec-title">VND - Pseudocódigo</div></div>
+</section>
+
+<section class="frame t only-title" data-section="VND - Pseudocódigo">
+<header class="ft"><h2>Pseudocódigo</h2></header>
+<div class="fc jus">
+<p>Abaixo segue um pseudocódigo <i>template</i> do VND.</p>
+<div class="algorithm">
+<div class="alg-cap"><b>Algorithm 2</b> Template genérico VND</div>
+<div class="alg-body">
+<div class="l1">\(s_{0} = \) GeraSolInicial()<div class="alg-cmt">\(\triangleright\) Gera uma solução inicial</div></div>
+<div class="l1">\(l = 1\)</div>
+<div class="l1"><b>while</b> \(l &lt; l_{max}\) <b>do</b></div>
+<div class="l2">\(s' =\) BuscaLocal( \(\mathcal{N}_l,s_0\))</div>
+<div class="l2"><b>if</b> \(f(s') &lt; f(s_0)\) <b>then</b></div>
+<div class="l3">\(s_0 = s'\)</div>
+<div class="l3">\(l = 1\)</div>
+<div class="l2"><b>else</b></div>
+<div class="l3">\(l = l + 1\)</div>
+<div class="l2"><b>end if</b></div>
+<div class="l1"><b>end while</b></div>
+<div class="l1"><b>return</b> melhor \(s\).<div class="alg-cmt">\(\triangleright\) Melhor \(s\) deve ser armazenada</div></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Atividades">
+<div class="fc"><div class="sec-title">Atividades</div></div>
+</section>
+
+<section class="frame only-title" data-section="Atividades">
+<header class="ft"><h2>Exemplo - TSP</h2></header>
+<div class="fc jus">
+<p><span class="c-myblue"><b>EXEMPLO</b></span>: Implemente um algoritmo ILS para a resolução do TSP com as seguintes características:</p>
+<ol class="enum rag">
+<li>Intensificação: busca local com 2-opt</li>
+<li>Perturbação: SWAP e reinício aleatório (2 algoritmos diferentes)</li>
+</ol>
+<p><span class="c-myblue"><b>EXEMPLO</b></span>: Implemente um algoritmo VND para a resolução do TSP com as seguintes estruturas de vizinhanças: 2-OPT, SWAP e 1-SHIFT (leia no artigo) <span class="c-myblue">1993 - Further results on the probabilistic traveling salesman problem- Bertsimas</span> <br></p>
+<div class="tcb jus"><p>Use as instancias do TSPlib para verificar a sua eficácia. Lembre de rodar diversos testes para calibrar os parâmetros do algoritmo.</p></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Atividades">
+<header class="ft"><h2>Atividade I</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li data-label="1">Qual o principal componente do <b>ILS</b> que o permite sanar a deficiência da busca local?</li>
+<li data-label="2">Quais são os parâmetros do <b>ILS</b> que devem ser calibrados?</li>
+<li data-label="3">Qual o principal componente do <b>VND</b> que o permite sanar a deficiência da busca local?</li>
+<li data-label="4">Considerando o artigo <span class="c-myblue">2000 - A study of exponential neighborhoods for the Traveling Salesman Problem - Daineko, Woeginger</span>, entenda como funciona a vizinhança <b>ASSIGN</b>. Qual é a relação da vizinhança com o problema da designação? Faça um esboço de como isso funciona.</li>
+<li data-label="5">Considerando os pseudocódigos do ILS e do VND. Pense em um design de algoritmo que <b>combine características</b> dos dois algoritmos.</li>
+</ol>
+</div>
+</section>
+
+<section class="frame only-title cols-alg" data-section="Atividades">
+<header class="ft"><h2>Atividade I</h2></header>
+<div class="fc jus">
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="center"><div class="algorithm">
+<div class="alg-cap"><b>Algorithm 3</b> Template genérico VND</div>
+<div class="alg-body">
+<div class="l1">\(s_{0} = \) GeraSolInicial() ;\(l = 1\)<div class="alg-cmt">\(\triangleright\) Gera uma solução inicial</div></div>
+<div class="l1"><b>while</b> \(l &lt; l_{max}\) <b>do</b></div>
+<div class="l2">\(s' =\) BuscaLocal( \(\mathcal{N}_l,s_0\))</div>
+<div class="l2"><b>if</b> \(f(s') &lt; f(s_0)\) <b>then</b></div>
+<div class="l3">\(s_0 = s'\) ;</div>
+<div class="l3">\(l = 1\)</div>
+<div class="l2"><b>else</b></div>
+<div class="l3">\(l = l + 1\)</div>
+<div class="l2"><b>end if</b></div>
+<div class="l1"><b>end while</b></div>
+<div class="l1"><b>return</b> melhor \(s\).<div class="alg-cmt">\(\triangleright\) Melhor \(s\) deve ser armazenada</div></div>
+</div>
+</div></div></div>
+<div class="column rag" style="width:201.85pt"><div class="algorithm">
+<div class="alg-cap"><b>Algorithm 4</b> Template genérico ILS</div>
+<div class="alg-body">
+<div class="l1">\(s_{0} = \) GeraSolInicial()<div class="alg-cmt">\(\triangleright\) Gera uma solução inicial</div></div>
+<div class="l1">\(s_{*} = \) Intensificacao(\(s_0\))<div class="alg-cmt">\(\triangleright\) Busca local</div></div>
+<div class="l1"><b>repeat</b></div>
+<div class="l2">\(s' = \) PerturbaSol(\(s_*\))</div>
+<div class="l2">\(s'_{*} = \) Intensificacao(\(s'\))</div>
+<div class="l2">\(s_{*} = \) CriterioDeAceite(\(s_*\),\(s'_*\))<div class="alg-cmt">\(\triangleright\) Aceita \(s'_{*}\) ou não</div></div>
+<div class="l1"><b>until</b> <span class="sp"></span>Criterio de parada</div>
+<div class="l1"><b>return</b> melhor \(s\).<div class="alg-cmt">\(\triangleright\) Melhor \(s\) deve ser armazenada</div></div>
+</div>
+</div></div></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Atividades">
+<header class="ft"><h2>Atividade II</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li data-label="1">Considerando o seu problema escolhido para a disciplina. Encontre 2 artigos científicos que usam ILS ou VND (ou usam ILS/VND como uma parte de outro algoritmo) para resolver o problema.</li>
+</ol>
+</div>
+</section>
+
+</main>
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="lib/hyphen/hyphen.js"></script>
+<script src="lib/hyphen/pt.js"></script>
+<script src="js/texbreak.js"></script>
+<script src="js/anim/core.js"></script>
+<script src="js/anim/dados/met.js"></script>
+<script src="js/anim/dados/ils.js"></script>
+<script src="js/anim/dados/comp.js"></script>
+<script src="js/anim/dados/vnd.js"></script>
+<script src="js/anim/dados/fl.js"></script>
+<script src="js/anim/camadas.js"></script>
+<script src="js/anim/arvore.js"></script>
+<script src="js/slides.js"></script>
+</body>
+</html>

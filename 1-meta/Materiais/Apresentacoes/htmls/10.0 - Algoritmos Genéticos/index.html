@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>10 - Algoritmos Populacionais &amp; Genéticos</title>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<link rel="stylesheet" href="css/beamer.css">
+</head>
+<body class="sansmath" data-author="Alexandre Checoli Choueiri" data-shorttitle="10 - Algoritmos Populacionais &amp; Genéticos">
+<main id="deck">
+
+<section class="frame titlepage notitle">
+<div class="fc">
+<div class="tp-title">10 - Algoritmos Populacionais &amp; Genéticos</div>
+<div class="tp-author">Alexandre Checoli Choueiri</div>
+<div class="tp-date">08/11/2025</div>
+<div class="tp-img"><img class="ig" src="img/capa.svg" style="width:84.10pt" alt=""></div>
+</div>
+</section>
+
+<section class="frame toc notitle">
+<div class="fc">
+<div class="toc-item"><span class="toc-num">1</span><span class="toc-txt">Algoritmos populacionais</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.1</span><span class="toc-txt">Introdução</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.2</span><span class="toc-txt">Pseudocódigo</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.3</span><span class="toc-txt">Exemplos</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">2</span><span class="toc-txt">Algoritmos evolucionários</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">3</span><span class="toc-txt">Algoritmos genéticos</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">4</span><span class="toc-txt">AG e Estruturas de Dados</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">5</span><span class="toc-txt">Exemplo - TSP</span></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Algoritmos populacionais">
+<div class="fc"><div class="sec-title">Algoritmos populacionais</div></div>
+</section>
+
+<section class="frame" data-section="Algoritmos populacionais">
+<header class="ft"><h2>Algoritmos populacionais</h2><div class="subtitle">Introdução</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Como o nome já diz, <span class="c-myblue">algoritmos populacionais</span> lidam com muitas soluções ao mesmo tempo (<b>população</b>), em que a cada iteração os elementos vão sendo melhorados.</p></div>
+<div class="tcb jus"><p>Inicialmente uma população de soluções é gerada. Em uma segunda etapa novos elementos são criados e substituídos na população. O processo é repetido até que um critério de parada seja atingido.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos populacionais">
+<header class="ft"><h2>Algoritmos populacionais</h2><div class="subtitle">Introdução</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim ov" data-anim="popmet" data-from="p0" data-state="p1"><img class="ig" src="img/pop_met.svg" style="width:284.34pt" alt=""></span></p></div>
+<p>Pode ou não existir um mecanismo de memória que armazena quais novos indivíduos foram adicionados à população em iterações anteriores.</p>
+</div>
+</section>
+
+<section data-steps="9" class="frame t" data-section="Algoritmos populacionais">
+<header class="ft"><h2>Algoritmos populacionais</h2><div class="subtitle">Pseudocódigo</div></header>
+<div class="fc jus">
+<p>Abaixo é mostrado um pseudocódigo de algoritmos populacionais.</p>
+<div class="algorithm">
+<div class="alg-cap"><b>Algorithm 1</b> Template de algoritmo populacional</div>
+<div class="alg-body">
+<div class="l1">\(P = P_0\)<div class="alg-cmt">\(\triangleright\) <span class="c-myblue">Criação da pop. inicial</span></div></div>
+<div class="l1">\(t = 0\)</div>
+<div class="l1"><b>while</b> Critério de parada não atingido <b>do</b></div>
+<div class="l2">\(P_t' = \) Gera-Pop(\(P_t\))<div class="alg-cmt">\(\triangleright\) <span class="c-myblue">Gera novos elementos</span></div></div>
+<div class="l2">\(P_{t + 1} = \)Seleciona-Pop(\(P_t\cup P_t'\))</div>
+<div class="l2">\(t = t+1\)</div>
+<div class="l1"><b>end while</b></div>
+<div class="l1"><b>return</b> Melhor individuo da População.</div>
+</div>
+</div>
+<span class="anim" data-anim="pseudoga" data-kind="pop" data-state="p,s0,s1,s2,s3,s4,s5,run,ret"></span>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos populacionais">
+<header class="ft"><h2>Algoritmos populacionais</h2><div class="subtitle">Exemplos</div></header>
+<div class="fc jus">
+<p>Como já mencionamos no estudo do algoritmo <span class="c-myblue">Simulated Annealing</span>, muitas metaheuristicas são bio-inspiradas, ou seja, buscam na natureza a idéia geral para o seu <i>design</i>. Com as metaheuristicas populacionais essa bio-inspiração <b>é mais acentuada</b>. Alguns exemplos de fenômenos naturais que inspiraram metaheuristicas:</p>
+<ol class="enum rag">
+<li>O movimento de pulo dos sapos</li>
+<li>A refração da luz</li>
+<li>Músicos improvisando jazz (harmony search)</li>
+<li><span class="c-myblue">Evolução das espécies</span></li>
+<li><span class="c-myblue">Colônia de formigas</span></li>
+<li>Movimento de morcegos, pássaros, moscas</li>
+<li>Movimento dos planetas</li>
+<li>Colonização de impérios...</li>
+</ol>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos populacionais">
+<header class="ft"><h2>Algoritmos populacionais</h2><div class="subtitle">Exemplos</div></header>
+<div class="fc jus">
+<div class="block alert tc"><div class="block-title tc">Atenção</div><div class="block-body jus"><p>Existe uma <span class="q q34">“</span>onda<span class="q q34">”</span> na comunidade de otimização que tende para a criação de muitas <span class="q q34">“</span>novas<span class="q q34">”</span> metaheuristicas bio-inspiradas. Muitas delas não passam de casos específicos de outros métodos já desenvolvidos, porém com uma roupagem de novidade. Essa tendência é extremamente prejudicial para a área, portanto <b>tome cuidado com esses novos e inovadores métodos</b>.</p></div></div>
+<p>Para uma <b>ótima</b> reflexão sobre o problema, ler os artigos:</p>
+<ol class="enum jus">
+<li><i><span class="c-myblue">2012 - Metaheuristics - the metaphor exposed - Kenneth Sorensen</span></i></li>
+<li><i><span class="c-myblue">2022 - Exposing the greywolf moth flame whale firefly bat and antlion algorithms six misleading optimization techniques inspired by bestial metaphors - Camacho</span></i></li>
+</ol>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos populacionais">
+<header class="ft"><h2>Algoritmos populacionais</h2><div class="subtitle">Exemplos</div></header>
+<div class="fc jus">
+<div class="block alert tc"><div class="block-title tc">Atenção</div><div class="block-body jus"><p>Existe uma <span class="q q34">“</span>onda<span class="q q34">”</span> na comunidade de otimização que tende para a criação de muitas <span class="q q34">“</span>novas<span class="q q34">”</span> metaheuristicas bio-inspiradas. Muitas delas não passam de casos específicos de outros métodos já desenvolvidos, porém com uma roupagem de novidade. Essa tendência é extremamente prejudicial para a área, portanto <b>tome cuidado com esses novos e inovadores métodos</b>.</p></div></div>
+<p>E para entender a dimensão do problema...<b>não ler</b> os artigos:</p>
+<ol class="enum jus">
+<li data-on="1-"><i><span class="c-myblue">2017 - Sperm motility algorithm a novel metaheuristic approach for global optimisation - raouf</span></i></li>
+<li data-on="2-"><i><span class="c-myblue">2020 - Tiki-taka algorithm a novel metaheuristic inspired by football playing style - Mohd</span></i></li>
+<li data-on="3-"><i><span class="c-myblue">2023 - Perfectionism Search Algorithm (PSA) An Efficient Meta-Heuristic - Amin</span></i></li>
+</ol>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos populacionais">
+<header class="ft"><h2>Algoritmos populacionais</h2><div class="subtitle">Exemplos</div></header>
+<div class="fc jus">
+<p>Os duas inspirações que estão destacadas na lista abaixo podem ser consideradas como verdadeiras inovações, que de fato geraram algoritmos novos e com conceitos que agregaram para o <b>avanço da pesquisa</b> na área.</p>
+<ol class="enum rag">
+<li>O movimento de pulo dos sapos</li>
+<li>A refração da luz</li>
+<li>Músicos improvisando jazz (harmony search)</li>
+<li><span class="c-myblue">Evolução das espécies</span></li>
+<li><span class="c-myblue">Colônia de formigas</span></li>
+<li>Movimento de morcegos, pássaros, moscas</li>
+<li>Movimento dos planetas</li>
+<li>Colonização de impérios...</li>
+</ol>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos populacionais">
+<header class="ft"><h2>Algoritmos populacionais</h2><div class="subtitle">Exemplos</div></header>
+<div class="fc jus">
+<p>Nós estudaremos os algoritmos inspirados na <b>evolução das espécies</b>.</p>
+<ol class="enum rag">
+<li>O movimento de pulo dos sapos</li>
+<li>A refração da luz</li>
+<li>Músicos improvisando jazz (harmony search)</li>
+<li><span class="c-brickred"><b>Evolução das espécies</b></span></li>
+<li><span class="c-myblue">Colônia de formigas</span></li>
+<li>Movimento de morcegos, pássaros, moscas</li>
+<li>Movimento dos planetas</li>
+<li>Colonização de impérios...</li>
+</ol>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Algoritmos evolucionários">
+<div class="fc"><div class="sec-title">Algoritmos evolucionários</div></div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="tline" data-from="t0" data-state="t1"><img class="ig" src="img/timeline1.svg" style="width:338.76pt" alt=""></span></p></div>
+<p>Vejamos uma linha do tempo dos algoritmos inspirados na evolução das espécies, hoje chamados de <b>algoritmos evolucionários</b>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="tline" data-from="t1" data-state="t2"><img class="ig" src="img/timeline2.svg" style="width:338.76pt" alt=""></span></p></div>
+<p>A grande inspiração para todos os algoritmos foi a revolucionária teoria de Darwin sobre <span class="c-myblue">como as espécies evoluem ao longo do tempo</span>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="tline" data-from="t2" data-state="t3"><img class="ig" src="img/timeline3.svg" style="width:338.76pt" alt=""></span></p></div>
+<p>Em Berlin, Rachenberg e Schwefel desenvolvem um modelo de algoritmos chamados <b>estrategias de evolução</b> (EE).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/timeline3.svg" style="width:338.76pt" alt=""></p></div>
+<p>Esses algoritmos foram usados para resolver problemas de mecânica dos fluidos, especificamente em túneis de vento para a otimização de placas que minimizam a resistência ao vento.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="tline" data-from="t3" data-state="t4"><img class="ig" src="img/timeline4.svg" style="width:338.76pt" alt=""></span></p></div>
+<p>Na Califórnia, Fogel desenvolve a estrutura evolucionária chamada <b>programação evolucionária</b> (PE), usado em máquinas de estado finitos com o objetivo de gerar inteligência artificial.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="tline" data-from="t4" data-state="t5"><img class="ig" src="img/timeline5.svg" style="width:338.76pt" alt=""></span></p></div>
+<p>Em Michigan, Holland publica seu livro sobre <b>algoritmos genéticos</b> (AG).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/timeline5.svg" style="width:338.76pt" alt=""></p></div>
+<p>Originalmente os AG não foram usados em problemas de otimização, mas sim na determinação de um número ideal de observações das variáveis aleatórias.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="tline" data-from="t5" data-state="t6"><img class="ig" src="img/timeline6.svg" style="width:338.76pt" alt=""></span></p></div>
+<p>Por sorte, seus alunos de doutorado começaram a usar seu método para resolver problemas de otimização.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/timeline6.svg" style="width:338.76pt" alt=""></p></div>
+<p>Até esse momento as pesquisas eram realizadas de forma quase que independente, com pouca interação entre os grupos de pesquisa.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/timeline6.svg" style="width:338.76pt" alt=""></p></div>
+<p>No fim da década 80 os pesquisadores começaram a se encontrar em congressos e a trocar conhecimentos.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="tline" data-from="t6" data-state="t7"><img class="ig" src="img/timeline7.svg" style="width:338.76pt" alt=""></span></p></div>
+<p>Em 1992 a área é consolidada com o termo <b>computação evolucionária</b>, e a primeira revista sobre o tema é criada, chamada <i><span class="c-myblue">Evolutionary Computing</span></i>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos evolucionários">
+<header class="ft"><h2>Algoritmos evolucionários</h2><div class="subtitle">Linha do tempo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="tline" data-from="t7" data-state="t8"><img class="ig" src="img/timeline8.svg" style="width:338.76pt" alt=""></span></p></div>
+<p>Nós estudaremos justamente os <span class="c-brickred">algoritmos genéticos</span> de Holland e seus alunos.</p>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Algoritmos genéticos">
+<div class="fc"><div class="sec-title">Algoritmos genéticos</div></div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/Darwin.png" style="width:304.25pt" alt=""></p></div>
+<div class="tcb jus"><p>Para isso, precisamos primeiro entender a dinâmica básica da teoria da evolução de <i>Charles Darwin</i>.</p></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="center"><p class="imgs ovf"><img class="ig" src="img/gala1.svg" style="width:203.36pt" alt="" data-only="1"></p></div></div>
+<div class="column rag" style="width:161.48pt"><div class="center jus"><p>É sabido que Darwin fez diversas incursões pelo mundo a bordo do <i>Beagle</i>, e nessas incursões ele estudava fauna e flora dos locais, com anotações e desenhos. Um dos lugares que ele visitou foi Galápagos e suas diversas ilhas.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="center"><p class="imgs ovf"><img class="ig" src="img/gala2.svg" style="width:203.36pt" alt="" data-only="1"></p></div></div>
+<div class="column rag" style="width:161.48pt"><div class="center jus"><p>Em Galápagos, Darwin reparou que em diversas ilhas existiam espécies de pássaros muito similares entre si. A única diferença notável era no formato de seus bicos.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="passaros" data-from="q0" data-state="q1"><img class="ig" src="img/pass1.svg" style="width:334.32pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Os pássaros de cada ilha aparentavam ter um tipo de bico próprio para <span class="c-myblue">coletar alimentos específicos daquela ilha</span>.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="passaros" data-from="q1" data-state="q2"><img class="ig" src="img/pass2.svg" style="width:334.32pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Darwin reparou que apesar de possuírem bicos diferentes...</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="passaros" data-from="q2" data-state="q3"><img class="ig" src="img/pass3.svg" style="width:334.32pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Os pássaros eram <b>muito semelhantes entre si</b>!</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="passaros" data-from="q3" data-state="q4"><img class="ig" src="img/pass4.svg" style="width:334.32pt" alt=""></span></p></div>
+<div class="tcb jus"><p>E isso o fez pensar em uma conjectura: <span class="c-myblue"><b>Será que todos os pássaros vieram de um ancestral comum?</b></span></p></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="center"><p class="imgs ovf"><span class="anim sel" data-anim="galap" data-from="g0" data-state="g5"><img class="ig" src="img/pass5.svg" style="width:203.36pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:161.48pt"><div class="center jus"><p>Para sustentar a conjectura, Darwin teria que explicar como um mesmo tipo de pássaro teria migrado para as ilhas, e <b>ao longo do tempo se diferenciado</b>.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="center"><p class="imgs ovf"><img class="ig" src="img/pass5.svg" style="width:203.36pt" alt="" data-only="1"></p></div></div>
+<div class="column rag" style="width:161.48pt"><div class="center jus"><p>A explicação para a conjectura de Darwin é conhecida como a <span class="c-myblue"><b>Teoria da Seleção Natural</b></span> (ou evolução das espécies).</p></div></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="center"><p class="imgs ovf"><span class="anim sel" data-anim="galap" data-from="g5" data-state="g6"><img class="ig" src="img/pass6.svg" style="width:203.36pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:161.48pt"><div class="center jus"><p>Vejamos qual é a dinâmica da Teoria da Seleção Natural, em uma das ilhas de Galápagos.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="antonio" data-from="a0" data-state="a1"><img class="ig" src="img/Antonio.svg" style="width:224.39pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>Suponha que a ilha é muito pedregosa, de forma que o alimento do <span class="c-myblue">pássaro Antônio</span> (que está faminto) cai e se posiciona como na Figura acima.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="antonio" data-from="a1" data-state="a2"><img class="ig" src="img/Antonio.svg" style="width:224.39pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>Podemos afirmar por mera observação, que o pássaro Antônio não está muito <span class="c-brickred"><b>Apto ou Adaptado</b></span> para se alimentar nesta ilha.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="gapass" data-from="g0" data-state="g1"><img class="ig" src="img/ga_pass1.svg" style="width:213.92pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>Inicialmente uma população desses ancestrais chegou a ilha. Note que embora a maioria tenha o bico característico, devido à <span class="c-brickred">mutação</span> pode existir uma pequena parte com variações.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="gapass" data-from="g1" data-state="g1b"><img class="ig" src="img/ga_pass1.svg" style="width:213.92pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>Embora eles sejam do mesmo tipo, cada um possui <span class="c-brickred">características</span> diferentes além do bico, nesse caso as cores e/ou tamanhos.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="gapass" data-from="g1b" data-state="g2"><img class="ig" src="img/ga_pass2.svg" style="width:213.92pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>Cada uma das características ajuda na <span class="c-brickred">adaptabilidade</span> do individuo ao ambiente. Vamos chamar essa pontuação de <span class="c-brickred">fitness</span> do indivíduo.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="gapass" data-from="g2" data-state="g3"><img class="ig" src="img/ga_pass3.svg" style="width:213.92pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>Com o tempo os indivíduos da população se reproduzem. Como ocorre com os seres humanos, existe uma <span class="c-brickred">competição</span> para a reprodução.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="gapass" data-from="g3" data-state="g4"><img class="ig" src="img/ga_pass4.svg" style="width:213.92pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>E a reprodução gera novos indivíduos para a população.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="gapass" data-from="g4" data-state="g4b"><img class="ig" src="img/ga_pass4.svg" style="width:213.92pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>Existe uma probabilidade pequena de ocorrer uma mutação nesses novos indivíduos (como o albinismo ou nanismo em seres humanos).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="gapass" data-from="g4b" data-state="g5"><img class="ig" src="img/ga_pass5.svg" style="width:213.92pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>Essa mutação altera alguma característica do indivíduo.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="gapass" data-wide="1" data-from="g5" data-state="g6"><img class="ig" src="img/ga_pass6.svg" style="width:241.92pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>Com esse novo indivíduo temos uma nova população (1 individuo maior do que a população inicial.)</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="gapass" data-wide="1" data-from="g6" data-state="g7"><img class="ig" src="img/ga_pass7.svg" style="width:241.92pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>Os indivíduos menos aptos (com menor <span class="c-brickred">fitness</span>) são mais propensos a morrer (porém existe pequena chance de sobreviverem).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="gapass" data-from="g7" data-state="g8"><img class="ig" src="img/ga_pass8.svg" style="width:213.92pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>E assim uma nova população repete o mesmo ciclo.</p></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs"><span class="anim ov" data-anim="ciclo" data-from="c0" data-state="c1"><img class="ig" src="img/ga_pass9.svg" style="width:154.24pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column rag" style="width:161.48pt"><div class="center jus"><p>O ciclo completo é mostrado ao lado. Consiste nas etapas:</p>
+<ol class="enum rag">
+<li>Geração da pop. inicial</li>
+<li>Reprodução</li>
+<li>Mutação</li>
+<li>Seleção natural</li>
+</ol></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">A evolução segundo Darwin</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="final" data-from="f0" data-state="f1"><img class="ig" src="img/ga_pass10.svg" style="width:213.92pt" alt="" data-only="1-"></span></p></div>
+<div class="tcb jus"><p>Segundo Darwin, após um intervalo de tempo suficiente, com muita mutação e seleção natural, a população se torna a mais apta para habitar naquele ambiente (com as características de comida que vimos). Nesse caso a característica predominante seria o formato do bico.</p></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="center fl"><p class="imgs ovf"><img class="ig" src="img/ga_pass11.svg" style="width:203.36pt" alt="" data-only="1"></p></div></div>
+<div class="column rag" style="width:161.48pt"><div class="center jus"><p>E assim se explicaria a conjectura de Darwin de como <b>todos os pássaros</b> de todas as ilhas possuíam um <b>ancestral comum</b>.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:121.11pt"><div class="center fl"><p class="imgs ovf"><img class="ig" src="img/ga_generico_pass.svg" style="width:154.24pt" alt="" data-only="1"></p></div></div>
+<div class="column rag" style="width:242.22pt"><div class="center jus"><p><span class="c-brickred">MAS O QUE ISSO TÊM A VER COM ALGORITMOS DE OTIMIZAÇÃO?</span></p></div></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:121.11pt"><div class="center fl"><p class="imgs ovf"><img class="ig" src="img/ga_generico_pass.svg" style="width:154.24pt" alt="" data-only="1-2"></p></div></div>
+<div class="column jus" style="width:242.22pt"><p>Podemos interpretar a teoria da seleção natural de Darwin como um mecanismo de <span class="c-myblue">maximização</span> da adaptabilidade (<span class="c-myblue"><i>fitness</i></span>) dos indivíduos de uma população.</p>
+<div data-on="2" class="tcb jus"><p>Essa ideia então pode ser usada em problemas de otimização, e é a partir dela que surgem os <b>algoritmos genéticos</b> de Holland.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:121.11pt"><div class="center fl"><p class="imgs ovf"><span class="anim sel" data-anim="avesrotas" data-from="a" data-state="t1,t2,t3,t4,t5,t6"><img class="ig" src="img/ga_tsp_generico.svg" style="width:154.24pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:242.22pt"><p>Considere a Figura ao lado como sendo as etapas de um algoritmo genético para o problema do caixeiro viajante. Temos as seguintes associações com a teoria de Darwin:</p>
+<ol class="enum jus">
+<li data-on="2-"><span class="c-myblue">Individuo da população</span> \(\rightarrow\) solução do TSP.</li>
+<li data-on="3-"><span class="c-myblue">Fitness</span> \(\rightarrow\) medida de valoração da solução (pode ser a fo).</li>
+<li data-on="4-"><span class="c-myblue">Reprodução</span> \(\rightarrow\) método para selecionar e combinar duas soluções.</li>
+<li data-on="5-"><span class="c-myblue">Mutação</span> \(\rightarrow\) pequena alteração na solução.</li>
+<li data-on="6-"><span class="c-myblue">Seleção natural</span> \(\rightarrow\) como excluir soluções ruins da população.</li>
+</ol></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos populacionais</h2><div class="subtitle">No fitness landscape</div></header>
+<div class="fc jus">
+<p>Sempre precisamos entender como os algoritmos de otimização se comportam no <i>fitness landscape</i>, pois de forma geral é isso que determina o <i>design</i> do método.</p>
+<div data-on="2-" class="block alert tc"><div class="block-title tc">ATENÇÃO</div><div class="block-body jus"><p>Não se esqueça que o <i>fitness landscape</i> é um conceito vinculado à <b>vizinhança</b>. É <b>errado</b> pensarmos em <i>fitness landscape</i> em algoritmos genéticos, pois não usamos vizinhança alguma! Vamos supor que o <i>fitness landscape</i> não seja ligado por um operador de movimento (vizinhança), mas sim como uma representação de todas as soluções possíveis para o problema (só para entendermos a convergência dos AG).</p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos populacionais</h2><div class="subtitle">No fitness landscape</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Os algoritmos evolucionários (genéticos inclusos), começam com um população de indivíduos bem separados, e ao longo das iterações as soluções convergem para ótimos locais ou globais (ot. local/global também está ligado ao conceito de vizinhança...).</p></div>
+</div>
+</section>
+
+<section data-steps="2" class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/fitness_landscape.png" style="width:287.16pt" alt="" data-only="1-"></p></div>
+<span class="anim" data-anim="landga" data-state="l1,l2"></span>
+</div>
+</section>
+
+<section data-steps="11" class="frame" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Pseudocódigo</div></header>
+<div class="fc jus">
+<p>Abaixo é mostrado um pseudocódigo de algoritmos genéticos e evolucionários.</p>
+<div class="algorithm">
+<div class="alg-cap"><b>Algorithm 2</b> Template de algoritmo evolucionário</div>
+<div class="alg-body">
+<div class="l1">\(P_0\) = Gere-Pop()<div class="alg-cmt">\(\triangleright\) <span class="c-myblue">Criação da pop. inicial</span></div></div>
+<div class="l1">\(t = 0\)</div>
+<div class="l1"><b>while</b> Critério de parada não atingido <b>do</b></div>
+<div class="l2">Avaliar(\(P_t\))<div class="alg-cmt">\(\triangleright\) <span class="c-myblue"> Calcular o fitness</span></div></div>
+<div class="l2">Selecao(\(P_t\))<div class="alg-cmt">\(\triangleright\) <span class="c-myblue"> Selecionar indivíduos para reprod.</span></div></div>
+<div class="l2">\(P_t' = \) Reproducao(\(P_t\))</div>
+<div class="l2">\(P_{t + 1} = \) Substituicao(\(P_t\), \(P_t'\))<div class="alg-cmt">\(\triangleright\) <span class="c-myblue"> Elimina indivíduos</span></div></div>
+<div class="l2">\(t = t+1\)</div>
+<div class="l1"><b>end while</b></div>
+<div class="l1"><b>return</b> Melhor individuo da População.</div>
+</div>
+</div>
+<span class="anim" data-anim="pseudoga" data-kind="ga" data-state="p,s0,s1,s2,s3,s4,s5,s6,s7,run,ret"></span>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Componentes de design</div></header>
+<div class="fc jus">
+<p>Dessa forma, temos que os principais componentes no design de um algoritmo genético são os seguintes:</p>
+<ol class="enum jus">
+<li><span class="c-myblue"><b>Geração da população inicial</b></span>: Como a primeira geração de soluções será criada?</li>
+<li><span class="c-myblue"><b>Avaliação</b></span>: Como será calculado o <i>fitness</i> de uma solução?</li>
+<li><span class="c-myblue"><b>Seleção</b></span>: Qual é o critério usado para selecionar os indivíduos que vão se reproduzir?</li>
+<li><span class="c-myblue"><b>Reprodução/mutação</b></span>: Como combinar duas (ou mais) soluções para gerar novas?</li>
+<li><span class="c-myblue"><b>Substituição</b></span>: Qual critério utilizar para remover soluções da população?</li>
+</ol>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Geração da população inicial</div></header>
+<div class="fc jus">
+<p>Dessa forma, temos que os principais componentes no design de um algoritmo genético são os seguintes:</p>
+<ol class="enum jus">
+<li data-tsp><span class="c-myblue"><b>Geração da população inicial</b></span>: Como a primeira geração de soluções será criada?</li>
+<li data-tsp><span class="c-semitransp"><b>Avaliação</b>: Como será calculado o <i>fitness</i> de uma solução?</span></li>
+<li data-tsp><span class="c-semitransp"> <b>Seleção</b>: Qual é o critério usado para selecionar os indivíduos que vão se reproduzir?</span></li>
+<li data-tsp><span class="c-semitransp"> <b>Reprodução/mutação</b>: Como combinar duas (ou mais) soluções para gerar novas?</span></li>
+<li><span class="c-semitransp"> <b>Substituição</b>: Qual critério utilizar para remover soluções da população?</span></li>
+</ol>
+</div>
+</section>
+
+<section class="frame" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Geração da população inicial</div></header>
+<div class="fc jus">
+<p>Devido a grande variabilidade que pode existir na população inicial, algoritmos populacionais focam mais na <b>exploração</b> do que na <b>intensificação</b> do <i>fitness landscape</i>.</p>
+<div class="tcb jus"><p>O aspecto mais importante na definição da pop. inicial é a <span class="c-myblue">diversificação</span>. Se a população é muito próxima (ou seja, são soluções parecidas), uma convergência prematura pode ocorrer.</p></div>
+<p>Algumas formas de inicialização são mostradas abaixo:</p>
+</div>
+</section>
+
+<section class="frame" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Geração da população inicial</div></header>
+<div class="fc jus">
+<div class="center"><div class="table"><div class="tab tabx" style="grid-template-columns:auto minmax(0,1fr);width:403.70pt">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td l" style="padding-left:5.98pt;padding-right:5.98pt"><b>Método</b></div>
+<div class="td l x jus" style="padding-left:5.98pt;padding-right:5.98pt"><p><i>Design</i></p></div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td l" style="padding-left:5.98pt;padding-right:5.98pt">Início aleatório</div>
+<div class="td l x jus" style="padding-left:5.98pt;padding-right:5.98pt"><p>Os indivíduos são gerados aleatóriamente</p></div>
+<div class="td l" style="padding-left:5.98pt;padding-right:5.98pt">Diversificação sequencial</div>
+<div class="td l x jus" style="padding-left:5.98pt;padding-right:5.98pt"><p>Cria-se soluções de forma sequencial, de forma que a sol \(i+1\) está sempre a uma distância \(\delta\) da solução \(i\).</p></div>
+<div class="td l" style="padding-left:5.98pt;padding-right:5.98pt">Heuristica</div>
+<div class="td l x jus" style="padding-left:5.98pt;padding-right:5.98pt"><p>Usa-se uma heurística que possibilite gerar diversas soluções, por exemplo a heurística do vizinho mais próximo do TSP com diversos pontos iniciais.</p></div>
+<div class="td l" style="padding-left:5.98pt;padding-right:5.98pt">Aleatória/Heurística</div>
+<div class="td l x jus" style="padding-left:5.98pt;padding-right:5.98pt"><p>Uma parte das soluções é gerada de forma aleatória e outra de forma heurística.</p></div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Avaliação</div></header>
+<div class="fc jus">
+<p>Dessa forma, temos que os principais componentes no design de um algoritmo genético são os seguintes:</p>
+<ol class="enum jus">
+<li><span class="c-myblue"><b>Geração da população inicial</b></span>: Como a primeira geração de soluções será criada?</li>
+<li data-tsp><span class="c-myblue"><b>Avaliação</b></span>: Como será calculado o <i>fitness</i> de uma solução?</li>
+<li data-tsp><span class="c-semitransp"> <b>Seleção</b>: Qual é o critério usado para selecionar os indivíduos que vão se reproduzir?</span></li>
+<li data-tsp><span class="c-semitransp"> <b>Reprodução/mutação</b>: Como combinar duas (ou mais) soluções para gerar novas?</span></li>
+<li><span class="c-semitransp"> <b>Substituição</b>: Qual critério utilizar para remover soluções da população?</span></li>
+</ol>
+</div>
+</section>
+
+<section class="frame" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Avaliação</div></header>
+<div class="fc jus">
+<p>A avaliação da qualidade de uma solução em algoritmos genéticos é usualmente feita pela <i>função fitness</i>. Essa medida deve ser do tipo <span class="q q34">“</span>maior melhor<span class="q q34">”</span>, considerando os métodos de seleção de indivíduos.</p>
+<div class="tcb jus"><p><span class="c-brickred">A função <i>fitness</i> não precisa necessáriamente ser igual ao valor da função objetivo!</span> Por exemplo, sabemos que uma população diversificada é importante, de forma que é possível embutir um <span class="q q34">“</span>bônus<span class="q q34">”</span> no <i>fitness</i> para as soluções que são mais diferentes da população, dessa forma mesmo que elas tenham uma fo ruim, esse aspecto pode ser compensado por outras características gerando um <i>fitness</i> mais alto.</p></div>
+</div>
+</section>
+
+<section data-steps="5" class="frame" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Avaliação</div></header>
+<div class="fc jus">
+<p>Ainda, se ela precisa ser do tipo <span class="q q34">“</span>maior melhor<span class="q q34">”</span>, como gerar o fitness de soluções de problemas de minimização (em que a fo menor é melhor)?</p>
+<div class="tcb jus"><p>Nesses casos podemos transformar a fo da seguinte forma:</p>
+<ol class="enum jus">
+<li>Primeiro calcular \(b_i = \dfrac{1}{z(x_i)}\) (o inverso da fo de toda solução).</li>
+<li>Em seguida padronizar todos os valores dividindo pela soma: \(f_i = \dfrac{b_i}{\sum_{0}^{n} b_i}\)</li>
+</ol></div>
+<span class="anim" data-anim="fitfo" data-state="f1,f2,f3,f4,f5"></span>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Seleção</div></header>
+<div class="fc jus">
+<p>Dessa forma, temos que os principais componentes no design de um algoritmo genético são os seguintes:</p>
+<ol class="enum jus">
+<li><span class="c-myblue"><b>Geração da população inicial</b></span>: Como a primeira geração de soluções será criada?</li>
+<li><span class="c-myblue"><b>Avaliação</b></span>: Como será calculado o <i>fitness</i> de uma solução?</li>
+<li data-tsp><span class="c-myblue"><b>Seleção</b></span>: Qual é o critério usado para selecionar os indivíduos que vão se reproduzir?</li>
+<li data-tsp><span class="c-semitransp"> <b>Reprodução/mutação</b>: Como combinar duas (ou mais) soluções para gerar novas?</span></li>
+<li><span class="c-semitransp"> <b>Substituição</b>: Qual critério utilizar para remover soluções da população?</span></li>
+</ol>
+</div>
+</section>
+
+<section class="frame" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Seleção</div></header>
+<div class="fc jus">
+<p>A etapa de seleção visa escolher quais indivíduos da população serão usados como pais, tendo seus materiais genéticos (partes da solução) mescladas de forma a gerar novos indivíduos. A idéia da seleção é que indivíduos com um alto <i>fitness</i> possuem componentes em sua estrutura que melhoram a função objetivo, e talvez mesclando esses indivíduos combine seus pontos fortes, criando soluções melhores.</p>
+<div data-on="2-" class="tcb jus"><p><b><span class="c-brickred">PERGUNTA:</span></b> Se queremos mesclar <span class="q q34">“</span>bons<span class="q q34">”</span> indivíduos, por que simplesmente não selecionamos aqueles com os maiores valores de <i>fitness</i> para a reprodução?</p></div>
+<div data-on="3-" class="tcb jus"><p><b><span class="c-myblue">RESPOSTA:</span></b> Essa estratégia pode levar a uma convergência prematura para ótimos locais, e ainda existe o fator de diversificação: pode ser que embora uma solução tenha um <i>fitness</i> ruim, uma pequena parte dela faz parte do ótimo!</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Seleção</div></header>
+<div class="fc jus">
+<div class="block tc"><div class="block-title tc">Conclusão</div><div class="block-body jus"><p>Embora soluções com baixo <i>fitness</i> não sejam boas, é uma boa prática manter elas na lista de possíveis seleções, porém com uma <b>baixa probabilidade</b>. Assim, os métodos mais comuns de seleção trabalham com essa ideia: todos podem ser selecionados, porém com probabilidades diferentes, e que refletem o seu <i>fitness</i> (quanto maior o <i>fitness</i> maior a chance de ser escolhido para reprodução).</p></div></div>
+<p>Os três métodos mais comuns para seleção são:</p>
+<ol class="enum jus">
+<li>Roleta (<i>Roulette Wheel Selection</i>)</li>
+<li>Amostragem Estocástica Universal (<i>Stochastic Universal Sampling</i>)</li>
+<li>Torneio (<i>Tournament selection</i>)</li>
+</ol>
+</div>
+</section>
+
+<section data-steps="2" class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Seleção - Roleta</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="roleta" data-from="r0" data-state="r1,r2"><img class="ig" src="img/Selection_roleta.svg" style="width:327.43pt" alt="" data-only="1-"></span></p></div>
+<p>No <b>método da roleta</b> atribuímos uma probabilidade de seleção a cada indivíduo que é <span class="c-myblue">proporcional ao seu <i>fitness</i></span> como em um gráfico de pizza. Em seguida atribuímos um marcador na roleta e a <span class="q q34">“</span>rolamos<span class="q q34">”</span>, o indivíduo selecionado pelo marcador é usado na reprodução.</p>
+</div>
+</section>
+
+<section data-steps="2" class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Seleção - Amostragem Estocástica Universal</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="roleta" data-fig="sus" data-from="r1" data-state="s1,s2"><img class="ig" src="img/Selection_roleta_universal.svg" style="width:327.47pt" alt="" data-only="1-"></span></p></div>
+<p>Ja no método da <b>Amostragem Estocástica Universal</b>, a roleta é <b>girada uma única vez</b> para todos os indivíduos, porém existe um número <i>n</i> de marcadores equidistantes na roleta, <b>um para cada indivíduo</b> que irá participar da reprodução.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Seleção - Torneio</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="torneio" data-from="t0" data-state="t1"><img class="ig" src="img/Torneio1.svg" style="width:275.04pt" alt="" data-only="1-"></span></p></div>
+<p>No método do <b>Torneio</b>, começamos com todos os indivíduos da população</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Seleção - Torneio</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="torneio" data-from="t1" data-state="t2"><img class="ig" src="img/Torneio2.svg" style="width:275.04pt" alt="" data-only="1-"></span></p></div>
+<p>Em seguida <i>k</i> indivíduos são selecionados aleatóriamente dentre a população (cada um com a mesma probabilidade).</p>
+</div>
+</section>
+
+<section data-steps="2" class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Seleção - Torneio</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim sel" data-anim="torneio" data-from="t2" data-state="t3,t4"><img class="ig" src="img/Torneio3.svg" style="width:275.04pt" alt="" data-only="1-"></span></p></div>
+<p>Dentre esses indivíduos o torneio é realizado: o indivíduo com maior <i>fitness</i> é selecionado para reproduzir. O método é executado uma vez para cada indivíduo que for reproduzir.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Seleção - Reprodução/Mutação</div></header>
+<div class="fc jus">
+<p>Dessa forma, temos que os principais componentes no design de um algoritmo genético são os seguintes:</p>
+<ol class="enum jus">
+<li><span class="c-myblue"><b>Geração da população inicial</b></span>: Como a primeira geração de soluções será criada?</li>
+<li><span class="c-myblue"><b>Avaliação</b></span>: Como será calculado o <i>fitness</i> de uma solução?</li>
+<li><span class="c-myblue"><b>Seleção</b></span>: Qual é o critério usado para selecionar os indivíduos que vão se reproduzir?</li>
+<li data-tsp><span class="c-myblue"><b>Reprodução/mutação</b></span>: Como combinar duas (ou mais) soluções para gerar novas?</li>
+<li><span class="c-semitransp"> <b>Substituição</b>: Qual critério utilizar para remover soluções da população?</span></li>
+</ol>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Seleção - Reprodução/Mutação</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>A etapa da reprodução tem por objetivo <b>mesclar boas partes das soluções dos pais e transmitir para os filhos</b>. Essa etapa é muito dependente das estruturas de dados usadas para a representação das soluções, factibilidade, etc...(como as vizinhanças). De forma que cada problema possui métodos específicos para reprodução.</p></div>
+<p>Veremos 2 métodos muito utilizados para a reprodução de soluções do TSP, são elas:</p>
+<ol class="enum jus">
+<li>Crossover Parcialmente Mapeado (<i>Partially Mapped Crossover</i> - PMX)</li>
+<li>Crossover Ordenado (<i>Ordered Crossover</i> - OX)</li>
+</ol>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim cruz" data-anim="cruz" data-from="vazio" data-state="p1"><img class="ig" src="img/PMX1.svg" style="width:174.16pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>No <b>PMX</b> a combinação é feita com 2 pais (<i>parents</i> \(p_1\) e \(p_2\)) gerando 2 filhos (<i>offsprings</i> \(o_1\) e \(o_2\)).</p></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim cruz" data-anim="cruz" data-from="p1" data-state="p2"><img class="ig" src="img/PMX2.svg" style="width:174.16pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>Dois pontos de corte aleatório são determinados para ambos os pais. Em seguida, os elementos entre os pontos de \(p_1\) são alocados em \(o_2\) e os elementos entre os pontos de \(p_2\) são alocados em \(o_1\).</p></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim cruz" data-anim="cruz" data-from="p2" data-state="p3"><img class="ig" src="img/PMX3.svg" style="width:174.16pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>Para todos os elementos restantes (tanto de \(o_1\) quanto de \(o_2\)), segue-se a ordem dos pais que não geraram seus interiores, alocando nas mesmas posições os valores que ainda não foram alocados. Os outros ficam ainda vagos.</p></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim cruz" data-anim="cruz" data-from="p3" data-state="p4"><img class="ig" src="img/PMX4.svg" style="width:174.16pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>Para alocar os elementos faltantes, um <span class="c-myblue">mapeamento</span> é feito entre os elementos internos aos pontos dos pais.</p></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim cruz" data-anim="cruz" data-from="p4" data-state="p5"><img class="ig" src="img/PMX5.svg" style="width:174.16pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>Esse mapeamento é usado no preenchimento dos pontos faltantes.</p></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim cruz" data-anim="cruz" data-from="p5" data-state="x1"><img class="ig" src="img/OX1.svg" style="width:174.16pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>O <b>método OX</b> começa da mesma forma do PMX, selecionando pontos de corte e copiando os elementos internos aos 2 filhos.</p></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim cruz" data-anim="cruz" data-from="x1" data-state="x2"><img class="ig" src="img/OX2.svg" style="width:174.16pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>Para o preenchimento dos elementos faltantes, segue-se a ordem dos pais (não o que gerou a parte interna), não adicionando os elementos já adicionados, porém continuando na busca pelos que ainda não foram.</p></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim cruz" data-anim="cruz" data-from="x2" data-state="x3"><img class="ig" src="img/OX3.svg" style="width:174.16pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>Essa busca continua <span class="q q34">“</span>dando a volta<span class="q q34">”</span> na solução, até que todos os elementos do filho estejam preenchidos.</p></div></div>
+</div>
+</section>
+
+<section data-steps="2" class="frame" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Reprodução/Mutação</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>A mutação é um <b>operador unário</b> (afeta uma solução), e tem por objetivo realizar <span class="c-myblue">pequenas alterações no indivíduo</span>. Conforme as gerações vão passando, a tendencia é que os indivíduos fiquem mais parecidos devido à convergência. A mutação tem o objetivo de dar uma pequena pivotada nesse processo, para <b>evitar uma convergência prematura</b>, e ainda aumentar o fator de exploração.</p></div>
+<p>Como a reprodução, a mutação é um <span class="c-myblue">processo específico para cada problema</span>, porém é padrão que deve existir uma probabilidade de mutação \(p_m\) para cada individuo gerado, estudo sugerem que essa probabilidade deve estar no intervalo \(p_m \in [0.001,0.01]\) (obviamente isso não é uma regra.)</p>
+<p>É possível usar as próprias estruturas de vizinhança do problema para gerar a mutação. Para o TSP, por exemplo, podemos fazer o <i>swap</i> de <i>k</i> elementos de uma rota, com \(k&lt;&lt;n\).</p>
+<span class="anim" data-anim="mutdemo" data-state="m1,m2"></span>
+</div>
+</section>
+
+<section class="frame t" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Substituição</div></header>
+<div class="fc jus">
+<p>Dessa forma, temos que os principais componentes no design de um algoritmo genético são os seguintes:</p>
+<ol class="enum jus">
+<li><span class="c-myblue"><b>Geração da população inicial</b></span>: Como a primeira geração de soluções será criada?</li>
+<li><span class="c-myblue"><b>Avaliação</b></span>: Como será calculado o <i>fitness</i> de uma solução?</li>
+<li><span class="c-myblue"><b>Seleção</b></span>: Qual é o critério usado para selecionar os indivíduos que vão se reproduzir?</li>
+<li><span class="c-myblue"><b>Reprodução/mutação</b></span>: Como combinar duas (ou mais) soluções para gerar novas?</li>
+<li><span class="c-myblue"><b>Substituição</b></span>: Qual critério utilizar para remover soluções da população?</li>
+</ol>
+</div>
+</section>
+
+<section class="frame" data-section="Algoritmos genéticos">
+<header class="ft"><h2>Algoritmos genéticos</h2><div class="subtitle">Substituição</div></header>
+<div class="fc jus">
+<p>Após a geração dos novos indivíduos, a população é aumentada. Ao longo do algoritmo a mesma deve ter um tamanho fixo, de forma que alguns indivíduos devem ser selecionados para serem removidos. Essa etapa é chamada <b>substituição</b>. Novamente podemos nos perguntar:</p>
+<div data-on="2-" class="tcb jus"><p><b><span class="c-brickred">PERGUNTA:</span></b> Se queremos manter <span class="q q34">“</span>bons<span class="q q34">”</span> indivíduos, por que não eliminar os k piores?</p></div>
+<p data-on="3-">E a resposta é a mesma...</p>
+<div data-on="3-" class="tcb jus"><p><b><span class="c-myblue">RESPOSTA:</span></b> Essa estratégia pode levar a uma convergência prematura para ótimos locais, e ainda existe o fator de diversificação: pode ser que embora uma solução tenha um <i>fitness</i> ruim, uma pequena parte dela faz parte do ótimo!</p></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><img class="ig" src="img/Substituicao1.svg" style="width:183.36pt" alt="" data-only="1-"></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>Uma forma de resolver esse problema é dando uma <b>margem</b> para selecionarmos indivíduos melhores para serem eliminados</p></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim sel" data-anim="subst" data-h="120.6" data-from="s1" data-state="s2"><img class="ig" src="img/Substituicao2.svg" style="width:183.36pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>Basta <span class="c-myblue">ordenarmos os elementos de forma crescente</span> em relação ao seu <i>fitness</i>.</p></div></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Algoritmos genéticos">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim sel" data-anim="subst" data-h="120.8" data-from="s2" data-state="s3"><img class="ig" src="img/Substituicao3.svg" style="width:183.36pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>Em seguida <b>selecionamos aleatoriamente</b> o número que deve ser eliminado \(m\) dentre os \(k\) primeiros elementos, com \(m &lt; k\). No exemplo ao lado temos \(m\) = 2 e \(k\) = 3.</p></div></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="AG e Estruturas de Dados">
+<div class="fc"><div class="sec-title">AG e Estruturas de Dados</div></div>
+</section>
+
+<section class="frame t only-title" data-section="AG e Estruturas de Dados">
+<header class="ft"><h2>AG e Estruturas de Dados</h2></header>
+<div class="fc">
+<p>Lembrando da aula de representação de soluções: existe algum tipo de estrutura de dados e/ ou representação de soluções que facilita a implementação de algoritmos genéticos?</p>
+<div data-only="2" class="center"><p class="imgs"><img class="ig" src="img/ArtigoRK.svg" style="width:281.06pt" alt="" data-only="1-"></p></div>
+<div data-only="3" class="center"><p class="imgs"><img class="ig" src="img/ArtigoRK2.svg" style="width:281.06pt" alt="" data-only="1-"></p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="AG e Estruturas de Dados">
+<header class="ft"><h2>AG e Estruturas de Dados</h2></header>
+<div class="fc">
+<div class="tcb jus"><p>As <b><span class="c-myblue">chaves aleatórias</span></b> foram criadas com o intuito de serem utilizadas em algoritmos genéticos! Usando-as, todas as operações de cruzamentos são executadas <b>no espaço indireto</b>. Só retomamos a solução quando a decodificamos - ou seja, já fazemos a decodificação para a factibilidade.</p></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="AG e Estruturas de Dados">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim sel" data-anim="rkcross" data-from="r0" data-state="r1"><img class="ig" src="img/CrossRK1.svg" style="width:174.16pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>Podemos executar o mesmo PMX que anteriormente.</p></div></div>
+</div>
+</section>
+
+<section data-steps="2" class="frame plain notitle" data-section="AG e Estruturas de Dados">
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="center fl"><p class="imgs ovf"><span class="anim sel" data-anim="rkcross" data-from="r1" data-state="r2,r3"><img class="ig" src="img/CrossRK2.svg" style="width:174.16pt" alt="" data-only="1-"></span></p></div></div>
+<div class="column jus" style="width:161.48pt"><p>No entanto, nenhuma correção é necessária agora! Podemos simplesmente realizar a troca de materiais genéticos e em seguida <b>fazer a decodificação</b> dos filhos gerados.</p></div></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="AG e Estruturas de Dados">
+<header class="ft"><h2>AG e Estruturas de Dados</h2></header>
+<div class="fc">
+<div class="tcb jus"><p>Note que com as <b>random keys</b>, o algoritmo genético se torna <b>independente do problema a ser resolvido</b> - todo o algoritmo é aplicado no espaço das chaves aleatórias. A única parcela que depende do problema é a decodificação. Vejamos o fluxograma de um algoritmo genético que usa RK.</p></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="AG e Estruturas de Dados">
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim ov" data-anim="brkga" data-from="b0" data-state="b1,b2"><img class="ig" src="img/Flowchart BRKGA.svg" style="width:313.88pt" alt="" data-only="1-"></span></p></div>
+<p><span data-on="2"> A única parte que é específica do problema é a <b>decodificação da solução</b>. </span></p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="AG e Estruturas de Dados">
+<header class="ft"><h2>AG e Estruturas de Dados</h2></header>
+<div class="fc">
+<div class="block tc"><div class="block-title tc">Conclusão</div><div class="block-body jus"><p>Ou seja, se você conseguir pensar em uma codificação por random keys para o seu problema, é possível usar pacotes de algoritmos genéticos prontos, em que a única coisa que é necessário implementar é o decodificador, para extrair o custo de uma chave aleatória. Uma versão desses AGs que está sendo muito usada é o BRKGA (<b>B</b>iased <b>R</b>andom <b>K</b>eys <b>G</b>enetic <b>A</b>lgorithms) - com códigos prontos em Python e C++.</p></div></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="AG e Estruturas de Dados">
+<header class="ft"><h2>Pacotes BRKGA</h2></header>
+<div class="fc">
+<p><b><span class="c-myblue">Pacotes prontos Python e C++ BRKGA:</span></b></p>
+<div class="center"><p class="imgs"><img class="ig" src="img/BRKGApython.svg" style="width:186.75pt" alt="" data-only="1-"></p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="AG e Estruturas de Dados">
+<header class="ft"><h2>Artigo BRKGA</h2></header>
+<div class="fc">
+<p><b><span class="c-myblue">Artigo de revisão sobre BRKGA:</span></b></p>
+<div class="center"><p class="imgs"><img class="ig" src="img/ArtigoResende.png" style="width:270.38pt" alt="" data-only="1-"></p></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Exemplo - TSP">
+<div class="fc"><div class="sec-title">Exemplo - TSP</div></div>
+</section>
+
+<section class="frame t only-title" data-steps="2" data-section="Exemplo - TSP">
+<header class="ft"><h2>Exemplo - TSP</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li><b>EXEMPLO:</b> Implemente um AG para o problema do TSP com as seguintes características:
+<ol class="enum rag">
+<li><b>Geração da população inicial:</b> aleatória.</li>
+<li><b>Seleção:</b> Roleta</li>
+<li><b>Cruzamento:</b> OX (Order Crossover)</li>
+<li><b>Mutação:</b> swap aleatório</li>
+</ol></li>
+</ol>
+<span class="anim" data-anim="agdemo" data-state="texto,demo"></span>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Exemplo - TSP">
+<header class="ft"><h2>Atividade 1</h2></header>
+<div class="fc jus">
+<p>Considerando o problema que você escolheu para tratar na disciplina.</p>
+<ol class="enum jus">
+<li>Encontre um artigo que o resolve usando AG.</li>
+<li>Descreva os como os autores resolvem os principais componentes do design para o algoritmo.</li>
+</ol>
+</div>
+</section>
+
+</main>
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="lib/hyphen/hyphen.js"></script>
+<script src="lib/hyphen/pt.js"></script>
+<script src="js/texbreak.js"></script>
+<script src="js/anim/core.js"></script>
+<script src="js/anim/cruzamento.js"></script>
+<script src="js/anim/agdemo.js"></script>
+<script src="js/anim/dados/roleta.js"></script>
+<script src="js/anim/dados/torneio.js"></script>
+<script src="js/anim/selecao.js"></script>
+<script src="js/anim/fitfo.js"></script>
+<script src="js/anim/dados/antonio.js"></script>
+<script src="js/anim/dados/gapass.js"></script>
+<script src="js/anim/dados/gafinal.js"></script>
+<script src="js/anim/dados/avesrotas.js"></script>
+<script src="js/anim/darwin.js"></script>
+<script src="js/anim/landga.js"></script>
+<script src="js/anim/pseudoga.js"></script>
+<script src="js/anim/dados/rk.js"></script>
+<script src="js/anim/rk.js"></script>
+<script src="js/anim/dados/timeline.js"></script>
+<script src="js/anim/dados/popmet.js"></script>
+<script src="js/anim/dados/galapagos.js"></script>
+<script src="js/anim/dados/subst.js"></script>
+<script src="js/anim/dados/passaros.js"></script>
+<script src="js/anim/extras.js"></script>
+<script src="js/slides.js"></script>
+</body>
+</html>

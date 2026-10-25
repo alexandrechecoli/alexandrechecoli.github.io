@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metaheuristicas - 6 - Busca Local (local search)</title>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<link rel="stylesheet" href="css/beamer.css">
+</head>
+<body data-author="Alexandre Checoli Choueiri" data-shorttitle="DEP - UFPR : Metaheuristicas - 6 - Busca local">
+<main id="deck">
+
+<section class="frame titlepage notitle">
+<div class="fc">
+<div class="tp-title" style="margin-top:-1.9pt">Metaheuristicas - 6 - Busca Local (<i>local search</i>)</div>
+<div class="tp-author" style="margin-top:25pt">Alexandre Checoli Choueiri</div>
+<div class="tp-date">29/03/2023</div>
+<div class="tp-img" style="margin-top:17.85pt"><img class="ig" src="img/capa.svg" style="width:84.10pt" alt=""></div>
+</div>
+</section>
+
+<section class="frame toc notitle">
+<div class="fc">
+<div class="toc-item"><span class="toc-num">1</span>Introdução</div>
+<div class="toc-item"><span class="toc-num">2</span>Representação Visual</div>
+<div class="toc-item"><span class="toc-num">3</span>Pseudocódigo</div>
+<div class="toc-item"><span class="toc-num">4</span>Seleção do Vizinho</div>
+<div class="toc-item"><span class="toc-num">5</span>Atividade</div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Introdução">
+<div class="fc"><div class="sec-title">Introdução</div></div>
+</section>
+
+<section class="frame only-title" data-section="Introdução">
+<header class="ft"><h2>Introdução</h2></header>
+<div class="fc jus">
+<div class="tcb jus"><p>A <b><span class="c-myblue">Busca Local</span></b> (<i>Local Search</i>) é provavelmente a mais simples e mais antiga metaheuristica. Ela começa com uma <b>solução inicial</b>, e a cada iteração faz a substituição da solução por uma <b>solução vizinha com melhor valor da função objetivo</b>. A busca é interrompida quando todos os vizinhos da solução atual tem valores piores da função objetivo, ou seja, atinge-se um <b>ótimo local</b>.</p></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Representação Visual">
+<div class="fc"><div class="sec-title">Representação Visual</div></div>
+</section>
+
+<section class="frame t only-title" data-section="Representação Visual">
+<header class="ft"><h2>Representação Visual</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="vazio" data-state="ls1"></span></p></div>
+<p>Podemos entender o que a busca local faz usando a nossa representação do <i>fitness landscape</i> (considerando um problema de minimização).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representação Visual">
+<header class="ft"><h2>Representação Visual</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="ls1" data-state="ls2"></span></p></div>
+<p>Precisamos de uma solução inicial \(s\) para dar início à busca.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representação Visual">
+<header class="ft"><h2>Representação Visual</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="ls2" data-state="ls3"></span></p></div>
+<p>Em seguida, considerando alguma estrutura de vizinhança \(N\) geramos os vizinhos de \(s\).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representação Visual">
+<header class="ft"><h2>Representação Visual</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="ls3" data-state="ls4"></span></p></div>
+<p>Verificamos então se existe alguma solução vizinha \(s'\) com valor da função objetivo melhor do que a solução atual.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representação Visual">
+<header class="ft"><h2>Representação Visual</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="ls4" data-state="ls5"></span></p></div>
+<p>Se existe, substituímos a solução inicial pelo vizinho encontrado \(s'\), e novamente geramos os seus vizinhos.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representação Visual">
+<header class="ft"><h2>Representação Visual</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="ls5" data-state="ls6"></span></p></div>
+<p>O processo é então repetido até que nenhuma solução vizinha tenha um valor de função objetivo melhor do que a solução atual.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representação Visual">
+<header class="ft"><h2>Representação Visual</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="ls6" data-state="ls7"></span></p></div>
+<p>O processo é então repetido até que nenhuma solução vizinha tenha um valor de função objetivo melhor do que a solução atual.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representação Visual">
+<header class="ft"><h2>Representação Visual</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="ls7" data-state="ls8"></span></p></div>
+<p>O processo é então repetido até que nenhuma solução vizinha tenha um valor de função objetivo melhor do que a solução atual.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representação Visual">
+<header class="ft"><h2>Representação Visual</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="ls8" data-state="ls9"></span></p></div>
+<p>O processo é então repetido até que nenhuma solução vizinha tenha um valor de função objetivo melhor do que a solução atual.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representação Visual">
+<header class="ft"><h2>Representação Visual</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="ls9" data-state="ls10"></span></p></div>
+<p>No fim do algoritmo a busca local <b><span class="c-myblue"> encontra o ótimo local</span></b> em relação à vizinhança \(N\).</p>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Pseudocódigo">
+<div class="fc"><div class="sec-title">Pseudocódigo</div></div>
+</section>
+
+<section class="frame t only-title" data-section="Pseudocódigo" data-steps="12">
+<header class="ft"><h2>Pseudocódigo</h2></header>
+<div class="fc jus">
+<p>Abaixo segue um pseudocódigo <i>template</i> da busca local.</p>
+<div class="algorithm" style="margin-top:10.05pt">
+<div class="alg-cap"><b>Algorithm 1</b> Template genérico busca local</div>
+<div class="alg-body" style="padding:5.97pt 0 0.32pt">
+<div class="l1">\(s = \) GeraSolInicial()<div class="alg-cmt">\(\triangleright\) Gera uma solução inicial</div></div>
+<div class="l1"><b>while</b> Critério de parada não for satisfeito <b>do</b></div>
+<div class="l2">\(V\) = GeraVizinhos(\(\mathbb{N}(s)\))<div class="alg-cmt">\(\triangleright\) Gera vizinhos de \(s\)</div></div>
+<div class="l2">\(s' = \) Seleciona(\(V\))<div class="alg-cmt">\(\triangleright\) Seleciona um vizinho de \(s\), \(s'\)</div></div>
+<div class="l2"><b>if</b> \(s^{'}\) for melhor do que \(s\) <b>then</b></div>
+<div class="l3">\(s = s'\)<div class="alg-cmt">\(\triangleright\) Substitui \(s\) por \(s'\)</div></div>
+<div class="l2"><b>else</b></div>
+<div class="l3">Pare</div>
+<div class="l2"><b>end if</b></div>
+<div class="l1"><b>end while</b></div>
+<div class="l1"><b>return</b> \(s\).</div>
+</div>
+</div>
+<span class="anim" data-anim="pseudo" data-state="p,i0,w0,g0,sel0,if0,mv0,run,sel8,if8,pare,ret" style="position:absolute;left:257.5pt;top:22pt"></span>
+</div>
+</section>
+
+<section class="frame t" data-section="Pseudocódigo">
+<header class="ft"><h2>Pseudocódigo</h2><div class="subtitle">Componentes no Design do Algoritmo</div></header>
+<div class="fc jus">
+<p>Em que:</p>
+<ol class="enum jus">
+<li>GeraSolInicial(): Gera uma solução inicial para o problema (<i>Greedy</i>, por exemplo).</li>
+<li>GeraVizinhos(\(\mathbb{N}(s)\)): Gera os vizinhos de \(s\) pela estrutura de vizinhança \(\mathbb{N}\).</li>
+<li>Seleciona(\(V\)): Seleciona algum vizinho de \(s \in \mathbb{N}(s) \).</li>
+</ol>
+<div data-on="2-" class="tcb jus"><p>Dessa forma, <b>existem 3 decisões importantes</b> ao se fazer o design da Busca Local. Já vimos métodos para gerar uma solução inicial e os conceitos de geração de vizinhança, falta definir a <b>forma de seleção do vizinho</b>.</p></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Seleção do Vizinho">
+<div class="fc"><div class="sec-title">Seleção do Vizinho</div></div>
+</section>
+
+<section class="frame t" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="vazio" data-state="t1"></span></p></div>
+<p>Verificando o <i>fitness landscape</i> para a busca local</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="busca" data-from="t1" data-state="t2"></span></p></div>
+<p>Mais especificamente na etapa de geração dos vizinhos.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="arvore" data-from="t2" data-state="zw"></span></p></div>
+<p>A busca local <b>nunca</b> aceita vizinhos com valores piores da função objetivo.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="arvore" data-from="zw" data-state="zb"></span></p></div>
+<p>Mas podem existir <b>diversos vizinhos</b> com valores melhores, qual escolher então?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="arvore" data-from="zb" data-state="f"></span></p></div>
+<p>Uma opção é escolher o primeiro vizinho com função melhor que a solução atual, esse método de seleção é chamado de <span class="c-myblue"><i>first improvement</i></span> (primeira melhoria).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="arvore" data-from="f" data-state="fb"></span></p></div>
+<p>Podemos ainda gerar toda a vizinhança e escolher o vizinho com a melhor função objetivo, esse método de seleção é chamado de <span class="c-myblue"><i>best improvement</i></span> (melhor “melhoria”).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="arvore" data-from="fb" data-state="fbr"></span></p></div>
+<p>Um terceiro método consiste em, dentre todos os vizinhos que são melhores que a solução atual, selecionar um aleatoriamente, esse método é chamado de <span class="c-myblue"><i>random selection</i></span> (seleção aleatória).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho - Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tabela" data-from="vazio" data-state="type1"></span></p></div>
+<div class="tcb jus"><p>Por exemplo, considere um problema (de minimização) com representação binária e o operador <i>flip</i>.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho - Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tabela" data-from="type1" data-state="type2"></span></p></div>
+<div class="tcb jus"><p>Os vizinhos da solução inicial, bem como seus valores de função objetivo são mostrados acima.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho - Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tabela" data-from="type2" data-state="type3"></span></p></div>
+<div class="tcb jus"><p>Quais soluções seriam escolhidas, de acordo com os tipos de seleção possíveis?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho - Conclusões</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="tabela" data-from="type3" data-state="type4"></span></p></div>
+<div class="tcb jus"><p>Quais soluções seriam escolhidas, de acordo com os tipos de seleção possíveis?</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Seleção do Vizinho">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Seleção do Vizinho - Conclusões</div></header>
+<div class="fc jus">
+<div class="block"><div class="block-title">Conclusões</div><div class="block-body jus"><p>Nota-se que o método <i>Best Improvement</i> gera <b>toda</b> a vizinhança da solução \(s\), o que pode ser <b>computacionalmente caro</b>. Já o <i>First Improvement</i> não seleciona o melhor vizinho, porém o tempo de geração é muito menor. Em muitas aplicações na prática têm-se observado que estratégia <i>First Improvement</i> leva a soluções de <b>mesma qualidade</b> da <i>Best Improvement</i> em menos tempo computacional (<span class="c-brickred">mas isso não é uma regra</span>!).</p></div></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Atividade">
+<div class="fc"><div class="sec-title">Atividade</div></div>
+</section>
+
+<section class="frame only-title" data-section="Atividade">
+<header class="ft"><h2>Atividade 1</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li style="line-height:11.96pt">Considerando o problema de sua escolha, busque pelo menos 2 artigos científicos em que o algoritmo de busca local é utilizado (geralmente a etapa de busca local é usada como uma parte de outros algoritmos). Nesses artigos identifique:
+<ol class="enum rag">
+<li data-label="1.1">As estruturas de vizinhança utilizadas.</li>
+<li data-label="1.2">Qual o método de seleção do vizinho utilizado.</li>
+</ol></li>
+</ol>
+</div>
+</section>
+
+</main>
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="lib/hyphen/hyphen.js"></script>
+<script src="lib/hyphen/pt.js"></script>
+<script src="js/texbreak.js"></script>
+<script src="js/anim/core.js"></script>
+<script src="js/anim/ciclo.js"></script>
+<script src="js/anim/continuo.js"></script>
+<script src="js/anim/cube.js"></script>
+<script src="js/anim/fig.js"></script>
+<script src="js/anim/flgraph.js"></script>
+<script src="js/anim/landscape.js"></script>
+<script src="js/anim/localopt.js"></script>
+<script src="js/anim/surface3d.js"></script>
+<script src="js/anim/swap.js"></script>
+<script src="js/anim/dados/tabela.js"></script>
+<script src="js/anim/buscalocal.js"></script>
+<script src="js/slides.js"></script>
+</body>
+</html>

@@ -13,13 +13,14 @@
  *   - Ao avançar (→) para o frame seguinte ou para o próximo passo, anima.
  *   - Ao voltar, pular para outro frame ou imprimir, mostra direto o estado final.
  *   - Apertar → durante uma animação apenas a completa. A tecla R repete a animação de entrada.
- *   - Respeita "reduzir movimento" do sistema operacional.
+ *   - Ignora "reduzir movimento" do sistema operacional: as animações rodam sempre.
  */
 (function () {
   'use strict';
 
   const NS = 'http://www.w3.org/2000/svg';
-  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Animações sempre ligadas, mesmo com "reduzir movimento" ativo no sistema.
+  const reduce = false;
   const registry = {};
 
   // ---------- utilidades ----------

@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metaheuristicas - 7 - Simulated Annealing</title>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<link rel="stylesheet" href="css/beamer.css">
+<style>
+/* capa: o css foi calibrado na aula 5, cujo título tem "ú" (o acento empurra tudo 2pt para baixo);
+   o título desta aula não tem acento */
+.frame.titlepage .fc::before { height: 24.5pt; }
+</style>
+</head>
+<body data-author="Alexandre Checoli Choueiri" data-shorttitle="Metaheuristicas - 7 - Simulated Annealing">
+<main id="deck">
+
+<section class="frame titlepage notitle">
+<div class="fc">
+<div class="tp-title">Metaheuristicas - 7 - Simulated Annealing</div>
+<div class="tp-author">Alexandre Checoli Choueiri</div>
+<div class="tp-date">05/03/2023</div>
+<div class="tp-img"><img class="ig" src="img/capa.svg" style="width:84.10pt" alt=""></div>
+</div>
+</section>
+
+<section class="frame toc notitle">
+<div class="fc">
+<div class="toc-item"><span class="toc-num">1</span>O problema da busca local</div>
+<div class="toc-gap"></div>
+<div class="toc-item"><span class="toc-num">2</span>Paradigma exploração x intensificação</div>
+<div class="toc-gap"></div>
+<div class="toc-item"><span class="toc-num">3</span>Metaheuristicas</div>
+<div class="toc-gap"></div>
+<div class="toc-item"><span class="toc-num">4</span>O processo de Annealing</div>
+<div class="toc-gap"></div>
+<div class="toc-item"><span class="toc-num">5</span>A metáfora no algoritmo</div>
+<div class="toc-gap"></div>
+<div class="toc-item"><span class="toc-num">6</span>Pseudocódigo</div>
+<div class="toc-gap"></div>
+<div class="toc-item"><span class="toc-num">7</span>Parâmetros do algoritmo</div>
+<div class="toc-gap"></div>
+<div class="toc-item"><span class="toc-num">8</span>Atividades</div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="O problema da busca local">
+<header class="ft"><h2>Problemática</h2></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Vimos a primeira e mais simples metaheuristica, chamada <span class="c-myblue">busca local</span>. Esta classe de algoritmos, no entanto, possui algumas limitações.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O problema da busca local">
+<header class="ft"><h2>Relembrando a busca local</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="lsprob" data-from="vazio" data-state="ls1"></span></p></div>
+<p>Na <span class="c-myblue">busca local</span>, partimos de uma solução inicial, e <b>intensificamos</b> a busca até chegar em um ótimo local.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O problema da busca local">
+<header class="ft"><h2>Relembrando a busca local</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="lsprob" data-from="ls1" data-state="ls2"></span></p></div>
+<p>Na <span class="c-myblue">busca local</span>, partimos de uma solução inicial, e <b>intensificamos</b> a busca até chegar em um ótimo local.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O problema da busca local">
+<header class="ft"><h2>Relembrando a busca local</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="lsprob" data-from="ls2" data-state="ls3"></span></p></div>
+<p>O que aconteceria se a solução inicial fosse como mostrado acima?</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O problema da busca local">
+<header class="ft"><h2>Relembrando a busca local - Problemática</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="lsprob" data-from="ls3" data-state="ls4"></span></p></div>
+<p>Após a intensificação, a busca chega a um ótimo local que <span class="c-brickred">não é o ótimo global</span>.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O problema da busca local">
+<header class="ft"><h2>Relembrando a busca local - Problemática</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="lsprob" data-from="ls4" data-state="ls5"></span></p></div>
+<p>Após a intensificação, a busca chega a um ótimo local que <span class="c-brickred">não é o ótimo global</span>.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O problema da busca local">
+<header class="ft"><h2>Relembrando a busca local - Problemática</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="lsprob" data-from="ls5" data-state="ls6"></span></p></div>
+<p>Com isso podemos inferir que a <span class="c-myblue">busca local</span> é muito sensível à escolha da solução inicial.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O problema da busca local">
+<header class="ft"><h2>Relembrando a busca local - Problemática</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="lsprob" data-from="ls6" data-state="ls7"></span></p></div>
+<p>Qualquer solução inicial gerada nas áreas delimitadas acima <span class="c-brickred">não chegará ao ótimo global.</span></p>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Paradigma exploração x intensificação">
+<header class="ft"><h2>Paradigma exploração x intensificação</h2></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Essa intuição gera o principal paradigma das metaheuristicas, chamado de</p>
+<div class="center"><p><b>exploração</b> x <b>intensificação</b></p></div>
+<p>do <i>fitness landscape</i>.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Paradigma exploração x intensificação">
+<header class="ft"><h2>Paradigma exploração x intensificação</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="pareixo" data-from="vazio" data-state="paradigma1"></span></p></div>
+<p>A <b>intensificação</b> está ligada a exploração intensiva de uma vizinhança (a maior intensificação é dada pela busca local).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Paradigma exploração x intensificação">
+<header class="ft"><h2>Paradigma exploração x intensificação</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="pareixo" data-from="paradigma1" data-state="paradigma2"></span></p></div>
+<p>A <b>exploração</b> está ligada a capacidade de explorar diferentes regiões do <i>fitness landscape</i>. O extremo da exploração é a geração aleatória de soluções, ou seja, a <span class="c-myblue">busca aleatória</span>.</p>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Paradigma exploração x intensificação">
+<header class="ft"><h2>Paradigma exploração x intensificação</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="parbusca" data-from="vazio" data-state="paradigma3"></span></p></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Paradigma exploração x intensificação">
+<header class="ft"><h2>Paradigma exploração x intensificação</h2></header>
+<div class="fc jus">
+<div class="block"><div class="block-title">Conclusão</div><div class="block-body jus"><ol class="enum jus">
+<li>O design de qualquer metaheuristica deve ponderar o paradigma <b>exploração x intensificação</b>. É necessário conseguir <b>intensificar</b> a busca em algumas regiões ao mesmo tempo que uma grande região do <i>fitness landscape</i> é <b>explorado</b>.</li>
+<li>Os dois conceitos são conflitantes, de forma que uma boa metaheuristica faz um compromisso entre eles.</li>
+<li>A <b>intensificação</b> está relacionada a melhoria continua de uma solução por meio de uma vizinhança.</li>
+<li>O principal objetivo da <b>exploração</b> é evitar que a busca fique <span class="c-brickred">presa em ótimos locais</span>.</li>
+</ol></div></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Paradigma exploração x intensificação">
+<header class="ft"><h2>Formas de evitar ótimos locais</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="metodos" data-from="vazio" data-state="metodos1"></span></p></div>
+<p>De forma geral, as diferentes abordagens para se evitar ótimos locais são mostradas acima, bem como os algoritmos mais representativos.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Paradigma exploração x intensificação">
+<header class="ft"><h2>Formas de evitar ótimos locais</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="metodos" data-from="metodos1" data-state="metodos3"></span></p></div>
+<p>Nós veremos um representante de cada família de algoritmos.</p>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Metaheuristicas">
+<header class="ft"><h2>Inspiração para metaheuristicas</h2></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Os criadores de metaheuristicas perceberam que uma inspiração para o <i>design</i> de algoritmos (e o paradigma <b>exploração</b> x <b>intensificação</b>) eficientes pode vir diretamente de associações com fenômenos e comportamentos da própria natureza. Alguns exemplos são mostrados abaixo:</p>
+<ol class="enum jus">
+<li><span class="c-myblue">Recozimento simulado</span>: Imita o comportamento de resfriamento de materiais.</li>
+<li><span class="c-myblue">Colônia de formigas</span>: Imita o comportamento das formigas.</li>
+<li><span class="c-myblue">Algoritmos genéticos</span>: Simula a evolução de uma população ao longo de gerações, com mutação, nascimentos, mortes, etc.</li>
+</ol></div>
+<div class="center"><p class="imgs"><img class="ig" src="img/ornamentos.svg" style="width:202.98pt" alt=""></p></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="O processo de Annealing">
+<header class="ft"><h2>Simulated Annealing</h2></header>
+<div class="fc jus">
+<p>Um desses algoritmos é o chamado <b>Simulated Annealing</b> - SA (recozimento simulado, têmpera simulada). O algoritmo é baseado nos princípios de mecânica estatística, e tem a seguinte associação com um fenômeno físico:</p>
+<div class="tcb jus"><p>O processo de <span class="c-myblue">Annealing</span> visa melhorar as características de um material por meio do <span class="c-brickred">aquecimento</span> e posterior <span class="c-myblue">refrigeração</span> a uma taxa controlada. A cada redução de temperatura os átomos vão se rearranjando em um estado de menor energia. Ao atingir a temperatura mais baixa e em equilíbrio, o material chega a uma estrutura atômica “perfeita” (com energia = 0). Se o processo for executado de forma correta, o novo material tem boas propriedades físicas.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O processo de Annealing">
+<header class="ft"><h2>Simulated Annealing</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="annealing" data-from="vazio" data-state="T1"></span></p></div>
+<div class="tcb jus"><p>Inicialmente a estrutura é submetida a uma temperatura alta, de forma que os átomos ficam com muita energia (E).</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O processo de Annealing">
+<header class="ft"><h2>Simulated Annealing</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="annealing" data-from="T1" data-state="T2"></span></p></div>
+<div class="tcb jus"><p>Inicialmente a estrutura é submetida a uma temperatura alta, de forma que os átomos ficam com muita energia (E). Após algum tempo (mantido na mesma temperatura), a estrutura atinge um estado de equilíbrio.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O processo de Annealing">
+<header class="ft"><h2>Simulated Annealing</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="annealing" data-from="T2" data-state="T3"></span></p></div>
+<div class="tcb jus"><p>Inicialmente a estrutura é submetida a uma temperatura alta, de forma que as átomos ficam com muita energia (E). Após algum tempo (mantido na mesma temperatura), a estrutura atinge um estado de equilíbrio.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O processo de Annealing">
+<header class="ft"><h2>Simulated Annealing</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="annealing" data-from="T3" data-state="T4"></span></p></div>
+<div class="tcb jus"><p>Após o equilibro ser atingido, a <span class="c-brickred">temperatura é reduzida</span>, e o processo é repetido até que um novo estado de equilíbrio de energia seja atingido.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O processo de Annealing">
+<header class="ft"><h2>Simulated Annealing</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="annealing" data-from="T4" data-state="T6"></span></p></div>
+<div class="tcb jus"><p>Após o equilibro ser atingido, a <span class="c-brickred">temperatura é reduzida</span>, e o processo é repetido até que um novo estado de equilíbrio de energia seja atingido.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O processo de Annealing">
+<header class="ft"><h2>Simulated Annealing</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="annealing" data-from="T6" data-state="T9"></span></p></div>
+<div class="tcb jus"><p>O processo é repetido até que uma <span class="c-brickred">temperatura</span> final seja atingida. Se o processo foi feito de forma controlada, a <b>estrutura gerada mantém uma configuração de energia minima (min E)</b>.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O processo de Annealing">
+<header class="ft"><h2>Simulated Annealing</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="annealing" data-from="T9" data-state="T9"></span></p></div>
+<div class="tcb jus"><p>Isso garante boas características mecânicas para o material.</p>
+<ol class="enum rag">
+<li>Conformabilidade</li>
+<li>Ductabilidade</li>
+</ol></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O processo de Annealing">
+<header class="ft"><h2>Simulated Annealing</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="annealing" data-from="T9" data-state="T10"></span></p></div>
+<div class="tcb jus"><p>Se a <span class="c-brickred">temperatura</span> for reduzida de forma muito brusca, ou o estado de equilíbrio não for atingido, o material final pode apresentar imperfeições na sua estrutura atômica.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="O processo de Annealing">
+<header class="ft"><h2>Formas de evitar ótimos locais</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="metodos" data-from="metodos3" data-state="metodos2"></span></p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="A metáfora no algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2></header>
+<div class="fc jus">
+<div class="tcb jus"><div class="center"><p><span class="c-brickred">Como isso é usado no algoritmo?</span></p></div>
+<p>A ideia de que altas temperaturas geram mais movimento nos átomos é usada para<b> evitar a convergência prematura em ótimos locais</b>. Com altas temperaturas existe uma probabilidade <b>P</b> alta de aceitarmos um movimento na vizinhança que não melhora a solução atual. Ao longo do algoritmo a temperatura vai abaixando e a probabilidade de aceitar uma solução pior é reduzida.</p></div>
+<div class="tcb jus"><p>Se a redução de temperatura for muito acelerada, a busca ficará presa em um <b>ótimo local</b>, equivalentemente ao material que foi resfriado muito rapidamente e os átomos ficaram com <b>imperfeições</b> no final do processo de <i>Annealing</i>.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="A metáfora no algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">No <i>fitness landscape</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="saland" data-from="vazio" data-state="prob1"></span></p></div>
+<p>Considerando a solução \(s\). O algoritmo gera uma solução vizinha <b>de forma aleatória</b>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="A metáfora no algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">No <i>fitness landscape</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="saland" data-from="prob1" data-state="prob2"></span></p></div>
+<p>Quando a solução \(s'\) é pior do que a solução atual, calculamos uma probabilidade de aceitá-la mesmo assim.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="A metáfora no algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">No <i>fitness landscape</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="saland" data-from="prob2" data-state="prob3"></span></p></div>
+<p>Essa probabilidade é influenciada pela temperatura (altas temperaturas aumentam a prob.), e pela diferença entre os valores objetivo \(\Delta E\).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="A metáfora no algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">No <i>fitness landscape</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="saland" data-from="prob3" data-state="prob4"></span></p></div>
+<p>Já quando a temperatura é reduzida a probabilidade de aceitar um movimento pior é menor.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="A metáfora no algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">No <i>fitness landscape</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="saland" data-from="prob4" data-state="prob5"></span></p></div>
+<p>Já quando a temperatura é reduzida a probabilidade de aceitar um movimento pior é menor.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="A metáfora no algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">No <i>fitness landscape</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="saland" data-from="prob5" data-state="prob6"></span></p></div>
+<p>Na comparação com o fenômeno físico, os ótimos locais são materiais com imperfeições e o ótimo global é o material com menor quantidade de energia e boas características.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Pseudocódigo" data-steps="12">
+<header class="ft"><h2>Pseudocódigo (problema de min.)</h2></header>
+<div class="fc jus">
+<div class="scalebox" style="transform:scale(0.9);transform-origin:0 0"><div class="tcb jus"><div class="algorithm bare"><div class="alg-body">
+<div class="l1">\(s = \) GeraSolInicial()<div class="alg-cmt">\(\triangleright\) Gera uma solução inicial</div></div>
+<div class="l1">\(T = T_{max}\)</div>
+<div class="l1"><b>while</b> T \(\geq\) T\(_{min}\) <b>do</b></div>
+<div class="l2"><b>while</b> Equilibrio não atingido <b>do</b></div>
+<div class="l3">Gera vizinho aleatório \(s'\)<div class="alg-cmt">\(\triangleright\) Gera vizinho aleatório de \(s\)</div></div>
+<div class="l3">\(\Delta E = f(s') - f(s)\)</div>
+<div class="l3"><b>if</b> \(\Delta E \leq 0\) <b>then</b></div>
+<div class="l4">\(s = s'\)</div>
+<div class="l3"><b>else</b></div>
+<div class="l4">Aceite \(s'\) com probabilidade P = \(e^{\frac{-\Delta E}{T}}\)</div>
+<div class="l3"><b>end if</b></div>
+<div class="l2"><b>end while</b></div>
+<div class="l2">T = RefriaTemperatura(T)<div class="alg-cmt">\(\triangleright\) Reduz a temperatura</div></div>
+<div class="l1"><b>end while</b></div>
+<div class="l1"><b>return</b> melhor \(s\).<div class="alg-cmt">\(\triangleright\) Melhor \(s\) deve ser armazenada</div></div>
+</div></div></div></div>
+<span class="anim" data-anim="sapseudo" data-state="p,i0,t0,w0,e0,g0,d0,if0,acc0,run,fim,ret"></span>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">Questões de design</div></header>
+<div class="fc jus">
+<p>Para cada temperatura, a busca continua por um período determinado pelo equilibro. Além das questões comuns de <i>design</i> para as metaheuristicas de solução única (determinação da vizinhança e da solução inicial), as principais decisões do simulated annealing são:</p>
+<ol class="enum jus">
+<li><span class="c-myblue">A função de probabilidade para o aceite</span>: Esse é o principal componente do SA que possibilita piores vizinhos de serem aceitos, mecanismo que tenta <b>evitar a convergência prematura para ótimos locais</b>.</li>
+<li><span class="c-myblue">A função de resfriamento</span>: A função de resfriamento determina a temperatura a cada iteração do algoritmo. Têm papel crucial no sucesso do algoritmo.</li>
+</ol>
+</div>
+</section>
+
+<section class="frame" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Vejamos como a busca e seleção dos vizinhos funcionava no algoritmo de <span class="c-myblue"><b>busca local</b></span> (em um problema de minimização).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizls" data-from="vazio" data-state="vizinho1"></span></p></div>
+<p>A partir de uma solução \(s_1\) geramos sucessivos vizinhos.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizls" data-from="vizinho1" data-state="vizinho2"></span></p></div>
+<p>A partir de uma solução \(s_1\) geramos sucessivos vizinhos.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizls" data-from="vizinho2" data-state="vizinho3"></span></p></div>
+<p>A partir de uma solução \(s_1\) geramos sucessivos vizinhos.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizls" data-from="vizinho3" data-state="vizinho4"></span></p></div>
+<p>Até o momento em que encontramos um <b>vizinho melhor</b> do que a solução atual.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizls" data-from="vizinho4" data-state="vizinho5"></span></p></div>
+<p>Neste caso fazemos a substituição da solução atual pelo vizinho.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizls" data-from="vizinho5" data-state="vizinho6"></span></p></div>
+<p>E geramos os vizinhos da nova solução.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizls" data-from="vizinho6" data-state="vizinho7"></span></p></div>
+<p>E o processo continua até nenhum vizinho ser melhor do que a solução atual.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizls" data-from="vizinho7" data-state="vizinho8"></span></p></div>
+<p>E o processo continua até nenhum vizinho ser melhor do que a solução atual.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizsa" data-from="vazio" data-state="vizinho9"></span></p></div>
+<p>Já no SA, geramos os vizinhos de forma aleatória.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizsa" data-from="vizinho9" data-state="vizinho10"></span></p></div>
+<p>E à cada vizinho calculamos uma probabilidade \(p\) de aceitar a solução.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizsa" data-from="vizinho10" data-state="vizinho11"></span></p></div>
+<p>Com essa probabilidade, mesmo soluções piores do que a atual podem ser aceitas.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizsa" data-from="vizinho11" data-state="vizinho12"></span></p></div>
+<p>Com essa probabilidade, mesmo soluções piores do que a atual podem ser aceitas.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizsa" data-from="vizinho12" data-state="vizinho13"></span></p></div>
+<p>Se a solução for aceita, da mesma forma que na busca local, continuamos gerando seus vizinhos.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizsa" data-from="vizinho13" data-state="vizinho14"></span></p></div>
+<p>Também da mesma forma que a busca local, se um vizinho é melhor que a solução atual, ele é aceito automáticamente (sem usar o mecanismo de probabilidade).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="vizsa" data-from="vizinho14" data-state="vizinho15"></span></p></div>
+<p>Também da mesma forma que a busca local, se um vizinho é melhor que a solução atual, ele é aceito automáticamente (sem usar o mecanismo de probabilidade).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="viztree" data-fig="viz18" data-from="vazio" data-state="vizinho18"></span></p></div>
+<p>O calculo da probabilidade deve ser uma função de 2 parâmetros:</p>
+<ol class="enum jus">
+<li><b><span class="c-myblue">\(\Delta E\)</span></b>: A diferença nos valores objetivos das duas soluções. Quanto maior \(\Delta E\), pior é o vizinho em relação a solução atual, de forma que a probabilidade de aceite deve ser menor.</li>
+<li><b><span class="c-myblue">Temperatura</span></b>: Quanto maior a temperatura, maior deve ser a probabilidade de aceite de soluções piores.</li>
+</ol>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<p>Como estamos trabalhando com uma probabilidade \(P(\Delta E, T)\), os axiomas da probabilidade devem ser satisfeitos. Seja:</p>
+<div class="eq">\[P(\Delta E, T) = e^{\frac{-(f(s')-f(s))}{T}} = e^{\frac{-\Delta E}{T} }\]<span class="eqno">\((1)\)</span></div>
+<p>Mantido a uma temperatura T constante temos:</p>
+<div class="eq">\[P(\Delta E) = e^{\frac{-(f(s')-f(s))}{T}} = e^{\frac{-\Delta E}{T} }\]<span class="eqno">\((2)\)</span></div>
+<p>Com os diferentes valores de \(\Delta E = \{\Delta E_1, \Delta E_2, ...\}\)</p>
+<ol class="enum rag">
+<li>\( P(\Delta E) \geq 1\)</li>
+<li>\(\sum_{\Delta E = -\infty}^{\Delta E = \infty} P(\Delta E) = 1\)</li>
+<li>\(P(\Delta E_1 \cup \Delta E_2 ...) = \sum_{\Delta E = -\infty}^{\Delta E = \infty} P(\Delta E) \)</li>
+</ol>
+</div>
+</section>
+
+<section class="frame" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<p>A função de probabilidade</p>
+<div class="eq">\[P(\Delta E, T) = e^{\frac{-(f(s')-f(s))}{T}} = e^{\frac{-\Delta}{T} }\]<span class="eqno">\((3)\)</span></div>
+<p>é chamada de função de <b>distribuição de Boltzmann</b>, e obedece a todos os axiomas, bem como as relações que queremos entre probabilidade, temperatura e valores da função objetivo. Vejamos como a distribuição se comporta com diferentes valores de \(\Delta E\).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="boltz" data-from="vazio" data-state="plot1"></span></p></div>
+<p>Para uma determinada temperatura, a <b>distribuição de Boltzmann</b> tem o seguinte comportamento.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="boltz" data-from="plot1" data-state="plot3"></span></p></div>
+<p>Note que quando o \(\Delta E\) é baixo (a solução vizinha é um pouco pior do que a atual) a probabilidade de aceite é alta.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="boltz" data-from="plot3" data-state="plot4"></span></p></div>
+<p>Já quando \(\Delta E\) aumenta a probabilidade de aceite diminui. Soluções um pouco piores do que a sol. atual são mais prováveis de serem aceitas do que as muito piores.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="boltz" data-from="plot4" data-state="plot5"></span></p></div>
+<p>Acima conseguimos ver a diferença da distribuição para diferentes temperaturas, com \(T_0 &gt; T_1 &gt; T_2\).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="boltz" data-from="plot5" data-state="plot6"></span></p></div>
+<p>Considerando o mesmo \(\Delta E\), para temperaturas maiores a probabilidade de aceite é maior.1</p>
+</div>
+</section>
+
+<section class="frame" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">A função de probabilidade - conclusão</div></header>
+<div class="fc jus">
+<div class="block"><div class="block-title">Conclusões</div><div class="block-body jus"><p>A distribuição de Boltzmann exibe o comportamento que precisamos (isso não impede que outras distribuições sejam utilizadas). <br> <span class="c-brickred">PERGUNTA:</span> Como implementamos esse mecanismo de aceite/rejeição de uma determinada probabilidade?</p></div></div>
+</div>
+</section>
+
+<section class="frame" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">Esquema de resfriamento</div></header>
+<div class="fc jus">
+<p>Como a distribuição de probabilidade, existem muitos esquemas de resfriamento que podemos usar no algoritmo. As questões que devem ser definidas em um esquema são:</p>
+<ol class="enum rag">
+<li><span class="c-myblue">A temperatura inicial \(T_{max}\)</span></li>
+<li><span class="c-myblue">A temperatura final \(T_{min}\)</span></li>
+<li><span class="c-myblue">Estado de equilíbrio</span></li>
+<li><span class="c-myblue">Função de resfriamento da temperatura</span></li>
+</ol>
+</div>
+</section>
+
+<section class="frame" data-section="Parâmetros do algoritmo" data-steps="2">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">Esquema de resfriamento</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Existem diversos estudos e divergências em relação aos 3 primeiros elementos, geralmente os cálculos levam em consideração o tamanho da instância. Por exemplo, problemas maiores precisam de mais iterações para chegar a um estado de equilíbrio, etc...de forma que vamos “testar” esses parâmetros..</p></div>
+<p>Também existem diversas <span class="c-myblue">funções de resfriamento da temperatura</span>, usaremos a <b>função geométrica</b>, em que a temperatura da próxima iteração \(T_{i + 1}\) é calculada a partir da temperatura atual \(T_i\) com a seguinte fórmula:</p>
+<div class="eq">\[T_{i+1} = T_{i}\alpha\]<span class="eqno">\((4)\)</span></div>
+<p>Com \(\alpha \in (0,1)\). Testes mostram que \(\alpha\) deve estar entre 0.5 e 0.99.</p>
+<span class="anim" data-anim="resfria" data-state="texto,grafico"></span>
+</div>
+</section>
+
+<section class="frame" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Simulated Annealing</h2><div class="subtitle">Esquema de resfriamento</div></header>
+<div class="fc jus">
+<div class="tcb jus"><div class="center" style="margin-top:1.28pt"><p><b><span class="c-brickred" style="font-size:11.96pt">ATENÇÃO</span></b></p></div>
+<p>O <b>ajuste dos parâmetros</b> (\(T_{max},T_{min}, ...\)) do algoritmo é uma etapa crucial para o bom desempenho do SA. <b>Vá com calma!</b> Comece com valores que não gerem muitas iterações e aumente gradativamente, até encontrar o “equilibro” entre qualidade de soluções e tempo computacional despendido para encontra-las.</p></div>
+</div>
+</section>
+
+<section class="frame only-title" data-steps="2" data-section="Parâmetros do algoritmo">
+<header class="ft"><h2>Exemplo - TSP</h2></header>
+<div class="fc jus">
+<p><span class="c-myblue"><b>EXEMPLO</b></span>: Implemente um algoritmo SA para a resolução do TSP. Use as instancias do TSPlib para verificar a sua eficácia. Lembre de rodar diversos testes para calibrar os parâmetros do algoritmo. Os resultados foram melhores ou piores do que a busca local? Salve todos em um arquivo de <i>benchmark</i> para comparação futura.</p>
+<span class="anim" data-anim="tspdemo" data-state="texto,demo"></span>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Atividades">
+<header class="ft"><h2>Atividade I</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li data-label="1">Qual é o problema dos algoritmos de busca local? Dê uma sugestão de como podemos melhorar o desempenho deles.</li>
+<li data-label="2">O que é o <b>paradigma intensificação x exploração</b> em metaheuristicas? Qual é o exemplo extremo de intensificação? E de exploração?</li>
+<li data-label="3">Explique a relação do algoritmo de <i>Simulated Annealing</i> com o processo de <i>Annealing</i> (recozimento) de materiais.</li>
+<li data-label="4">Aponte quais componentes do SA são responsáveis pela <b>intensificação</b> e pela <b>exploração</b> do <i>fitness landscape</i>.</li>
+<li data-label="5">Quais são os parâmetros do algoritmo SA? Como podemos determiná-los?</li>
+</ol>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Atividades">
+<header class="ft"><h2>Atividade II</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li data-label="1">Considerando o seu problema escolhido para a disciplina. Encontre 2 artigos científicos que usam SA (ou usam SA como uma parte de outro algoritmo) para resolver o problema. Entenda o algoritmo proposto e identifique suas particularidades:
+<ol class="enum jus">
+<li data-label="1.1">Como a sol. inicial é construída?</li>
+<li data-label="1.2">Qual é a vizinhança utilizada?</li>
+<li data-label="1.3">Como são definidos os parâmetros do SA, função de resfriamento, prob., etc?</li>
+</ol></li>
+<li data-label="2">Implemente um algoritmo de SA para o seu problema escolhido.</li>
+</ol>
+</div>
+</section>
+
+</main>
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="lib/hyphen/hyphen.js"></script>
+<script src="lib/hyphen/pt.js"></script>
+<script src="js/texbreak.js"></script>
+<script src="js/anim/core.js"></script>
+<script src="js/anim/buscalocal.js"></script>
+<script src="js/anim/dados/annealing.js"></script>
+<script src="js/anim/annealing.js"></script>
+<script src="js/anim/dados/prob.js"></script>
+<script src="js/anim/saland.js"></script>
+<script src="js/anim/sapseudo.js"></script>
+<script src="js/anim/dados/boltz.js"></script>
+<script src="js/anim/boltz.js"></script>
+<script src="js/anim/resfria.js"></script>
+<script src="js/anim/dados/ls.js"></script>
+<script src="js/anim/lsprob.js"></script>
+<script src="js/anim/dados/par.js"></script>
+<script src="js/anim/dados/par3.js"></script>
+<script src="js/anim/paradigma.js"></script>
+<script src="js/anim/dados/vizls.js"></script>
+<script src="js/anim/dados/vizsa.js"></script>
+<script src="js/anim/dados/viz18.js"></script>
+<script src="js/anim/viztree.js"></script>
+<script src="js/anim/dados/met.js"></script>
+<script src="js/anim/metodos.js"></script>
+<script src="js/anim/tspdemo.js"></script>
+<script src="js/anim/ciclo.js"></script>
+<script src="js/anim/continuo.js"></script>
+<script src="js/anim/cube.js"></script>
+<script src="js/anim/fig.js"></script>
+<script src="js/anim/flgraph.js"></script>
+<script src="js/anim/landscape.js"></script>
+<script src="js/anim/localopt.js"></script>
+<script src="js/anim/surface3d.js"></script>
+<script src="js/anim/swap.js"></script>
+<script src="js/slides.js"></script>
+</body>
+</html>
