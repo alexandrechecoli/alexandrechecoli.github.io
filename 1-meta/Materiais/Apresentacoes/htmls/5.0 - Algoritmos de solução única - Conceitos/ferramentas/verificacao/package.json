@@ -1,0 +1,8 @@
+{
+  "name": "verificacao-slides",
+  "private": true,
+  "description": "Scripts que comparam o HTML com o PDF do Beamer (ver ../../contexto.md)",
+  "dependencies": {
+    "puppeteer-core": "23.11.1"
+  }
+}

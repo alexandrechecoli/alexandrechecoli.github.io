@@ -10,8 +10,11 @@
  *   spin   (entrada) a superfície gira até a vista padrão e vira a imagem
  *   mesh   (entrada) começa como malha com nós (plot1) e vira a superfície
  *   nocut  (entrada, plot5) sem o plano; o plano de corte e a curva de interseção aparecem
+ *   cut    (plot5) plano de corte e curva de interseção desenhados ao vivo (estado final do nocut)
  *   walk   uma busca local desce pela malha, de vizinho em vizinho (plot1.1)
  * Interação: arrastar gira a superfície; duplo clique volta à vista original.
+ *   No estado 'cut', arrastar o plano de corte o desloca (o gráfico corte2d acompanha);
+ *   o plano volta à posição original ao sair do slide.
  */
 (function () {
   'use strict';
@@ -86,6 +89,14 @@
     const img = host.querySelector('img');
     host.classList.add('s3d');
     host.setAttribute('data-interactive', '');
+    if (P.cutY != null && P.cut0 == null) P.cut0 = P.cutY;
+    // muda a posição do plano de corte e avisa o gráfico 2D (corte2d) do mesmo plot
+    function setCutY(y) {
+      y = Math.max(0.02, Math.min(0.98, y));
+      if (y === P.cutY) return;
+      P.cutY = y;
+      document.dispatchEvent(new CustomEvent('s3d-cut', { detail: host.dataset.plot }));
+    }
     const canvas = document.createElement('canvas');
     canvas.className = 's3d-canvas';
     host.appendChild(canvas);
@@ -126,7 +137,10 @@
     function sizeCanvas() {
       const r = img.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
-      const pw = Math.max(1, Math.round(r.width * dpr)), ph = Math.max(1, Math.round(r.height * dpr));
+      // slide escondido (rect zerado) ou impressão: usa no mínimo 2x o tamanho de layout da imagem
+      const lw = img.offsetWidth || parseFloat(img.style.width) * 4 / 3 || P.W;
+      const pw = Math.max(1, Math.round(r.width * dpr), Math.round(lw * 2));
+      const ph = Math.max(1, Math.round(pw * P.H / P.W));
       if (canvas.width !== pw || canvas.height !== ph) { canvas.width = pw; canvas.height = ph; }
       ctx.setTransform(pw / P.W, 0, 0, ph / P.H, 0, 0);
     }
@@ -295,10 +309,13 @@
     let state = 'img';
     function snap(name) {
       state = name;
-      view = { az: AZ0, el: EL0 }; cutState = null; meshBlend = null;
+      view = { az: AZ0, el: EL0 }; meshBlend = null;
+      if (P.cutY != null) setCutY(P.cut0); // o plano volta à posição original
+      cutState = name === 'cut' ? { plane: 1, curve: 1 } : null;
       walkUpto = name === 'walk' && WALK ? WALK.length - 1 : -1;
-      setLive(false);
+      setLive(name === 'cut');
     }
+    window.addEventListener('resize', function () { if (live) render(); });
     async function play(from, to, h) {
       if (from === 'spin') {
         setLive(true);
@@ -326,12 +343,44 @@
 
     // ----- interação: girar com o mouse -----
     let drag = null;
+    // ----- interação: arrastar o plano de corte (estado 'cut') -----
+    function toP(e) { // coordenadas do mouse no sistema da figura (P.W x P.H)
+      const r = host.getBoundingClientRect();
+      return [(e.clientX - r.left) * P.W / r.width, (e.clientY - r.top) * P.H / r.height];
+    }
+    function onPlane(q) { // ponto dentro do retângulo projetado do plano?
+      const v = P.cutY - 0.5;
+      const c = [proj(-0.5, v, -0.5), proj(0.5, v, -0.5), proj(0.5, v, 0.5), proj(-0.5, v, 0.5)];
+      let inside = false;
+      for (let a = 0, b = 3; a < 4; b = a++) {
+        if ((c[a][1] > q[1]) !== (c[b][1] > q[1]) &&
+          q[0] < (c[b][0] - c[a][0]) * (q[1] - c[a][1]) / (c[b][1] - c[a][1]) + c[a][0]) inside = !inside;
+      }
+      return inside;
+    }
+    const canCut = function () { return state === 'cut' && P.cutY != null; };
+
     host.addEventListener('pointerdown', function (e) {
-      drag = { x: e.clientX, y: e.clientY, az: view.az, el: view.el };
+      if (canCut() && onPlane(toP(e))) {
+        // direção na tela de um deslocamento unitário em y (eixo perpendicular ao plano)
+        const a = proj(0, -0.5, 0), b = proj(0, 0.5, 0);
+        drag = { plane: true, p0: toP(e), y0: P.cutY, e: [b[0] - a[0], b[1] - a[1]] };
+      } else {
+        drag = { x: e.clientX, y: e.clientY, az: view.az, el: view.el };
+      }
       host.setPointerCapture(e.pointerId); e.preventDefault();
     });
     host.addEventListener('pointermove', function (e) {
-      if (!drag) return;
+      if (!drag) {
+        if (canCut()) host.style.cursor = onPlane(toP(e)) ? 'move' : '';
+        return;
+      }
+      if (drag.plane) {
+        const q = toP(e), dx = q[0] - drag.p0[0], dy = q[1] - drag.p0[1];
+        const n2 = drag.e[0] * drag.e[0] + drag.e[1] * drag.e[1];
+        if (n2 > 1) { setCutY(drag.y0 + (dx * drag.e[0] + dy * drag.e[1]) / n2); render(); }
+        return;
+      }
       const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
       if (!live && Math.abs(dx) + Math.abs(dy) < 3) return;
       if (!live) setLive(true);
@@ -346,7 +395,7 @@
       (function step(now) { // volta suavemente à vista original
         const t = Math.min(1, (now - t0) / 700), e = A.ease.inOut(t);
         view = { az: A.lerp(v0.az, AZ0, e), el: A.lerp(v0.el, EL0, e) }; render();
-        if (t < 1) requestAnimationFrame(step); else setLive(false);
+        if (t < 1) requestAnimationFrame(step); else setLive(state === 'cut');
       })(t0);
     });
 
@@ -354,7 +403,65 @@
     return { snap: snap, play: play };
   });
 
-  // Revela uma figura da esquerda para a direita (curva 2D do corte), após um atraso
+  /* Curva 2D do corte (slide 119): z(x) = f(x, cutY) da mesma superfície do plot5, então é
+   * exatamente a curva de interseção desenhada no gráfico 3D ao lado.
+   * Eixos e rótulos vêm de img/search_space3_eixos.svg (a figura original sem a curva).
+   * Uso: <span class="anim" data-anim="corte2d" data-plot="plot5" data-from="hidden" data-state="curve"><img ...></span>
+   * Estados: hidden (nada), curve (eixos + curva). A entrada segue o mesmo tempo do 'nocut':
+   * eixos surgem junto com o plano, curva é traçada junto com a curva do 3D. */
+  A.define('corte2d', function (host) {
+    const P = PLOTS[host.dataset.plot || 'plot5'];
+    const img = host.querySelector('img');
+    // área da curva no viewBox da figura original (248.72 x 144.4)
+    const X0 = 31.94, X1 = 220.71, YB = 118, YT = 12;
+    const M = 240, Z = [];
+    let cur = 'hidden';
+    // escala vertical fixa = faixa de z da superfície inteira (como o eixo z do 3D), para que
+    // mover o plano mostre a curva subindo/descendo e mudando de amplitude
+    let zlo = Infinity, zhi = -Infinity;
+    for (let i = 0; i <= 90; i++) for (let j = 0; j <= 90; j++) {
+      const z = P.fn(P.dom * i / 90, P.dom * j / 90); zlo = Math.min(zlo, z); zhi = Math.max(zhi, z);
+    }
+    function compute() { // curva no y atual do plano
+      const yc = P.dom * P.cutY;
+      for (let k = 0; k <= M; k++) Z[k] = P.fn(P.dom * k / M, yc);
+    }
+    compute();
+    document.addEventListener('s3d-cut', function (e) {
+      if (e.detail !== (host.dataset.plot || 'plot5')) return;
+      compute();
+      if (cur !== 'hidden') setCurve(1);
+    });
+    const pt = function (k) { return [X0 + (X1 - X0) * k / M, YB - (YB - YT) * (Z[k] - zlo) / (zhi - zlo)]; };
+    host.classList.add('c2d');
+    const svg = A.svg('svg', { viewBox: '0 0 248.7223 144.4', preserveAspectRatio: 'none', class: 'c2d-svg' }, host);
+    const path = A.svg('path', { fill: 'none', stroke: 'rgb(0,0,139)', 'stroke-width': 0.8, 'stroke-linejoin': 'round' }, svg);
+    function setCurve(t) { // fração t do domínio, da esquerda para a direita (como no 3D)
+      const n = M * t, whole = Math.floor(n);
+      let d = '';
+      for (let k = 0; k <= whole; k++) { const p = pt(k); d += (k ? 'L' : 'M') + p[0].toFixed(2) + ' ' + p[1].toFixed(2); }
+      if (n > whole && whole < M) {
+        const a = pt(whole), b = pt(whole + 1), s = n - whole;
+        d += 'L' + A.lerp(a[0], b[0], s).toFixed(2) + ' ' + A.lerp(a[1], b[1], s).toFixed(2);
+      }
+      path.setAttribute('d', t > 0 ? d : '');
+    }
+    function snap(st) {
+      cur = st;
+      const on = st !== 'hidden';
+      img.style.opacity = on ? '' : '0';
+      setCurve(on ? 1 : 0);
+    }
+    async function play(from, to, h) {
+      snap('hidden');
+      await h.wait(400);
+      await h.tween(700, function (e) { img.style.opacity = e; });
+      await h.tween(1400, setCurve, A.ease.inOut);
+    }
+    return { snap: snap, play: play };
+  });
+
+  // Revela uma figura da esquerda para a direita, após um atraso
   A.define('reveal', function (host) {
     const delay = +(host.dataset.delay || 0);
     function snap() { host.style.clipPath = ''; }

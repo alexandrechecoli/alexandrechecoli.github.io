@@ -246,6 +246,9 @@ li ul.itemz > li::before { width: 3.3pt; height: 3.3pt; top: 5pt; }
 .s3d img { display: block; }
 .s3d-canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: none; }
 .anim[data-anim="reveal"] { display: inline-block; }
+.c2d { position: relative; display: inline-block; line-height: 0; }
+.c2d img { display: block; }
+.c2d-svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
 
 /* ---------- Overlays ---------- */
 .ov-hidden { visibility: hidden !important; }
