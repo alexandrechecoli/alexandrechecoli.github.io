@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metaheuristicas - Local Search 2OPT</title>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<link rel="stylesheet" href="css/beamer.css">
+<style>
+.c-olivegreen { color: #3c8031; }
+@font-face { font-family: "LM Mono 8"; src: url(fonts/lmmono8-regular.otf); }
+</style>
+</head>
+<body data-author="Alexandre Checoli Choueiri" data-shorttitle="DEP - UFPR : Metaheuristicas Lab3 Local Search 2OPT">
+<main id="deck">
+
+<section class="frame titlepage notitle">
+<div class="fc">
+<div class="tp-title">Metaheuristicas - Local Search 2OPT</div>
+<div class="tp-author">Alexandre Checoli Choueiri</div>
+<div class="tp-date">30/03/2023</div>
+<div class="tp-img"><img class="ig" src="img/capa.svg" style="width:84.10pt" alt=""></div>
+</div>
+</section>
+
+<section class="frame toc notitle">
+<div class="fc">
+<div class="toc-item"><span class="toc-num">1</span>Exemplo</div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">2</span>Operador 2-OPT</div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">3</span>Atividade</div>
+</div>
+</section>
+
+<section class="frame" data-section="Exemplo">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<p><span class="c-myblue"><b>EXEMPLO:</b></span> Implemente um algoritmo de busca local para o problema do caixeiro viajante usando a estrutura de vizinhança swap e 2-OPT.</p>
+<div class="tcb jus"><p>Antes de partirmos para a etapa de implementação, os principais problemas que poderiam ocorrer devem estar bem resolvidos. Fazemos isso pensando no design da nossa implementação antes de implementarmos. <span class="c-brickred">OBS: Não se anime! mesmo com esse cuidado cometeremos erros.</span></p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<p>A vizinhança 2-OPT consiste em remover os arcos \((i, i+1)\) e \((j, j+1)\) e criar os arcos \((i,j)\) e \((i+1, j+1)\)</p>
+<div class="columns"><div class="column rag" style="width:161.48pt"><div class="tcb jus"><div class="center"><div class="center"><p><span class="c-brickred">REMOVER</span></p></div>
+<p>\((i, i+1)\) e \((j, j+1)\)</p></div></div></div>
+<div class="column rag" style="width:161.48pt"><div class="tcb jus"><div class="center"><div class="center"><p><span class="c-olivegreen">ADICIONAR</span></p></div>
+<p>\((i,j)\) e \((i+1, j+1)\)</p></div></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="tsp" data-scale="1.65" data-from="t0" data-state="t1"></span></p></div>
+<p>Podemos verificar o que ocorre com o operador 2-OPT junto a estrutura de solução.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="tsp" data-scale="1.65" data-from="t1" data-state="t2"></span></p></div>
+<p>A primeira pergunta que devemos responder é:</p>
+<div class="tcb bs0 jus"><p>Dada uma solução (vetor) \(s\) e os elementos \(i,i+1,j,j+1\), como alterar \(s\) para operar o 2-OPT?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="tsp" data-scale="1.7" data-from="t2" data-state="t3"></span></p></div>
+<p>A figura acima mostra as alterações realizadas no vetor de solução. Como podemos generalizar essas transformações para quaisquer \(i,i+1,j,j+1\)?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="tsp" data-scale="1.7" data-from="t3" data-state="t4"></span></p></div>
+<p>Note que os elementos \(i\) e \(j+1\) <b>não foram alterados</b>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="tsp" data-scale="1.7" data-from="t4" data-state="t5"></span></p></div>
+<p>Já a sequência com os pontos começando em \(i+1\) até \(j\) <b>foi invertida</b>. Ou seja, precisamos de uma rotina que faça a inversão dos elementos de um vetor de forma genérica.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="inverte" data-scale="3" data-from="v0" data-state="v1"></span></p></div>
+<div class="tcb jus"><p>A ideia básica da inversão de elementos em um vetor é que <span class="c-myblue"> não precisamos iterar por toda a sequência, mas somente em metade dela</span>. Considere o exemplo acima.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="inverte" data-scale="3" data-from="v1" data-state="v2"></span></p></div>
+<div class="tcb jus"><p>A ideia básica da inversão de elementos em um vetor é que <span class="c-myblue"> não precisamos iterar por toda a sequência, mas somente em metade dela</span>. Considere o exemplo acima.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="inverte" data-scale="3" data-from="v2" data-state="v3"></span></p></div>
+<div class="tcb jus"><p>A ideia básica da inversão de elementos em um vetor é que <span class="c-myblue"> não precisamos iterar por toda a sequência, mas somente em metade dela</span>. Considere o exemplo acima.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="inverte" data-scale="3" data-from="v3" data-state="v4"></span></p></div>
+<div class="tcb jus"><p>A ideia básica da inversão de elementos em um vetor é que <span class="c-myblue"> não precisamos iterar por toda a sequência, mas somente em metade dela</span>. Considere o exemplo acima.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="inverte" data-scale="3" data-from="v4" data-state="v5"></span></p></div>
+<div class="tcb jus"><p>A ideia básica da inversão de elementos em um vetor é que <span class="c-myblue"> não precisamos iterar por toda a sequência, mas somente em metade dela</span>. Considere o exemplo acima.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>O código na sequência inverte os elementos de um vetor começando em <i>inicio</i> até <i>fim</i>. Inicialmente encontra-se o número de iterações que deverão ser realizadas, como o menor inteiro da divisão do número de elementos do vetor por 2. Em seguida o laço<i> while</i> faz a troca dos elementos começando em <i>inicio</i> e <i>fim</i>, incrementando <i>inicio</i> e decrementando <i>fim</i>.</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="lst" style="font-family:'LM Mono 8';font-size:7.970pt;--lst-bs:9.4645pt;--lst-top:-0.873pt;margin-left:0.000pt;margin-right:0.000pt;padding:3.387pt;background:#f9f9f9;box-shadow:inset 0 0 0 0.399pt #0061a5;">
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#ffa500">Sub</span><span style="left:20.314pt;letter-spacing:0.799pt;padding-left:0.799pt;color:#0000ff">inverte_elementos</span><span style="left:106.649pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">(</span><span style="left:111.728pt;letter-spacing:0.705pt;padding-left:0.705pt;color:#0000ff">ByRef</span><span style="left:142.199pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#0000ff">v</span><span style="left:147.278pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#000000">()</span><span style="left:162.513pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">As</span><span style="left:177.749pt;letter-spacing:0.741pt;padding-left:0.741pt;color:#ffa500">Integer</span><span style="left:213.298pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">,</span><span style="left:223.456pt;letter-spacing:0.726pt;padding-left:0.726pt;color:#0000ff">inicio</span><span style="left:259.005pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">As</span><span style="left:274.241pt;letter-spacing:0.741pt;padding-left:0.741pt;color:#ffa500">Integer</span><span style="left:309.791pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">,</span><span style="left:319.948pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#0000ff">fim</span><span style="left:340.262pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">As</span><span style="left:355.497pt;letter-spacing:0.741pt;padding-left:0.741pt;color:#ffa500">Integer</span><span style="left:391.047pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">)</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#ffa500">Dim</span><span style="left:20.314pt;letter-spacing:0.726pt;padding-left:0.726pt;color:#0000ff">n_iter</span><span style="left:55.864pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">As</span><span style="left:71.099pt;letter-spacing:0.741pt;padding-left:0.741pt;color:#ffa500">Integer</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#ffa500">Dim</span><span style="left:20.314pt;letter-spacing:0.776pt;padding-left:0.776pt;color:#0000ff">n_elementos</span><span style="left:81.257pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">As</span><span style="left:96.492pt;letter-spacing:0.741pt;padding-left:0.741pt;color:#ffa500">Integer</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.776pt;padding-left:0.776pt;color:#0000ff">n_elementos</span><span style="left:60.942pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">=</span><span style="left:71.099pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#0000ff">fim</span><span style="left:91.414pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">-</span><span style="left:101.571pt;letter-spacing:0.726pt;padding-left:0.726pt;color:#0000ff">inicio</span><span style="left:137.120pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">+</span><span style="left:147.278pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">1</span><span style="left:157.435pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#008000">&#x27;</span><span style="left:167.592pt;letter-spacing:0.726pt;padding-left:0.726pt;color:#008000">numero</span><span style="left:203.141pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#008000">de</span><span style="left:218.377pt;letter-spacing:0.762pt;padding-left:0.762pt;color:#008000">elementos</span><span style="left:269.162pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#008000">na</span><span style="left:284.398pt;letter-spacing:0.762pt;padding-left:0.762pt;color:#008000">sequencia</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.726pt;padding-left:0.726pt;color:#0000ff">n_iter</span><span style="left:35.550pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">=</span><span style="left:45.707pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#ffa500">Int</span><span style="left:60.942pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">(</span><span style="left:66.021pt;letter-spacing:0.776pt;padding-left:0.776pt;color:#0000ff">n_elementos</span><span style="left:126.963pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">/</span><span style="left:137.120pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">2</span><span style="left:142.199pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">)</span><span style="left:157.435pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#008000">&#x27;</span><span style="left:167.592pt;letter-spacing:0.726pt;padding-left:0.726pt;color:#008000">numero</span><span style="left:203.141pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#008000">de</span><span style="left:218.377pt;letter-spacing:0.762pt;padding-left:0.762pt;color:#008000">iteracoes</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#ffa500">Dim</span><span style="left:20.314pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p1</span><span style="left:35.550pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">As</span><span style="left:50.785pt;letter-spacing:0.741pt;padding-left:0.741pt;color:#ffa500">Integer</span><span style="left:86.335pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">,</span><span style="left:96.492pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p2</span><span style="left:111.728pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">As</span><span style="left:126.963pt;letter-spacing:0.741pt;padding-left:0.741pt;color:#ffa500">Integer</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p1</span><span style="left:15.236pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">=</span><span style="left:25.393pt;letter-spacing:0.726pt;padding-left:0.726pt;color:#0000ff">inicio</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p2</span><span style="left:15.236pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">=</span><span style="left:25.393pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#0000ff">fim</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#ffa500">Dim</span><span style="left:20.314pt;letter-spacing:0.677pt;padding-left:0.677pt;color:#0000ff">iter</span><span style="left:45.707pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">As</span><span style="left:60.942pt;letter-spacing:0.741pt;padding-left:0.741pt;color:#ffa500">Integer</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.677pt;padding-left:0.677pt;color:#0000ff">iter</span><span style="left:25.393pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">=</span><span style="left:35.550pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">1</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#ffa500">Do</span><span style="left:15.236pt;letter-spacing:0.705pt;padding-left:0.705pt;color:#ffa500">While</span><span style="left:45.707pt;letter-spacing:0.677pt;padding-left:0.677pt;color:#0000ff">iter</span><span style="left:71.099pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#000000">&lt;=</span><span style="left:86.335pt;letter-spacing:0.726pt;padding-left:0.726pt;color:#0000ff">n_iter</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#ffa500">Dim</span><span style="left:20.314pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#0000ff">aux</span><span style="left:40.628pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">As</span><span style="left:55.864pt;letter-spacing:0.741pt;padding-left:0.741pt;color:#ffa500">Integer</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#0000ff">aux</span><span style="left:20.314pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">=</span><span style="left:30.471pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#0000ff">v</span><span style="left:35.550pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">(</span><span style="left:40.628pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p1</span><span style="left:50.785pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">)</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#0000ff">v</span><span style="left:5.079pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">(</span><span style="left:10.157pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p1</span><span style="left:20.314pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">)</span><span style="left:30.471pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">=</span><span style="left:40.628pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#0000ff">v</span><span style="left:45.707pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">(</span><span style="left:50.785pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p2</span><span style="left:60.942pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">)</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#0000ff">v</span><span style="left:5.079pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">(</span><span style="left:10.157pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p2</span><span style="left:20.314pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">)</span><span style="left:30.471pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">=</span><span style="left:40.628pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#0000ff">aux</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p1</span><span style="left:15.236pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">=</span><span style="left:25.393pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p1</span><span style="left:40.628pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">+</span><span style="left:50.785pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">1</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p2</span><span style="left:15.236pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">=</span><span style="left:25.393pt;letter-spacing:0.564pt;padding-left:0.564pt;color:#0000ff">p2</span><span style="left:40.628pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">-</span><span style="left:50.785pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">1</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.677pt;padding-left:0.677pt;color:#0000ff">iter</span><span style="left:25.393pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">=</span><span style="left:35.550pt;letter-spacing:0.677pt;padding-left:0.677pt;color:#0000ff">iter</span><span style="left:60.942pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">+</span><span style="left:71.099pt;letter-spacing:0.423pt;padding-left:0.423pt;color:#000000">1</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.677pt;padding-left:0.677pt;color:#0000ff">Loop</span></div>
+<div class="lst-l"><span style="left:0.000pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#ffa500">End</span><span style="left:20.314pt;letter-spacing:0.635pt;padding-left:0.635pt;color:#ffa500">Sub</span></div>
+</div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="idx" data-scale="2" data-from="x0" data-state="x6"></span></p></div>
+<p>A segunda pergunta que temos que responder é:</p>
+<div class="tcb jus"><p>Como geramos toda a vizinhança 2OPT? Ou seja, quais valores que os índices \(i,i+1,j,j+1\) podem assumir?</p></div>
+<p>Pela imagem acima percebemos que \(i\) pode começar no índice 0.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="idx" data-scale="2" data-from="x6" data-state="x7"></span></p></div>
+<p>No entanto ele <span class="c-brickred">não pode ir até o fim do vetor</span>, pois devemos considerar os valores \(i + 1, j\) e \(j+1\). Assim, \(i\) vai até o fim -3.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="idx" data-scale="2" data-from="x7" data-state="x8"></span></p></div>
+<p>Já os valores de \(j\) devem começar após os valores de \(i+1\), ou seja, \(i+2\).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="idx" data-scale="2" data-from="x8" data-state="x8b"></span></p></div>
+<p>E podem ir até o fim -1, pois devemos considerar \(j+1\) como o último elemento.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="tcb jus"><div class="center"><p><span class="c-brickred">CUIDADO</span></p></div>
+<p>Com essa seleção de \(i\) e \(j\) estamos deixando alguns arcos de fora do 2-OPT.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="wrap" data-scale="1.7" data-from="w0" data-state="w1"></span></p></div>
+<div class="tcb jus"><p>Considere o caso acima, em que queremos remover os arcos em vermelho.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="wrap" data-scale="1.7" data-from="w1" data-state="w1b"></span></p></div>
+<div class="tcb jus"><p>Um dos arcos removidos é composto pelo último e pelo primeiro ponto (7 e 0), de forma que \(j\) deveria ser 7 e \(j\) + 1 0.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="wrap" data-scale="1.7" data-from="w1b" data-state="w2"></span></p></div>
+<div class="tcb jus"><p>Como o 2OPT inverte as posições de \(i + 1\) até \(j\), não há problema em colocarmos o \(j\) na última posição do vetor. Com isso, podemos também alterar o limite designado para \(i\), ao invés de fim - 3 deve ser fim - 2.</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<p>Dessa forma, temos que os limites para i e j devem ser:</p>
+<div class="center"><div class="tab" style="grid-template-columns:repeat(3,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:0.00pt;padding-right:5.98pt"><b>Contador</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Inicio</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:0.00pt"><b>Fim</b></div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:0.00pt;padding-right:5.98pt">\(i\)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">\(0\)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:0.00pt">fim - \(2\)</div>
+<div class="td c" style="padding-left:0.00pt;padding-right:5.98pt">\(j\)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">\(i + 2\)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:0.00pt">fim</div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div>
+<p>Se definidos puramente desta forma, a primeira iteração de \(i\) gera um movimento 2-OPT redundante.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim" data-anim="doisopt" data-scene="adj" data-scale="1.6" data-from="a0" data-state="a1"></span></p></div>
+<div class="tcb jus"><p>Quando \(i = 0\) e \(j\) = fim os dois arcos a serem removidos são <b>adjacentes</b>, o que implica simplesmente uma inversão na rota como um todo. Embora não seja um problema, é uma computação a mais.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/2opt9.svg" style="width:185.04pt" alt=""></p></div>
+<div class="tcb jus"><p>Uma última consideração. Pela definição de varredura dos índices percebemos que não faz sentido executar o movimento 2OPT em rotas com menos de 4 pontos.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Operador 2-OPT">
+<header class="ft"><h2>Busca Local</h2><div class="subtitle">Exemplo</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/2opt10.svg" style="width:184.92pt" alt=""></p></div>
+<div class="tcb jus"><p><span class="c-brickred">Somente a partir de 4 pontos conseguimos remover e reinserir 2 arcos de forma que a rota é alterada.</span></p></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Atividade">
+<header class="ft"><h2>Atividade 1</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li>Considerando o problema de sua escolha, implemente um algoritmo de busca local.</li>
+</ol>
+</div>
+</section>
+
+</main>
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="lib/hyphen/hyphen.js"></script>
+<script src="lib/hyphen/pt.js"></script>
+<script src="js/texbreak.js"></script>
+<script src="js/anim/core.js"></script>
+<script src="js/anim/doisopt.js"></script>
+<script src="js/slides.js"></script>
+</body>
+</html>
