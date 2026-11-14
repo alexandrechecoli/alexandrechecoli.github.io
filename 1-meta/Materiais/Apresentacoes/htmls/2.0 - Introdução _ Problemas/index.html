@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metaheuristicas - Introdução &amp; Problemas</title>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<link rel="stylesheet" href="css/beamer.css">
+<style>
+/* capa da aula 2 (medida no PDF) */
+.frame.titlepage .fc::before { height: 24.67pt; }
+.tp-author { margin-top: 23.86pt; }
+.tp-date { margin-top: 28.52pt; }
+.tp-img { margin-top: 18.08pt; }
+</style>
+</head>
+<body data-author="Alexandre Checoli Choueiri" data-shorttitle="DEP - UFPR : Metaheuristicas - Introdução &amp; Problemas">
+<main id="deck">
+
+<section class="frame titlepage notitle">
+<div class="fc">
+<div class="tp-title">Metaheuristicas - Introdução &amp; Problemas</div>
+<div class="tp-author">Alexandre Checoli Choueiri</div>
+<div class="tp-date">19/02/2023</div>
+<div class="tp-img"><img class="ig" src="img/capa.svg" style="width:84.10pt" alt=""></div>
+</div>
+</section>
+
+<section class="frame toc notitle">
+<div class="fc">
+<div class="toc-item"><span class="toc-num">1</span><span class="toc-txt">Problemas</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.1</span><span class="toc-txt">O problema do caixeiro viajante - TSP</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.2</span><span class="toc-txt">O problema de roteirização de veículos (VRP)</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.3</span><span class="toc-txt">O problema da mochila</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.4</span><span class="toc-txt">Bin packing problem</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.5</span><span class="toc-txt">O problema do carregamento 2D</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.6</span><span class="toc-txt">Carregamento 3D</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.7</span><span class="toc-txt">Localização de facilidades (p-medianas) - estratégico</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.8</span><span class="toc-txt">Balanceamento de linhas de produção - estratégico</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.9</span><span class="toc-txt">Planejamento da produção - tático</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.10</span><span class="toc-txt">Programação da produção - sequenciamento - operacional</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.11</span><span class="toc-txt">Problema de planejamento de projetos</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.12</span><span class="toc-txt">Problema de designação</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.13</span><span class="toc-txt">Problema de planejamento escalas de trabalho</span></div>
+<div class="toc-sub"><span class="toc-subnum">1.14</span><span class="toc-txt">Problema do <i>timetabling</i></span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">2</span><span class="toc-txt">Atividade</span></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="">
+<header class="ft"><h2>Inicio</h2></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Vamos começar o nosso estudo entendendo os<b> tipos de problemas</b> que poderemos resolver. Após entender bem o <span class="q q34">“</span>sabor<span class="q q34">”</span> desses problemas (problemas de otimização), entenderemos quais métodos podem ser utilizados para resolvê-los.</p></div>
+<div class="tcb jus"><p>O objetivo aqui é abrir a cabeça de vocês, mostrando que os <b>problemas de otimização permeiam todas as áreas!</b></p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema do caixeiro viajante (TSP)</div></header>
+<div class="fc">
+<div class="block"><div class="block-title">O problema do caixeiro viajante (TSP)</div><div class="block-body"><p class="sz-small">Seja \(G=(N,E)\) um grafo em que \(N\) é um conjunto de vértices e \(E = \{(i,j), i\in N, j \in N\)}, o conjunto de arestas ligando os vértices, e ainda \(f:(i,j)\rightarrow\mathbb{R}\) uma função que atribui pesos aos arcos. O problema do caixeiro viajante consiste em se determinar uma rota que visite todos os vértices de G sem repetição, de forma que a soma dos pesos das arestas utilizadas seja mínimo</p></div></div>
+<p style="position:relative;top:1.89pt"><sup class="fnm">1</sup>TSP.</p>
+</div>
+<div class="footnotes"><p class="fn"><span class="fn-mark">1</span>Traveling Salesman Problem</p></div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema do caixeiro viajante (TSP)</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim cx" data-anim="caixeiro" data-from="vazio" data-state="pts"><img class="ig" src="img/tsp1.svg" style="width:203.32pt" alt="" data-only="1"></span></p></div>
+<p>Os nós de um grafo podem ser pensados como pontos no espaço.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema do caixeiro viajante (TSP)</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim cx" data-anim="caixeiro" data-from="pts" data-state="t2"><img class="ig" src="img/tsp2.svg" style="width:203.32pt" alt="" data-only="1"></span></p></div>
+<p>O problema se resume então a ligar todos os pontos, partindo de, e retornando ao mesmo ponto, de forma que o <span class="c-myblue"> somatório das distâncias entre os pontos seja mínima</span>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema do caixeiro viajante (TSP)</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim cx" data-anim="caixeiro" data-from="t2" data-state="t3" data-painel="comb"><img class="ig" src="img/tsp3.svg" style="width:203.32pt" alt="" data-only="1"></span></p></div>
+<p>Note que existem muitas (mas <b>muitas mesmo...</b>) combinações possíveis para se realizar essa tarefa. Algumas melhores do que outras.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema do caixeiro viajante (TSP)</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim cx" data-anim="caixeiro" data-from="pts" data-state="t3,t3x"><img class="ig" src="img/tsp3.svg" style="width:172.04pt" alt="" data-only="1-2"></span> <span class="anim cx" data-anim="caixeiro" data-from="pts" data-state="t2,t2ok"><img class="ig" src="img/tsp2.svg" style="width:172.04pt" alt="" data-only="1-2"></span></p></div>
+<div class="tcb jus"><p>Qual das duas soluções acima você acha que é a melhor? <span data-only="2"><span class="c-myblue"><b>Claro que a segunda!</b></span></span></p></div>
+<p class="jtop">É importante ressaltar o que <b>não</b> constitui uma solução viável para um determinado problema, ou seja, uma solução <span class="c-brickred">infactível</span>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema do caixeiro viajante (TSP)</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim cx" data-anim="caixeiro" data-from="pts" data-state="t4"><img class="ig" src="img/tsp4.svg" style="width:203.32pt" alt="" data-only="1"></span></p></div>
+<p>No caso acima, existe um ponto que não está no percurso, portanto a solução é <span class="c-brickred">infactível</span>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema do caixeiro viajante (TSP)</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim cx" data-anim="caixeiro" data-from="pts" data-state="t5"><img class="ig" src="img/tsp5.svg" style="width:203.32pt" alt="" data-only="1"></span></p></div>
+<p>No caso acima, existem subrotas, o que não é permitido no problema do caixeiro viajante, sendo também uma solução <span class="c-brickred">infactível</span>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema do caixeiro viajante (TSP): aplicações</div></header>
+<div class="fc">
+<div class="tcb jus"><p><span class="c-myblue"> Quais situações podem ser representadas como um problema do caixeiro viajante (<i>traveling salesman problem</i> - TSP)? </span></p></div>
+<div class="ornamento"><img src="img/ornamento.svg" alt=""></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema do caixeiro viajante (TSP): aplicações</div></header>
+<div class="fc jus">
+<div class="center"><p><b>ROTEIRIZAÇÃO DE VEÍCULOS</b></p></div>
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="center"><p class="imgs"><img class="ig" src="img/tsp6_rota.svg" style="width:140.76pt" alt="" data-only="1"></p></div></div>
+<div class="column jus" style="width:201.85pt"><p>A aplicação mais natural é de fato em roteirização de veículos. Um veículo deve fazer entregas ou coletas em N locais, e retornar ao ponto inicial.</p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema do caixeiro viajante (TSP): aplicações</div></header>
+<div class="fc jus">
+<div class="center"><p><b>CIRCUITOS ELETRÔNICOS (2D e 3D)</b></p></div>
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="center"><p class="imgs"><img class="ig" src="img/tsp6_eletrico1.svg" style="width:79.44pt" alt="" data-only="1"> <img class="ig" src="img/tsp6_eletrico2.svg" style="width:79.44pt" alt="" data-only="2"></p></div></div>
+<div class="column jus" style="width:201.85pt"><p>Conectar N pontos elétricos usando a menor quantidade de fio possível.</p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema do caixeiro viajante (TSP): aplicações</div></header>
+<div class="fc jus">
+<div class="center"><p><b>CRIAÇÃO DE OBRAS DE ARTE</b></p></div>
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="center"><p class="imgs"><img class="ig" src="img/mona-lisa.png" style="width:152.62pt" alt="" data-only="1"></p></div></div>
+<div class="column jus" style="width:201.85pt"><p>A solução ótima desta instância do problema com 100k pontos gera a obra de arte de Leonardo da Vinci. Para motivar a criação de novas soluções, um prêmio de $1000 é oferecido (<span class="c-myblue"><a href="https://www.math.uwaterloo.ca/tsp/data/ml/monalisa.html">link</a></span>).</p></div></div>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="block"><div class="block-title">O problema de roteirização de veículos (VRP)</div><div class="block-body jus"><p class="sz-small">Seja \(G=(N,E)\) um grafo em que \(N\) é um conjunto de vertices e \(E = \{(i,j), i\in N, j \in N\)}, o conjunto de arestas ligando os vértices, e ainda \(f:(i,j)\rightarrow\mathbb{R}\) uma função que atribui pesos aos arcos. A cada vértice é atribuído uma demanda, e existem \(K\) veículos de mesma capacidade \(Q\). Encontrar as menores rotas para os veículos, de tal forma que todos os clientes sejam atendidos, as capacidades não sejam excedidas, e todos os veículos deve sair do, e voltar ao depósito.</p></div></div>
+<p style="position:relative;top:1.89pt"><sup class="fnm">2</sup>VRP.</p>
+</div>
+<div class="footnotes"><p class="fn"><span class="fn-mark">2</span>Vehicle Routing Problem</p></div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:282.59pt"><div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="vazio" data-state="v1"><img class="ig" src="img/vrp1.svg" style="width:218.68pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:121.11pt"><div class="tcb jus"><p class="sz-footnotesize sz-grp">Diferentemente do TSP, o VRP sai e volta de um depósito.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:282.59pt"><div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="v1" data-state="v2"><img class="ig" src="img/vrp2.svg" style="width:218.68pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:121.11pt"><div class="tcb jus"><p class="sz-footnotesize sz-grp">Todos os pontos ainda devem ser visitados.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:282.59pt"><div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="v2" data-state="v4"><img class="ig" src="img/vrp4.svg" style="width:218.68pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:121.11pt"><div class="tcb jus"><p class="sz-footnotesize sz-grp">Cada ponto possui uma <b>demanda</b>, e cada veículo uma <b>capacidade</b> de transporte</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:282.59pt"><div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="v4" data-state="v5"><img class="ig" src="img/vrp5.svg" style="width:218.68pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:121.11pt"><div class="tcb jus"><p class="sz-footnotesize sz-grp">No problema original existe um número ilimitado de veículos de capacidades iguais.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:282.59pt"><div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="v5" data-state="v5obj"><img class="ig" src="img/vrp5.svg" style="width:218.68pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:121.11pt"><div class="tcb jus"><p class="sz-footnotesize sz-grp">O objetivo é então duplo: minimizar tanto as distâncias percorridas pelos veículos quanto o número total de veículos.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:282.59pt"><div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="v5obj" data-state="v5cap"><img class="ig" src="img/vrp5.svg" style="width:218.68pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:121.11pt"><div class="tcb jus"><p class="sz-footnotesize sz-grp">Sem <span class="c-brickred"> exceder as capacidades dos mesmos</span>.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:282.59pt"><div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="v5cap" data-state="v6"><img class="ig" src="img/vrp6.svg" style="width:218.68pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:121.11pt"><div class="tcb jus"><p class="sz-footnotesize sz-grp">Uma extensão comum do VRP é a adição de <b>janelas de tempo</b> (time windows) VRPTW.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:282.59pt"><div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="v6" data-state="v6tw"><img class="ig" src="img/vrp6.svg" style="width:218.68pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:121.11pt"><div class="tcb jus"><p class="sz-footnotesize sz-grp">Cada cliente possui uma janela de tempo que pode ser atendido, bem como um tempo de processamento. Se o veículo chegar antes ou depois da janela a coleta não é realizada.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:282.59pt"><div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="v6tw" data-state="v7"><img class="ig" src="img/vrp7.svg" style="width:218.68pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:121.11pt"><div class="tcb jus"><p class="sz-footnotesize sz-grp">Uma outra extensão é o caso com veículos limitados e <b>heterogêneos</b>. (HVRPTW).</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:282.59pt"><div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="v7" data-state="v7cost"><img class="ig" src="img/vrp7.svg" style="width:218.68pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:121.11pt"><div class="tcb jus"><p class="sz-footnotesize">Nesta variante existem veículos com capacidades diferentes, porém custos por utilização também diferentes.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema de roteirização de veículos (VRP)</div></header>
+<div class="fc">
+<div class="columns"><div class="column rag" style="width:282.59pt"><div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="v7cost" data-state="v8"><img class="ig" src="img/vrp8.svg" style="width:218.68pt" alt="" data-only="1"></span></p></div></div>
+<div class="column rag" style="width:121.11pt"><div class="tcb jus"><p class="sz-footnotesize sz-grp">A rota pode ser feita por diversos veículos menores, poucos maiores, ou uma combinação.</p></div></div></div>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema da mochila - <i>knapsack problem</i></div></header>
+<div class="fc">
+<div class="block"><div class="block-title">O problema da mochila</div><div class="block-body jus"><p>Dado um conjunto de objetos de tamanhos diferentes com valorações diferentes e uma <span class="q q34">“</span>mochila<span class="q q34">”</span> (<i>bin</i>) de capacidade finita. O problema da mochila consiste em determinar qual subconjunto de objetos será empacotado na mochila, de forma a maximizar o somatório dos valores de todos os itens, sem exceder a capacidade da mochila.</p></div></div>
+<p><sup class="fnm">3</sup></p>
+</div>
+<div class="footnotes"><p class="fn"><span class="fn-mark">3</span><i>knapsack problem</i></p></div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema da mochila - <i>knapsack problem</i></div></header>
+<div class="fc">
+<ol class="enum jus">
+<li data-on="2-">Imagine que você vai acampar na floresta e só possui uma mochila.</li>
+<li data-on="3-">Os itens que serão levados devem ser escolhidos com cuidado, pois a mochila possui uma capacidade limitada.</li>
+<li data-on="4-">De forma que cada item têm um <i>valor</i> diferente.</li>
+<li data-on="5-">Você tentará levar os itens mais <span class="q q34">“</span>úteis<span class="q q34">”</span> que caibam na mochila.</li>
+</ol>
+<div data-on="6-" class="center"><span class="anim mo" data-anim="mochila" data-fig="monta" data-state="t0,t0,t0,t0,t0,th,tv,tv"></span><div class="tab" style="grid-template-columns:repeat(9,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Ipod</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Abobrinha</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">\(H_2O\)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Canivete</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Carne</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Arroz</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Aveia</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">PS4</div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Valor</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">10</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">8</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">5</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">15</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">25</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">17</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">8</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">30</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Peso</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">50</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">55</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">60</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">45</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">15</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">25</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">35</span></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><span data-on="7-">25</span></div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div>
+<p><span data-on="8">Considerando uma mochila com capacidade C = 130, o que você levaria? Qual a carga e a utilidade total da mochila? </span></p>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas" data-steps="3">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">O problema da mochila - <i>knapsack problem</i></div></header>
+<div class="fc">
+<ol class="enum jus">
+<li>Imagine que você vai acampar na floresta e só possui uma mochila.</li>
+<li>Os itens que serão levados devem ser escolhidos com cuidado, pois a mochila possui uma capacidade limitada.</li>
+<li>De forma que cada item têm um <i>valor</i> diferente.</li>
+<li>Você tentará levar os itens mais <span class="q q34">“</span>úteis<span class="q q34">”</span> que caibam na mochila.</li>
+</ol>
+<div class="center"><span class="anim mo" data-anim="mochila" data-fig="demo" data-from="plain" data-state="s1,s2,demo"></span><div class="tab" style="grid-template-columns:repeat(9,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Ipod</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Abobrinha</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">\(H_2O\)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">Canivete</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Carne</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Arroz</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Aveia</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">PS4</div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Valor</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">10</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">8</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">5</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">15</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">25</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">17</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">8</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">30</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Peso</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">50</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">55</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">60</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">45</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">15</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">25</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">35</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">25</div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div>
+<p>Considerando uma mochila com capacidade C = 130, o que você levaria? Qual a carga e a utilidade total da mochila? <span data-only="2-"><span class="xsp" data-sf="3000"></span><span class="c-myblue">Capacidade: 130, Utilidade: 50</span> </span></p>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Bin packing problem</div></header>
+<div class="fc">
+<ol class="enum jus">
+<li>O BPP é como o problema da mochila, porém não existe um <i>valor</i> para cada carga, mas sim uma <b>quantidade</b> de cada item.</li>
+<li>Diferentemente do problema da mochila, no BPP temos um número ilimitado de mochilas, e precisamos carregar todos os itens na menor quantidade possível.</li>
+</ol>
+<div class="center"><div class="tab" style="grid-template-columns:repeat(9,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Ipod</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Abobrinha</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">\(H_2O\)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Canivete</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Carne</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Arroz</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Aveia</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">PS4</div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Qtde</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">10</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">8</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">5</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">15</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">25</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">17</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">8</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">30</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Peso</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">50</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">55</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">60</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">45</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">15</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">25</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">35</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">25</div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div>
+<p>Considerando mochilas com capacidade C = 500. Qual é o menor número de mochilas necessárias para empacotar todos os itens?</p>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Bin packing problem</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p><span class="c-myblue"> Quais situações podem ser representadas como um BPP? </span></p></div>
+<p><span data-on="2"> O BPP é um problema base da otimização, ou seja, ele pode representar diversos outros problemas, ou mesmo ser usado para parte da resolução em problemas mais complexos. Vejamos 2 exemplos (carregamento de paletes e VRP).</span></p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Bin packing problem</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="paletes" data-fig="bpp1" data-from="vazio" data-state="b1"><img class="ig" src="img/BPP1.svg" style="width:274.98pt" alt=""></span></p></div>
+<div class="tcb jus"><p>No problema de carregamento de paletes (<i>pallet loading problem</i>), temos um número de caixas diferentes (tridimensionais), cada uma com uma quantidade. Precismos encontrar uma forma de carregar todas as caixas usando a menor quantidade de paletes possível.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Bin packing problem</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="paletes" data-fig="bpp2" data-from="vazio" data-state="b2"><img class="ig" src="img/BPP2.svg" style="width:184.55pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Usualmente, as caixas possuem instruções do próprio fabricante, indicando como fazer uma <b>camada</b> (de caixas do mesmo tipo) em um palete.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Bin packing problem</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="paletes" data-fig="bpp3" data-from="vazio" data-state="b3"><img class="ig" src="img/BPP3.svg" style="width:181.76pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Se considerarmos somente as camadas completas, não precisamos nos preocupar com a parte 3D do problema. Cada camada possui uma altura (que é a altura da caixa que a compõe).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas" data-steps="2">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Bin packing problem</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="paletes" data-fig="bpp4" data-from="vazio" data-state="b4,b4p"><img class="ig" src="img/BPP4.svg" style="width:240.40pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Assim, fazendo um pré processamento nas caixas, calculando quantas camadas completas temos de cada uma, o problema se resume a determinar quantas camadas de cada caixa compõe cada palete, de forma a minimizar o número de paletes utilizados. <b>Ou seja, o BPP</b>!</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Bin packing problem</div></header>
+<div class="fc">
+<p>A tabela de dados do problema ficaria algo como:</p>
+<div class="center"><span class="anim mo" data-anim="mochila" data-fig="monta" data-from="vazio" data-state="tc"></span><div class="tab" style="grid-template-columns:repeat(6,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Camada1</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Camada2</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Camada3</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Camada4</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Camada5</b></div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Qtde</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">10</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">8</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">5</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">15</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">25</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Altura</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">50</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">55</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">60</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">45</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">15</div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div>
+<p>E os paletes teriam uma altura máxima permitida H.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Bin packing problem</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="vazio" data-state="v4"><img class="ig" src="img/vrp4.svg" style="width:156.20pt" alt=""></span></p></div>
+<p>A mesma idéia pode ser usada em algoritmos para resolução do VRP. Lembre que cada cliente possui uma <b>demanda</b>, e cada veículo uma <b>capacidade</b>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas" data-steps="3">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Bin packing problem</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim vr" data-anim="vrp" data-from="v4" data-state="v4,g4,r4"><img class="ig" src="img/vrp4.svg" style="width:156.20pt" alt=""></span></p></div>
+<p>Podemos pensar em um método de resolução em duas partes:</p>
+<ul class="itemz rag">
+<li>Determinar quais grupos de clientes serão atendidos pelos mesmos carros.</li>
+<li>Para cada grupo desses, encontrar a melhor rota.</li>
+</ul>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Bin packing problem</div></header>
+<div class="fc jus">
+<p>Note que, novamente, a primeira parte da solução é basicamente um BPP. Devemos <span class="q q34">“</span>encher<span class="q q34">”</span> os carros com todos os clientes, usando a menor quantidade de carros possível. A tabela de dados ficaria da seguinte forma:</p>
+<div class="center"><span class="anim mo" data-anim="mochila" data-fig="monta" data-from="vazio" data-state="tc"></span><div class="tab" style="grid-template-columns:repeat(6,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Cliente1</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Cliente2</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Cliente3</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Cliente4</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Cliente5</b></div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Qtde</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">1</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">1</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">1</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">1</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">1</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Demanda</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">50</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">55</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">60</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">45</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">15</div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div>
+<p>E os veículos tem uma capacidade total <b>C</b>.</p>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Carregamento 2D - <i>2D knapsack problem</i></div></header>
+<div class="fc">
+<div class="block"><div class="block-title">O problema da mochila 2D</div><div class="block-body jus"><p>Dado um conjunto de objetos retangulares de comprimentos e larguras diferentes, tentar empacotar a maior quantidade de objetos possíveis em um retângulo maior, de forma a minimizar a área perdida no retângulo maior.</p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Carregamento 2D - <i>2D knapsack problem</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="corte2d" data-from="vazio" data-state="c1"><img class="ig" src="img/bin_packing1.svg" style="width:154.44pt" alt=""></span></p></div>
+<p>Como carregar os retângulos menores dentro do retângulo maior?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Carregamento 2D - <i>2D knapsack problem</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="corte2d" data-from="c1" data-state="c2"><img class="ig" src="img/bin_packing2.svg" style="width:154.44pt" alt=""></span></p></div>
+<p>Note que não foi possível carregar todos os retângulos. Tentamos <b>maximizar</b> a área ocupada no retângulo maior.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Carregamento 2D - <i>2D knapsack problem</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="corte2d" data-state="c2"><img class="ig" src="img/bin_packing2.svg" style="width:154.44pt" alt=""></span></p></div>
+<p>Quais aplicações existem para este tipo de problema (e suas soluções)?</p>
+<ul class="itemz rag">
+<li data-on="2-">Corte de linha branca</li>
+<li data-on="3-">Corte de tecidos</li>
+<li data-on="4-">Corte de papel</li>
+</ul>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Carregamento 2D - <i>2D knapsack problem</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="corte2d" data-state="c2"><img class="ig" src="img/bin_packing2.svg" style="width:154.44pt" alt=""></span></p></div>
+<p>Quais aplicações existem para este tipo de problema (e suas soluções)?</p>
+<ul class="itemz rag">
+<li data-on="1-">Ajuste de layout em jornais/paginas web</li>
+<li data-on="2-">Paletização de caixas em camadas</li>
+</ul>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Carregamento 2D - <i>2D knapsack problem</i></div></header>
+<div class="fc">
+<div class="block"><div class="block-title">O problema de carregamento de contêineres</div><div class="block-body jus"><p>Dado um conjunto de caixas e um contêiner, alocar as caixas dentro do contêiner de forma a maximizar o espaço utilizado.</p></div></div>
+<p>CLP <sup class="fnm">4</sup></p>
+</div>
+<div class="footnotes"><p class="fn"><span class="fn-mark">4</span><i>Container Loading Problem</i></p></div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Carregamento 3D - <i>Container loading problem</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim ct" data-anim="conteiner" data-from="vazio" data-state="cheio" data-info><img class="ig" src="img/CLP.png" style="width:256.00pt" alt=""></span></p></div>
+<p>Como carregar o maior número possível de caixas?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Carregamento + roteirização</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim ct" data-anim="conteiner" data-state="cheio"><img class="ig" src="img/CLP.png" style="width:192.00pt" alt=""></span> <img class="ig" src="img/vrp7.svg" style="width:140.58pt" alt="" data-only="1"></p></div>
+<div class="tcb jus"><p>Muitos problemas podem ser mesclados, de forma a unificar as decisões de otimização em um único contexto. Isso <b>infelizmente</b> deixa os problemas mais difíceis (e mais atraentes de serem resolvidos).</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Carregamento + roteirização</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim ct" data-anim="conteiner" data-state="cheio"><img class="ig" src="img/CLP.png" style="width:192.00pt" alt=""></span> <img class="ig" src="img/vrp7.svg" style="width:140.58pt" alt="" data-only="1"></p></div>
+<div class="tcb jus"><p>Imagine o VRP com todas as restrições, porém as demandas e capacidades dos veículos não são escalares, mas volumétricas. Volume dos veículos e caixas nas demandas. <span class="c-brickred">Quais restrições estariam envolvidas nessa variante?</span>.</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Estratégicos, táticos e operacionais</div></header>
+<div class="fc">
+<ul class="itemz jus" style="margin-top:0.63pt;position:relative;top:-1.84pt">
+<li>À cada nível hierárquico de gerenciamento estão associados diversos problemas de produção: <i> <span class="c-myblue"> estratégico</span> </i>, <i><span class="c-myblue">tático</span></i> e <i><span class="c-myblue"> operacional</span></i>
+<ol class="enum jus" style="margin-top:2.74pt">
+<li><i>Estratégico:</i> trata da decisões a longo prazo, compra de máquinas, localização de facilidades, balanceamento de linhas de produção.</li>
+<li><i>Tático:</i> trata do planejamento de atividades a médio prazo. Decisões como níveis de mão de obra, hora extra, quantidades a serem produzidas, todas em relação à demandas agregadas.</li>
+<li><i>Operacional:</i> controla as atividades em nível diário, com informações provenientes do nível tático. Designação de tarefas à máquinas e programação (<i>scheduling</i>) das tarefas em cada máquina (horário de início e fim).</li>
+</ol></li>
+</ul>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Localização de facilidades</div></header>
+<div class="fc">
+<div class="block"><div class="block-title">O problema de localização de facilidades</div><div class="block-body jus"><p>Dado um conjunto de pontos distribuídos geograficamente em que cada ponto possui uma demanda, e um número \(p\) de centros de distribuição, cada um com uma capacidade de fornecimento, determinar a melhor localização dos centros de distribuição de forma a atender todas as demandas e minimizar as distâncias totais entre os clientes e os centros.</p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Localização de facilidades</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="pmedianas" data-from="vazio" data-state="m1"><img class="ig" src="img/p_medianas1.svg" style="width:220.78pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Cada elemento possui uma demanda que deve ser atendida.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Localização de facilidades</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="pmedianas" data-from="m1" data-state="m2"><img class="ig" src="img/p_medianas2.svg" style="width:220.78pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Existem p centros que possuem, cada um, uma capacidade.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas" data-steps="2">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Localização de facilidades</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="pmedianas" data-from="m2" data-state="m2,demo"><img class="ig" src="img/p_medianas2.svg" style="width:220.78pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Onde localizar os centros, e a quais pontos atribui-los, de forma a atender todas as demandas?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Localização de facilidades</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="pmedianas" data-from="m2" data-state="m3"><img class="ig" src="img/p_medianas3.svg" style="width:220.78pt" alt=""></span></p></div>
+<p>Quais aplicações existem para este tipo de problema (e suas soluções)?</p>
+<ul class="itemz jus">
+<li data-on="1-">Localização de cilos de armazenagem de grãos</li>
+<li data-on="2-">Localização de estações móveis para vacinação de COVID</li>
+<li data-on="3-">Localização de centros de distribuição</li>
+</ul>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Balanceamento de linhas de produção</div></header>
+<div class="fc">
+<div class="block"><div class="block-title">O problema de balanceamento de linhas de produção</div><div class="block-body jus"><p>O problema de balanceamento de linhas simples, consiste em, dado a sequência de atividades de um produto (grafo de precedências), em que cada nó do grafo representa uma tarefa a ser realizada, e cada tarefa possui um tempo de processamento, bem como o tempo de ciclo da linha, alocar tarefas a serem realizadas a postos, com o objetivo de minimizar o número total de postos. A minimização dos postos implica na minimização dos trabalhadores alocados à linha</p></div></div>
+<p>SALBP1<sup class="fnm">5</sup>.</p>
+</div>
+<div class="footnotes"><p class="fn"><span class="fn-mark">5</span>Simple Assembly Line Balancing Problem</p></div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Balanceamento de linhas de produção</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/SALBP.svg" style="width:193.68pt" alt=""></p></div>
+<div class="tcb jus"><p>Quais tarefas podem ser agrupadas em postos, de forma que o tempo de ciclo não seja excedido, e as restrições de precedência sejam satisfeitas?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Balanceamento de linhas de produção</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/LineBalancingPlot.svg" style="width:129.12pt" alt=""></p></div>
+<div class="tcb jus"><p>Considerando um tempo de ciclo de 5 unidades, a solução acima é factível.</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Planejamento da produção</div></header>
+<div class="fc">
+<div class="block"><div class="block-title">O problema do planejamento da produção</div><div class="block-body jus"><p>Dado um horizonte de planejamento de \(t\) períodos, em que existe uma demanda em cada um, bem como um custo para armazenamento dos itens no estoque e uma capacidade de produção. O problema requer a determinação das quantidades a serem produzidas em cada período,de forma a atender a demanda do produto e minimizar os custos de estoque.</p></div></div>
+<p>Planejamento da produção <sup class="fnm">6</sup></p>
+</div>
+<div class="footnotes"><p class="fn"><span class="fn-mark">6</span>Lot Sizing Problem</p></div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Planejamento da produção</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/producao1.svg" style="width:239.75pt" alt=""></p></div>
+<div class="tcb jus"><p>Quanto produzir em cada período, sem exceder a capacidade e minimizando o estoque?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Planejamento da produção</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/producao2.svg" style="width:239.75pt" alt=""></p></div>
+<div class="tcb jus"><p>O planejamento acima detém custos de estoques, mas atende às demandas de todos os períodos.</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Programação da produção - sequenciamento</div></header>
+<div class="fc">
+<div class="block"><div class="block-title">Programação da produção</div><div class="block-body jus"><p>O sequenciamento de produção desdobra o planejamento para o nível operacional: cada produto tem um tempo de processamento, uma data de entrega, um conjunto de máquinas em que pode ser processado e um tempo de setup em cada máquina. Determinar quais produtos devem ser processados em quais máquinas e em quais períodos de tempo, de forma que o tempo total de produção seja minimizado.</p></div></div>
+<p>Programação da produção<sup class="fnm">7</sup></p>
+</div>
+<div class="footnotes"><p class="fn"><span class="fn-mark">7</span>Scheduling, JOB shop scheduling, flow shop scheduling</p></div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Programação da produção - sequenciamento</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="sequencia" data-fig="gantt" data-from="vazio" data-state="s1"><img class="ig" src="img/seq1.svg" style="width:172.58pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Considerando 3 produtos que podem ser processados em 3 máquinas, cada um leva um tempo de 2 unidades de processamento. A solução acima é factível.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Programação da produção - sequenciamento</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="sequencia" data-fig="gantt" data-from="s1" data-state="s2"><img class="ig" src="img/seq2.svg" style="width:172.58pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Porém essa é melhor, a taxa de ocupação das máquinas é maior e o tempo de finalização dos processamentos é menor.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Programação da produção - sequenciamento multi-níveis</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="sequencia" data-fig="arvore" data-from="vazio" data-state="t1,t2"><img class="ig" src="img/arvore_produto.svg" style="width:97.68pt" alt=""></span> <span data-on="2"><span class="anim pl" data-anim="sequencia" data-fig="gantt" data-state="vazio,g3"><img class="ig" src="img/seq3.svg" style="width:159.30pt" alt=""></span></span></p></div>
+<div class="tcb jus"><p data-only="1">Alguns produtos são compostos de diversos níveis, por exemplo: um carro é composto de rodas, chassi, etc...e cada uma dessas partes, por sua vez, também é composta por outras. Essa estrutura pode ser representada por uma <span class="c-myblue">árvore do produto</span>.</p>
+<p data-only="2">Além de todas as outras restrições, a ordem de precedência dos produtos deve ser obedecida (não é possível montar o carro sem antes ter as rodas)</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Planejamento de projetos</div></header>
+<div class="fc">
+<div class="block"><div class="block-title">Planejamento de projetos</div><div class="block-body jus"><p>Dada uma rede de precedência das atividades que compõe um projeto, bem como os recursos que são necessários para executar as atividades (pessoas, por exemplo), e os tempos que as mesmas levam para executá-los, determinar o período de inicio e de fim de todas as atividades, bem como quais recursos estarão alocados à quais atividades, de forma a minimizar o tempo de finalização da última atividade do projeto.</p></div></div>
+<p>Planejamento de projetos <sup class="fnm">8</sup></p>
+</div>
+<div class="footnotes"><p class="fn"><span class="fn-mark">8</span>Project scheduling, resource-constrained project scheduling</p></div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Planejamento de projetos</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/SALBP.svg" style="width:161.40pt" alt=""> <span data-on="2"><img class="ig" src="img/project.svg" style="width:225.37pt" alt=""></span></p></div>
+<div class="tcb jus"><p data-only="1">As precedências das etapas do projeto devem ser atendidas.</p>
+<p data-only="2">Se temos recursos (pessoas) ilimitados, a solução de cima é factível. A solução de baixo considera a limitação de recursos (2 pessoas).</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema de designação</div></header>
+<div class="fc">
+<div class="block"><div class="block-title">Problema de designação</div><div class="block-body jus"><p>Dado um conjunto de recursos e um conjunto de atividades. Cada recurso tem uma aptidão para executar cada atividade. Como alocar recursos à atividades de forma a maximizar a soma das aptidões? Cada recurso é atribuído a uma única atividade e toda atividades deve ter um recurso alocado a ela.</p></div></div>
+<p>Problema de designação <sup class="fnm">9</sup></p>
+</div>
+<div class="footnotes"><p class="fn"><span class="fn-mark">9</span>Assignment problem</p></div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema de designação</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim al" data-anim="designacao" data-from="vazio" data-state="a1"><img class="ig" src="img/alocacao1.svg" style="width:144.48pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Cada soldado consegue executar as 4 tarefas.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema de designação</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim al" data-anim="designacao" data-from="a1" data-state="a2"><img class="ig" src="img/alocacao2.svg" style="width:144.48pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Quais soldados realizam quais tarefas?</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas" data-steps="2">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema de designação</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><span class="anim al" data-anim="designacao" data-from="a2" data-state="a3,opt"><img class="ig" src="img/alocacao3.svg" style="width:145.06pt" alt=""></span></p></div>
+<div class="tcb jus"><p>Existe alguma alocação com maior soma de aptidões?</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema de planejamento escalas de trabalho</div></header>
+<div class="fc">
+<div class="block"><div class="block-title">Problema de planejamento escalas de trabalho</div><div class="block-body jus"><p>Dado um horizonte de planejamento e um conjunto de funcionários, alocar turnos à funcionários de forma a atender dois conjuntos de restrições, <i>hard</i> e <i>soft</i>. As restrições podem envolver legislações de folgas mínimas, cobertura de funcionários, preferências de turnos, etc...</p></div></div>
+<p>Agendamento de enfermeiras <sup class="fnm">10</sup></p>
+</div>
+<div class="footnotes"><p class="fn"><span class="fn-mark">10</span>Nurse scheduling problem, Nurse rostering problem, timetabling</p></div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema de planejamento escalas de trabalho</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/tipos_restricoes.svg" style="width:227.28pt" alt=""></p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema de planejamento escalas de trabalho</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/r1.svg" style="width:390.72pt" alt=""></p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema de planejamento escalas de trabalho</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/r2.svg" style="width:390.72pt" alt=""></p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema de planejamento escalas de trabalho</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/r3.svg" style="width:390.72pt" alt=""></p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema de planejamento escalas de trabalho</div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/r4.svg" style="width:391.04pt" alt=""></p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="block"><div class="block-title">Problema do <i>timetabling</i></div><div class="block-body jus"><p>O problema de <i>timetabling</i>, na sua forma mais genérica, lida com a <b>alocação de horários à recursos</b>. Diversos problemas se encaixam na categoria de <i>timetabling</i>: <i>sports timetabling</i>, <i>railway timetabling</i>, <i>airflight timetabling</i>, <i>nurse rostering</i>,...</p></div></div>
+</div>
+</section>
+
+<section class="frame" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="block"><div class="block-title">Problema do <i>timetabling</i></div><div class="block-body jus"><p>No entanto, quando o termo é usado, geralmente ele se refere ao <i>educational timetabling</i>, ou seja, alocação de professores/alunos à períodos e a salas de aula, satisfazendo um conjunto de restrições do tipo <i>hard</i>, e ao máximo possível um conjunto de restrições do tipo <i>soft</i>.</p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling1.svg" style="width:311.04pt" alt=""></p></div>
+<p>Vamos considerar próprio exemplo do nosso departamento. Temos duas salas disponíveis, PM03 e PM04.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling1.svg" style="width:311.04pt" alt=""></p></div>
+<p>Podemos <b>dividir</b> os tempos disponíveis nas salas em <b>períodos</b> (manhã/tarde, etc...), bem como em dias de utilização.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling2.svg" style="width:311.04pt" alt=""></p></div>
+<p>Existe um conjunto de <b>turmas</b> que precisam ocupar esses espaços para cursar as disciplinas.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling3.svg" style="width:311.04pt" alt=""></p></div>
+<p>Cada turma deve cumprir um número específico de <b>disciplinas</b> no semestre.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling4.svg" style="width:311.04pt" alt=""></p></div>
+<p>Além disso, existe um conjunto de <b>professores</b>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling5.svg" style="width:311.04pt" alt=""></p></div>
+<p>E cada professor pode ministrar um conjunto de <b>disciplinas</b>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling6.svg" style="width:311.04pt" alt=""></p></div>
+<p>Precisamos então, atribuir o conjunto de elementos (Turma, Disciplina, Professor) aos períodos de tempo disponíveis nas salas.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling6.svg" style="width:311.04pt" alt=""></p></div>
+<p>Quais poderiam ser as <span class="c-brickred">restrições</span> (hard) para esse problema?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling7.svg" style="width:311.52pt" alt=""></p></div>
+<p>Uma delas é a de que todas as turmas devem cumprir todas as disciplinas do semestre (disciplinas da turma \(T_1\) na imagem acima).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling8.svg" style="width:311.04pt" alt=""></p></div>
+<p>Além disso, uma mesma turma não pode ser alocada em aulas no mesmo período.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling9.svg" style="width:311.04pt" alt=""></p></div>
+<p>O mesmo para os professores que estão ministrando as disciplinas.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling9.svg" style="width:311.04pt" alt=""></p></div>
+<p>Fora essas, quais restrições do tipo soft podem existir?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling9.svg" style="width:311.04pt" alt=""></p></div>
+<p>Preferência de professores por horários, turmas por professores, etc...</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling9.svg" style="width:311.04pt" alt=""></p></div>
+<p>E a função objetivo? O que podemos usar para quantificar a qualidade de uma solução?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Problemas">
+<header class="ft"><h2>Problemas</h2><div class="subtitle">Problema do <i>timetabling</i></div></header>
+<div class="fc">
+<div class="center"><p class="imgs"><img class="ig" src="img/timetabling10.svg" style="width:311.04pt" alt=""></p></div>
+<p>Podemos, por exemplo, priorizar horários conjuntos (PM04) em detrimento de espaços vagos na grade das turmas/professores.</p>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Atividade">
+<header class="ft"><h2>Atividade</h2></header>
+<div class="fc jus">
+<p>Considerando os seguinte problemas:</p>
+<ol class="enum rag">
+<li>TSP</li>
+<li>VRP</li>
+<li>Localização de facilidades</li>
+<li>Sequenciamento (com uma máquina)</li>
+<li>Carregamento 2D</li>
+</ol>
+<p>Faça o que se pede:</p>
+<ol class="enum jus">
+<li>Crie uma lista com todas as restrições que devem existir, para que uma solução seja considerada factível.</li>
+<li>Dadas duas soluções para um mesmo problema, como você decidiria qual é melhor que a outra? Em outras palavras, qual deveria ser a função objetivo para o problema?</li>
+</ol>
+</div>
+</section>
+
+</main>
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="lib/hyphen/hyphen.js"></script>
+<script src="lib/hyphen/pt.js"></script>
+<script src="js/texbreak.js"></script>
+<script src="js/anim/core.js"></script>
+<script src="js/anim/caixeiro.js"></script>
+<script src="js/anim/dados/vrp.js"></script>
+<script src="js/anim/vrp.js"></script>
+<script src="js/anim/mochila.js"></script>
+<script src="js/anim/designacao.js"></script>
+<script src="js/anim/dados/bpp.js"></script>
+<script src="js/anim/paletes.js"></script>
+<script src="js/anim/dados/bp2d.js"></script>
+<script src="js/anim/corte2d.js"></script>
+<script src="js/anim/dados/pmed.js"></script>
+<script src="js/anim/pmedianas.js"></script>
+<script src="js/anim/dados/seq.js"></script>
+<script src="js/anim/sequencia.js"></script>
+<script src="js/anim/conteiner.js"></script>
+<script src="js/slides.js"></script>
+</body>
+</html>

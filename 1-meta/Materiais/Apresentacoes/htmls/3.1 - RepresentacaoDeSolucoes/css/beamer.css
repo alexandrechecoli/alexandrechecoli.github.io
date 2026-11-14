@@ -1,0 +1,845 @@
+/* Tema que reproduz o Beamer "Boadilla" com cor MyBlue, 11pt, 16:9.
+ * Todas as medidas estão em pt, iguais às do PDF original (453.543pt x 255.118pt).
+ * Fonte: Latin Modern Sans (a mesma do LaTeX). Para essa fonte, a linha de base de
+ * um texto fica a  L/2 + 0.4225*tamanho  do topo da caixa de linha de altura L. */
+
+@font-face { font-family: "LM Sans"; src: url(../fonts/lmsans10-regular.otf); font-weight: 400; font-style: normal; }
+@font-face { font-family: "LM Sans"; src: url(../fonts/lmsans10-bold.otf); font-weight: 700; font-style: normal; }
+@font-face { font-family: "LM Sans"; src: url(../fonts/lmsans10-oblique.otf); font-weight: 400; font-style: italic; }
+@font-face { font-family: "LM Sans"; src: url(../fonts/lmsans10-boldoblique.otf); font-weight: 700; font-style: italic; }
+@font-face { font-family: "LM Sans 12"; src: url(../fonts/lmsans12-regular.otf); }
+@font-face { font-family: "LM Sans 9"; src: url(../fonts/lmsans9-regular.otf); }
+@font-face { font-family: "LM Sans 9"; src: url(../fonts/lmsans9-oblique.otf); font-style: italic; }
+@font-face { font-family: "LM Sans 8"; src: url(../fonts/lmsans8-regular.otf); }
+@font-face { font-family: "Iwona"; src: url(../fonts/iwona-regular.otf); }
+@font-face { font-family: "Iwona"; src: url(../fonts/iwona-italic.otf); font-style: italic; }   /* textos das figuras do VRP (aula 2) */
+
+:root {
+  --myblue: #0061A5;
+  --brickred: #B6321D;
+  --foot-l: #1A71AE;
+  --foot-r: #E5EEF5;
+  --block-title: #CCDFED;
+  --block-body: #E6EFF6;
+  --textwidth: 403.7pt;
+  --bg: #2b2b2b;
+}
+
+html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+html:not(.ready) #deck { visibility: hidden; }
+
+#deck {
+  position: absolute; left: 50%; top: 50%;
+  width: 453.543pt; height: 255.118pt;
+  transform-origin: center center;
+}
+
+/* ---------- Frame ---------- */
+.frame {
+  position: absolute; inset: 0;
+  display: none;
+  overflow: hidden;
+  background: #fff; color: #000;
+  font-family: "LM Sans", sans-serif;
+  font-size: 10.91pt; line-height: 13.55pt;
+  text-align: left;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+}
+.frame.active { display: block; }
+
+/* Título (linha de base em 21.1pt) e subtítulo (linha de base em 35.1pt) */
+.ft { position: absolute; left: 8.5pt; right: 8.5pt; top: 0; color: var(--myblue); }
+.ft h2 { position: absolute; left: 0; top: 6.84pt; margin: 0; white-space: nowrap;
+  font: 400 14.35pt/17pt "LM Sans 12", sans-serif; }
+.ft .subtitle { position: absolute; left: 0; top: 26.11pt; white-space: nowrap;
+  font: 400 8.97pt/11pt "LM Sans 9", sans-serif; }
+
+/* Área de texto do frame (\textheight). Margens: 30pt à esquerda e 20pt à direita.
+ * Frame centralizado: o Beamer usa 1fill acima e 1.5fill abaixo do conteúdo.
+ * Frame [t]: 0.2cm acima do conteúdo. */
+.fc {
+  position: absolute; left: 29.9pt; right: 19.93pt; top: 38.9pt; bottom: 19.12pt;
+  display: flex; flex-direction: column;
+}
+/* só título: calibrado na aula 6 (frames [t] só com título; a aula 5 não tinha nenhum) */
+.frame.only-title .fc { top: 24.9pt; }
+.frame.t.only-title .fc { top: 26.28pt; }
+.frame.t.only-title .fc > .center:first-child { margin-top: 6.42pt; }
+.frame.notitle .fc { top: 0; }
+.fc::before { content: ""; flex: 1 1 0; }
+.fc::after  { content: ""; flex: 1.5 1 0; }
+.frame.t .fc::before { flex: none; height: 5.69pt; }
+.frame.t .fc::after  { flex: 1 1 0; }
+.fc > * { flex: none; }
+
+/* Rodapé */
+.frame > footer {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 12.398pt;
+  font: 400 6.97pt/12.398pt "LM Sans 8", sans-serif;
+  white-space: nowrap;
+}
+.foot-l { position: absolute; left: 0; top: 0; bottom: 0; width: 181.415pt;
+  background: var(--foot-l); color: #fff; text-align: center; }
+.foot-r { position: absolute; left: 181.415pt; top: 0; bottom: 0; width: 317.48pt;
+  background: var(--foot-r); color: var(--myblue); text-align: center; }
+.foot-num { margin-left: 32.1pt; margin-right: 3.1pt; }
+
+/* ---------- Texto ---------- */
+p { margin: 0; }
+b, strong { font-weight: 700; }
+b i, i b { font-style: normal; }  /* cmss não tem negrito itálico: o LaTeX usa negrito reto */
+.jus { text-align: justify; hyphens: manual; -webkit-hyphens: manual; }
+.rag { text-align: left; hyphens: manual; }
+/* linhas já quebradas pelo algoritmo do TeX (js/texbreak.js) */
+.tl { white-space: nowrap; }
+.c-myblue { color: var(--myblue); }
+.c-brickred { color: var(--brickred); }
+
+/* Fórmulas inline não aumentam a altura da linha (como no TeX) */
+.katex { font-size: 1em !important; line-height: 0; }
+.katex .katex-html { display: inline-block; height: 0; line-height: 0; vertical-align: baseline; }
+.katex-display > .katex > .katex-html { display: block; height: auto; }
+
+/* Espaçamentos verticais (equivalentes às colas do TeX) */
+.fc > p:first-child { margin-top: -1.2pt; }
+
+/* Ambiente center */
+.center { text-align: center; margin: 5.8pt 0 4.5pt; display: flex; flex-direction: column; }
+.imgs { display: flex; justify-content: safe center; align-items: flex-end; flex-wrap: wrap;
+  column-gap: 3.6pt; line-height: 0; }
+.imgs img { display: block; flex: none; }  /* figura mais larga que a coluna não encolhe (aula 10) */
+.center + p { margin-top: 6.8pt; }
+p + .center { margin-top: 8.2pt; }
+.tcb > .center:first-child { margin-top: 0; }
+/* dentro da tcolorbox (\parskip = 0) o center fica a 8.97pt do texto antes e depois
+ * (medido na aula 7: linhas de base a 22.52pt nos dois lados) */
+.tcb > p + .center { margin-top: 8.97pt; }
+.tcb > .center + p { margin-top: 4.47pt; }
+.tcb > .center:last-child { margin-bottom: 0; }
+ol + p, ul + p { margin-top: 2.2pt; }
+
+/* ---------- tcolorbox ---------- */
+.tcb {
+  box-shadow: inset 0 0 0 1.42pt var(--myblue);
+  border-radius: 0.28pt;
+  background: #fff;
+  padding: 6.37pt 15.62pt 9.84pt;  /* inclui a borda de 1.42pt */
+  margin: 6.7pt 0 0;
+  display: flex; flex-direction: column;
+}
+.tcb.bs0 { padding: 3.52pt 12.77pt 6.99pt; }
+.tcb + p { margin-top: 3.9pt; }
+
+/* ---------- block (Boadilla: rounded + shadow) ---------- */
+.block {
+  margin: 6.7pt -4pt 5.5pt;
+  border-radius: 4pt;
+  box-shadow: 2.4pt 2.4pt 3pt rgba(0,0,0,0.5);
+  display: flex; flex-direction: column;
+}
+.frame.t .fc > .block:first-child { margin-top: 3.1pt; }
+.tcb + .block { margin-top: 13.8pt; }
+.block + p { margin-top: 0; }
+.block-title {
+  background: var(--block-title); color: var(--myblue);
+  border-radius: 4pt 4pt 0 0;
+  font-weight: 400; font-size: 11.96pt; line-height: 16.2pt; height: 16.7pt;
+  padding: 0 4pt; text-align: center;
+  white-space: nowrap;
+}
+.block-title .center { margin: 0; display: block; }
+.block-body {
+  background: var(--block-body);
+  border-radius: 0 0 4pt 4pt;
+  padding: 1.12pt 4pt 3.8pt;
+  display: flex; flex-direction: column;
+}
+.block-body > ol:first-child, .block-body > ul:first-child { margin-top: -1.5pt; }
+
+
+/* ---------- Listas ---------- */
+ol.enum, ul.itemz { list-style: none; margin: 3.05pt 0 0; padding: 0 0 0 21.8pt; }
+.fc > ol.enum:first-child, .fc > ul.itemz:first-child,
+.tcb > ol.enum:first-child, .tcb > ul.itemz:first-child { margin-top: 0; }
+ol.enum { counter-reset: it; }
+ol.enum > li, ul.itemz > li { position: relative; margin-top: 2.95pt; }
+ol.enum > li:first-child, ul.itemz > li:first-child { margin-top: 0; }
+ol.enum > li { counter-increment: it; }
+ol.enum > li::before {
+  content: counter(it) ".";
+  position: absolute; right: calc(100% + 5.4pt); top: 0;
+  color: var(--myblue);
+}
+ol.enum > li[data-label]::before { content: attr(data-label); }
+ul.itemz > li::before {
+  content: ""; position: absolute; right: calc(100% + 5.6pt); top: 4.6pt;
+  width: 4.1pt; height: 4.1pt; background: var(--myblue);
+}
+/* listas de 2º nível: fonte \small (10pt / 12pt) */
+li ul.itemz, li ol.enum { font-size: 9.96pt; line-height: 11.96pt; padding-left: 21.8pt; margin-top: 1.5pt; }
+li ul.itemz > li, li ol.enum > li { margin-top: 0; }
+li ul.itemz > li::before { width: 3.3pt; height: 3.3pt; top: 5pt; }
+
+/* ---------- Colunas ---------- */
+/* Beamer (sem [onlytextwidth]) distribui as colunas por toda a largura do slide */
+.columns { display: flex; align-items: center; justify-content: space-evenly; margin: 13.2pt -19.93pt 0 -29.9pt; }
+.column { display: flex; flex-direction: column; flex: none; }
+.column > .center, .column > .tcb { margin-top: 0; margin-bottom: 0; }
+
+/* ---------- Fórmulas em destaque ---------- */
+/* Como no TeX: a linha de base da fórmula fica 24.55pt (\abovedisplayskip + \baselineskip)
+ * abaixo da linha anterior e 24.55pt acima da seguinte. Uma caixa de linha de 35.55pt
+ * produz exatamente isso. Fórmulas altas aumentam a linha, como o \lineskip do TeX. */
+.eq { margin: 0; line-height: 35.55pt; text-align: center; position: relative; }
+.eq .katex-display { display: inline; margin: 0; }
+.eq .katex-display > .katex { display: inline; }
+.eq .katex-display > .katex > .katex-html { display: inline-block; height: auto; }
+.eq-row > span + span { margin-left: 0.2778em; }
+.eqno { position: absolute; right: 0; top: 0; }
+/* \abovedisplayshortskip / \belowdisplayshortskip: linha anterior curta (marcado pelo JS) */
+.eq.short { margin-top: -11pt; margin-bottom: -4.5pt; }
+
+/* ---------- Algoritmo (algorithm + algpseudocode) ---------- */
+.algorithm { margin: 11.5pt 0 0; padding: 0.8pt 0 0.4pt;
+  background:
+    linear-gradient(#000, #000) top / 100% 0.8pt no-repeat,
+    linear-gradient(#000, #000) bottom / 100% 0.4pt no-repeat; }
+.alg-cap { padding-bottom: 0.4pt;
+  background: linear-gradient(#000, #000) bottom / 100% 0.4pt no-repeat; }
+.alg-body { padding: 0 0 2.8pt; }
+/* algorithmic solto (sem o float algorithm): sem réguas nem espaços */
+.algorithm.bare { margin: 0; padding: 0; background: none; }
+.algorithm.bare .alg-body { padding: 0; }
+/* \scalebox{f}{...}: dentro da \hbox a caixa não tem espaço vertical antes; a quebra de linha
+ * logo após "{" vira um espaço de palavra (3.64pt) antes da caixa (aula 7, pseudocódigo) */
+.scalebox > .tcb:first-child { margin-top: 0; margin-left: 3.64pt; margin-right: -3.64pt; }
+.frame.t .fc > .scalebox:first-child { margin-top: -3pt; }  /* medido no PDF (topo da caixa em y = 29.45) */
+.alg-body div { padding-left: 10.9pt; }
+.alg-body .l2 { padding-left: 27.3pt; }
+.alg-body .l3 { padding-left: 43.7pt; }
+.alg-body .l4 { padding-left: 60.1pt; }
+.alg-body .l5 { padding-left: 76.5pt; }
+/* \Comment do algpseudocode: \hfill + triângulo, alinhado à margem direita */
+.alg-body > div { position: relative; }
+.alg-body > div > .alg-cmt { position: absolute; right: 0; top: 0; padding-left: 0; }
+/* pseudocódigo executado passo a passo (componente pseudo, js/anim/buscalocal.js) */
+.alg-body > div { transition: background-color .25s, box-shadow .25s; }
+.alg-body > div.alg-on { background-color: #dbe8f3; box-shadow: inset 1.6pt 0 0 var(--myblue); }
+.c-alert { color: #ff0000; }
+
+/* ---------- Páginas especiais ---------- */
+.frame.titlepage .fc { align-items: center; text-align: center; }
+.frame.titlepage .fc::before { flex: none; height: 26.5pt; }
+.tp-title { color: var(--myblue); font: 400 14.35pt/17pt "LM Sans 12", sans-serif; }
+.tp-author { margin-top: 24.2pt; }
+.tp-date { margin-top: 28.3pt; }
+.tp-img { margin-top: 17.4pt; line-height: 0; }
+
+.frame.sec .fc { align-items: center; }
+.frame.sec .fc::before { flex: 2 1 0; }
+.frame.sec .fc::after { flex: 2.5 1 0; }
+.sec-title { color: var(--myblue); font: 400 14.35pt/17pt "LM Sans 12", sans-serif; padding: 8pt; position: relative; top: -0.5pt; }
+
+/* Sumário: \vfill com pesos 2 (acima) : 1 (entre seções) : 2.5 (abaixo). Ajustado com 5 seções
+ * (aulas 5 e 6: linhas de base 49.6 + 34.3k) e 8 seções (aula 7: 31.71 + 25.355k). */
+.frame.toc .fc::before { flex: 2 1 0; }
+.frame.toc .fc::after { flex: 2.5 1 0; }
+.frame.toc .fc > .toc-gap { flex: 1 1 0; }
+.toc-item { color: var(--myblue); display: flex; align-items: center; height: 13.55pt; }
+.frame.toc .fc > .toc-item:first-of-type { margin-top: -3.3pt; }
+.frame.toc .fc > .toc-item:last-of-type { margin-bottom: -4.93pt; }
+.toc-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 8.5pt; height: 8.5pt; border-radius: 50%;
+  background: var(--myblue); color: #fff;
+  font: 400 6.4pt/1 "LM Sans 8", sans-serif;
+  margin: 0 3.7pt 0 -2.5pt; flex: none;
+}
+
+/* ---------- Figuras animadas (js/anim/) ---------- */
+.anim { display: block; line-height: 0; }
+.anim svg { display: block; overflow: visible; }
+.cube-v { cursor: pointer; }
+.cube-v:hover circle + circle { stroke: var(--myblue); }
+.tsp-v { cursor: pointer; }
+.cont-h { cursor: grab; touch-action: none; }
+.cont-h:active { cursor: grabbing; }
+.tsp-v:hover circle + circle { stroke: var(--myblue); }
+.lo-ball { cursor: grab; touch-action: none; }
+.lo-ball:active { cursor: grabbing; }
+.s3d { position: relative; display: inline-block; line-height: 0; touch-action: none; cursor: grab; }
+.s3d:active { cursor: grabbing; }
+.s3d img { display: block; }
+.s3d-canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: none; }
+.anim[data-anim="reveal"] { display: inline-block; }
+
+/* ---------- lstlisting (listings) — aula Lab3 ----------
+ * Cada token é posicionado na sua coluna (left = coluna x largura da coluna); o estilo
+ * (fonte, tamanho, cores, moldura) vem inline do tex2html.py, calculado das opções do .tex. */
+.lst { margin-top: 0; margin-bottom: 0; flex: none; }
+.lst-l { position: relative; height: var(--lst-bs); white-space: pre; }
+.lst-l > span { position: absolute; top: var(--lst-top); line-height: var(--lst-bs); }
+
+/* ---------- tabular (+ booktabs) — aula Lab3 ----------
+ * Linha = strut de 0.7/0.3 \baselineskip: caixa de 9.75pt (linha de base a 9.485pt do topo,
+ * L/2 + 0.4225·10.91) + 3.8pt embaixo = 13.55pt. Réguas são divs (bordas CSS arredondam para pixels). */
+.tab { display: inline-grid; align-self: center; line-height: 9.75pt; }
+.tab .td { height: 9.75pt; padding-bottom: 3.8pt; white-space: nowrap; }  /* altura fixa: o negrito tem métricas maiores */
+.tab .td.c { text-align: center; } .tab .td.l { text-align: left; } .tab .td.r { text-align: right; }
+.tab-rule { grid-column: 1 / -1; background: #000; }
+
+/* ---------- Ajustes medidos no PDF da aula Lab3 ----------
+ * texto -> tcolorbox: o TeX deixa 10.84 pt da linha de base ao topo da caixa (também nos PDFs das
+ * aulas 5 e 7); com 6.7 pt o HTML ficava com 8.6 pt. tcolorbox -> texto: 16.26 pt (topo da caixa -> base). */
+p + .tcb { margin-top: 8.55pt; }
+.tcb + p { margin-top: 4.7pt; }
+/* center dentro de center (slide 4: \begin{center}\begin{center}REMOVER\end{center}...): sem espaço,
+ * as duas linhas ficam a 13.55 pt */
+.center > .center { margin: 0; }
+.center > .center + p { margin-top: 0; }
+/* tabela num center: linha de base anterior -> régua de cima 12.09 pt; régua de baixo -> próxima base 17.55 pt */
+p + .center:has(> .tab) { margin-top: 10.9pt; }
+.center:has(> .tab) + p { margin-top: 1.9pt; }
+/* tcolorbox no fim do frame: o after skip (4.1pt TeX) fica no fim da caixa vertical e entra na centralização
+ * de frames [c] (slide 3: espaço livre 35.7 : 54.7 = 1 : 1.5 só contando os 4.08pt) */
+.fc > .tcb:last-child { margin-bottom: 4.08pt; }
+
+/* ---------- Overlays ---------- */
+.ov-hidden { visibility: hidden !important; }
+.ov-gone { display: none !important; }
+.ov-block { display: flex; flex-direction: column; }
+
+/* ---------- Impressão: um frame por página, todos os overlays visíveis ---------- */
+@page { size: 453.543pt 255.118pt; margin: 0; }
+@media print {
+  html, body { background: #fff; overflow: visible; height: auto; }
+  #deck { position: static; transform: none !important; width: auto; height: auto; }
+  .frame { position: relative; display: block !important; width: 453.543pt; height: 255.118pt;
+    page-break-after: always; break-after: page; }
+  .ov-hidden { visibility: visible !important; }
+}
+
+/* ---- aula 8: figure do Beamer + \centerline ---- */
+.figure { display: flex; flex-direction: column; margin: 0; }
+.cline { display: flex; justify-content: center; }
+.cline img { display: block; }
+/* medidas no PDF (posição exata dos XObjects):
+ *  \centerline no topo de frame [t]: topo da figura em y = 29.45; linha seguinte = uma \baselineskip (13.55) abaixo do fim.
+ *  figure: 9pt (8.97) acima da figura; abaixo, 8.97 + 13.55 até a próxima linha de base (36.06 do fim da figura).
+ *  frame [c] só com uma figure que não cabe (slides 4 e 20): topo em y = 27.77 (o TeX encolhe a cola de cima). */
+.frame.t .fc > .cline:first-child { margin-top: -2.52pt; }
+.frame.t .fc > .figure:first-child { margin-top: 6.45pt; }
+.figure { margin-top: 8.97pt; margin-bottom: 8.97pt; }
+.cline + p { margin-top: 1.71pt; }
+.figure + p { margin-top: 15.25pt; }
+.frame:not(.t) .fc > .figure:only-child { margin-top: 2.87pt; margin-bottom: 0; }
+.frame:not(.t) .fc:has(> .figure:only-child)::before { flex: none; height: 0; }
+.figure + .tcb { margin-top: 14.7pt; }   /* slide 16: fim da figura -> 1a linha de base da caixa = 41.88 */
+
+/* ---- matemática sans (aula 8: preâmbulo sem \usefonttheme[onlymath]{serif}) ----
+ * O Beamer troca as fontes da matemática: letras em cmssi (sans itálico), dígitos, letras retas e
+ * ( ) [ ] = + : ; ! ? em cmss; o resto continua nas fontes de matemática (< > , . / em cmmi,
+ * ∗ − ′ e caligráficas em cmsy). unicode-range limita a troca a esses caracteres; os demais caem
+ * na fonte seguinte da lista (KaTeX_Main / KaTeX_Math). */
+@font-face { font-family: "MathSans"; src: url(../fonts/lmsans10-regular.otf);
+  unicode-range: U+0021, U+0028-0029, U+002B, U+0030-003B, U+003D, U+003F, U+0041-005B, U+005D, U+0061-007A; }
+@font-face { font-family: "MathSansIt"; src: url(../fonts/lmsans10-oblique.otf);
+  unicode-range: U+0041-005A, U+0061-007A; }
+@font-face { font-family: "MathSansBf"; src: url(../fonts/lmsans10-bold.otf);
+  unicode-range: U+0021, U+0028-0029, U+002B, U+0030-003B, U+003D, U+003F, U+0041-005B, U+005D, U+0061-007A; }
+.sansmath .katex { font-family: "MathSans", KaTeX_Main, "Times New Roman", serif; }
+.sansmath .katex .mathnormal { font-family: "MathSansIt", KaTeX_Math; font-style: normal; }
+.sansmath .katex .mathrm, .sansmath .katex .mop { font-family: "MathSans", KaTeX_Main; }
+.sansmath .katex .mathbf { font-family: "MathSansBf", KaTeX_Main; }
+
+/* Réguas de 0.4pt do algorithm: o Chrome descarta imagens de fundo com menos de 1px (antes da escala
+ * do slide) -> a régua sob a legenda e a de baixo não apareciam. Desenhadas como pseudo-elementos. */
+.algorithm { position: relative;
+  background: linear-gradient(#000, #000) top / 100% 0.8pt no-repeat; }
+.algorithm:not(.bare)::after, .alg-cap::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 0.4pt; background: #000; }
+.alg-cap { position: relative; background: none; }
+.algorithm.bare { background: none; }
+/* aula 8 (PDF, slides 15 e 52): régua de cima em y = 55.49 (centro), régua da legenda em 69.76,
+ * 1ª linha de base do corpo 15.75 abaixo dela */
+.algorithm:not(.bare) { margin-top: 10.45pt; }
+.algorithm:not(.bare) > .alg-body { padding-top: 4.6pt; }
+/* algorithm dentro de center (aula 8, slide 56): as linhas continuam alinhadas à esquerda */
+.algorithm { text-align: left; }
+/* espaço extra (\Until{ texto}: o espaço do início do argumento soma-se ao da macro) */
+.sp { margin-left: 0.3333em; }
+/* slide 56 (dois algorithm em colunas; o da esquerda não cabe no frame): posições medidas no PDF —
+ * régua de cima da esquerda em y = 46.10, da direita em 54.08 (centro da régua) */
+.cols-alg .columns { align-items: flex-start; }
+.cols-alg .column > .center { margin: 0 !important; }
+.cols-alg .column:first-child { margin-top: -2.84pt; }
+.cols-alg .column:last-child { margin-top: 5.14pt; }
+/* fim da área útil dos frames [c] de conteúdo (aula 8): y = 239.0, não 236.0 — com 236 todos os frames [c] da aula 8
+ * ficavam 0.8–2.6 pt altos (a aula 7 registrava o mesmo desvio); conferido nos slides 5, 6, 17, 18, 21, 22, 28, 54–57 */
+.frame:not(.t):not(.sec):not(.toc):not(.titlepage) .fc { bottom: 16.12pt; }
+/* figure no início de um frame [c] seguida de outro conteúdo (slide 16, único caso): medido 5.3 pt acima */
+.frame:not(.t) .fc > .figure:first-child:not(:only-child) { margin-top: 5.3pt; }
+/* sumário: o texto da seção num span (num flex, o espaço antes de \textit{} sumia: "ILS Nofitness") */
+.toc-txt { white-space: nowrap; }
+/* lista no topo de frame [t] (slides 23–27): 1ª linha de base em y = 45.00 */
+.frame.t .fc > ol.enum:first-child, .frame.t .fc > ul.itemz:first-child { margin-top: 1.65pt; }
+/* lista -> tcolorbox: 10.84 pt da última linha de base ao topo da caixa (como p + .tcb) */
+.enum + .tcb, .itemz + .tcb { margin-top: 8.68pt; }
+/* enumerate -> texto (slide 54, único caso nesta aula): 3.0 pt no PDF (a aula 5 calibrou 2.2) */
+ol.enum + p { margin-top: 3.0pt; }
+
+/* ---------- aula 9 ---------- */
+/* frame [plain] só com TikZ/pgfplots: a própria página do PDF (o conversor gera img/pagina-N.svg) */
+.frame.plain .fc:has(> .pagina) { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+/* frame [plain] com conteúdo comum (aula 10): margens normais, sem título nem rodapé */
+.frame.plain:not(.t):not(.sec):not(.toc):not(.titlepage) .fc:not(:has(> .pagina)) { top: 0; bottom: 3.8pt; }
+/* figura mais larga que a coluna: linha vazia antes dela (conversor: p.imgs.ovf) */
+.column p.imgs.ovf { margin-top: 13.55pt; }
+.frame.plain .pagina { position: absolute; left: 0; top: 0; width: 453.543pt; height: 255.118pt; }
+/* \footnote: marca = \textsuperscript no \scriptsize (cmss8, 7.97pt) elevada 0.3629 em (sup2 do cmsy, 10.95pt);
+   o texto vai para o pé do frame: régua 0.4\textwidth de 0.4pt em y = 217.26, \footnotesize (cmss9 8.97/10.96pt),
+   marca numa caixa de 1.8em alinhada à direita, linha de base da 1ª linha em y = 227.78, \raggedright */
+.fnm { font: 400 7.97pt/0 "LM Sans 8", sans-serif; vertical-align: 3.97pt; }
+.footnotes { position: absolute; left: 29.89pt; width: 403.7pt; top: 217.06pt; padding-top: 0.4pt;
+  background: linear-gradient(#000, #000) no-repeat 0 0 / 161.49pt 0.4pt; }
+.footnotes .fn { font: 400 8.97pt/10.96pt "LM Sans 9", sans-serif; text-align: left; margin-top: 1.05pt; }
+.footnotes .fn i { font-family: "LM Sans 9"; }
+.footnotes .fn-mark { display: inline-block; width: 16.59pt; text-align: right; font: 400 5.98pt/0 "LM Sans 8", sans-serif;
+  vertical-align: 3.81pt; }
+/* fórmula em destaque que abre parágrafo (classe do conversor): linha vazia (13.55) + \abovedisplayshortskip (0)
+   antes; \belowdisplayshortskip (6.5) depois. Medido: slides 17, 19, 23 e 50 (= .short + 13.55 acima) */
+.eq.par { margin-top: 2.55pt; margin-bottom: -4.5pt; }
+/* espaço que não some no início da linha (texbreak.js; a largura final é calculada linha a linha) */
+.xsp { display: inline-block; width: 0.3333em; }
+.xsp[data-sf="3000"], .xsp[data-sf="2000"] { width: 0.4444em; }
+/* linha com fórmula inline alta: o slides.js põe um strut com a altura que o \lineskip do TeX daria */
+.lstrut { display: inline-block; width: 0; vertical-align: baseline; }
+/* linha vazia que o TeX compõe antes do parágrafo (ex.: "}" de um \onslide depois de uma fórmula + linha em branco) */
+p.vazia { margin-top: 13.55pt; }
+/* .par cuja fórmula começa a menos de 2em da margem (coluna estreita): linha vazia + colas normais (11 / 11) */
+.eq.par.parlong { margin-top: 13.55pt; margin-bottom: 0; }
+/* fórmula no topo de uma tcolorbox: o conteúdo começa 9.92pt abaixo da borda de fora; linha vazia no topo (sem cola
+   entre linhas) e a fórmula a 13.55 (curta) ou 11 + 13.55 (normal) dela. Medido: slides 22, 24 e 25 */
+.tcb > .eq.par:first-child { margin-top: -5.285pt; }
+.tcb > .eq.par.parlong:first-child { margin-top: 5.715pt; }
+/* aspas duplas (conversor): 0.5em como no cmss OT1, sem kerning com o vizinho (aula 9, slide 8) */
+.q { display: inline-block; width: 0.5em; }
+/* block (aula 9, medido nas aulas 5 e 9): título com a linha de base 11.31pt abaixo do topo da barra (antes 1.44pt
+   baixa); a barra começa 1.71pt mais abaixo do que o css antigo punha; 1ª linha do corpo a 27.99pt do topo da barra
+   (mais se a linha for alta, ver slides.js) */
+.block-title { line-height: 13.32pt; }
+.block { margin-top: 8.41pt; }
+.frame.t .fc > .block:first-child { margin-top: 4.81pt; }
+.tcb + .block { margin-top: 15.51pt; }
+.block-body { padding-top: 0.05pt; }
+.block + p { margin-top: 0.92pt; }
+/* texto depois de um center só com figura: linha de base = fim da figura + topsep (6.57) + 13.55 (aula 9, slide 6) */
+.center:has(> p.imgs:only-child) + p { margin-top: 4.48pt; }
+/* \text{} nas fórmulas (o conversor troca por \textsf): no PDF é o cmss do texto -> mesma fonte do texto (o
+   KaTeX_SansSerif tem outras larguras; aula 9, slides 21 e 23) */
+.katex .textsf { font-family: "LM Sans", sans-serif; }
+/* lista logo depois de uma tcolorbox: 1ª linha de base 20.87pt abaixo da caixa (aula 9, slide 11) */
+.tcb + ol.enum, .tcb + ul.itemz { margin-top: 9.62pt; }
+/* espaços dentro de fórmulas (\text{...}) não esticam com a justificação da linha (no TeX são uma hbox) */
+.katex { word-spacing: 0; }
+/* center só com uma fórmula inline alta (cases, aula 9 slides 21 e 23): medido no PDF */
+p + .center:has(> p:only-child .katex):not(:has(.tl, img)) { margin-top: 8.84pt; }
+.center:has(> p:only-child .katex):not(:has(.tl, img)) { margin-bottom: 2.04pt; }
+/* algorithm (aula 9, conferido nos PDFs das aulas 8 e 9), a partir do topo T da régua de cima: legenda com a
+   linha de base em T + 10.36, régua da legenda (centro) em T + 14.67, 1ª linha do corpo em T + 25.05; com
+   \label depois do \caption (aula 8) o algorithmic ganha o \topsep: T + 30.42 (classe .lbl, do conversor);
+   régua de baixo 4.37 abaixo da última linha de base */
+.alg-cap { margin-top: -1.83pt; padding-bottom: 2.35pt; }
+.algorithm:not(.bare) > .alg-body { padding-top: 0; margin-top: -1.2pt; padding-bottom: 2pt; }
+.algorithm.lbl:not(.bare) > .alg-body { margin-top: 4.17pt; }
+.frame.t .fc > .algorithm:not(.bare):first-child { margin-top: 7.47pt; }
+/* columns depois de texto: topo das caixas 14.57pt abaixo da linha de base (aula 9, slides 24 e 25) */
+.columns { margin-top: 12.5pt; }
+/* \vspace (conversor) */
+.vsp { flex: none; }
+/* texto depois de columns + \vspace{0.3cm}: 17.08pt do fim das caixas até a linha de base (aula 9, slide 25) */
+.columns + .vsp + p { margin-top: -3.2pt; }
+/* frames [t] também: a área útil termina em y = 239.0 (aula 9, slide 20: com 236 o shrinkToFit encolhia 3pt a mais
+   que o TeX) */
+.frame.t .fc { bottom: 16.12pt; }
+/* o KaTeX escreve os espaços de \text{} como &nbsp;, que no LM Sans mede 0.5em (o espaço do cmss mede 0.3333em) */
+.katex .textsf { word-spacing: -0.1667em; }
+/* roletas do slide 25 (passo extra): abaixo do texto */
+.anim.roleta { position: absolute; left: 0; top: 150pt; }
+
+/* ---------- aula 10 ---------- */
+/* alertblock / exampleblock (cores do Boadilla medidas no PDF: título #FFCCCC com texto vermelho, corpo #FFE6E6) */
+.block.alert > .block-title { background: #FFCCCC; color: #FF0000; }
+.block.alert > .block-body { background: #FFE6E6; }
+.block.example > .block-title { background: #CCE6CC; color: #008000; }
+.block.example > .block-body { background: #E6F2E6; }
+/* \semitransp = \textcolor{fg!15} */
+.c-semitransp, .c-semitransp b, .c-semitransp i { color: #D9D9D9; }
+/* flushleft: a mesma lista do center, alinhada à esquerda */
+.center.fl { text-align: left; }
+.center.fl .imgs { justify-content: flex-start; }
+/* tabularx: colunas X quebram linhas (célula p{} justificada) */
+.table { display: flex; flex-direction: column; align-items: center; }
+/* célula X (p{}): linhas de 13.55pt, 1ª linha de base alinhada com as células comuns (9.48pt do topo da linha da
+   tabela) e fim da célula na profundidade do strut (4.08pt abaixo da última linha de base), medido no PDF */
+.tab.tabx .td.x { height: auto; white-space: normal; text-align: justify; padding-bottom: 1.91pt; }
+.tab.tabx .td.x > p { line-height: 13.55pt; margin-top: -1.905pt; }
+/* \justifying dentro de center (texto das colunas dos frames [plain]) */
+.center.jus { text-align: justify; }
+/* center > table > tabularx num frame [c] (slide 61): toprule em y = 65.4 como no PDF */
+.center > .table:has(> .tabx) { margin-top: -3.22pt; }
+/* block com {\center título} (aula 10): fim da barra -> 1ª linha de base = 4.49 + altura da linha (12.06 no PDF) */
+.block.tc > .block-body { padding-top: 1.43pt; }
+.frame.t .fc > .block.tc:first-child { margin-top: 3.82pt; }
+/* tcolorbox depois de texto dentro de uma coluna (\onslide, slide 52): o espaço normal texto -> caixa */
+.column > p + .tcb { margin-top: 8.55pt; }
+/* texto depois de um center só com figura (frame [t], slides 5, 13-24, 69): linha de base = fim da figura + 22.51 */
+.center:has(> p.imgs:only-child) + p { margin-top: 7.06pt; }
+/* frame [c] que termina numa tcolorbox (slides 4, 63, 66, 85): o conteúdo fica 1.2pt mais alto que com o
+   after skip de 4.08 -> 7.08pt na centralização */
+.frame:not(.t) .fc > .tcb:last-child { margin-bottom: 7.08pt; }
+/* block no topo de frame [c] (slide 67) */
+.frame:not(.t) .fc > .block:first-child { margin-top: 2.2pt; }
+/* algorithm [H] no fim de frame [c] (slide 57): o \intextsep de baixo entra na centralização */
+.frame:not(.t) .fc > .algorithm:last-child { margin-bottom: 12.75pt; }
+/* enumerate de 2º nível: rótulo "1.1" (Beamer default) */
+li ol.enum > li::before { content: counters(it, "."); }
+/* item com lista dentro (slide 100): o \small da lista interna vale para o parágrafo do item -> linhas de
+   11.96pt (a 1ª linha de base fica no mesmo lugar); 1ª linha da lista interna 13.94pt abaixo */
+ol.enum > li:has(> ol.enum, > ul.itemz), ul.itemz > li:has(> ol.enum, > ul.itemz) { line-height: 11.96pt; padding-top: 0.795pt; }
+li:has(> ol.enum, > ul.itemz) > ol.enum, li:has(> ol.enum, > ul.itemz) > ul.itemz { margin-top: 1.19pt; }
+li:has(> ol.enum, > ul.itemz) > ol.enum::before { content: none; }
+/* frame [t] só com título que começa com uma lista (slide 100) */
+.frame.t.only-title .fc > ol.enum:first-child { margin-top: 0.47pt; }
+/* frame [plain] centralizado com center (slides 56 e 95): topsep + partopsep no topo, topsep no fim */
+.frame.plain .fc > .center:first-child { margin-top: 11.8pt; }
+.frame.plain .fc > .center:last-child { margin-bottom: 9.4pt; }
+/* capa: figura 1.15pt acima (slide 1) */
+.tp-img { margin-top: 16.25pt; }
+/* frame [plain] só com um center (slide 56, fitness landscape) */
+.frame.plain .fc > .center:only-child { margin-top: 5.57pt; margin-bottom: 0; }
+/* subseções no sumário (aula 10): "1.1" preto na margem, texto a 21.82pt, linhas de 13.55pt logo abaixo da seção */
+.toc-sub { display: flex; align-items: center; height: 13.55pt; color: #000; }
+.toc-subnum { flex: none; width: 21.82pt; }
+.frame.toc .fc:has(> .toc-sub) > .toc-item:last-of-type { margin-bottom: -2.83pt; }
+/* ---------- animações da aula 10 ---------- */
+/* PMX/OX (js/anim/cruzamento.js): a figura do PDF fica invisível reservando o espaço; o SVG por cima */
+.anim.cruz { position: relative; flex: none; }
+.anim.cruz > img { visibility: hidden; }
+.anim.cruz > svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.cruz-ctl { position: absolute; left: 0; top: calc(100% + 19pt); display: flex; align-items: center; gap: 4pt;
+  line-height: normal; white-space: nowrap; }
+.cruz-ctl button { font: 400 6.97pt "LM Sans 8", sans-serif; color: var(--myblue); background: #fff;
+  border: 0.6pt solid #b7cde0; border-radius: 2pt; padding: 1.2pt 4pt; cursor: pointer; }
+.cruz-ctl button:hover { background: #eef4f9; }
+.cruz-hint { font: 400 6.2pt "LM Sans 8", sans-serif; color: #999; }
+@media print { .cruz-ctl { display: none; } }
+/* seleção (js/anim/selecao.js): como o PMX/OX, a figura do PDF fica invisível e o SVG por cima */
+.anim.sel { position: relative; flex: none; }
+.anim.sel > img { visibility: hidden; }
+.anim.sel > svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+@media print { .sel-panel { display: none !important; } }
+/* demo (span.anim invisível) depois da última tcolorbox (slide 64): a caixa continua sendo o fim do frame */
+.fc > .tcb:has(+ .anim:last-child) { margin-bottom: 4.08pt; }
+.frame:not(.t) .fc > .tcb:has(+ .anim:last-child) { margin-bottom: 7.08pt; }
+
+/* ciclo (js/anim/darwin.js): camada por cima da figura do PDF, que continua visível */
+.anim.ov { position: relative; flex: none; }
+.anim.ov > svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+
+/* um span.anim no fim do .fc (pseudoga, landga) não pode tirar a margem de fim de frame do bloco anterior */
+.frame:not(.t) .fc > .algorithm:has(+ .anim:last-child) { margin-bottom: 12.75pt; }
+.frame.plain .fc > .center:first-child:has(+ .anim:last-child) { margin-top: 5.57pt; margin-bottom: 0; }   /* = :only-child (slide 56) */
+
+/* ---------- Aula 2 ---------- */
+/* \small, \footnotesize, \scriptsize (tex2html: span.sz / p.sz-*). Com sz-grp ({\footnotesize ...}) o parágrafo
+ * termina fora do grupo: só a fonte muda e a entrelinha continua 13.55pt */
+.sz-small { font-size: 9.96pt; }
+.sz-footnotesize { font-size: 8.97pt; font-family: "LM Sans 9", "LM Sans", sans-serif; }
+.sz-scriptsize { font-size: 7.97pt; font-family: "LM Sans 8", "LM Sans", sans-serif; }
+.sz-footnotesize b, .sz-scriptsize b { font-family: "LM Sans", sans-serif; }   /* cmssbx10 escalado */
+p.sz-small:not(.sz-grp) { line-height: 11.96pt; }
+p.sz-footnotesize:not(.sz-grp) { line-height: 10.96pt; }
+p.sz-scriptsize:not(.sz-grp) { line-height: 9.46pt; }
+/* \sectionline (ornamento do pgfornament recortado do PDF) */
+.ornamento { text-align: center; line-height: 0; }
+.ornamento img { width: 198pt; position: relative; left: -2.75pt; top: 12.33pt; }   /* recorte (130, 107.5) do PDF, página 12 */
+/* notas de rodapé alinhadas por baixo: a última linha de base fica em y = 238.74 (aula 2: nota de 1 linha, régua em
+ * 228.21; aula 9: nota de 2 linhas, régua em 217.26 = 228.21 - 10.96) */
+.footnotes { top: auto; bottom: 14.69pt; }
+/* center só com texto (título em negrito) no topo de frame [t] com subtítulo: linha de base em y = 62.93 (aula 2) */
+.frame.t:not(.only-title) .fc > .center:first-child:has(> p:only-child:not(.imgs)) { margin-top: 7.11pt; }
+/* nota de rodapé em frame [c]: o espaço dela sai da área útil (o conteúdo centralizado sobe 2.45pt; aula 2) */
+.frame:not(.t) .fc:has(~ .footnotes) { padding-bottom: 6.12pt; }
+/* \justify depois de uma tcolorbox = \begin{justify} do ragged2e (trivlist): \topsep (8.97) no lugar do after skip (aula 2, frame 8) */
+.tcb + p.jtop { margin-top: 8.97pt; }
+/* tabela booktabs num center depois de texto ou lista: régua de cima 12.52pt abaixo da última linha de base (aula 2) */
+p + .center:has(> .tab) { margin-top: 8.89pt; }
+ol + .center:has(> .tab), ul + .center:has(> .tab) { margin-top: 9.83pt; }
+/* frame [c] só com um block (aula 2: frames 45, 50, 79 e 80): o conteúdo fica 1.57pt mais baixo que com o
+ * after skip do block (5.5pt) no fim -> no TeX o espaço depois do último block conta 3.93pt a menos */
+.frame:not(.t) .fc > .block:only-child { margin-bottom: 1.57pt; }
+/* corpo de block em \small (aula 2, frames 4 e 15): as linhas ficam 1.67pt mais abaixo no PDF (regra exata não achada) */
+.block-body > p.sz-small:first-child { position: relative; top: 1.67pt; }
+
+/* ---------- animações da aula 2 ---------- */
+/* TSP (js/anim/caixeiro.js, frames 5–10): a figura do PDF fica invisível reservando o espaço; o SVG por cima */
+.anim.cx, .anim.vr, .anim.pl { position: relative; flex: none; }
+.anim.cx > img, .anim.vr > img, .anim.pl > img { visibility: hidden; }
+.anim.cx > svg, .anim.vr > svg, .anim.pl > svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+/* VRP (js/anim/vrp.js, frames 16–26): painel do horário de saída (frame 23) */
+.anim.vr text, .anim.pl text { text-rendering: geometricPrecision; }
+.vr-btn { cursor: pointer; }
+.vr-btn:hover rect { fill: #eef4f9; }
+@media print { .vr-btn { display: none; } }
+.cx-hit { cursor: grab; touch-action: none; }
+.cx-hit:active { cursor: grabbing; }
+.cx-reset { position: absolute; right: 0; top: 0; font: 400 6pt "LM Sans 8", sans-serif; color: var(--myblue);
+  background: #fff; border: 0.6pt solid #b7cde0; border-radius: 2pt; padding: 1pt 3.5pt; cursor: pointer; line-height: normal; }
+.cx-reset:hover { background: #eef4f9; }
+/* painel "quantas rotas?" (frame 7): à direita da figura (sobram ~100pt até a margem) */
+.cx-painel { position: absolute; left: calc(100% + 8pt); top: 50%; transform: translateY(-50%); width: 88pt;
+  line-height: normal; text-align: left; font: 400 6.97pt "LM Sans 8", sans-serif; color: #333; }
+.cx-n { display: flex; align-items: center; gap: 4pt; margin-bottom: 4pt; font-size: 8pt; }
+.cx-n b { color: var(--myblue); }
+.cx-n button { font: 700 8pt "LM Sans", sans-serif; color: var(--myblue); background: #fff; width: 13pt; height: 13pt;
+  padding: 0; border: 0.6pt solid #b7cde0; border-radius: 2pt; cursor: pointer; line-height: 1; }
+.cx-n button:hover { background: #eef4f9; }
+.cx-lb { color: #666; font-size: 6.2pt; }
+.cx-big { font: 700 10pt "LM Sans", sans-serif; color: var(--myblue); margin: 0.5pt 0 4pt; }
+.cx-t { font: 700 7.5pt "LM Sans", sans-serif; color: var(--brickred); }
+.cx-flash { animation: cxflash 0.5s ease-out; }
+@keyframes cxflash { from { transform: scale(1.25); transform-origin: left center; color: var(--brickred); } }
+@media print { .cx-reset, .cx-n button { display: none !important; } }
+/* frame 38 (BPP dentro do VRP): item da lista da parte em andamento */
+.vr-on { color: var(--myblue); transition: color 0.4s; }
+@media print { .vr-on { color: inherit; } }
+/* mochila (js/anim/mochila.js, frames 28–29): o span fica no div.center da tabela, fora do fluxo */
+.anim.mo { position: absolute; left: 0; top: 0; width: 0; height: 0; line-height: normal; }
+.tab.mo-anim .td { transition: background-color 0.35s; }
+.tab.mo-click .td { cursor: pointer; }
+.tab.mo-click .td:hover { box-shadow: inset 0 0 0 0.6pt #8fb3d3; }
+.mo-panel { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 5pt;
+  font: 400 8.97pt "LM Sans", sans-serif; color: #222; text-align: left; }
+.mo-top { display: flex; align-items: center; justify-content: space-between; }
+.mo-title { font-weight: 700; color: var(--myblue); font-size: 10.95pt; }
+.mo-btns { display: flex; gap: 3pt; }
+.mo-btns button { font: 400 7.5pt "LM Sans 8", sans-serif; color: var(--myblue); background: #fff;
+  border: 0.6pt solid #b7cde0; border-radius: 2pt; padding: 1.5pt 4pt; cursor: pointer; }
+.mo-btns button:hover { background: #eef4f9; }
+.mo-barwrap { position: relative; height: 20pt; margin-top: 9pt; }
+.mo-bar { position: absolute; inset: 0; border: 0.8pt solid #555; background: #fafafa; }
+.mo-bar.over { border-color: var(--brickred); }
+.mo-seg { position: absolute; top: 0; bottom: 0; transition: left 0.45s, width 0.45s, opacity 0.3s;
+  box-shadow: inset -0.6pt 0 0 #fff; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  white-space: nowrap; font: 400 7pt "LM Sans 8", sans-serif; }
+.mo-seg.mo-over { background-image: repeating-linear-gradient(45deg, transparent 0 3pt, rgba(182,50,29,.35) 3pt 5pt); }
+.mo-seg.mo-flash { animation: moflash 0.7s ease-out; }
+@keyframes moflash { from { filter: brightness(0.75); } }
+.mo-cap { position: absolute; top: -4pt; bottom: -3pt; border-left: 1.2pt dashed var(--brickred); transition: left 0.45s; }
+.mo-cap span { position: absolute; top: -9.5pt; left: -14pt; font: 400 7pt "LM Sans 8", sans-serif; color: var(--brickred); white-space: nowrap; }
+.mo-stats { display: flex; align-items: baseline; gap: 14pt; font-size: 9.96pt; }
+.mo-stats b { color: var(--myblue); }
+.mo-msg { font-size: 8.97pt; }
+.mo-msg.ok { color: #1a7f37; font-weight: 700; }
+.mo-msg.ko { color: var(--brickred); }
+.mo-hint { font: 400 6.5pt "LM Sans 8", sans-serif; color: #888; }
+@media print { .mo-btns, .mo-hint { display: none; } }
+/* designação (js/anim/designacao.js, frames 68–70): a figura do PDF fica visível; o SVG por cima */
+.anim.al { position: relative; flex: none; }
+.anim.al > svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+.al-sol, .al-btn { cursor: pointer; }
+.al-btn:hover rect { fill: #eef4f9; }
+@media print { .al-btn { display: none; } }
+/* p-medianas (js/anim/pmedianas.js, frame 53 passo 2): centros arrastáveis e botões */
+.pm-c { cursor: grab; touch-action: none; }
+.pm-c:active { cursor: grabbing; }
+.pm-btn { cursor: pointer; }
+.pm-btn:hover rect { fill: #eef4f9; }
+@media print { .pm-btn { display: none; } }
+/* contêiner 3D (js/anim/conteiner.js, frames 46–48): substitui img/CLP.png (a <img> reserva o espaço) */
+.anim.ct { position: relative; flex: none; }
+.anim.ct > img { visibility: hidden; }
+.anim.ct > canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+.anim.ct > canvas:active { cursor: grabbing; }
+.ct-info { position: absolute; right: 0; bottom: 100%; margin-bottom: 1pt; text-align: right; font: 400 6.5pt "LM Sans 8", sans-serif; color: var(--myblue);
+  line-height: normal; white-space: nowrap; pointer-events: none; }
+
+/* ---- aula 3 (Métodos de Resolução): medidas no PDF ---- */
+/* \frametitle{\textbf{..}}: o PDF usa o cmssbx10 ampliado (o LM Sans 12 não tem negrito) */
+.ft h2 b { font-family: "LM Sans", sans-serif; }
+/* título de block com {\center ..} ou \begin{center}..\end{center} (classe tc): o slides.js dá a altura certa
+   à barra, mas no navegador a linha de base fica 0.80pt alta (PDF: 11.30pt abaixo do topo da barra) */
+.block-title.tc { box-sizing: border-box; padding-top: 0.8pt; }
+/* fim do corpo do block: 0.28pt mais baixo no PDF (todos os blocos desta aula) */
+.block-body { padding-bottom: 4.08pt; }
+/* algorithm [H] no topo de frame [t] com subtítulo: régua de cima em 53.36 (1.4pt mais baixo); sem \label, 1ª linha
+   0.54pt mais alta; texto depois do float: \intextsep -> linha de base 25.71pt abaixo da régua de baixo */
+.frame.t:not(.only-title):not(.notitle) .fc > .algorithm:not(.bare):first-child { margin-top: 8.87pt; }
+.algorithm:not(.bare):not(.lbl) > .alg-body { margin-top: -1.74pt; }
+.algorithm:not(.bare) + p { margin-top: 14.33pt; }
+/* frame [t] com subtítulo: 1ª linha de base em 53.96 e \centerline com o topo em 41.41 (0.67pt mais alto que o css
+   supunha); o figure/center no topo já cai certo. Subtítulo com maiúscula acentuada ("Árvore"): o TeX desce a
+   caixa (classe sub-acc, ajustes_aula3.py) */
+.frame.t:not(.only-title):not(.notitle):not(.sub-acc) .fc > p:first-child { margin-top: -1.87pt; }
+.frame.t:not(.only-title):not(.notitle):not(.sub-acc) .fc > .cline:first-child { margin-top: -3.17pt; }
+/* \centerline seguido de texto: linha de base 13.58pt abaixo da figura (o css dava 12.99) */
+.cline + p { margin-top: 2.30pt; }
+/* \centerline seguido de tcolorbox (frames 12, 25-27): caixa 4.07pt mais baixa */
+.cline + .tcb { margin-top: 10.77pt; }
+/* figure{\centerline} seguido de tcolorbox (frames 4-9): 0.65pt mais baixa */
+.figure + .tcb { margin-top: 15.35pt; }
+/* block no topo de frame [t] só com título (frame 20): barra em 36.43 */
+.frame.t.only-title .fc > .block.tc:first-child { margin-top: 4.48pt; }
+/* alignat* (amsmath; slides.js alignatSpacing): linhas a 16.54pt (\baselineskip + \jot, o KaTeX dá 16.36);
+   --al-a = da margem de cima até a 1ª linha de base; --al-b = da última linha de base até a margem de baixo.
+   tcolorbox (frames 13-16): 28.06 do topo interno e 4.15 até o fim interno. Frame 18: 62.1pt abaixo da linha de base
+   anterior (depois de um cases) */
+.eq.alignat { --al-a: 33.25; --al-b: 13.17; }
+.tcb > .eq.alignat:first-child { --al-a: 28.06; }
+.tcb > .eq.alignat:last-child { --al-b: 4.15; }
+/* tcolorbox depois de uma tabela num center (frame 31): 2.05pt mais perto que o css supunha */
+.center:has(> .tab) + .tcb { margin-top: 4.65pt; }
+/* frame 61: dois blocks seguidos, 11.96pt entre o fim do corpo e a barra seguinte (ajustes_aula3.py) */
+.block.b-gap { margin-top: 6.46pt; }
+/* explosão combinatória (js/anim/forcabruta.js, frame 31): host de tamanho zero no center da tabela; o SVG das barras
+   e o painel são posicionados a partir dele */
+.anim.fb { position: absolute; left: 0; top: 0; width: 0; height: 0; line-height: normal; }
+.fb-painel .cx-big { font-size: 9pt; }
+.fb-painel .cx-lb { margin-top: 1pt; }
+/* matriz D interativa (js/anim/matrizd.js, frame 21 passo 2): host de tamanho zero no canto do div.bkarr */
+.anim.md { position: absolute; left: 0; top: 0; width: 0; height: 0; line-height: normal; z-index: 1; }   /* acima do recorte da matriz */
+/* busca local executável (js/anim/buscaopt.js, frame 67): span absoluto à direita do algoritmo encolhido */
+.anim.bo { line-height: normal; }
+/* mochila (js/anim/mochila3.js): frame 17 — painel abaixo da tabela (host de tamanho zero no center da tabela) */
+.anim.mo3 { position: absolute; left: 0; top: 0; width: 0; height: 0; line-height: normal; }
+.mo3-panel { inset: auto; height: auto; gap: 4pt; text-align: left; }
+/* frame 18 — o vetor x e o modelo avaliado, abaixo do modelo */
+.anim.mo3m { line-height: normal; }
+.mo3-modelo { font: 400 8pt "LM Sans", sans-serif; color: #333; display: flex; flex-direction: column; gap: 5pt; }
+.mo3-x { display: flex; align-items: center; gap: 3pt; flex-wrap: wrap; }
+.mo3-x button { font: 400 7.5pt "LM Sans", sans-serif; background: #fff; border: 0.6pt solid #b7cde0; border-radius: 2pt;
+  padding: 1.5pt 3pt; cursor: pointer; color: #222; }
+.mo3-x button i { font-family: KaTeX_Math, serif; }
+.mo3-x button b { color: var(--myblue); }
+.mo3-x button:hover { box-shadow: inset 0 0 0 0.6pt #8fb3d3; }
+.mo3-lb { color: #777; font-size: 7pt; margin-right: 2pt; }
+.mo3-l b { color: var(--myblue); }
+.mo3-l .ok { color: #1a7f37; font-weight: 700; }
+.mo3-l .ko { color: var(--brickred); font-weight: 700; }
+@media print { .mo3-x .mo3-lb { display: none; } }
+/* links (\href): no PDF não são sublinhados (aula 3, frame 56); a cor vem do \color do texto */
+.fc a { color: inherit; text-decoration: none; }
+.fc a:hover { text-decoration: underline; }
+
+/* ---- aula 3.1 (Representação de Soluções): medidas no PDF ---- */
+/* \scalebox{f}{tabular} num center: zoom (o espaço ocupado escala, como no TeX), tabela centrada */
+.scalebox.stab { align-self: center; display: flex; flex-direction: column; }  /* a tabela não fica numa linha (strut) */
+.scalebox.stab > .tab { align-self: auto; }
+/* tcolorbox seguida de center com figura (frame 9): topo da figura 8.0pt abaixo da caixa */
+.tcb + .center { margin-top: 8.87pt; }  /* natural; o TeX encolhe 0.88 (figura no fim: shrinkToFit) */
+/* texto depois da tabela escalada: linha de base 17.93pt abaixo da régua de baixo (frame 38) */
+.center:has(> .stab) + p { margin-top: 1.97pt; }
+/* columns no topo de frame [t] (frame 43): topo das caixas 4.73pt acima do que dá a regra de columns depois de texto */
+.frame.t .fc > .columns:first-child { margin-top: 7.77pt; }
+/* \vspace{0.5cm} + texto depois de columns com tabela escalada (frame 43) */
+.columns:has(.stab) + .vsp + p { margin-top: -2.25pt; }
+/* center com várias figuras/tabelas \only<1>..<n>: no passo 1 as quebras de linha entre elas ficam como um
+ * espaço (3.64pt) depois da figura e ela anda 1.82pt para a esquerda (frames 18 e 43; nos outros passos não) */
+.imgs > img[data-only="1"]:has(~ img[data-only]) { margin-right: 3.64pt; }
+.center > .scalebox.stab[data-only="1"]:has(~ .scalebox[data-only]) { translate: -1.82pt 0; }
+/* frame 30, passo 2: no PDF a caixa DESAFIO é overfull e encosta no rodapé (no navegador chegava a entrar nele).
+ * Caixa um pouco menor (pedido do professor): 3pt a menos acima, margens internas 4.4 / 6.8 em vez de 6.37 / 9.84
+ * (~8pt de folga); o texto da caixa fica ~5pt mais alto que no PDF. */
+.pos-cases30 + .tcb { margin-top: 5.55pt; padding-top: 4.4pt; padding-bottom: 6.8pt; }
+
+/* ---- jssdec (frame 43, js/anim/jssdec.js): passo 4 ---- */
+/* as células J2 J1 J3 da fórmula viram fichas (cor do job no Gantt); --ja anima a entrada */
+.jd-chip { display: inline-block; position: relative; isolation: isolate; cursor: grab; touch-action: none; user-select: none; }
+.jd-chip::before { content: ""; position: absolute; left: -2.4pt; right: -2.4pt; top: -8.2pt; bottom: -3pt; z-index: -1;  /* a caixa do KaTeX quase não tem altura */
+  border-radius: 2.2pt; background: color-mix(in srgb, var(--jc) calc(28% * var(--ja, 1)), #fff);
+  box-shadow: 0 0 0 0.6pt color-mix(in srgb, var(--jc) calc(85% * var(--ja, 1)), transparent); }
+.jd-chip:hover::before { box-shadow: 0 0 0 0.9pt var(--jc); }
+.jd-chip.sel::before { box-shadow: 0 0 0 1.3pt var(--myblue); }
+.jd-chip.drag { cursor: grabbing; z-index: 2; }
+.jd-hint { position: absolute; transform: translateX(-50%); font: 400 6pt "LM Sans 8", sans-serif; color: #888; white-space: nowrap; }
+.jd-row { position: absolute; display: flex; justify-content: center; align-items: center; gap: 3pt;
+  font: 400 6.5pt "LM Sans 8", sans-serif; color: #666; }
+.jd-row button { font: inherit; color: #333; background: #fff; border: 0.6pt solid #b7cde0; border-radius: 2pt;
+  padding: 1.2pt 3.5pt; cursor: pointer; display: flex; align-items: baseline; gap: 3.5pt; }
+.jd-row button:hover { background: #eef4f9; }
+.jd-row button.cur { box-shadow: inset 0 0 0 0.8pt var(--myblue); }
+.jd-o { display: flex; gap: 2pt; font: 400 7.5pt KaTeX_Main, serif; }
+.jd-o span { color: var(--jc); }
+.jd-o i { font-family: KaTeX_Math, serif; }
+.jd-c { min-width: 8pt; text-align: right; color: var(--myblue); }
+.jd-row button.best .jd-c { color: #1a7f37; }
+.jd-rt { margin-right: 2pt; }
+@media print { .jd-row, .jd-hint { display: none !important; } }
+
+/* ---- rainhas (frame 20, js/anim/rainhas.js): passo 2 ---- */
+.anim.pl.rh-on .rh-cell { cursor: pointer; }
+.anim.pl.rh-on .rh-cell:hover { fill-opacity: 0.35; }
+.rh-pnl { position: absolute; display: flex; flex-direction: column; gap: 3.2pt; font: 400 6.6pt "LM Sans 8", sans-serif;
+  color: #444; line-height: 1.25; text-align: left; }
+.rh-st { font-size: 7.6pt; color: #333; }
+.rh-st b { color: var(--myblue); }
+.rh-cod { border-left: 1.2pt solid #b7cde0; padding-left: 4pt; }
+.rh-h { display: flex; gap: 3pt; align-items: baseline; color: #555; }
+.rh-h b { color: var(--myblue); }
+.rh-sz { margin-left: auto; color: #777; white-space: nowrap; }
+.rh-v { font: 400 7.6pt KaTeX_Main, serif; color: #000; margin: 0.8pt 0; overflow-wrap: anywhere; }
+.rh-v .ko-b { color: #8b0000; background: rgba(139, 0, 0, 0.18); border-radius: 1pt; padding: 0 0.6pt; }
+.rh-m .ok, .rh-st .ok, .rh-m b.ok { color: #1a7f37; font-weight: 700; }
+.rh-m .ko, .rh-st .ko, .rh-m b.ko, .rh-st b.ko { color: var(--brickred); }
+.rh-n { color: #888; }
+.rh-btns { display: flex; flex-wrap: wrap; gap: 2pt; margin-top: 1pt; }
+.rh-btns button { font: 400 6.6pt "LM Sans 8", sans-serif; color: var(--myblue); background: #fff; border: 0.6pt solid #b7cde0;
+  border-radius: 2pt; padding: 1pt 2.6pt; cursor: pointer; }
+.rh-btns button:hover { background: #eef4f9; }
+.rh-hint { font-size: 6pt; color: #888; }
+@media print { .rh-btns, .rh-hint { display: none !important; } }
+
+/* ---- espbusca (frame 21, js/anim/espbusca.js): svg do tamanho do frame, fora do .fc ---- */
+.anim.sb { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+.anim.sb > svg { width: 100%; height: 100%; overflow: visible; }
+.anim.sb text { text-rendering: geometricPrecision; }
+
+/* ---- mapeam (frames 25–44, js/anim/mapeam.js) ---- */
+.anim.pl .mp-hit { cursor: pointer; }
+
+/* ---- decod (frames 35–36, js/anim/decod.js): botão na margem esquerda da figura ---- */
+.dc-btn { position: absolute; display: flex; flex-direction: column; gap: 2.5pt; font: 400 6pt "LM Sans 8", sans-serif; color: #888; }
+.dc-btn button { font: 400 6.6pt "LM Sans 8", sans-serif; color: var(--myblue); background: #fff; border: 0.6pt solid #b7cde0;
+  border-radius: 2pt; padding: 1.2pt 3pt; cursor: pointer; align-self: flex-start; }
+.dc-btn button:hover { background: #eef4f9; }
+@media print { .dc-btn { display: none !important; } }
+
+/* ---- tuplas (frame 41, js/anim/tuplas.js): células (j,o,b,e) das fórmulas ligadas aos blocos do Gantt ---- */
+.tp-cell { display: inline-block; position: relative; isolation: isolate; cursor: pointer; }
+.tp-cell::before { content: ""; position: absolute; left: -1.6pt; right: -1.6pt; top: -8.4pt; bottom: -3.2pt; z-index: -1;
+  border-radius: 2pt; background: transparent; transition: background-color .2s, box-shadow .2s; }
+.tp-cell:hover::before { box-shadow: 0 0 0 0.6pt color-mix(in srgb, var(--jc) 60%, transparent); }
+.tp-cell.on::before { background: color-mix(in srgb, var(--jc) 22%, #fff); box-shadow: 0 0 0 0.9pt var(--jc); }
+.anim.pl .tp-hit { cursor: pointer; }
+.anim.tp { position: relative; flex: none; }   /* a imagem fica; o svg só desenha os destaques por cima */
+.anim.tp > svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+.anim.tp text { text-rendering: geometricPrecision; }
+.anim.tp .tp-hit { cursor: pointer; }
+
+/* ---- codir (frames 5–8, js/anim/codir.js): painel à direita da figura ---- */
+.cd-pnl { position: absolute; width: 96pt; display: flex; flex-direction: column; gap: 2.5pt; font: 400 6.6pt "LM Sans 8", sans-serif;
+  color: #333; line-height: 1.3; text-align: left; }
+.cd-pnl > b { color: var(--myblue); }
+.cd-h, .cd-n { color: #888; }
+.cd-r b { color: var(--myblue); }
+.cd-r .ok, .cd-r b.ok { color: #1a7f37; font-weight: 700; }
+.cd-r .ko { color: var(--brickred); font-weight: 700; }
+.cd-pnl button { font: inherit; color: var(--myblue); background: #fff; border: 0.6pt solid #b7cde0; border-radius: 2pt;
+  padding: 1pt 3pt; cursor: pointer; align-self: flex-start; margin-top: 1pt; }
+.cd-pnl button:hover { background: #eef4f9; }
+.anim.pl .cd-hit { cursor: pointer; }
+.anim.pl .cd-hit:hover { fill-opacity: 0.25; fill: #8fb3d3; }
+.anim.pl .cd-drag { cursor: ns-resize; touch-action: none; }
+@media print { .cd-pnl { display: none !important; } }

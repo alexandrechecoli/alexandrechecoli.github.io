@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Representação de S oluções</title>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<link rel="stylesheet" href="css/beamer.css">
+<style>
+/* capa da aula 3.1 (medida no PDF) */
+.frame.titlepage .fc::before { height: 67.06pt; }
+.tp-author { margin-top: 24.21pt; }
+.tp-date { margin-top: 28.51pt; }
+</style>
+<style>
+/* aula 3.1: frames 45 e 47 (medidos no PDF) */
+.frame.exer45 .fc > ol.enum > li:nth-child(2) { margin-top: 1.31pt; }
+.frame.exer45 li > ol.enum { margin-top: 2.39pt; }
+.frame.exer45 li > ol.enum + p { padding-top: 0.47pt; }
+.frame.exer45 .fc > ol.enum > li:nth-child(3) { margin-top: 3.82pt; }
+.frame.atv1 .fc > ol.enum > li + li { margin-top: 1.93pt; }
+.frame.atv1 .fc { transform: translateY(0.48pt); }
+</style>
+</head>
+<body data-author="Alexandre Checoli Choueiri" data-shorttitle="DEP - UFPR : Metaheuristicas">
+<main id="deck">
+
+<section class="frame titlepage notitle">
+<div class="fc">
+<div class="tp-title">Representação de S oluções</div>
+<div class="tp-author">Alexandre Checoli Choueiri</div>
+<div class="tp-date">19/08/2023</div>
+</div>
+</section>
+
+<section class="frame toc notitle">
+<div class="fc">
+<div class="toc-item"><span class="toc-num">1</span><span class="toc-txt">Representações</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">2</span><span class="toc-txt">Classificações</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">3</span><span class="toc-txt">Representações Indiretas</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">4</span><span class="toc-txt">Atividades</span></div>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Representações">
+<div class="fc"><div class="sec-title">Representações</div></div>
+</section>
+
+<section class="frame t only-title" data-section="Representações">
+<header class="ft"><h2>Representações</h2></header>
+<div class="fc jus">
+<p>Toda metaheuristica precisa de uma <b>codificação</b> (representação) para uma solução. A escolha da codificação da solução desempenha um papel crucial no desempenho dos algoritmos. Podem existir diversos tipos de representação para um mesmo problema. Uma boa representação deve possuir as seguintes características:</p>
+<div class="tcb jus"><ol class="enum jus">
+<li data-on="2-"><span class="c-myblue"><b>Completude</b></span>: todas as soluções de um problema (pelo menos as factíveis) devem ser passíveis de representação.</li>
+<li data-on="3-"><span class="c-myblue"><b>Conectividade</b></span>: é necessário que exista um caminho entre quaisquer duas soluções.</li>
+<li data-on="4-"><span class="c-myblue"><b>Eficiência</b></span>: a representação precisa ser de fácil manipulação pelos operadores de movimento. Também deve facilitar o cálculo da função objetivo e verificação de violação de restrições.</li>
+</ol></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representações">
+<header class="ft"><h2>Representações</h2></header>
+<div class="fc jus">
+<p>Existem muitas codificações diretas para famílias de problemas de otimização tradicionais:</p>
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="codir" data-fig="bin" data-from="vazio" data-state="v"><img class="ig" src="img/rep_binario.svg" style="width:193.20pt" alt="" data-only="1"></span></p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representações">
+<header class="ft"><h2>Representações</h2></header>
+<div class="fc jus">
+<p>Existem muitas codificações diretas para famílias de problemas de otimização tradicionais:</p>
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="codir" data-fig="disc" data-from="vazio" data-state="v"><img class="ig" src="img/rep_discreto.svg" style="width:193.20pt" alt="" data-only="1"></span></p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representações">
+<header class="ft"><h2>Representações</h2></header>
+<div class="fc jus">
+<p>Existem muitas codificações diretas para famílias de problemas de otimização tradicionais:</p>
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="codir" data-fig="real" data-from="vazio" data-state="v"><img class="ig" src="img/rep_reais.svg" style="width:193.20pt" alt="" data-only="1"></span></p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representações">
+<header class="ft"><h2>Representações</h2></header>
+<div class="fc jus">
+<p>Existem muitas codificações diretas para famílias de problemas de otimização tradicionais:</p>
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="codir" data-fig="perm" data-from="vazio" data-state="v"><img class="ig" src="img/rep_permutacao.svg" style="width:193.20pt" alt="" data-only="1"></span></p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<p>Uma escolha inteligente de codificação para uma solução, pode até mesmo reduzir o espaço de busca do problema. Considere o <b>problema das 8 rainhas</b>:</p>
+<div class="tcb jus"><p>O problema (ou quebra cabeça) das 8 rainhas consiste em posicionar 8 rainhas em um tabuleiro de xadrez, de forma que nenhuma delas seja capaz de capturar nenhuma outra.</p></div>
+<div class="center"><p class="imgs"><img class="ig" src="img/xadrez1.svg" style="width:89.88pt" alt="" data-only="1"></p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/xadrez2.svg" style="width:128.40pt" alt="" data-only="1"></p></div>
+<p>Lembrando dos <b>movimentos</b> da rainha em um jogo de xadrez.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/xadrez2.svg" style="width:128.40pt" alt="" data-only="1"></p></div>
+<p><span class="c-myblue">Como poderia ser a <b>codificação</b> para a resposta deste problema?</span></p>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<p>A solução para esse problema representa a <b>designação de 8 rainhas no tabuleiro</b>. Inicialmente, poderíamos codificar a solução como um vetor de coordenadas:</p>
+<div class="eq">\[x = (p_1,p_2,...,p_8)\]</div>
+<p>Em que</p>
+<div class="eq">\[p_i = (x_i,y_i)\]</div>
+<p>representa a posição cartesiana da rainha \(i\), com \(x_i,y_i \in \{1,...,8\}\) representando a numeração da linha e da coluna da rainha no tabuleiro.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/xadrez3.svg" style="width:130.34pt" alt="" data-only="1-"></p></div>
+<p>Por exemplo, as rainhas acima seriam representadas como:</p>
+<div data-on="2" class="eq">\[x = ((4,4),(6,2),(6,6))\]<span class="eqno">\((1)\)</span></div>
+<div class="eq-fim" style="height:13.6pt"></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/xadrez3.svg" style="width:130.34pt" alt="" data-only="1"></p></div>
+<p>Com essa representação, o número de possíveis soluções (espaço de busca) é de \(64^8\), mais de <b>4 bilhões de possibilidades</b>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/xadrez3.svg" style="width:130.34pt" alt="" data-only="1"></p></div>
+<p>Ainda, para verificar a <span class="c-brickred"><b>factibilidade</b></span> de cada solução, temos de computar se nenhuma rainha se encontra na <b>horizontal</b>, na <b>vertical</b> ou na <b>diagonal</b> entre si.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/xadrez4.svg" style="width:130.34pt" alt=""></p></div>
+<p>Note que <span class="c-brickred"><b>nunca</b></span> uma solução em que uma rainha está na mesma coluna de outra será factível. <span data-on="2-">Será que conseguimos incorporar essa característica diretamente na codificação da solução?</span></p>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<p>Seja a nova solução representada pela codificação:</p>
+<div class="eq">\[x = (p_1,p_2,...,p_8)\]</div>
+<p>Em que cada índice \(i\) do vetor indica <b>uma coluna</b>. E o elemento \(p_i\) indica, para aquela coluna, em qual linha existe uma rainha posicionada.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><img class="ig" src="img/xadrez5.0.svg" style="width:267.14pt" alt="" data-only="1"> <img class="ig" src="img/xadrez5.1.svg" style="width:267.14pt" alt="" data-only="2"> <img class="ig" src="img/xadrez5.2.svg" style="width:267.14pt" alt="" data-only="3-"></p></div>
+<p data-only="1-2">Como a solução acima poderia ser representada pela nova codificação?</p>
+<p data-only="3">Note que algumas soluções naturalmente infactíveis, <b>nem podem ser representadas pela nova codificação</b>!</p>
+<p data-only="4">Nenhuma solução com rainhas na mesma coluna pode ser representada com essa codificação.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<p><span data-on="1-"> Isso reduz o espaço de busca de <b>4 bilhões</b> de soluções para \(8^8\), que é aproximadamente <b>16 milhões de possibilidades</b>.</span></p>
+<div data-on="2-" class="tcb jus"><p>Será que é possível pensar em uma codificação que reduz ainda mais o espaço de busca?</p></div>
+<p data-on="3-">Pela mesma premissa passada, sabemos que nenhuma solução que mantenha <b>duas rainhas na mesma linha</b> é uma solução <span class="c-brickred"><b>factível</b></span>.</p>
+<p data-on="3-">Seja a nova codificação uma <b>permutação</b> de 8 elementos:</p>
+<div data-on="3-" class="eq">\[x = (p_1,p_2,...,p_8)\]</div>
+<p data-on="3-">Em que o significado permanece o mesmo da codificação passada, porém, em se tratando de uma permutação, garantimos que <b>nenhuma linha será igual</b>.</p>
+</div>
+</section>
+
+<section data-steps="2" class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="rainhas" data-state="fig,live"><img class="ig" src="img/xadrez6.svg" style="width:267.14pt" alt=""></span></p></div>
+<p>Não conseguimos mais representar a primeira solução nessa nova codificação: ela <span class="c-brickred">não é uma permutação de elementos</span>!</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações">
+<header class="ft"><h2>Representações</h2><div class="subtitle">Reduzindo o espaço de busca</div></header>
+<div class="fc jus">
+<p>Agora, temos que nenhuma solução com duas rainhas na mesma linha e na mesma coluna podem ser representadas. Isso reduz o espaço de busca novamente, de <b>16 milhões</b> para <b>8! = 40.320</b> possibilidades. A única verificação que deve ser feita é <span class="c-myblue"><b>em relação à diagonal das rainhas</b>.</span></p>
+<div data-on="2-" class="vsp" style="height:14.17pt"></div>
+<p data-on="2-">\( \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} \textsf{{\color{#0061a5}\textsf{\textbf{Cod. 1}}:} 4 bilhões de possibilidades} \\ \textsf{{\color{#0061a5}\textsf{\textbf{Cod. 2}}:} 16 milhões de possibilidades} \\ \textsf{{\color{#0061a5}\textsf{\textbf{Cod. 3}}:} 40.320 possibilidades} \\ \end{array}\kern-0.5em}\right. \)</p>
+<div data-on="3-" class="block tc"><div class="block-title tc">Conclusão</div><div class="block-body jus"><p>A escolha adequada de codificação da solução impacta fortemente no desempenho dos algoritmos. Pelo exemplo acima, conseguimos reduzir substancialmente o espaço de busca do problema, simplesmente alterando a forma de representar uma solução.</p></div></div>
+</div>
+<span class="anim sb" data-anim="espbusca" data-state="vazio,barras"></span>
+</section>
+
+<section class="frame sec notitle" data-section="Classificações">
+<div class="fc"><div class="sec-title">Classificações</div></div>
+</section>
+
+<section class="frame t only-title" data-section="Classificações">
+<header class="ft"><h2>Classificações</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="genfen" data-fig="1" data-from="vazio" data-state="r1"><img class="ig" src="img/representacao1.svg" style="width:375.76pt" alt="" data-only="1"></span></p></div>
+<p>De forma geral, temos uma codificação, que é uma representação computacional de uma solução.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Classificações">
+<header class="ft"><h2>Classificações</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="genfen" data-fig="2" data-from="r1" data-state="r2,meio,sols"><img class="ig" src="img/representacao2.svg" style="width:377.48pt" alt="" data-only="1-"></span></p></div>
+<p data-only="1">Uma terminologia muito usada para esses conceitos, provenientes da biologia (e dos <b>algoritmos genéticos</b>), se refere a representação como <b>genótipo</b> e a solução como <b>fenótipo</b>.</p>
+<p data-only="2">Lembrando que o genótipo diz respeito aos genes de um individuo, e o fenótipo às características do indivíduo que são manifestadas pelos genes. O <b>fenótipo</b> é influenciado pelo meio, ou seja, um mesmo <b>genótipo</b> pode gerar diferentes <b>fenótipos</b>.</p>
+<p data-only="3">Isso nos remete às soluções: pode ocorrer de uma mesma codificação representar diferentes soluções. Todos os casos são apresentados a seguir, no chamado <b>mapeamento representação-solução</b></p>
+</div>
+</section>
+
+<section class="frame t" data-section="Classificações">
+<header class="ft"><h2>Classificações</h2><div class="subtitle">Mapeamento representação-solução</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="mapeam" data-from="vazio" data-state="todos"><img class="ig" src="img/mapeamento.svg" style="width:243.93pt" alt="" data-only="1"></span></p></div>
+<p>O <b>mapeamento representação-solução</b> pode ser de um dos tipos mostrados na imagem acima</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Classificações">
+<header class="ft"><h2>Classificações</h2><div class="subtitle">Mapeamento representação-solução</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="mapeam" data-from="todos" data-state="p0"><img class="ig" src="img/mapeamento_1_1.svg" style="width:243.93pt" alt="" data-only="1"></span></p></div>
+<p><span class="c-myblue"><b>(Um-para-um)</b></span>: esse é o mapeamento clássico. Uma solução é representada por uma única codificação, e toda codificação representa somente uma solução. <i>Usualmente esse é o esperado, pois toda representação que um algoritmo encontra é única</i>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Classificações">
+<header class="ft"><h2>Classificações</h2><div class="subtitle">Mapeamento representação-solução</div></header>
+<div class="fc jus">
+<p data-on="1-"><b><span class="c-myblue">EXEMPLO</span></b>: A representação matriz enfermeiras x dias para o problema de determinação de escalas de enfermeiras é do tipo <b>um-para-um</b>.</p>
+<div data-on="1-" class="center"><p class="imgs"><img class="ig" src="img/r6.svg" style="width:97.68pt" alt="" data-only="1-"></p></div>
+<p data-on="2-"><b><span class="c-myblue">EXEMPLO</span></b>: A representação binária para os problemas da mochila também são mapeamentos <b>um-para-um</b>. Considerando a codificação:</p>
+<div data-on="2-" class="eq">\[x = [0,1,1,0,1]\]</div>
+<p data-on="2-">Só existe uma solução para essa codificação: carregar os itens 1,2 e 4, e nenhum outro na mochila.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Classificações">
+<header class="ft"><h2>Classificações</h2><div class="subtitle">Mapeamento representação-solução</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="mapeam" data-from="p0" data-state="p1"><img class="ig" src="img/mapeamento_1_M.svg" style="width:243.93pt" alt="" data-only="1"></span></p></div>
+<p><span class="c-myblue"><b>(Um-para-muitos)</b></span>: nesse mapeamento, uma solução pode ser representada por mais de uma codificação. <i>A redundância na codificação vai aumentar o espaço de busca, e consequentemente pode afetar a eficiência da metaheuristica</i>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Classificações">
+<header class="ft"><h2>Classificações</h2><div class="subtitle">Mapeamento representação-solução</div></header>
+<div class="fc jus">
+<p><b><span class="c-myblue">EXEMPLO</span></b>: Em problemas de particionamento de conjunto, precisamos particionar um conjunto \(S\) de elementos em subconjuntos disjuntos \(s_i\), onde \(\cup s_i = S\) e \(s_i \cap s_j = \emptyset\). O <b>bin-packing</b> é um problema de particionamento de conjuntos. Seja os itens:</p>
+<div class="eq">\[L = [0,1,2,3]\]</div>
+<p data-on="2-"><span class="xsp"></span>Podemos usar a seguinte codificação para indicar que os itens 0 e 3 fazem parte de um conjunto, e os itens 1 e 2 de outro:</p>
+<div data-on="2-" class="eq">\[ABBA\]</div>
+<p data-on="3-"><span class="xsp"></span><span class="xsp"></span>No entanto, a codificação:</p>
+<div data-on="3-" class="eq">\[BAAB\]</div>
+<p data-on="3-">Indica a mesma solução. Essa codificação é então um exemplo de <b>um-para-muitos</b>.</p>
+</div>
+<span class="anim sb" data-anim="binpart" data-from="vazio" data-state="itens,abba,baab"></span>
+</section>
+
+<section class="frame t" data-section="Classificações">
+<header class="ft"><h2>Classificações</h2><div class="subtitle">Mapeamento representação-solução</div></header>
+<div class="fc jus">
+<p><b><span class="c-myblue">EXEMPLO</span></b>: A representação permutacional para os problemas do caixeiro viajante se enquadra no mapeamento <b>um-para-muitos</b>. Considerando as codificações:</p>
+<p class="cases30" style="padding-top:15.32pt">\( \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} x_1 = [0,3,2,1,4,5,6]\\ x_2 = [3,2,1,4,5,6,0] \\ x_3 = [2,1,4,5,6,0,3] \\ x_4 = [0,6,5,4,1,2,3] \\ \end{array}\kern-0.5em}\right. \)</p>
+<p class="pos-cases30" style="padding-top:12.76pt">Todas são representações de uma mesma rota, ou seja, é mais uma representação <b>um-para-muitos</b> - muita redundância.</p>
+<div data-on="2" class="tcb jus"><p><span class="c-brickred">DESAFIO:</span> Existe algo que poderia ser feito (alguma convenção), para eliminar a redundância desta representação?</p></div>
+</div>
+<span class="anim sb" data-anim="tsprota" data-fig="30" data-from="vazio" data-state="rota"></span>
+</section>
+
+<section class="frame t" data-section="Classificações">
+<header class="ft"><h2>Classificações</h2><div class="subtitle">Mapeamento representação-solução</div></header>
+<div class="fc jus">
+<p><span data-on="1-">Se convencionarmos que: <i>(a) o primeiro ponto da representação sempre deve ser o zero</i></span><span data-on="2-">, então já eliminamos boa parte das redundâncias.</span> <span data-on="3-"><span class="xsp"></span>Convencionando ainda <i>(b) que o segundo ponto sempre deve ser menor do que o último, elimina todas as representações redundantes</i>.</span></p>
+<div class="vsp" style="height:14.17pt"></div>
+<p data-only="1">\( \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} x_1 = [0,3,2,1,4,5,6]\\ x_2 = [3,2,1,4,5,6,0] \\ x_3 = [2,1,4,5,6,0,3] \\ x_4 = [0,6,5,4,1,2,3] \\ \end{array}\kern-0.5em}\right. \)</p>
+<p data-only="2">\( \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} x_1 = [0,3,2,1,4,5,6]\\ \cancel{x_2 = [3,2,1,4,5,6,0]} \\ \cancel{x_3 = [2,1,4,5,6,0,3]} \\ x_4 = [0,6,5,4,1,2,3] \\ \end{array}\kern-0.5em}\right. \)</p>
+<p data-only="3">\( \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} x_1 = [0,3,2,1,4,5,6]\\ \cancel{x_2 = [3,2,1,4,5,6,0]} \\ \cancel{x_3 = [2,1,4,5,6,0,3]} \\ \cancel{x_4 = [0,6,5,4,1,2,3]} \\ \end{array}\kern-0.5em}\right. \)</p>
+</div>
+<span class="anim sb" data-anim="tsprota" data-fig="31" data-from="vazio" data-state="mapa,zero,canon"></span>
+</section>
+
+<section class="frame t" data-section="Classificações">
+<header class="ft"><h2>Classificações</h2><div class="subtitle">Mapeamento representação-solução</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="mapeam" data-from="p1" data-state="p2"><img class="ig" src="img/mapeamento_M_1.svg" style="width:243.93pt" alt="" data-only="1"></span></p></div>
+<p><span class="c-myblue"><b>(Muitos-para-um)</b></span>: nesta classe, várias soluções podem ser representadas por uma mesma codificação. Essas codificações são caracterizadas por uma falta de detalhes em relação ao problema original, algumas informações não são explicitamente representadas.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Classificações">
+<header class="ft"><h2>Classificações</h2><div class="subtitle">Mapeamento representação-solução</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="mapeam" data-from="p2" data-state="p2b"><img class="ig" src="img/mapeamento_M_1.svg" style="width:243.93pt" alt="" data-only="1"></span></p></div>
+<p><span class="c-myblue"><b>(Muitos-para-um)</b></span>: em alguns casos isso reduz o espaço de busca original, aumentando a eficiência da metaheuristica. Essa classe de representações também é chamada de <b>representações indiretas</b>.</p>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Representações Indiretas">
+<div class="fc"><div class="sec-title">Representações Indiretas</div></div>
+</section>
+
+<section class="frame t only-title" data-section="Representações Indiretas">
+<header class="ft"><h2>Representações Indiretas</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="decod" data-fig="det" data-from="vazio" data-state="det"><img class="ig" src="img/decodificador.svg" style="width:236.34pt" alt="" data-only="1"></span></p></div>
+<div class="tcb jus"><p>Ao se usar uma <b>codificação indireta</b>, a representação não é uma solução completa do problema. Um <b>decodificador</b> é necessário para expressar a solução dada pela codificação. De acordo com as informações na representação, o decodificador pode ter mais ou menos trabalho para derivar uma solução completa.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representações Indiretas">
+<header class="ft"><h2>Representações Indiretas</h2></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="decod" data-fig="est" data-from="det" data-state="est"><img class="ig" src="img/decodificador.svg" style="width:236.34pt" alt="" data-only="1"></span></p></div>
+<div class="tcb jus"><p>O decodificador pode ser <b>estocástico (não-determinístico)</b>, o que implica que a cada decodificação uma solução diferente pode ser derivada. Representações indiretas são muito usadas em problemas com <i>muitas restrições</i>, como <b>scheduling</b>.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representações Indiretas">
+<header class="ft"><h2>Representações Indiretas</h2></header>
+<div class="fc jus">
+<p><b><span class="c-myblue">EXEMPLO</span></b>: Considere o problema de <b>job-shop scheduling (JSS)</b>:</p>
+<div class="block tc"><div class="block-title tc"><b>Definição</b></div><div class="block-body jus"><p><span class="c-myblue"><b>Job-shop scheduling</b></span>: No JSS, um conjunto de <b>n</b> <i>jobs</i> devem ser processados em <b>m</b> máquinas. Cada job é composto de um número \(n_i\) de operações, sendo que cada operação deve ser processada em uma máquina específica. A ordem de execução das operações deve ser respeitada. Um objetivo é minimizar o <i>makespan</i>, ou seja, o tempo de termino da última tarefa.</p></div></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representações Indiretas">
+<header class="ft"><h2>Representações Indiretas</h2></header>
+<div class="fc jus">
+<div class="center"><div class="scalebox stab" style="zoom:0.9"><div class="tab" style="grid-template-columns:repeat(4,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>1</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>2</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>3</b></div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">J1</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M1(2)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M2(3)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">J2</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M1(2)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M2(1)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M3(1)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">J3</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M2(4)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M1(1)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M3(2)</div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div></div>
+<p>Por exemplo, considere a instância para o problema com 3 <i>jobs</i> e 3 <b>máquinas</b>, dada pela Tabela acima. O job 1 deve ser processado nas máquinas \(M1 \rightarrow M2\), levando um tempo de 2 unidades na máquina 1 e 3 na máquina 2.</p>
+<div data-on="2" class="center"><p><span class="c-myblue"><b>Qual poderia ser uma codificação para a solução deste tipo de problema?</b></span></p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representações Indiretas">
+<header class="ft"><h2>Representações Indiretas</h2></header>
+<div class="fc jus">
+<div class="center"><div class="scalebox stab" style="zoom:0.9"><div class="tab" style="grid-template-columns:repeat(4,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>1</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>2</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>3</b></div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">J1</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M1(2)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M2(3)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">J2</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M1(2)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M2(1)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M3(1)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">J3</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M2(4)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M1(1)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M3(2)</div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div></div>
+<p>Primeiramente vamos tentar visualizar uma possível solução. Para problemas de scheduling, fica fácil representar as soluções por meio de <b>gráficos de Gannt</b>, em que os recursos são as máquinas. Uma possível solução é mostrada na Figura (com custo de 9):</p>
+<div class="center"><p class="imgs"><img class="ig" src="img/JSS1.svg" style="width:189.14pt" alt="" data-only="1"></p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representações Indiretas">
+<header class="ft"><h2>Representações Indiretas</h2></header>
+<div class="fc jus">
+<p>Uma representação (direta) para o problema, pode ser uma lista de máquinas. Cada máquina, por sua vez, mantém uma lista em que cada elemento mantém os 3 valores:</p>
+<div class="eq">\[(j,o,b,e)\]</div>
+<p>Em que:</p>
+<div class="center"><p>\( \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} \textsf{{\color{#0061a5}j}:} &amp; \textsf{Job que está sendo processado} \\ \textsf{{\color{#0061a5}o}:} &amp; \textsf{Tarefa do job que está sendo processada} \\ \textsf{{\color{#0061a5}b}:} &amp; \textsf{Tempo de inicio do processamento} \\ \textsf{{\color{#0061a5}e}:} &amp; \textsf{Tempo de término do processamento} \end{array}\kern-0.5em}\right. \)</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representações Indiretas">
+<header class="ft"><h2>Representações Indiretas</h2></header>
+<div class="fc jus">
+<p>Uma representação (direta) para o problema, pode ser uma lista de máquinas. Cada máquina, por sua vez, mantém uma lista em que cada elemento mantém os 3 valores:</p>
+<div class="columns"><div class="column rag" style="width:201.85pt;position:relative;top:-10.6pt"><div class="eq par" data-only="1">\[\left[
+	\begin{array}{cccccc}
+		(3,3,6,7)  &amp; (2,3,9,9) \\
+	\end{array}
+	\right]\]</div>
+<div class="eq par" data-only="2">\[\left[
+	\begin{array}{cccccc}
+		{\color{#b6321d}(3,3,6,7)}  &amp; (2,3,9,9) \\
+	\end{array}
+	\right]\]</div>
+<div class="eq">\[\left[
+	\begin{array}{cccccc}
+		(3,1,1,4)   &amp; (1,2,5,7) &amp; (2,2,8,8) \\
+	\end{array}
+	\right]\]</div>
+<div class="eq">\[\left[
+	\begin{array}{cccccc}
+		(1,1,1,2)   &amp; (2,1,3,4) &amp; (3,2,5,5) 
+	\end{array}
+	\right]\]</div></div>
+<div class="column rag" style="width:201.85pt;position:relative;top:-1.72pt"><div class="center"><p class="imgs"><span class="anim tp" data-anim="tuplas" data-from="vazio" data-state="ler,ex"><img class="ig" src="img/JSS1.svg" style="width:189.14pt" alt="" data-only="1-"></span></p></div></div></div>
+<div data-on="2-" class="tcb jus"><p>Por exemplo \( \left[ \begin{array}{cccccc} {\color{#b6321d}(3,3,6,7)} \end{array} \right]\) O Job 3 (primeiro 3), 3\(^a\) etapa (segundo 3), começa a sua execução no período 6 e termina no período 7. OBS: Como as marcações de tempo na figura estão <span class="q q34">”</span>entre<span class="q q34">”</span>os períodos, o inicio e fim são contabilizados pelos <span class="q q34">”</span>segmentos<span class="q q34">”</span>completos.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Representações Indiretas">
+<header class="ft"><h2>Representações Indiretas</h2></header>
+<div class="fc jus">
+<p>Uma possível representação indireta para soluções, consiste em um vetor de <b>prioridades de execução dos jobs</b>, por exemplo:</p>
+<div class="eq">\[x = 
+		\left[
+		\begin{array}{cccccc}
+			J2 &amp; J1 &amp; J3
+		\end{array}
+		\right]\]<span class="eqno">\((2)\)</span></div>
+<p data-on="2-"><span class="xsp"></span>Um decodificador possível poderia funcionar da seguinte forma:</p>
+<div data-on="2-" class="tcb jus"><p>Seguindo a ordem de jobs dada pela representação, atribua cada operação do job <b>ao instante de tempo mais cedo possível</b> na máquina.</p></div>
+</div>
+</section>
+
+<section data-steps="4" class="frame t only-title" data-section="Representações Indiretas">
+<header class="ft"><h2>Representações Indiretas</h2></header>
+<div class="fc jus">
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="center"><div data-only="1" class="scalebox stab" style="zoom:0.7"><div class="tab" style="grid-template-columns:repeat(4,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>1</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>2</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>3</b></div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">J1</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M1(2)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M2(3)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">J2</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M1(2)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M2(1)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M3(1)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">J3</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M2(4)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M1(1)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M3(2)</div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div>
+<div data-only="2" class="scalebox stab" style="zoom:0.7"><div class="tab" style="grid-template-columns:repeat(4,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>1</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>2</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>3</b></div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">J1</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M1(2)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M2(3)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">J2</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M1(2)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M2(1)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M3(1)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">J3</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M2(4)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M1(1)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">M3(2)</div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div>
+<div data-only="3-" class="scalebox stab" style="zoom:0.7"><div class="tab" style="grid-template-columns:repeat(4,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>1</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>2</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>3</b></div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">J1</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M1(2)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M2(3)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">J2</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M1(2)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M2(1)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M3(1)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">J3</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M2(4)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M1(1)</div>
+<div class="td c" style="background:#bdd4e6;padding-left:5.98pt;padding-right:5.98pt">M3(2)</div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div></div></div>
+<div class="column rag" style="width:201.85pt;position:relative;top:-8.72pt"><div class="eq par">\[x = 
+				\left[
+				\begin{array}{cccccc}
+					J2 &amp; J1 &amp; J3
+				\end{array}
+				\right]\]</div></div></div>
+<div class="vsp" style="height:14.17pt"></div>
+<p>A solução decodificada para a representação acima fica (com custo de 14):</p>
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="jssdec" data-only="1" data-from="vazio" data-state="i1" style="margin-right:3.64pt"><img class="ig" src="img/indirect1.svg" style="width:278.46pt" alt=""></span> <span class="anim pl" data-anim="jssdec" data-only="2" data-state="i1,i2"><img class="ig" src="img/indirect2.svg" style="width:278.46pt" alt=""></span> <span class="anim pl" data-anim="jssdec" data-only="3-" data-state="i1,i2,i3,live"><img class="ig" src="img/indirect3.svg" style="width:278.46pt" alt=""></span></p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Representações Indiretas">
+<header class="ft"><h2>Classificações</h2><div class="subtitle">Mapeamento representação-solução</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="mapeam" data-from="p2" data-state="p2b"><img class="ig" src="img/mapeamento_M_1.svg" style="width:243.93pt" alt="" data-only="1"></span></p></div>
+<p>Ou seja, as representações indiretas (muitos para um), usualmente são usadas quando uma representação explícita para o problema é muito complicada. Para utilizá-las é necessário criar um <b>decodificador</b> (o que pode ser a parte mais trabalhosa).</p>
+</div>
+</section>
+
+<section class="frame t exer45 only-title" data-section="Representações Indiretas">
+<header class="ft"><h2>Representações Indiretas</h2></header>
+<div class="fc jus">
+<p><b><span class="c-myblue">EXERCÍCIO</span></b> Algumas considerações em relação a esta representação indireta:</p>
+<ol class="enum jus">
+<li>Em qual categoria ela se enquadra? Um-para-um, um-para-muitos ou muitos-para-um?</li>
+<li>Lembrando que uma boa codificação deve possuir as 3 características:
+<ol class="enum jus">
+<li>Completude</li>
+<li>Conectividade</li>
+<li>Eficiência</li>
+</ol>
+<p>Ela satisfaz a primeira característica? Se não, dê um exemplo do motivo.</p></li>
+<li>Escreva a decodificação de mais 2 representações (quaisquer) para o exemplo do JSS - crie mais duas soluções codificadas e decodifique-as - qual foi a melhor?</li>
+</ol>
+</div>
+</section>
+
+<section class="frame sec notitle" data-section="Atividades">
+<div class="fc"><div class="sec-title">Atividades</div></div>
+</section>
+
+<section class="frame atv1 only-title" data-section="Atividades">
+<header class="ft"><h2>Atividade 1</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li>Considerando o artigo <span class="c-myblue">2010 - Application of Genetic Algorithm for the Bin Packing Problem with a new representation scheme - Mohamadi</span>, leia e entenda as 3 formas de representar uma solução para o problema do <b>bin-packing</b>.</li>
+<li>Uma codificação indireta muito utilizada é chamada de <b>random keys</b> (proposta por Beam). Considerando o artigo <span class="c-myblue">1994 - Genetic Algorithms and Random Keys for Sequencing and Optimization - Beam</span>, entenda como representar uma solução para o <i>single machine scheduling problem</i>, e para o <i>multiple machine scheduling problem</i> usando as random-keys.</li>
+<li>Considerando o artigo <span class="c-myblue">2012 - A parallel multi-population biased random-key genetic algorithm for a container loading problem</span>, leia o parágrafo indicado, e relacione com os conceitos explicados em aula.</li>
+<li>Considerando o artigo <span class="c-myblue">2007 - A hybrid genetic and variable neighborhood descent algorithm for flexible job shop scheduling problems - Gao</span>, entenda a codificação dos autores para o flexible-job-shop scheduling (é a mesma coisa que o JSS, porém cada operação pode ser executada por mais de uma máquina).</li>
+</ol>
+</div>
+</section>
+
+</main>
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="lib/hyphen/hyphen.js"></script>
+<script src="lib/hyphen/pt.js"></script>
+<script src="js/texbreak.js"></script>
+<script src="js/anim/core.js"></script>
+<script src="js/anim/binpart.js"></script>
+<script src="js/anim/dados/codir.js"></script>
+<script src="js/anim/codir.js"></script>
+<script src="js/anim/dados/decod.js"></script>
+<script src="js/anim/decod.js"></script>
+<script src="js/anim/espbusca.js"></script>
+<script src="js/anim/dados/rep.js"></script>
+<script src="js/anim/genfen.js"></script>
+<script src="js/anim/dados/jss.js"></script>
+<script src="js/anim/jssdec.js"></script>
+<script src="js/anim/dados/map.js"></script>
+<script src="js/anim/mapeam.js"></script>
+<script src="js/anim/rainhas.js"></script>
+<script src="js/anim/tsprota.js"></script>
+<script src="js/anim/tuplas.js"></script>
+<script src="js/slides.js"></script>
+</body>
+</html>

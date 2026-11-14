@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metaheuristicas - Métodos de Resolução</title>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<link rel="stylesheet" href="css/beamer.css">
+<style>
+/* aula 3: referências (frame 71) */
+.frame.bib .bib-item { position: absolute; left: 0; right: 0; top: 78.65pt;
+  font: 400 8.97pt/10.96pt "LM Sans 9", sans-serif; }
+.frame.bib .bib-l1 { white-space: nowrap; word-spacing: -0.868pt; }  /* 414.11pt natural -> 403.7 (12 espaços) */
+.frame.bib .bib-l2 { white-space: nowrap; padding-left: 10.91pt; }
+</style>
+<style>
+/* capa da aula 3 (medida no PDF) */
+.frame.titlepage .fc::before { height: 24.67pt; }
+.tp-author { margin-top: 23.86pt; }
+.tp-date { margin-top: 28.52pt; }
+.tp-img { margin-top: 18.08pt; }
+</style>
+</head>
+<body data-author="Alexandre Checoli Choueiri" data-shorttitle="DEP - UFPR : Metaheuristicas - Métodos de Resolução">
+<main id="deck">
+
+<section class="frame titlepage notitle">
+<div class="fc">
+<div class="tp-title"><span style="display:inline-block;width:4.78pt"></span>Metaheuristicas - Métodos de Resolução</div>
+<div class="tp-author">Alexandre Checoli Choueiri</div>
+<div class="tp-date">27/02/2023</div>
+<div class="tp-img"><img class="ig" src="img/capa.svg" style="width:84.10pt" alt=""></div>
+</div>
+</section>
+
+<section class="frame toc notitle">
+<div class="fc">
+<div class="toc-item"><span class="toc-num">1</span><span class="toc-txt">Processo de tomada de decisão</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">2</span><span class="toc-txt">Modelos clássicos de otimização</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">3</span><span class="toc-txt">Métodos de resolução</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">4</span><span class="toc-txt">Origens</span></div>
+<div class="toc-gap"></div><div class="toc-item"><span class="toc-num">5</span><span class="toc-txt">Atividade</span></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Processo de tomada de decisão">
+<header class="ft"><h2><b>Processo de tomada de decisão</b></h2></header>
+<div style="transform:translateY(1.17pt)" class="fc">
+<div class="block tc"><div class="block-title tc">O processo de tomada de decisão</div><div class="block-body jus"><p>O processo para tomada de decisão baseado na ciência deve ser executado de forma sistemática. Conseguir <b>identificar um problema</b>, <b>desenvolver</b> algum tipo de modelo que o representa, encontrar uma solução (<b>otimizar</b>) e por fim <b>implementar</b> a solução no mundo real são algumas das etapas mais importantes deste processo.</p></div></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Processo de tomada de decisão">
+<header class="ft"><h2>Processo de tomada de decisão</h2></header>
+<div class="fc">
+<div class="figure"><div class="cline"><span class="anim pl" data-anim="decisao" data-from="vazio" data-state="decisao1"><img class="ig" src="img/decisao1.svg" style="width:378.60pt" alt=""></span></div></div>
+<div class="tcb jus"><p>De forma geral, as seguintes etapas sempre são tomadas, seja de forma sistemática ou não.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Processo de tomada de decisão">
+<header class="ft"><h2>Processo de tomada de decisão</h2></header>
+<div class="fc">
+<div class="figure"><div class="cline"><span class="anim pl" data-anim="decisao" data-from="decisao1" data-state="decisao2"><img class="ig" src="img/decisao2.svg" style="width:378.60pt" alt=""></span></div></div>
+<div class="tcb jus"><p><span class="c-myblue"><b>Formular</b></span>: nesta etapa o problema é identificado de maneira informal, ou seja, os dados são levantados, requisições e preferências, e mais importante; se é um problema já conhecido (pela comunidade acadêmica) ou não. Sendo um problema conhecido o caminho é muito facilitado.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Processo de tomada de decisão">
+<header class="ft"><h2>Processo de tomada de decisão</h2></header>
+<div class="fc">
+<div class="figure"><div class="cline"><span class="anim pl" data-anim="decisao" data-from="decisao2" data-state="decisao3"><img class="ig" src="img/decisao3.svg" style="width:378.60pt" alt=""></span></div></div>
+<div class="tcb jus"><p><span class="c-myblue"><b>Modelar</b></span>: nesta etapa um modelo matemático é desenvolvido para o problema. O modelo <i>sempre é uma simplificação da realidade</i>. Nesta etapa também fazemos a <i>modelagem computacional</i> do problema: como representamos o problema computacionalmente? suas entradas/saídas, estruturas de dados, restrições, etc...</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Processo de tomada de decisão">
+<header class="ft"><h2>Processo de tomada de decisão</h2></header>
+<div class="fc">
+<div class="figure"><div class="cline"><span class="anim pl" data-anim="decisao" data-from="decisao3" data-state="decisao4"><img class="ig" src="img/decisao4.svg" style="width:378.60pt" alt=""></span></div></div>
+<div class="tcb jus"><p><span class="c-myblue"><b>Otimizar</b></span>: Nesta etapa deve-se encontrar uma solução para o problema. Diversos métodos podem ser usados nessa etapa, e é a maior parte do escopo deste curso. (DICA PARA O MERCADO: A solução não precisa ser a melhor do mundo...somente ser melhor e mais prática do que aquela gerada atualmente pelos gestores.)</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Processo de tomada de decisão">
+<header class="ft"><h2>Processo de tomada de decisão</h2></header>
+<div class="fc">
+<div class="figure"><div class="cline"><span class="anim pl" data-anim="decisao" data-from="decisao4" data-state="decisao5"><img class="ig" src="img/decisao5.svg" style="width:378.60pt" alt=""></span></div></div>
+<div class="tcb jus"><p><span class="c-myblue"><b>Implementar</b></span>: Com um método de solução satisfatório encontrado em <span class="q q34">“</span>laboratório<span class="q q34">”</span>, nesta etapa a solução é adequada para o uso, ou seja, uma interface gráfica é criada, bancos de dados, etc...</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Processo de tomada de decisão">
+<header class="ft"><h2>Processo de tomada de decisão</h2></header>
+<div class="fc">
+<div class="figure"><div class="cline"><span class="anim pl" data-anim="decisao" data-from="decisao5" data-state="decisao6"><img class="ig" src="img/decisao6.svg" style="width:378.60pt" alt=""></span></div></div>
+<div class="tcb jus"><p><span class="c-myblue"><b>Retomar</b></span>: Este processo nunca é linear como na imagem, pode ser necessário retomar etapas já executadas.</p></div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Modelos clássicos de otimização</h2></header>
+<div style="transform:translateY(1.15pt)" class="fc">
+<div class="block tc"><div class="block-title tc">Modelagem</div><div class="block-body jus"><p>A etapa de modelagem é muito importante, é nela que <span class="q q34">“</span>cercamos<span class="q q34">”</span> o problema de forma matemática. Existem diversas técnicas para modelarmos um problema.</p></div></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Modelos clássicos de otimização</h2></header>
+<div class="fc">
+<div class="cline"><img class="ig" src="img/modelos.svg" style="width:259.52pt" alt=""></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Modelos clássicos de otimização</h2></header>
+<div class="fc">
+<div class="cline"><img class="ig" src="img/modelos1.svg" style="width:259.52pt" alt=""></div>
+<div class="tcb jus"><p>No nosso curso nos concentraremos em modelos de programação matemática <b>lineares</b> e <b>inteiros</b>.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Modelos clássicos de otimização</h2><div class="subtitle">Programação matemática linear - Relembrando</div></header>
+<div class="fc">
+<p>Um modelo de <b>programação linear (PL)</b> admite valores reais não negativos para as suas variáveis, e assume a forma genérica:</p>
+<div class="tcb jus"><div class="eq par alignat">\[\begin{alignedat}{3}
+			\textsf{min z = } &amp; \textsf{\textbf{c}}^{T}\textsf{\textbf{x}}\\[0.165pt]
+			&amp; \textsf{\textbf{Ax}} = \textsf{\textbf{b}} \\[0.165pt]
+			&amp; \textsf{\textbf{x}} \in R^n_+\end{alignedat}\]</div></div>
+<p>Em que:</p>
+<ol class="enum jus">
+<li><b>A</b> é uma matriz \(mxn\) chamada matriz dos coeficientes.</li>
+<li><b>c</b>\(^T\) é o vetor dos custos.</li>
+<li><b>b</b>\(^T\) é o vetor dos termos independentes ou de recursos.</li>
+</ol>
+</div>
+</section>
+
+<section class="frame t" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Modelos clássicos de otimização</h2><div class="subtitle">Programação matemática linear</div></header>
+<div class="fc">
+<p>Um modelo de <b>programação inteira (PI)</b> admite valores inteiros não negativos para as suas variáveis, e assume a forma genérica:</p>
+<div class="tcb jus"><div class="eq par alignat">\[\begin{alignedat}{3}
+			\textsf{min z = } &amp; \textsf{\textbf{c}}^{T}\textsf{\textbf{x}}\\[0.165pt]
+			&amp; \textsf{\textbf{Ax}} = \textsf{\textbf{b}} \\[0.165pt]
+			&amp; \textsf{\textbf{x}} \in Z^n_+\end{alignedat}\]</div></div>
+<p>Em que:</p>
+<ol class="enum jus">
+<li><b>A</b> é uma matriz \(mxn\) chamada matriz dos coeficientes.</li>
+<li><b>c</b>\(^T\) é o vetor dos custos.</li>
+<li><b>b</b>\(^T\) é o vetor dos termos independentes ou de recursos.</li>
+</ol>
+</div>
+</section>
+
+<section class="frame t" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Modelos clássicos de otimização</h2><div class="subtitle">Programação matemática linear</div></header>
+<div class="fc">
+<p>Um modelo de <b>programação inteira mista (PIM)</b> admite tanto valores inteiros quanto reais não negativos para as suas variáveis, e assume a forma genérica:</p>
+<div class="tcb jus"><div class="eq par alignat">\[\begin{alignedat}{3}
+			\textsf{min z = } &amp; \textsf{\textbf{c}}^{T}\textsf{\textbf{x}} + \textsf{\textbf{d}}^{T}\textsf{\textbf{y}}\\[0.165pt]
+			&amp; \textsf{\textbf{Ax}} + \textsf{\textbf{Dy}} = \textsf{\textbf{b}} \\[0.165pt]
+			&amp; \textsf{\textbf{x}} \in R^n_+, \textsf{\textbf{y}} \in Z^p_+\end{alignedat}\]</div></div>
+<p>Em que:</p>
+<ol class="enum jus">
+<li><b>A</b> é uma matriz \(mxn\) e <b>D</b> uma matriz \(mxp\).</li>
+<li><b>c</b>\(^T\) é um vetor \(1xn\) e <b>y</b>\(^T\) um vetor \(1xp\).</li>
+<li><b>b</b>\(^T\) é o vetor dos termos independentes ou de recursos.</li>
+</ol>
+</div>
+</section>
+
+<section class="frame t overfull" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Modelos clássicos de otimização</h2><div class="subtitle">Programação matemática linear</div></header>
+<div class="fc">
+<p>Um modelo de <b>programação binaria (PB)</b> admite somente valores 0 ou 1 para suas variáveis.</p>
+<div class="tcb jus"><div class="eq par alignat">\[\begin{alignedat}{3}
+			\textsf{min z = } &amp; \textsf{\textbf{c}}^{T}\textsf{\textbf{x}}\\[0.165pt]
+			&amp; \textsf{\textbf{Ax}} = \textsf{\textbf{b}} \\[0.165pt]
+			&amp; \textsf{\textbf{x}} \in B^n_+\end{alignedat}\]</div></div>
+<p>Em que:</p>
+<ol class="enum jus">
+<li><b>A</b> é uma matriz \(mxn\) chamada matriz dos coeficientes.</li>
+<li><b>c</b>\(^T\) é o vetor dos custos.</li>
+<li><b>b</b>\(^T\) é o vetor dos termos independentes ou de recursos.</li>
+<li>\(B^n\) representa o espaço dos vetores com \(n\) componentes binárias (0,1).</li>
+</ol>
+</div>
+</section>
+
+<section class="frame t" data-steps="2" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Modelos clássicos de otimização</h2><div class="subtitle">Programação matemática: modelo da mochila</div></header>
+<div class="fc jus">
+<p><span class="c-myblue"><b>EXERCÍCIO:</b></span> Escreva o modelo de programação matemática para o problema da mochila visto na última aula (capacidade de 150). O problema possui os seguintes parâmetros:</p>
+<div class="center"><span class="anim mo3" data-anim="mochila3" data-fig="tab" data-state="vazio,demo"></span><div class="tab" style="grid-template-columns:repeat(9,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Ipod</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Abobrinha</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">\(H_2O\)</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Canivete</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Carne</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Arroz</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>Aveia</b></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>PS4</b></div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Valor</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">10</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">8</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">5</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">15</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">25</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">17</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">8</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">30</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">Peso</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">50</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">55</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">60</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">45</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">15</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">25</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">35</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">25</div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div>
+</div>
+</section>
+
+<section class="frame t" data-steps="2" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Modelos clássicos de otimização</h2><div class="subtitle">Programação matemática: modelo da mochila</div></header>
+<div class="fc jus">
+<p>Sejam as variáveis:</p>
+<div class="eq">\[\left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll}
+			x_{i}: &amp; \textsf{se o item $i$ é levado (1) na mochila ou não (0)}, i\in\{1,...,8\}
+		\end{array}\kern-0.5em}\right.\]</div>
+<div class="eq par alignat">\[\begin{alignedat}{4}
+		&amp; \textsf{maximizar} \quad &amp; 10 x_1 + 8 x_2 + 5 x_3 + 15 x_4 + 25 x_5 + 17 x_6 + 8 x_7 + 30 x_8&amp; \\[0.165pt]
+		&amp; \textsf{Sujeito à} &amp;50 x_1  + 55 x_2 + 60 x_3 + 45 x_4 + 15 x_5  + 25 x_6 + 35 x_7 + 25 x_8 \leq 150\\[0.165pt]
+		&amp;&amp; x_{i} \in \{0,1\}, i\in\{1,...,8\}\end{alignedat}\]</div>
+<span class="anim mo3m" data-anim="mochila3" data-fig="modelo" data-state="vazio,modelo" style="position:absolute;left:0;top:136pt;width:403.7pt"></span>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2></header>
+<div class="fc jus">
+<p>OK..Já vimos diversos de <b><span class="c-myblue">problemas de otimização</span></b>, e diversos métodos para modelarmos <b><span class="c-myblue">problemas de otimização</span></b>. Mas afinal, <br></p>
+<div data-only="2-" class="tcb jus"><div class="center"><p style="font-size:11.96pt">O QUE SÃO PROBLEMAS DE OTIMIZAÇÃO<span style="font-size:10.91pt">?</span></p></div></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2></header>
+<div class="fc jus">
+<div class="block tc"><div class="block-title tc">Definição</div><div class="block-body jus"><p><b>Problema de otimização:</b> Um problema de otimização pode ser definido como um par \((\mathbb{S},f)\) em que \(\mathbb{S}\) representa o conjunto de soluções factíveis e \(f:\mathbb{S}\rightarrow\mathbb{R}\) a função objetivo a ser otimizada. A função objetivo atribui um valor a cada solução \(s\in \mathbb{S}\) indicando a sua importância.</p></div></div>
+<p><span class="c-brickred">OBSERVAÇÕES:</span></p>
+<ol class="enum jus">
+<li>O conjunto \(\mathbb{S}\) de soluções factíveis é chamado de <b>espaço de busca</b> (esta definição está ainda incompleta...).</li>
+<li>Não se confunda com as terminologias! Vimos <b>problemas</b> e <b>modelos</b> de otimização, porém não falamos nada sobre <b>métodos</b> (algoritmos) que resolvem estes problemas.</li>
+</ol>
+</div>
+</section>
+
+<section class="frame t only-title" data-steps="2" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2></header>
+<div class="fc jus">
+<p><span class="c-myblue"><b>EXERCÍCIO:</b></span> Considere um TSP com 4 pontos, e a matriz de distâncias abaixo. Este é um problema de otimização? Mostre escrevendo o espaço de busca \(\mathbb{S}\) e a função objetivo \(f\).</p>
+<div class="bkarr" style="position:relative;height:68pt;margin:12.735pt 0 16.495pt"><span class="anim md" data-anim="matrizd" data-from="vazio" data-state="vazio,demo"></span><img class="ig" src="img/matriz_d.svg" style="position:absolute;left:133.11pt;top:0;width:131pt" alt=""></div>
+<p><span class="c-brickred">OBSERVAÇÕES:</span> Os elementos da matriz indicam a distância entre os pontos, ou seja: \(d_{ij} = \) distância entre o ponto \(i\) e o ponto \(j\).</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2></header>
+<div class="fc jus">
+<p data-only="2-">Se representarmos uma rota por um vetor numérico em que cada índice representa um ponto (considerando que o último ponto volta ao primeiro), obtemos o seguinte espaço de busca (conjunto \(\mathbb{S}\)):</p>
+<div data-only="2-" class="eq">\[\mathbb{S} =
+		\{
+		\left[
+		\begin{array}{cccccc}
+			1&amp;2&amp;3&amp;4
+		\end{array}
+		\right],
+		\left[
+		\begin{array}{cccccc}
+			1&amp;2&amp;4&amp;3
+		\end{array}
+		\right]\]</div>
+<div data-only="2-" class="eq">\[\left[
+	\begin{array}{cccccc}
+		1&amp;3&amp;2&amp;4
+	\end{array}
+	\right],
+	\left[
+	\begin{array}{cccccc}
+		1&amp;3&amp;4&amp;2
+	\end{array}
+	\right]\]</div>
+<div data-only="2-" class="eq">\[\left[
+	\begin{array}{cccccc}
+		1&amp;4&amp;2&amp;3
+	\end{array}
+	\right],
+	\left[
+	\begin{array}{cccccc}
+		1&amp;4&amp;3&amp;2
+	\end{array}
+	\right]
+		\}\]</div>
+<p data-only="3-"><span class="xsp"></span>A função objetivo para algumas soluções fica então:</p>
+<div data-only="3-" class="eq">\[f(s_1) = f(	\left[
+	\begin{array}{cccccc}
+		1&amp;2&amp;3&amp;4
+	\end{array}
+	\right])
+	=
+	1 + 4 + 3 + 2 = 10\]</div>
+<div data-only="3-" class="eq">\[f(s_2) = f(	\left[
+	\begin{array}{cccccc}
+		1&amp;2&amp;4&amp;3
+	\end{array}
+	\right])
+	=
+	1 + 1 + 3 + 3 = 8\]</div>
+<div data-only="3-" class="eq">\[...\]</div>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2></header>
+<div style="transform:translateY(0.80pt)" class="fc jus">
+<p>Definimos formalmente o que é um <b>problema de otimização</b>. Mas qual é o nosso objetivo com esse problema? <span class="c-myblue">O que queremos encontrar?</span> <br></p>
+<div data-on="2-" class="block tc"><div class="block-title tc">Definição</div><div class="block-body jus"><p><b>Ótimo global:</b> Uma solução \(s^*\in\mathbb{S}\) é um <i>ótimo global</i> se possui uma função objetivo melhor do que todas as outras soluções do espaço de busca, ou seja, \(f(s^*) \leq f(s) \forall s \in \mathbb{S}\) para um problema de minimização.</p></div></div>
+<p data-on="2-">De forma que o <b>nosso objetivo</b> é então encontrar a solução que é um ótimo global para o problema de otimização.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Bom...isso é simples, podemos gerar todo o <i>espaço de busca</i> (\(\mathbb{S}\)) de um problema de otimização e avaliar os valores das funções objetivo (\(f\)), selecionando o menor de todos.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="espaco" data-fig="eb" data-from="vazio" data-state="espaco_busca1"><img class="ig" src="img/espaco_busca1.svg" style="width:248.72pt" alt=""></span></div>
+<div class="tcb jus"><p>Imagine que escrevemos todo o espaço de busca no eixo \(x\) e calculamos os valores de \(f\) em \(y\). Temos um gráfico como mostrado na Figura acima.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="espaco" data-fig="eb" data-from="espaco_busca1" data-state="espaco_busca2"><img class="ig" src="img/espaco_busca2.svg" style="width:248.72pt" alt=""></span></div>
+<div class="tcb jus"><p>Imagine que escrevemos todo o espaço de busca no eixo \(x\) e calculamos os valores de \(f\) em \(y\). Temos um gráfico como mostrado na Figura acima.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="espaco" data-fig="eb" data-from="espaco_busca2" data-state="espaco_busca3"><img class="ig" src="img/espaco_busca3.svg" style="width:248.72pt" alt=""></span></div>
+<div class="tcb jus"><p>Claramente \(s_4\) é um ótimo global! Pronto, encontramos a melhor solução para o nosso problema.</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2><div class="subtitle">Problemática</div></header>
+<div style="transform:translateY(1.04pt)" class="fc jus">
+<div class="block alert tc"><div class="block-title tc">Pergunta</div><div class="block-body jus"><p>Por quê então não usamos esta técnica? Gerar todo o espaço de busca e verificar qual a melhor solução? (OBS: esse tipo de estratégia é conhecida como <i>força-bruta</i>, justamente por gerar todo o espaço).</p></div></div>
+<p><span data-on="2-"> Vamos pensar um pouco...</span></p>
+</div>
+</section>
+
+<section class="frame" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2><div class="subtitle">Problemática</div></header>
+<div class="fc jus">
+<p>Quantas rotas são possíveis de serem feitas em um problema do caixeiro-viajante com 3 pontos?</p>
+<div data-on="2-" class="center"><p class="imgs"><span class="anim pl" data-anim="tsprotas" data-fig="TSP1" data-delay="0" data-from="vazio" data-state="vazio,v"><img class="ig" src="img/TSP1.svg" style="width:72.80pt" alt=""></span> <span class="anim pl" data-anim="tsprotas" data-fig="TSP2" data-delay="1400" data-from="vazio" data-state="vazio,v"><img class="ig" src="img/TSP2.svg" style="width:72.80pt" alt=""></span> <span class="anim pl" data-anim="tsprotas" data-fig="TSP3" data-delay="4700" data-from="vazio" data-state="vazio,v"><img class="ig" src="img/TSP3.svg" style="width:72.80pt" alt=""></span></p></div>
+<p><span data-on="3-"> E se nosso problema tivesse 4 pontos?</span> <span data-on="4-">Como no exemplo passado, vimos que 4 pontos geraram um espaço de busca \(\mathbb{S}\) com 6 soluções. Qual a relação que define o número de rotas em função do número de pontos?</span></p>
+<div data-on="5-" class="tcb jus"><p>Para \(n\) cidades em um problema do caixeiro viajante, existem <b><span class="c-myblue">\((n-1)!\)</span></b> rotas possíveis.</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2><div class="subtitle">Problemática</div></header>
+<div class="fc jus">
+<p>Se considerarmos um computador capaz de realizar <b>1 bilhão de somas/segundo</b>. Um problema de 20 cidades precisa de <b>20 operações de soma</b> para obter o custo de cada rota. Assim, o computador é capaz de analisar:</p>
+<div data-on="2-" class="eq">\[\dfrac{10^9}{20} = 50 \textsf{ milhões de rotas/segundo}\]<span class="eqno">\((1)\)</span></div>
+<p data-on="3-"><span class="xsp"></span><span class="xsp"></span>O número de rotas é:</p>
+<div data-on="3-" class="eq">\[19! = 1.22x10^{17}\]<span class="eqno">\((2)\)</span></div>
+<p data-on="4-"><span class="xsp"></span><span class="xsp"></span>O tempo necessário para avaliar essas rotas é então:</p>
+<div data-on="4-" class="tcb jus"><div class="eq par">\[\frac{1.22x10^{17}}{50 \textsf{ milhões}} = \textsf{\textsf{\textbf{77 anos!}}}\]<span class="eqno">\((3)\)</span></div></div>
+</div>
+</section>
+
+<section class="frame" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2><div class="subtitle">Problemática</div></header>
+<div class="fc jus">
+<p>A Tabela abaixo mostra os tempos de processamento utilizando o algoritmo de força-bruta, em função do número de cidades:</p>
+<div class="center"><span class="anim fb" data-anim="forcabruta" data-from="vazio" data-state="b"></span><div class="tab" style="grid-template-columns:repeat(2,auto)">
+<div class="tab-rule" style="height:0.873pt;margin:0.00pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt"><b>n</b></div>
+<div class="td l" style="padding-left:5.98pt;padding-right:5.98pt"><b>Tempo</b></div>
+<div class="tab-rule" style="height:0.545pt;margin:1.93pt 0 3.14pt"></div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">5</div>
+<div class="td l" style="padding-left:5.98pt;padding-right:5.98pt">insignificante</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">10</div>
+<div class="td l" style="padding-left:5.98pt;padding-right:5.98pt">0.004s</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">15</div>
+<div class="td l" style="padding-left:5.98pt;padding-right:5.98pt">22 min</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">20</div>
+<div class="td l" style="padding-left:5.98pt;padding-right:5.98pt">77 anos</div>
+<div class="td c" style="padding-left:5.98pt;padding-right:5.98pt">25</div>
+<div class="td l" style="padding-left:5.98pt;padding-right:5.98pt"><span class="c-brickred"><b>492 milhões de anos</b></span></div>
+<div class="tab-rule" style="height:0.873pt;margin:1.93pt 0 0.00pt"></div>
+</div></div>
+<div data-on="2-" class="tcb jus"><p>Isso para o problema do caixeiro viajante...imagine os problemas mais complexos de otimização que vimos nas últimas aulas!</p></div>
+</div>
+</section>
+
+<section class="frame" data-section="Modelos clássicos de otimização">
+<header class="ft"><h2>Definição de problemas de otimização</h2><div class="subtitle">Problemática</div></header>
+<div style="transform:translateY(1.22pt)" class="fc jus">
+<div class="block alert tc"><div class="block-title tc">Pergunta</div><div class="block-body jus"><p>Por quê então não usamos esta técnica? Gerar todo o espaço de busca e verificar qual a melhor solução? (OBS: esse tipo de estratégia é conhecida como <i>força-bruta</i>, justamente por gerar todo o espaço). <br> <span data-on="2-"><b>RESPOSTA: Porquê existe uma explosão combinatória nos problemas, e mesmo com o uso de computadores é inviável usar força-bruta!</b></span></p></div></div>
+<div data-on="3-" class="tcb jus"><p>Na prática, os algoritmos que resolvem problemas de otimização não geram todo o espaço de busca, <span class="c-myblue"><b>apenas um pequeno subconjunto deste</b></span>. A forma de geração deste subconjunto é o que diferencia os vários métodos de resolução.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="espaco" data-fig="ebm" data-from="vazio" data-state="espaco_busca6"><img class="ig" src="img/espaco_busca6.svg" style="width:273.59pt" alt=""></span></div>
+<p>Considerando novamente o espaço de busca.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="espaco" data-fig="ebm" data-from="espaco_busca6" data-state="espaco_busca7"><img class="ig" src="img/espaco_busca7.svg" style="width:273.59pt" alt=""></span></div>
+<p>Os métodos de resolução geram um subconjunto do espaço total.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="espaco" data-fig="ebm" data-from="espaco_busca7" data-state="espaco_busca8"><img class="ig" src="img/espaco_busca8.svg" style="width:273.59pt" alt=""></span></div>
+<p>De uma forma inteligente, para tentar encontrar o ótimo global.</p>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="espaco" data-fig="ebm" data-from="espaco_busca8" data-state="espaco_busca9"><img class="ig" src="img/espaco_busca9.svg" style="width:273.59pt" alt=""></span></div>
+<p>Evitando assim a explosão combinatória gerada pelos algoritmos de força-bruta.</p>
+</div>
+</section>
+
+<section class="frame t sub-acc" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Árvore de métodos</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="arvoremr" data-from="vazio" data-state="metodos_resolucao1"><img class="ig" src="img/metodos_resolucao1.svg" style="width:361.08pt" alt=""></span></div>
+<p>Os métodos de resolução de problemas de otimização são resumidos na<b> árvore acima</b>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Exatos vs Aproximativos</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="arvoremr" data-from="metodos_resolucao1" data-state="metodos_resolucao2"><img class="ig" src="img/metodos_resolucao2.svg" style="width:361.08pt" alt=""></span></div>
+<p>A primeira grande separação nos métodos é em relação ao tipo de solução que eles encontram: o valor da função objetivo é o <span class="c-myblue"> ótimo global</span> ou não?</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Exatos vs Aproximativos</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="exapx" data-from="vazio" data-state="f"><img class="ig" src="img/solucao_exata_aproximada.svg" style="width:381.62pt" alt=""></span></div>
+<p>Se o algoritmo garante que o ótimo global é encontrado, ele é considerado <b>exato</b>. Se o ótimo não pode ser garantido ele é considerado <b>aproximativo</b>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Exatos vs Aproximativos</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="exapx" data-from="f" data-state="f2"><img class="ig" src="img/solucao_exata_aproximada.svg" style="width:381.62pt" alt=""></span></div>
+<p><span class="c-brickred">Atenção:</span> um algoritmo aproximativo pode encontrar o ótimo. Só não é garantido matematicamente que ele o fará.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="arvoremr" data-from="metodos_resolucao2" data-state="metodos_resolucao3"><img class="ig" src="img/metodos_resolucao3.svg" style="width:341.02pt" alt=""></span></div>
+<p>Os métodos exatos baseados em <i>Branching</i> utilizam o algoritmo Simplex como seu motor de otimização.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="vazio" data-state="bb1"><img class="ig" src="img/bb1.svg" style="width:288.36pt" alt=""></span></div>
+<p>O Simplex é resolvido diversas vezes, e novas restrições são inseridas no modelo.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb1" data-state="bb2"><img class="ig" src="img/bb2.svg" style="width:288.36pt" alt=""></span></div>
+<p>Esse processo é repetido até que uma solução inteira seja encontrada.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb2" data-state="bb3"><img class="ig" src="img/bb3.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb3" data-state="bb4"><img class="ig" src="img/bb4.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb4" data-state="bb5"><img class="ig" src="img/bb5.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb5" data-state="bb6"><img class="ig" src="img/bb6.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb6" data-state="bb7"><img class="ig" src="img/bb7.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb7" data-state="bb8"><img class="ig" src="img/bb8.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb8" data-state="bb9"><img class="ig" src="img/bb9.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb9" data-state="bb10"><img class="ig" src="img/bb10.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb10" data-state="bb11"><img class="ig" src="img/bb11.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb11" data-state="bb12"><img class="ig" src="img/bb12.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb12" data-state="bb13"><img class="ig" src="img/bb13.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="cline"><span class="anim pl" data-anim="bnb" data-from="bb13" data-state="bb14"><img class="ig" src="img/bb14.svg" style="width:288.36pt" alt=""></span></div>
+</div>
+</section>
+
+<section class="frame" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div style="transform:translateY(-1.67pt)" class="fc jus">
+<p><span class="c-myblue"><b>EXERCÍCIO:</b></span> Encontre a solução ótima do problema da mochila visto nos exercícios anteriores, usando o <i>solver open source</i> <span class="c-myblue">GLPK</span> <a href="https://www.gnu.org/software/glpk/"><span class="c-myblue"><b>G</b>eneral <b>L</b>inear <b>P</b>rogramming <b>K</b>it</span></a>, por meio da interface GUSEK.</p>
+<p><span class="c-brickred">OBSERVAÇÕES:</span></p>
+<ol class="enum jus">
+<li>Os softwares que implementam algoritmos de otimização (como o Simplex e B&amp;B) são chamados de <i>solvers</i>, como o GLPK. O GLPK não possui interface, e na maioria das vezes é usado como uma biblioteca (API) por meio de alguma linguagem de programação.</li>
+<li>No entanto, o professor <b>Leandro Magatão</b> (UTFPR - Curitiba) implementou uma solução com interface gráfica utilizando o glpk, chamada <a href="http://gusek.sourceforge.net/gusek.html"><span class="c-myblue">GUSEK</span></a>. Com ele podemos escrever modelos de PL em arquivos de texto e encontrar a solução em um mesmo ambiente.</li>
+<li>Para uma referência sobre a escrita do formato do arquivo .lp, veja o site do solver <a href="https://www.gurobi.com/documentation/current/refman/lp_format.html"><span class="c-myblue">GUROBI</span></a></li>
+</ol>
+</div>
+</section>
+
+<section class="frame" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Branch and Bound</div></header>
+<div class="fc jus">
+<div class="block alert tc"><div class="block-title tc">Atenção</div><div class="block-body jus"><p>Mesmo realizando uma busca inteligente no espaço de soluções, usualmente os <b>algoritmos exatos também não são viáveis para problemas práticos</b>. O tempo computacional necessário para encontrar uma solução ótima ainda é muito grande (claro que menor do que a força bruta). Dessa forma, lança-se mão dos algoritmos aproximativos.</p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Aproximativos</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="arvoremr" data-from="metodos_resolucao3" data-state="metodos_resolucao4"><img class="ig" src="img/metodos_resolucao4.svg" style="width:361.08pt" alt=""></span></p></div>
+<p>Dentre os algoritmos aproximativos existe uma separação entre as <span class="c-myblue">heurísticas</span> e os algoritmos de aproximação.</p>
+</div>
+</section>
+
+<section class="frame" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Aproximativos</div></header>
+<div style="transform:translateY(1.02pt)" class="fc jus">
+<div class="block tc"><div class="block-title tc">Definição</div><div class="block-body jus"><p><b>Algoritmos de aproximação:</b> Em algoritmos de aproximação, existe uma garantia no limitante (bound) da solução encontrada em relação ao ótimo global.</p></div></div>
+<p>EXEMPLO: O algoritmo de <i>Christofides–Serdyukov</i> para o problema do caixeiro viajante garante que o custo da solução gerada não ultrapassa \(\frac{3}{2}\) do custo da solução ótima. Ou seja, em uma instância em que a rota ótima tem um custo de 10, no pior cenário possível o algoritmo gera uma solução de custo \(\frac{3}{2}\)10 = 15.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Métodos de resolução">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Aproximativos</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="arvoremr" data-from="metodos_resolucao4" data-state="metodos_resolucao5"><img class="ig" src="img/metodos_resolucao5.svg" style="width:361.08pt" alt=""></span></p></div>
+<p>Finalmente vamos entender o nome da nossa disciplina!</p>
+</div>
+</section>
+
+<section class="frame" data-section="Origens">
+<header class="ft"><h2>Introdução</h2><div class="subtitle">Origens</div></header>
+<div style="transform:translateY(1.46pt)" class="fc">
+<div class="block tc"><div class="block-title tc">Heurística</div><div class="block-body"><p><b>Heuriskein:</b> Antiga palavra de origem Grega com significado <span class="q q34">“</span>a arte de descobrir novas estratégias (regras) para resolver problemas<span class="q q34">”</span>.</p></div></div>
+<div class="block tc b-gap"><div class="block-title tc">Meta</div><div class="block-body"><p><b>Meta:</b> O sufixo <i>meta</i>, também de origem grega significa, <span class="q q34">“</span>metodologia de nível superior<span class="q q34">”</span> (meta linguagem, metafísica, Meta).</p></div></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Origens">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Heurísticas</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="arvoremr" data-from="metodos_resolucao5" data-state="metodos_resolucao5p"><img class="ig" src="img/metodos_resolucao5.svg" style="width:361.08pt" alt=""></span></p></div>
+<p>Por exclusão, sabemos que as Heurísticas <span class="c-myblue">não garantem o ótimo, e nem mesmo um limitante em relação a solução ótima</span>.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Origens">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Heurísticas</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="arvoremr" data-from="metodos_resolucao5" data-state="metodos_resolucao6"><img class="ig" src="img/metodos_resolucao6.svg" style="width:361.08pt" alt=""></span></p></div>
+<p>As heurísticas específicas são talhadas para resolver um tipo específico de problema.</p>
+</div>
+</section>
+
+<section class="frame t" data-steps="2" data-section="Origens">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Heurísticas </div></header>
+<div class="fc jus">
+<p><span class="c-myblue"><b>EXEMPLO:</b></span> Um algoritmo de otimização do problema do caixeiro viajante é chamado de 2-OPT. Ele consiste em destruir dois arcos de uma rota e substituir por outros dois arcos, como mostrado na Figura abaixo:</p>
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="doisopt3" data-from="vazio" data-state="f,demo"><img class="ig" src="img/2-OPT.svg" style="width:192.32pt" alt=""></span></p></div>
+<p>Note que é impossível aplicar um 2-OPT em um problema de carregamento de contêineres, por exemplo. Não faria sentido, de forma que o 2-OPT é uma heurística específica para o TSP.</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Origens">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Metaheuristicas</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="arvoremr" data-from="metodos_resolucao6" data-state="metodos_resolucao7"><img class="ig" src="img/metodos_resolucao7.svg" style="width:361.08pt" alt=""></span></p></div>
+<p>As Metaheurísticas, por outro lado, são procedimentos que servem para qualquer problema de otimização. Elas <span class="q q34">“</span>guiam<span class="q q34">”</span> as heurísticas específicas (Meta-acima).</p>
+</div>
+</section>
+
+<section class="frame t" data-section="Origens">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Metaheuristicas</div></header>
+<div class="fc jus">
+<div class="algorithm lbl">
+<div class="alg-cap"><b>Algorithm 1</b> Template genérico busca local</div>
+<div class="alg-body">
+<div class="l1">\(s = s_0\)<div class="alg-cmt">\(\triangleright\) Gerar uma solução inicial</div></div>
+<div class="l1"><b>while</b> Critério de parada não for satisfeito <b>do</b></div>
+<div class="l2">Altere a solução \(s\) por \(s'\)</div>
+<div class="l2"><b>if</b> \(s^{'}\) for melhor do que \(s\) <b>then</b></div>
+<div class="l3">\(s = s'\)</div>
+<div class="l2"><b>end if</b></div>
+<div class="l1"><b>end while</b></div>
+<div class="l1"><b>return</b> \(s\).</div>
+</div>
+</div>
+<p><span class="c-myblue"><b>EXEMPLO:</b></span> A metaheuristica mais simples é chamada de busca local (<i>local search</i> - LS). Nesse algoritmo, uma melhoria na solução é feita a cada iteração, até que um critério de parada seja satisfeito.</p>
+</div>
+</section>
+
+<section class="frame t" data-steps="11" data-section="Origens">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Metaheuristicas</div></header>
+<div class="fc jus">
+<div class="algorithm">
+<div class="alg-cap"><b>Algorithm 2</b> Template genérico busca local</div>
+<div class="alg-body">
+<div class="l1">\(s = s_0\)<div class="alg-cmt">\(\triangleright\) Gerar uma solução inicial</div></div>
+<div class="l1"><b>while</b> Critério de parada não for satisfeito <b>do</b></div>
+<div class="l2">Altere a solução \(s\) por \(s'\)<div class="alg-cmt">\(\triangleright\) Colocar o 2-OPT aqui</div></div>
+<div class="l2"><b>if</b> \(s'\) for melhor do que \(s\) <b>then</b></div>
+<div class="l3">\(s = s'\)</div>
+<div class="l2"><b>end if</b></div>
+<div class="l1"><b>end while</b></div>
+<div class="l1"><b>return</b> \(s\).</div>
+</div>
+</div>
+<p>Note que o algoritmo pode ser aplicado para qualquer problema! O que é alterado é o método de alteração de \(s\). No caso do TSP, poderíamos colocar o 2-OPT nesta etapa.</p>
+<span class="anim bo" data-anim="buscaopt" data-state="p,i0,w0,alt1,if1,mv1,run,altL,ifL,pare,ret" style="position:absolute;left:258pt;top:14pt"></span>
+</div>
+</section>
+
+<section class="frame t" data-section="Origens">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Metaheuristicas</div></header>
+<div class="fc jus">
+<div class="tcb jus"><p>Percebe-se que a <b>Meta</b>heurística age <b>sobre</b> a heurística específica (2-OPT). Se escolhermos outro problema de otimização, o LS poderia ser utilizado, a única coisa que seria diferente é o método de alteração da soluções, que seria uma heurística específica para o outro problema.</p></div>
+</div>
+</section>
+
+<section class="frame t" data-section="Origens">
+<header class="ft"><h2>Métodos de resolução</h2><div class="subtitle">Solução única x populacionais</div></header>
+<div class="fc jus">
+<div class="center"><p class="imgs"><span class="anim pl" data-anim="arvoremr" data-from="metodos_resolucao7" data-state="metodos_resolucao8"><img class="ig" src="img/metodos_resolucao8.svg" style="width:341.02pt" alt=""></span></p></div>
+<p>As metaheurísticas, por sua vez, podem ser separadas em dois grupos: aquelas que desenvolvem soluções únicas (como o LS), e as que geram mais de uma solução (como algoritmos genéticos).</p>
+</div>
+</section>
+
+<section class="frame only-title" data-section="Atividade">
+<header class="ft"><h2>Atividade</h2></header>
+<div class="fc jus">
+<ol class="enum jus">
+<li>O que é um problema de otimização? Crie uma instancia pequena (4 itens) para o problema da mochila, e mostre que ele é um problema de otimização.</li>
+<li>Escreva o modelo de programação inteira para o problema de designação visto na última apresentação.</li>
+<li>Resolva o problema usando o software GUSEK, e mostre a solução ótima (designação e custo total).</li>
+<li>O que são algoritmos de força-bruta? Por que não os utilizamos em problemas de otimização?</li>
+<li>Qual a diferença entre algoritmos aproximativos e exatos? E entre heurísticas e algoritmos de aproximação?</li>
+</ol>
+</div>
+</section>
+
+<section class="frame t only-title bib" data-section="Atividade">
+<header class="ft"><h2>Referências I</h2></header>
+<div class="fc">
+<div class="bib-item">
+<div class="bib-l1">Marcos Nereu Arenales, Vinícius Amaral Armentano, Reinaldo Morabito Neto, and Horacio Hideki Yanasse.</div>
+<div class="bib-l2"><i>Pesquisa operacional para cursos de engenharia</i>. 2007.</div>
+</div>
+</div>
+</section>
+
+</main>
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="lib/hyphen/hyphen.js"></script>
+<script src="lib/hyphen/pt.js"></script>
+<script src="js/texbreak.js"></script>
+<script src="js/anim/core.js"></script>
+<script src="js/anim/dados/mr.js"></script>
+<script src="js/anim/arvoremr.js"></script>
+<script src="js/anim/dados/bb.js"></script>
+<script src="js/anim/bnb.js"></script>
+<script src="js/anim/buscaopt.js"></script>
+<script src="js/anim/dados/dec.js"></script>
+<script src="js/anim/decisao.js"></script>
+<script src="js/anim/dados/opt.js"></script>
+<script src="js/anim/doisopt3.js"></script>
+<script src="js/anim/dados/eb.js"></script>
+<script src="js/anim/dados/ebm.js"></script>
+<script src="js/anim/espaco.js"></script>
+<script src="js/anim/dados/sea.js"></script>
+<script src="js/anim/exapx.js"></script>
+<script src="js/anim/dados/tsp.js"></script>
+<script src="js/anim/forcabruta.js"></script>
+<script src="js/anim/matrizd.js"></script>
+<script src="js/anim/mochila3.js"></script>
+<script src="js/slides.js"></script>
+</body>
+</html>
