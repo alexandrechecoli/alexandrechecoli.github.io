@@ -1,8 +1,10 @@
 /* global CodeMirror, marked */
 // Aba "Ajuda": índice, páginas em Markdown (docs/<id>.md), busca e histórico de navegação.
-import { DOC_PAGES, DOC_SECTIONS, HIGHSPY_WORDS } from "./docs.js?v=8";
+import { DOC_PAGES, DOC_SECTIONS, HIGHSPY_WORDS } from "./docs.js?v=15";
 
-export { HIGHSPY_WORDS };
+// DOC_PAGES segue para o app.js daqui (e não por um import próprio do docs.js) para
+// o número de versão continuar em um só import.
+export { DOC_PAGES, HIGHSPY_WORDS };
 
 // As páginas são buscadas com a mesma versão (?v=N) deste módulo, para não virem do cache.
 const VERSION = new URL(import.meta.url).search;
@@ -25,9 +27,15 @@ for (const page of DOC_PAGES) {
 // Funções da página principal, recebidas em initHelp.
 let actions = { openInEditor() {}, openDataFile() {}, openExample() {} };
 
-// Histórico: cada entrada é { id, anchor }; id "" é o índice.
+// Histórico: cada entrada é { id, anchor, scroll? }; id "" é o índice. "scroll" é a
+// rolagem em que o aluno deixou a entrada, restaurada ao voltar ou avançar até ela.
 const history = [];
 let position = -1;
+// A busca não entra no histórico: enquanto ela está na tela, a entrada atual fica "por baixo".
+let showingSearch = false;
+// Entrada cujo conteúdo está de fato na tela (null durante a busca ou com erro). Pode ser
+// diferente de history[position] enquanto a página nova ainda está sendo baixada.
+let shownEntry = null;
 
 const texts = new Map(); // id → Markdown já baixado
 
@@ -126,7 +134,7 @@ function link(href, title, summary) {
   return `<li><a href="${href}">${escapeHtml(title)}</a>${summary ? `<span>${escapeHtml(summary)}</span>` : ""}</li>`;
 }
 
-function renderHome() {
+function renderHome(entry) {
   let html = "<h1>Ajuda</h1><p>Documentação do editor e do <code>highspy</code>, com exemplos comentados. " +
     "No editor, <kbd>F1</kbd> sobre uma palavra abre a página dela.</p>";
   for (const section of DOC_SECTIONS) {
@@ -136,7 +144,8 @@ function renderHome() {
       pages.map((page) => link(page.id + ".md", page.title, page.summary)).join("") + "</ul>";
   }
   content.innerHTML = html;
-  content.scrollTop = 0;
+  shownEntry = entry;
+  content.scrollTop = entry.scroll ?? 0;
 }
 
 async function renderPage(entry) {
@@ -146,8 +155,15 @@ async function renderPage(entry) {
     if (history[position] !== entry || searchInput.value.trim()) return; // o aluno já foi para outro lugar
     content.innerHTML = marked.parse(text);
     enhance(page);
+    shownEntry = entry;
   } catch (err) {
     content.innerHTML = `<p class="help-empty">Não foi possível carregar esta página (${escapeHtml(String(err.message || err))}).</p>`;
+    shownEntry = null;
+    return;
+  }
+  // De volta pelo histórico: onde o aluno estava. Primeira visita: a seção pedida ou o topo.
+  if (entry.scroll != null) {
+    content.scrollTop = entry.scroll;
     return;
   }
   const target = entry.anchor && findAnchor(entry.anchor);
@@ -155,19 +171,41 @@ async function renderPage(entry) {
   else content.scrollTop = 0;
 }
 
-function render() {
-  backButton.disabled = position <= 0;
+// Voltar também serve para fechar a busca, mesmo na primeira entrada do histórico.
+function updateNavButtons() {
+  backButton.disabled = position <= 0 && !showingSearch;
   forwardButton.disabled = position >= history.length - 1;
+}
+
+// Mostra a entrada atual do histórico (e fecha a busca, se estava aberta).
+function render() {
+  showingSearch = false;
+  updateNavButtons();
   const entry = history[position];
   if (entry.id) renderPage(entry);
-  else renderHome();
+  else renderHome(entry);
+}
+
+// Guarda a rolagem da entrada que está na tela antes de sair dela. Com a busca na tela não
+// há o que guardar: a rolagem da entrada foi guardada quando a busca começou.
+function rememberScroll() {
+  if (!showingSearch && shownEntry) shownEntry.scroll = content.scrollTop;
 }
 
 function go(id, anchor) {
+  const target = { id: pageById.has(id) ? id : "", anchor: anchor || "" };
+  rememberScroll();
   searchInput.value = "";
-  history.splice(position + 1);
-  history.push({ id: pageById.has(id) ? id : "", anchor: anchor || "" });
-  position = history.length - 1;
+  const current = history[position];
+  if (current && current.id === target.id && current.anchor === target.anchor) {
+    // O mesmo lugar (índice clicado no índice, F1 repetido): não repete a entrada,
+    // senão "Voltar" pareceria não fazer nada. Só volta ao topo ou à seção pedida.
+    delete current.scroll;
+  } else {
+    history.splice(position + 1);
+    history.push(target);
+    position = history.length - 1;
+  }
   render();
 }
 
@@ -198,6 +236,10 @@ async function renderSearch() {
   });
   results.sort((a, b) => b.score - a.score);
 
+  rememberScroll(); // só na primeira tela da busca: depois, showingSearch já é true
+  showingSearch = true;
+  shownEntry = null;
+  updateNavButtons();
   content.innerHTML = `<h1>Busca: ${escapeHtml(query)}</h1>` + (results.length
     ? `<ul class="help-list">${results.map(({ page, snippet }) =>
       link(`${page.id}.md#${encodeURIComponent(query)}`, page.title, snippet)).join("")}</ul>`
@@ -231,13 +273,22 @@ searchInput.addEventListener("input", () => {
 });
 
 backButton.addEventListener("click", () => {
+  clearTimeout(searchTimer);
+  if (showingSearch || searchInput.value.trim()) {
+    // Com a busca aberta, Voltar a fecha e mostra de novo a página que estava por baixo.
+    searchInput.value = "";
+    render();
+    return;
+  }
   if (position <= 0) return;
-  searchInput.value = "";
+  rememberScroll();
   position--;
   render();
 });
 forwardButton.addEventListener("click", () => {
+  clearTimeout(searchTimer);
   if (position >= history.length - 1) return;
+  rememberScroll();
   searchInput.value = "";
   position++;
   render();
@@ -248,6 +299,11 @@ document.getElementById("help-home").addEventListener("click", () => go(""));
 export function initHelp(handlers) {
   actions = handlers;
   go("");
+}
+
+// Abre uma página pelo id (ex.: "ex-mix", pelo botão "Ver explicação" da galeria de exemplos).
+export function openHelpPage(id) {
+  go(id);
 }
 
 // Abre a ajuda de um termo (a palavra sob o cursor no F1). Se o termo tem página,

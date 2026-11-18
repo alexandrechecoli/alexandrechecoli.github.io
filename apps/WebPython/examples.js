@@ -1,10 +1,13 @@
-// Exemplos clássicos de Pesquisa Operacional exibidos no menu "Exemplos…".
+// Exemplos clássicos de Pesquisa Operacional exibidos na galeria "Exemplos".
+// "kind" (PL ou PLI) aparece como etiqueta no cartão do exemplo; o resumo vem da página
+// "ex-<id>" da ajuda (docs.js).
 // Um exemplo pode ter "files": abas de dados criadas junto com a aba de código.
 // "id" é como as páginas da ajuda se referem ao exemplo (link "#exemplo-<id>").
 
 export const EXAMPLES = [
   {
     id: "mix",
+    kind: "PL",
     name: "Mix de produção (PL)",
     code: `# Mix de produção
 # Uma marcenaria fabrica mesas e cadeiras.
@@ -35,6 +38,7 @@ print("Lucro:   ", h.getInfo().objective_function_value)
   },
   {
     id: "transporte",
+    kind: "PL",
     name: "Problema de transporte (PL)",
     code: `# Problema de transporte
 # Enviar produtos de 3 fábricas para 4 centros de distribuição
@@ -79,6 +83,7 @@ for (i, j), var in x.items():
   },
   {
     id: "mochila",
+    kind: "PLI",
     name: "Mochila 0-1 (PLI)",
     code: `# Problema da mochila 0-1
 # Escolher os itens de maior valor total sem ultrapassar a capacidade.
@@ -108,6 +113,7 @@ for item, p, v, xi in zip(itens, peso, valor, x):
   },
   {
     id: "transporte-csv",
+    kind: "PL",
     name: "Transporte com arquivos de dados (CSV)",
     code: `# Problema de transporte com os dados em arquivos
 # Os dados estão nas abas custos.csv, oferta.csv e demanda.csv.

@@ -1,6 +1,6 @@
 /* global CodeMirror */
-import { EXAMPLES } from "./examples.js?v=8";
-import { HIGHSPY_WORDS, initHelp, openHelp } from "./help.js?v=8";
+import { EXAMPLES } from "./examples.js?v=15";
+import { DOC_PAGES, HIGHSPY_WORDS, initHelp, openHelp, openHelpPage } from "./help.js?v=15";
 
 // Chaves do localStorage (sempre em try/catch: pode estar bloqueado).
 const KEY_CODE = "webpython.code"; // versão antiga, de antes das abas: só é lida na migração
@@ -29,11 +29,113 @@ function saveSetting(key, value) {
 const runButton = document.getElementById("btn-run");
 const stopButton = document.getElementById("btn-stop");
 const clearButton = document.getElementById("btn-clear");
-const examplesSelect = document.getElementById("examples-select");
 const output = document.getElementById("output");
 const placeholder = document.getElementById("placeholder");
 const statusDot = document.getElementById("dot");
 const statusMsg = document.getElementById("status-msg");
+
+/* ════════════════════════════════════════════════════════════════════
+   Diálogos do app, no lugar de prompt/confirm/alert do navegador
+════════════════════════════════════════════════════════════════════ */
+const askDialog = document.getElementById("ask-dialog");
+const askForm = document.getElementById("ask-form");
+const askTitle = document.getElementById("ask-title");
+const askText = document.getElementById("ask-text");
+const askInput = document.getElementById("ask-input");
+const askError = document.getElementById("ask-error");
+const askOk = document.getElementById("ask-ok");
+const askCancel = document.getElementById("ask-cancel");
+
+// Uma pergunta por vez: quem chama enquanto outra está aberta espera a vez
+// (ex.: um exemplo com vários arquivos de dados que já existem).
+let askQueue = Promise.resolve();
+
+// Confirmação (sem "value") ou pergunta de um texto (com "value", o valor inicial).
+// Devolve true ou o texto digitado; null se o aluno cancelar (botão, Esc ou clique fora).
+// validate(texto) devolve uma mensagem de erro, que mantém o diálogo aberto, ou "".
+function ask(options) {
+  const result = askQueue.then(() => showAsk(options));
+  askQueue = result.catch(() => {});
+  return result;
+}
+
+function showAsk({ title, text = "", value = null, okLabel = "OK", danger = false, validate = null }) {
+  return new Promise((resolve) => {
+    const withInput = value !== null;
+    askTitle.textContent = title;
+    askText.textContent = text;
+    askText.hidden = !text;
+    askInput.hidden = !withInput;
+    askInput.value = withInput ? value : "";
+    askError.hidden = true;
+    askOk.textContent = okLabel;
+    askOk.classList.toggle("danger", danger);
+
+    function finish(answer) {
+      askForm.removeEventListener("submit", onSubmit);
+      askDialog.removeEventListener("cancel", onCancel);
+      askDialog.removeEventListener("click", onBackdrop);
+      askCancel.removeEventListener("click", onCancelButton);
+      askDialog.close();
+      resolve(answer);
+    }
+    function onSubmit(e) {
+      e.preventDefault();
+      if (!withInput) return finish(true);
+      const typed = askInput.value.trim();
+      if (!typed) return finish(null);
+      const error = validate?.(typed);
+      if (error) {
+        askError.textContent = error;
+        askError.hidden = false;
+        askInput.focus();
+        return;
+      }
+      finish(typed);
+    }
+    function onCancel(e) {
+      e.preventDefault(); // Esc: fecha por finish(), para limpar os ouvintes
+      finish(null);
+    }
+    function onBackdrop(e) {
+      if (e.target === askDialog) finish(null); // clique fora da caixa
+    }
+    function onCancelButton() {
+      finish(null);
+    }
+    askForm.addEventListener("submit", onSubmit);
+    askDialog.addEventListener("cancel", onCancel);
+    askDialog.addEventListener("click", onBackdrop);
+    askCancel.addEventListener("click", onCancelButton);
+
+    askDialog.showModal();
+    if (withInput) {
+      askInput.focus();
+      selectBaseName(askInput);
+    } else {
+      // Em ações destrutivas o foco fica em "Cancelar": Enter sem querer não apaga nada.
+      (danger ? askCancel : askOk).focus();
+    }
+  });
+}
+
+// Seleciona o nome sem a extensão ("custos" em "custos.csv"), para digitar por cima.
+function selectBaseName(input) {
+  const dot = input.value.lastIndexOf(".");
+  input.setSelectionRange(0, dot > 0 ? dot : input.value.length);
+}
+
+// Aviso rápido no canto da tela, que some sozinho. kind: undefined ou "error".
+function notify(text, kind) {
+  const toast = document.createElement("div");
+  toast.className = "toast" + (kind ? " " + kind : "");
+  toast.textContent = text;
+  document.getElementById("toast-area").append(toast);
+  setTimeout(() => {
+    toast.classList.add("leaving");
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
 
 /* ════════════════════════════════════════════════════════════════════
    Autocompletar: palavras-chave do Python + nomes do highspy documentados
@@ -168,6 +270,7 @@ function renderTabBar() {
   for (const tab of tabs) {
     const el = document.createElement("div");
     el.className = "tab" + (tab.id === activeTabId ? " active" : "") + (isDataTab(tab) ? " data" : "");
+    el.dataset.id = tab.id;
     el.title = isDataTab(tab)
       ? `${tab.name} — arquivo de dados: leia no código por este nome · duplo clique para renomear`
       : `${tab.name} — duplo clique para renomear`;
@@ -249,13 +352,18 @@ function activateTab(id) {
   persistTabs();
 }
 
-function newTab(name, content) {
+// Assíncrona: abrir um arquivo de dados com nome já existente pode perguntar se substitui.
+async function newTab(name, content) {
   // Um arquivo de dados é identificado pelo nome: abrir o mesmo nome de novo atualiza a aba.
   const existing = name && isDataName(name) ? tabs.find((tab) => tab.name === name) : null;
   if (existing) {
     const current = existing.doc.getValue();
-    const replace = current === (content || "") || !current.trim() ||
-      confirm(`Já existe a aba de dados "${name}".\n\nSubstituir o conteúdo dela?`);
+    const replace = current === (content || "") || !current.trim() || await ask({
+      title: `Substituir "${name}"?`,
+      text: `Já existe uma aba de dados "${name}", com outro conteúdo. O conteúdo atual dela será trocado.`,
+      okLabel: "Substituir",
+      danger: true,
+    });
     if (replace) existing.doc.setValue(content || "");
     activateTab(existing.id);
     persistTabs();
@@ -267,9 +375,15 @@ function newTab(name, content) {
   return tab;
 }
 
-function newDataTab() {
-  const typed = prompt("Nome do arquivo de dados (ex.: custos.csv):", "dados.csv");
-  if (!typed || !typed.trim()) return;
+async function newDataTab() {
+  const typed = await ask({
+    title: "Nova aba de dados",
+    text: 'O nome da aba é o nome do arquivo que o código lê, como em open("custos.csv"). ' +
+      "Use .csv, .tsv, .txt, .json ou .dat; sem extensão, vira .csv.",
+    value: "dados.csv",
+    okLabel: "Criar",
+  });
+  if (!typed) return;
   let name = sanitizeFileName(typed);
   if (!isDataName(name)) name += ".csv";
   const existing = tabs.find((tab) => tab.name === name);
@@ -277,15 +391,21 @@ function newDataTab() {
   else newTab(name, "");
 }
 
-function closeTab(id) {
-  const index = tabs.findIndex((tab) => tab.id === id);
-  if (index === -1) return;
-  const tab = tabs[index];
+async function closeTab(id) {
+  const tab = getTab(id);
+  if (!tab) return;
   // O conteúdo só existe no navegador: fechar sem querer perderia o trabalho.
-  if (tab.doc.getValue().trim() &&
-      !confirm(`Fechar a aba "${tab.name}"?\n\nO conteúdo que não foi salvo em arquivo será perdido.`)) {
-    return;
+  if (tab.doc.getValue().trim()) {
+    const close = await ask({
+      title: `Fechar "${tab.name}"?`,
+      text: "O conteúdo só existe neste navegador: o que não foi salvo em arquivo será perdido.",
+      okLabel: "Fechar aba",
+      danger: true,
+    });
+    if (!close) return;
   }
+  const index = tabs.indexOf(tab); // procurada de novo: as abas podem ter mudado durante a pergunta
+  if (index === -1) return;
   tabs.splice(index, 1);
   if (!tabs.length) tabs.push(makeTab());
 
@@ -297,15 +417,48 @@ function closeTab(id) {
   persistTabs();
 }
 
+// Renomear: o rótulo da aba vira um campo de texto (duplo clique), como no VS Code.
+// Enter ou clicar fora confirma; Esc cancela.
 function renameTab(id) {
   const tab = getTab(id);
-  if (!tab) return;
-  const typed = prompt("Nome da aba:", tab.name);
-  if (!typed || !typed.trim()) return;
+  const nameSpan = document.querySelector(`#tab-bar .tab[data-id="${id}"] .tab-name`);
+  if (!tab || !nameSpan) return;
+
+  const input = document.createElement("input");
+  input.className = "tab-rename";
+  input.value = tab.name;
+  input.spellcheck = false;
+  input.setAttribute("aria-label", "Novo nome da aba");
+  const fit = () => { input.size = Math.max(6, input.value.length + 1); };
+  fit();
+  nameSpan.replaceWith(input);
+  input.focus();
+  selectBaseName(input);
+
+  let finished = false;
+  function finish(save) {
+    if (finished) return; // renderTabBar() remove o campo, o que dispara outro "blur"
+    finished = true;
+    if (save) applyRename(tab, input.value);
+    renderTabBar();
+    if (tab.id === activeTabId) editor.focus();
+  }
+  input.addEventListener("input", fit);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); finish(true); }
+    if (e.key === "Escape") { e.preventDefault(); finish(false); }
+  });
+  input.addEventListener("blur", () => finish(true));
+  // Cliques no campo não devem ativar a aba nem abrir outra edição.
+  input.addEventListener("click", (e) => e.stopPropagation());
+  input.addEventListener("dblclick", (e) => e.stopPropagation());
+}
+
+function applyRename(tab, typed) {
   const newName = typed.trim().replace(/[\\/]/g, "_");
-  if (newName === tab.name) return;
+  if (!newName || newName === tab.name) return;
   if (isDataName(newName) && tabs.some((other) => other !== tab && other.name === newName)) {
-    alert(`Já existe uma aba de dados chamada "${newName}".`);
+    notify(`Já existe uma aba de dados chamada "${newName}". O nome não foi trocado.`, "error");
     return;
   }
   const kindChanged = isDataName(newName) !== isDataTab(tab);
@@ -325,8 +478,11 @@ function renameTab(id) {
 ════════════════════════════════════════════════════════════════════ */
 const editor = CodeMirror(document.getElementById("cm-wrapper"), {
   value: getActiveTab().doc,
-  mode: "python",
-  theme: loadSetting(KEY_EDITOR_THEME) || "dracula",
+  // O modo tem de ser o do próprio Doc: recebendo um Doc junto com outro "mode", o
+  // CodeMirror troca o modo do Doc, e uma aba de dados ativa ao carregar a página
+  // ganhava o realce do Python. (Sem esta opção vale o padrão, que também é "python".)
+  mode: getActiveTab().doc.modeOption,
+  theme: "dracula", // trocado logo abaixo por applyEditorTheme(), quando o tema da página é aplicado
   lineNumbers: true,
   lineWrapping: false,
   autofocus: true,
@@ -544,13 +700,28 @@ renderTabBar();
 /* ════════════════════════════════════════════════════════════════════
    Editor color theme selector
 ════════════════════════════════════════════════════════════════════ */
+// "auto" (o padrão) acompanha o tema da página: Dracula no escuro, Eclipse no claro.
+// As demais opções fixam um tema, independente da página.
+const AUTO_EDITOR_THEMES = { dark: "dracula", light: "eclipse" };
+let editorThemeChoice = loadSetting(KEY_EDITOR_THEME) || "auto";
+
+function applyEditorTheme() {
+  const theme = editorThemeChoice === "auto"
+    ? AUTO_EDITOR_THEMES[document.documentElement.dataset.theme] || "dracula"
+    : editorThemeChoice;
+  if (editor.getOption("theme") === theme) return;
+  editor.setOption("theme", theme);
+  editor.refresh();
+}
+
 (function () {
   const sel = document.getElementById("editor-theme-select");
-  sel.value = editor.getOption("theme");
+  sel.value = editorThemeChoice;
+  if (!sel.value) sel.value = editorThemeChoice = "auto"; // tema salvo que não existe mais
   sel.addEventListener("change", () => {
-    editor.setOption("theme", sel.value);
-    editor.refresh();
+    editorThemeChoice = sel.value;
     saveSetting(KEY_EDITOR_THEME, sel.value);
+    applyEditorTheme();
   });
 })();
 
@@ -608,6 +779,7 @@ for (const tab of panelTabs) {
     document.getElementById("theme-switch-label").title =
       name === "dark" ? "Mudar para o tema claro" : "Mudar para o tema escuro";
     saveSetting(KEY_THEME, name);
+    applyEditorTheme(); // no modo "Automático", o editor acompanha a página
   }
 
   checkbox.addEventListener("change", () => applyTheme(checkbox.checked ? "dark" : "light"));
@@ -736,6 +908,7 @@ let startTime = 0;
 // Executar e Parar ocupam o mesmo lugar: durante a execução, o primeiro dá lugar ao segundo.
 function updateButtons() {
   runButton.disabled = !ready;
+  runButton.title = ready ? "Executar (F5 ou Ctrl+Enter)" : "Aguarde: o Python ainda está carregando";
   runButton.hidden = running;
   stopButton.hidden = !running;
 }
@@ -760,7 +933,7 @@ function startWorker() {
   setStatus("Carregando Python…", "loading");
   updateButtons();
 
-  worker = new Worker("worker.js?v=8", { type: "module" });
+  worker = new Worker("worker.js?v=15", { type: "module" });
   worker.onmessage = ({ data }) => {
     switch (data.type) {
       case "ready":
@@ -849,21 +1022,70 @@ function stopCode() {
 /* ════════════════════════════════════════════════════════════════════
    Toolbar
 ════════════════════════════════════════════════════════════════════ */
-EXAMPLES.forEach((example, index) => {
-  examplesSelect.add(new Option(example.name, index));
-});
-
-function openExample(example) {
-  for (const file of example.files ?? []) newTab(file.name, file.content);
-  newTab(example.name, example.code);
+// Uma aba de cada vez: cada arquivo de dados já existente pode perguntar se substitui.
+async function openExample(example) {
+  for (const file of example.files ?? []) await newTab(file.name, file.content);
+  await newTab(example.name, example.code);
 }
 
-examplesSelect.addEventListener("change", () => {
-  if (examplesSelect.value === "") return;
-  const example = EXAMPLES[examplesSelect.value];
-  examplesSelect.value = "";
-  openExample(example);
-});
+// Galeria de exemplos: um cartão por item de EXAMPLES, com o resumo da página
+// "ex-<id>" da ajuda, a etiqueta PL/PLI e a indicação de abas de dados.
+(function () {
+  const dialog = document.getElementById("examples-dialog");
+  const grid = document.getElementById("example-grid");
+
+  function element(tag, className, text) {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text) el.textContent = text;
+    return el;
+  }
+
+  for (const example of EXAMPLES) {
+    const page = DOC_PAGES.find((item) => item.id === `ex-${example.id}`);
+    const card = element("article", "example-card");
+
+    const tags = element("div", "example-tags");
+    if (example.kind) tags.append(element("span", "tag " + example.kind.toLowerCase(), example.kind));
+    if (example.files?.length) {
+      const count = example.files.length;
+      tags.append(element("span", "tag data", count === 1 ? "1 aba de dados" : `${count} abas de dados`));
+    }
+
+    // O "(PL)" do nome vira etiqueta; o nome completo continua sendo o nome da aba.
+    const title = element("h3", "", example.name.replace(/\s*\([^)]*\)\s*$/, ""));
+    const summary = element("p", "", page?.summary || "");
+
+    const actions = element("div", "example-actions");
+    const openButton = element("button", "btn primary small", "Abrir no editor");
+    openButton.addEventListener("click", () => {
+      dialog.close();
+      openExample(example);
+    });
+    actions.append(openButton);
+    if (page) {
+      const explainButton = element("button", "btn small", "Ver explicação");
+      explainButton.addEventListener("click", () => {
+        dialog.close();
+        showPanelView("help");
+        openHelpPage(page.id);
+      });
+      actions.append(explainButton);
+    }
+
+    card.append(tags, title, summary, actions);
+    grid.append(card);
+  }
+
+  document.getElementById("btn-examples").addEventListener("click", () => {
+    dialog.showModal();
+    grid.querySelector("button")?.focus();
+  });
+  document.getElementById("examples-close").addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close(); // clique fora da caixa
+  });
+})();
 
 // Ajuda: os blocos de código e os links de exemplo das páginas abrem abas no editor.
 initHelp({
@@ -894,7 +1116,7 @@ fileInput.addEventListener("change", async () => {
   const files = [...fileInput.files];
   fileInput.value = "";
   for (const file of files) {
-    newTab(file.name.replace(/\.py$/i, ""), await file.text());
+    await newTab(file.name.replace(/\.py$/i, ""), await file.text());
   }
 });
 
@@ -915,6 +1137,12 @@ document.getElementById("btn-save").addEventListener("click", saveActiveTab);
 document.addEventListener("keydown", (e) => {
   const mod = e.ctrlKey || e.metaKey;
   const key = e.key.toLowerCase();
+  // Com um diálogo aberto, os atalhos não agem sobre o editor que está por trás dele
+  // (só o F5 continua bloqueado, para não recarregar a página no meio da pergunta).
+  if (document.querySelector("dialog[open]")) {
+    if (key === "f5" && !mod) e.preventDefault();
+    return;
+  }
   if (key === "f5" && !mod && !e.altKey) {
     // Ctrl+F5 e Ctrl+R continuam recarregando a página.
     e.preventDefault();

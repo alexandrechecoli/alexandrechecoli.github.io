@@ -1,7 +1,7 @@
 // Índice da ajuda (aba "Ajuda"). Cada página é um arquivo Markdown em docs/<id>.md.
 // keywords: termos que levam à página pelo F1 (palavra sob o cursor) e pesam na busca.
 
-export const DOC_SECTIONS = ["Começando", "Referência do highspy", "Como fazer", "Exemplos comentados"];
+export const DOC_SECTIONS = ["Começando", "Python básico", "Referência do highspy", "Como fazer", "Exemplos comentados"];
 
 export const DOC_PAGES = [
   {
@@ -10,6 +10,51 @@ export const DOC_PAGES = [
     title: "Primeiros passos",
     summary: "Como o editor funciona e o roteiro de um modelo com o highspy.",
     keywords: ["highspy", "Highs", "import"],
+  },
+  {
+    id: "py-valores",
+    section: "Python básico",
+    title: "Valores, operações e print",
+    summary: "Variáveis, contas (** e não ^), textos, f-strings para formatar resultados e comparações.",
+    keywords: ["print", "int", "float", "str", "bool", "True", "False", "None", "round", "type",
+      "and", "or", "not", "f-string", "format", "replace"],
+  },
+  {
+    id: "py-lacos",
+    section: "Python básico",
+    title: "Laços e condições",
+    summary: "if/elif/else, for com range, enumerate e zip, while, e o recuo como sintaxe.",
+    keywords: ["for", "range", "enumerate", "while", "if", "elif", "else", "break", "continue", "pass", "in"],
+  },
+  {
+    id: "py-dicionarios",
+    section: "Python básico",
+    title: "Dicionários, tuplas e conjuntos",
+    summary: "Guardar dados e variáveis por nome (oferta[i], custo[i, j]); listas, tuplas e set.",
+    keywords: ["dict", "items", "keys", "values", "get", "len", "tuple", "set", "list",
+      "dicionário", "dicionario", "tupla", "lista", "conjunto", "Scripting.Dictionary"],
+  },
+  {
+    id: "py-compreensoes",
+    section: "Python básico",
+    title: "Compreensões de listas e dicionários",
+    summary: "Criar listas e dicionários em uma linha e escrever somatórios com sum(... for ...).",
+    keywords: ["comprehension", "compreensão", "compreensao", "gerador", "generator", "zip", "append",
+      "max", "min", "any", "all"],
+  },
+  {
+    id: "py-funcoes",
+    section: "Python básico",
+    title: "Funções, argumentos e módulos",
+    summary: "def e return, argumentos nomeados (lb=0, name=...), métodos de objetos e import.",
+    keywords: ["def", "return", "lambda", "math", "sqrt", "ceil", "floor", "from", "as", "join", "strip"],
+  },
+  {
+    id: "py-papel-codigo",
+    section: "Python básico",
+    title: "Do modelo matemático ao código",
+    summary: "Como cada conjunto, parâmetro, ∑ e ∀ do modelo vira Python, com um exemplo completo.",
+    keywords: ["modelagem", "somatório", "somatorio", "para todo", "localização"],
   },
   {
     id: "variaveis",
@@ -31,7 +76,7 @@ export const DOC_PAGES = [
     section: "Referência do highspy",
     title: "Função objetivo e resolução",
     summary: "maximize e minimize definem o objetivo e já resolvem o modelo.",
-    keywords: ["maximize", "minimize", "solve", "run"],
+    keywords: ["maximize", "minimize", "solve", "run", "setObjective", "ObjSense", "kMaximize", "kMinimize", "optimize"],
   },
   {
     id: "resultados",
@@ -63,6 +108,13 @@ export const DOC_PAGES = [
     title: "Ler dados de arquivos",
     summary: "Tabelas em abas de dados (CSV, TXT, JSON), lidas com o módulo csv ou com o pandas.",
     keywords: ["read_csv", "pandas", "csv", "json", "to_dict", "DictReader"],
+  },
+  {
+    id: "exportar",
+    section: "Como fazer",
+    title: "Exportar o modelo (.lp)",
+    summary: "Gravar o modelo em .lp ou .mps com writeModel, para conferir ou usar em outro solver.",
+    keywords: ["writeModel", "lp", "mps"],
   },
   {
     id: "log",
@@ -114,7 +166,7 @@ export const HIGHSPY_WORDS = [
   "kInfeasible", "kUnbounded", "kHighsInf",
   "addVariable", "addVariables", "addBinary", "addBinaries", "addIntegral", "addIntegrals", "name_prefix",
   "addConstr", "addConstrs", "qsum",
-  "maximize", "minimize", "solve",
+  "maximize", "minimize", "solve", "setObjective", "ObjSense", "kMaximize", "kMinimize", "writeModel",
   "getModelStatus", "modelStatusToString", "getInfo", "objective_function_value", "getObjectiveValue",
   "val", "vals", "variableValue", "variableDual", "constrDual", "constrValue",
   "allVariableValues", "allVariableNames", "mip_gap", "mip_node_count",

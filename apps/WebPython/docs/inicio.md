@@ -2,6 +2,8 @@
 
 O WebPython é um editor de Python que roda inteiro no navegador. Ele já vem com o `highspy`, a interface em Python do solver **HiGHS**, que resolve problemas de Programação Linear (PL) e Programação Linear Inteira (PLI).
 
+Se você está começando no Python (por exemplo, vindo do VBA), a seção **Python básico** do índice mostra o que é preciso para escrever um modelo, comparando com o VBA. Comece por [Valores, operações e print](py-valores.md) e termine em [Do modelo matemático ao código](py-papel-codigo.md).
+
 ## Como usar o editor
 
 - Escreva o código na aba à esquerda e clique no triângulo verde, no canto direito da linha de abas, para executar. A saída aparece na aba **Saída** deste painel.

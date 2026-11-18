@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=15">
 </head>
 
 <body>
@@ -28,9 +28,10 @@
     </span>
     <div class="sep"></div>
 
-    <select class="btn" id="examples-select" title="Carregar código de exemplo">
-      <option value="">Exemplos…</option>
-    </select>
+    <button class="btn" id="btn-examples" title="Abrir um exemplo pronto em uma aba nova">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+      Exemplos
+    </button>
 
     <div class="sep"></div>
     <button class="btn" id="btn-open" title="Abrir arquivos: .py (código) ou .csv, .txt, .json… (dados)">
@@ -58,6 +59,7 @@
           <div class="popover-row">
             <label for="editor-theme-select">Tema do editor</label>
             <select class="editor-theme-select" id="editor-theme-select">
+              <option value="auto">Automático (segue a página)</option>
               <option value="dracula">Dracula</option>
               <option value="monokai">Monokai</option>
               <option value="material-darker">Material Darker</option>
@@ -65,14 +67,6 @@
               <option value="eclipse">Eclipse</option>
               <option value="default">Claro (padrão)</option>
             </select>
-          </div>
-          <div class="popover-row">
-            <span>Fonte do editor</span>
-            <div class="font-btns">
-              <button class="font-btn" id="font-dec" title="Diminuir fonte (Ctrl+-)">A−</button>
-              <span id="font-size-display">14px</span>
-              <button class="font-btn" id="font-inc" title="Aumentar fonte (Ctrl++)">A+</button>
-            </div>
           </div>
         </div>
       </div>
@@ -85,13 +79,20 @@
     <div class="panel-editor" id="panel-editor">
       <div class="tab-row">
         <div class="tab-bar" id="tab-bar"></div>
-        <!-- Executar / Parar: só um dos dois aparece por vez -->
+        <!-- Tamanho da fonte do editor; Executar / Parar: só um dos dois aparece por vez -->
         <div class="editor-actions">
-          <button class="icon-btn run" id="btn-run" title="Executar (F5 ou Ctrl+Enter)" aria-label="Executar" disabled>
+          <div class="font-btns">
+            <button class="font-btn" id="font-dec" title="Diminuir fonte do editor (Ctrl+-)">A−</button>
+            <span id="font-size-display">14px</span>
+            <button class="font-btn" id="font-inc" title="Aumentar fonte do editor (Ctrl++; Ctrl+0 volta a 14px)">A+</button>
+          </div>
+          <button class="run-btn" id="btn-run" title="Executar (F5 ou Ctrl+Enter)" disabled>
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>
+            <span>Executar</span>
           </button>
-          <button class="icon-btn stop" id="btn-stop" title="Interromper a execução (Shift+F5)" aria-label="Parar" hidden>
+          <button class="run-btn stop" id="btn-stop" title="Interromper a execução (Shift+F5)" hidden>
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+            <span>Parar</span>
           </button>
         </div>
       </div>
@@ -103,8 +104,14 @@
     <div class="panel-results">
       <div class="panel-header">
         <div class="panel-tabs" role="tablist">
-          <button class="panel-tab active" id="panel-tab-output" data-view="output" role="tab" aria-selected="true">Saída</button>
-          <button class="panel-tab" id="panel-tab-help" data-view="help" role="tab" aria-selected="false" title="Documentação e exemplos comentados (F1)">Ajuda</button>
+          <button class="panel-tab active" id="panel-tab-output" data-view="output" role="tab" aria-selected="true">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M7 9.5l3 2.5-3 2.5M12.5 15h4.5"/></svg>
+            <span>Saída</span>
+          </button>
+          <button class="panel-tab" id="panel-tab-help" data-view="help" role="tab" aria-selected="false" title="Documentação e exemplos comentados (F1)">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1.1.9-1.1 1.6v.6M12 16.8v.2"/></svg>
+            <span>Ajuda</span>
+          </button>
         </div>
         <div class="font-btns">
           <button class="font-btn" id="result-font-dec" title="Diminuir tamanho do texto">A−</button>
@@ -163,6 +170,38 @@
     </span>
   </div>
 
+  <!-- ── Diálogos do app (no lugar de prompt/confirm/alert) ───────────── -->
+  <!-- Pergunta genérica: confirmação, ou um nome a digitar (função ask() no app.js) -->
+  <dialog class="modal" id="ask-dialog" aria-labelledby="ask-title">
+    <form class="modal-body" id="ask-form" method="dialog">
+      <h2 class="modal-title" id="ask-title"></h2>
+      <p class="modal-text" id="ask-text"></p>
+      <input class="modal-input" id="ask-input" type="text" spellcheck="false" autocomplete="off">
+      <p class="modal-error" id="ask-error" role="alert" hidden></p>
+      <div class="modal-actions">
+        <button class="btn" type="button" id="ask-cancel">Cancelar</button>
+        <button class="btn primary" type="submit" id="ask-ok">OK</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Galeria de exemplos (botão "Exemplos" da toolbar) -->
+  <dialog class="modal modal-wide" id="examples-dialog" aria-labelledby="examples-title">
+    <div class="modal-body">
+      <div class="modal-head">
+        <h2 class="modal-title" id="examples-title">Exemplos</h2>
+        <button class="icon-btn" id="examples-close" title="Fechar (Esc)" aria-label="Fechar">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <p class="modal-text">Cada exemplo abre em uma aba nova; as abas que você já tem não mudam.</p>
+      <div class="example-grid" id="example-grid"></div>
+    </div>
+  </dialog>
+
+  <!-- Avisos rápidos (função notify() no app.js) -->
+  <div class="toast-area" id="toast-area" aria-live="polite"></div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
@@ -179,6 +218,6 @@
   <!-- Ajuda: destaque dos blocos de código (runmode) e conversão de Markdown (marked) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/runmode/runmode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
-  <script type="module" src="app.js?v=8"></script>
+  <script type="module" src="app.js?v=15"></script>
 </body>
 </html>

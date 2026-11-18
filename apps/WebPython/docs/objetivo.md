@@ -39,6 +39,21 @@ print("Lucro com o limite:", h.getInfo().objective_function_value)
 
 `h.run()` faz o mesmo que `h.solve()`.
 
+> Quem vem do SCIP ou do Gurobi procura um `optimize()`: no `highspy` ele não existe. O papel dele é de `maximize`/`minimize` (que já resolvem) ou de `solve`.
+
+## Definir o objetivo sem resolver
+
+### `h.setObjective(expressão, sense=...)`
+
+Define a função objetivo **sem** executar o solver; o modelo é resolvido depois, com `h.solve()`. O sentido é `highspy.ObjSense.kMaximize` ou `highspy.ObjSense.kMinimize`.
+
+```python
+h.setObjective(40 * mesas + 30 * cadeiras, sense=highspy.ObjSense.kMaximize)
+h.solve()
+```
+
+Serve para fazer algo com o modelo completo antes de resolvê-lo, como gravá-lo em um arquivo `.lp` (veja [Exportar o modelo](exportar.md)).
+
 ## Cuidados
 
 - Um modelo tem uma única função objetivo. Chamar `maximize` duas vezes troca o objetivo, não soma.

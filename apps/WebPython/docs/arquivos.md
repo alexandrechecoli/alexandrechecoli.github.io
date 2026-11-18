@@ -179,7 +179,7 @@ with open(caminho_arquivo, "w", encoding="utf-8") as arquivo:
     arquivo.write("Frase escrita no arquivo, direto do python")
 ```
 
-> Neste editor, o arquivo gravado aparece como uma nova aba de dados (`output.txt`) ao fim da execução, e a saída mostra a linha "Arquivo gravado: output.txt". Para levar o arquivo ao seu computador, abra a aba e use **Salvar**. Só viram abas os arquivos com nome terminado em `.txt`, `.csv`, `.tsv`, `.json` ou `.dat`.
+> Neste editor, o arquivo gravado aparece como uma nova aba de dados (`output.txt`) ao fim da execução, e a saída mostra a linha "Arquivo gravado: output.txt". Para levar o arquivo ao seu computador, abra a aba e use **Salvar**. Só viram abas os arquivos com nome terminado em `.txt`, `.csv`, `.tsv`, `.json` ou `.dat`; para o modelo em `.lp`, veja [Exportar o modelo](exportar.md).
 
 Para pular linhas, escrevemos a string `\n`:
 
@@ -194,3 +194,4 @@ O modo `"w"` apaga o que havia no arquivo e escreve de novo. Para acrescentar ao
 ## Veja também
 
 - [Ler dados de arquivos](dados.md): tabelas em CSV, com o módulo `csv` ou com o pandas.
+- [Exportar o modelo (.lp)](exportar.md): gravar o modelo montado para conferir ou usar em outro solver.
