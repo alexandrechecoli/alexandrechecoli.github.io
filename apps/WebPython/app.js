@@ -1,6 +1,6 @@
 /* global CodeMirror */
-import { EXAMPLES } from "./examples.js?v=15";
-import { DOC_PAGES, HIGHSPY_WORDS, initHelp, openHelp, openHelpPage } from "./help.js?v=15";
+import { EXAMPLES } from "./examples.js?v=16";
+import { DOC_PAGES, HIGHSPY_WORDS, initHelp, openHelp, openHelpPage } from "./help.js?v=16";
 
 // Chaves do localStorage (sempre em try/catch: pode estar bloqueado).
 const KEY_CODE = "webpython.code"; // versão antiga, de antes das abas: só é lida na migração
@@ -285,7 +285,9 @@ function renderTabBar() {
     closeBtn.title = "Fechar aba";
 
     el.append(nameSpan, closeBtn);
+    el.addEventListener("pointerdown", (e) => startTabDrag(e, el, tab));
     el.addEventListener("click", (e) => {
+      if (suppressTabClick) return; // o clique que encerra um arrasto não é um clique na aba
       if (e.target !== closeBtn) activateTab(tab.id);
     });
     closeBtn.addEventListener("click", (e) => {
@@ -313,6 +315,92 @@ function renderTabBar() {
   bar.append(addDataBtn);
 
   bar.querySelector(".tab.active")?.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+
+/* Arrastar abas para mudar a ordem, como nas abas do Windows e do navegador.
+   Feito com eventos de ponteiro, e não com o arrastar nativo do HTML (que mostra uma
+   "imagem fantasma" e não deixa as outras abas deslizarem). A aba arrastada segue o
+   mouse; quando o centro dela passa o centro de uma vizinha, as duas trocam de lugar no
+   DOM e a vizinha desliza até a posição nova. Ao soltar, a ordem do DOM vira a ordem
+   de `tabs`. Posições em coordenadas da barra (offsetLeft, que ignora o transform):
+   por isso `.tab-bar` tem position: relative. No toque, o dedo continua rolando a barra. */
+const TAB_DRAG_THRESHOLD = 5; // px de movimento antes de um clique virar arrasto
+let suppressTabClick = false;
+
+function startTabDrag(e, el, tab) {
+  if (e.button !== 0 || e.pointerType === "touch") return;
+  if (e.target.closest(".tab-close, .tab-rename")) return;
+  const bar = el.parentElement;
+  const toBarX = (clientX) => clientX - bar.getBoundingClientRect().left + bar.scrollLeft;
+  const startX = e.clientX;
+  const grabOffset = toBarX(startX) - el.offsetLeft;
+  let dragging = false;
+
+  const isTab = (node) => node?.classList.contains("tab");
+  const middle = (node) => node.offsetLeft + node.offsetWidth / 2;
+
+  // Troca a aba arrastada de lugar com `other` e faz `other` deslizar da posição antiga.
+  function slide(other, move) {
+    const before = other.offsetLeft;
+    move();
+    other.style.transition = "none";
+    other.style.transform = `translateX(${before - other.offsetLeft}px)`;
+    void other.offsetWidth; // aplica a posição antiga antes de ligar a transição
+    other.style.transition = "";
+    other.style.transform = "";
+  }
+
+  function place(clientX) {
+    const all = bar.querySelectorAll(".tab");
+    const last = all[all.length - 1];
+    const minLeft = all[0].offsetLeft;
+    const maxLeft = last.offsetLeft + last.offsetWidth - el.offsetWidth;
+    const left = Math.min(Math.max(toBarX(clientX) - grabOffset, minLeft), maxLeft);
+    const center = left + el.offsetWidth / 2;
+    let next, prev;
+    while (isTab(next = el.nextElementSibling) && center > middle(next)) slide(next, () => next.after(el));
+    while (isTab(prev = el.previousElementSibling) && center < middle(prev)) slide(prev, () => prev.before(el));
+    el.style.transform = `translateX(${left - el.offsetLeft}px)`;
+  }
+
+  function onMove(ev) {
+    if (!el.isConnected) return stop(); // a barra foi redesenhada no meio (ex.: renomear terminou)
+    if (!dragging) {
+      if (Math.abs(ev.clientX - startX) < TAB_DRAG_THRESHOLD) return;
+      dragging = true;
+      el.classList.add("dragging");
+      document.body.classList.add("tab-dragging");
+    }
+    // Perto das bordas, rola a barra (quando há mais abas do que cabem).
+    const rect = bar.getBoundingClientRect();
+    if (ev.clientX < rect.left + 24) bar.scrollLeft -= 12;
+    else if (ev.clientX > rect.right - 24) bar.scrollLeft += 12;
+    place(ev.clientX);
+  }
+
+  function stop() {
+    window.removeEventListener("pointermove", onMove);
+    window.removeEventListener("pointerup", onUp);
+    window.removeEventListener("pointercancel", onUp);
+    document.body.classList.remove("tab-dragging");
+  }
+
+  function onUp() {
+    stop();
+    if (!dragging || !el.isConnected) return;
+    const order = [...bar.querySelectorAll(".tab")].map((node) => node.dataset.id);
+    tabs.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+    // O "click" vem logo depois do "pointerup", na mesma tarefa: ignora só esse.
+    suppressTabClick = true;
+    setTimeout(() => { suppressTabClick = false; });
+    if (tab.id !== activeTabId) activateTab(tab.id); // como no navegador: a aba arrastada fica ativa
+    else renderTabBar();
+    persistTabs();
+  }
+
+  window.addEventListener("pointermove", onMove);
+  window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
 }
 
 // Última aba de código ativa: é ela que roda quando o aluno executa a partir de uma aba de dados.
@@ -933,7 +1021,7 @@ function startWorker() {
   setStatus("Carregando Python…", "loading");
   updateButtons();
 
-  worker = new Worker("worker.js?v=15", { type: "module" });
+  worker = new Worker("worker.js?v=16", { type: "module" });
   worker.onmessage = ({ data }) => {
     switch (data.type) {
       case "ready":

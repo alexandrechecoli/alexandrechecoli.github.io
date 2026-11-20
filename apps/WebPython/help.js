@@ -1,6 +1,6 @@
 /* global CodeMirror, marked */
 // Aba "Ajuda": índice, páginas em Markdown (docs/<id>.md), busca e histórico de navegação.
-import { DOC_PAGES, DOC_SECTIONS, HIGHSPY_WORDS } from "./docs.js?v=15";
+import { DOC_PAGES, DOC_SECTIONS, HIGHSPY_WORDS } from "./docs.js?v=16";
 
 // DOC_PAGES segue para o app.js daqui (e não por um import próprio do docs.js) para
 // o número de versão continuar em um só import.
