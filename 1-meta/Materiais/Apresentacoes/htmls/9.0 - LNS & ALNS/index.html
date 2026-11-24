@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Metaheuristicas 9 - LNS &amp; ALNS</title>
+<title>Meta-heurísticas 9 - LNS &amp; ALNS</title>
 <link rel="stylesheet" href="lib/katex/katex.min.css">
 <link rel="stylesheet" href="css/beamer.css">
 <style>
@@ -17,12 +17,12 @@
 .center .katex:has(.delimsizing.mult) { margin-right: 10.8pt; }
 </style>
 </head>
-<body data-author="Alexandre Checoli Choueiri" data-shorttitle="Metaheuristicas 9 - LNS &amp; ALNS">
+<body data-author="Alexandre Checoli Choueiri" data-shorttitle="Meta-heurísticas 9 - LNS &amp; ALNS">
 <main id="deck">
 
 <section class="frame titlepage notitle">
 <div class="fc">
-<div class="tp-title">Metaheuristicas 9 - LNS &amp; ALNS</div>
+<div class="tp-title">Meta-heurísticas 9 - LNS &amp; ALNS</div>
 <div class="tp-author">Alexandre Checoli Choueiri</div>
 <div class="tp-date">13/02/2025</div>
 <div class="tp-img"><img class="ig" src="img/capa.svg" style="width:84.10pt" alt=""></div>
@@ -44,6 +44,10 @@
 </div>
 </section>
 
+<section class="frame sec notitle" data-section="O problema das vizinhanças">
+<div class="fc"><div class="sec-title">O problema das vizinhanças</div></div>
+</section>
+
 <section class="frame t only-title" data-section="O problema das vizinhanças">
 <header class="ft"><h2>Problemática</h2></header>
 <div class="fc jus">
@@ -53,13 +57,17 @@
 </div>
 </section>
 
+<section class="frame sec notitle" data-section="Tamanho de vizinhanças">
+<div class="fc"><div class="sec-title">Tamanho de vizinhanças</div></div>
+</section>
+
 <section class="frame t only-title" data-section="Tamanho de vizinhanças">
 <header class="ft"><h2>Tamanho de vizinhança</h2></header>
 <div class="fc">
-<p>Relembrando a definição de vizinhança, visto na aula <span class="q q34">“</span><b>5 - Algoritmos de solução única: Conceitos</b><span class="q q34">”</span>:</p>
+<p>Relembrando a definição de vizinhança, vista na aula <span class="q q34">“</span><b>5 - Algoritmos de solução única: Conceitos</b><span class="q q34">”</span>:</p>
 <div class="block"><div class="block-title"><b>Definição</b></div><div class="block-body jus"><p><b>Vizinhança (Neighborhood)</b>: Uma função vizinhança \(N\) é um mapeamento \(N:S \rightarrow 2^S\) que atribui a cada solução \(s\in S\) um conjunto de soluções \(N(s) \subset S\)</p></div></div>
 <p>Em que \(S\) é o conjunto de soluções factíveis para o problema.</p>
-<p><span data-on="2-"> Sabemos que as soluções de um problema estão ligadas a uma instância em particular (\(I\)), chamemos então as soluções factíveis de de uma determinada instância como \(S(I)\).</span></p>
+<p><span data-on="2-"> Sabemos que as soluções de um problema estão ligadas a uma instância em particular (\(I\)), chamemos então as soluções factíveis de uma determinada instância como \(S(I)\).</span></p>
 </div>
 </section>
 
@@ -67,8 +75,8 @@
 <header class="ft"><h2>Tamanho de vizinhança</h2></header>
 <div class="fc">
 <p>Podemos definir então o <b>tamanho</b> de uma vizinhança \(N(\cdot)\) para uma instância \(I\) como:</p>
-<div class="block"><div class="block-title"><b>Definição</b></div><div class="block-body jus"><p><b>Tamanho de vizinhança</b>: \(max\{|N(s)|:s\in S(I)\}\)</p></div></div>
-<div data-on="2-" class="tcb jus"><p>Ou seja, considerando uma instancia de um problema, o tamanho da vizinhança é dado pelo <b>maior número de vizinhos que uma solução pode gerar</b>.</p></div>
+<div class="block"><div class="block-title"><b>Definição</b></div><div class="block-body jus"><p><b>Tamanho de vizinhança</b>: \(\max\{|N(s)|:s\in S(I)\}\)</p></div></div>
+<div data-on="2-" class="tcb jus"><p>Ou seja, considerando uma instância de um problema, o tamanho da vizinhança é dado pelo <b>maior número de vizinhos que uma solução pode gerar</b>.</p></div>
 </div>
 </section>
 
@@ -78,7 +86,7 @@
 <p>Vejamos um exemplo para o problema do TSP com a vizinhança SWAP e 5 cidades:</p>
 <div class="center"><p class="imgs"><span class="anim" data-anim="swap" data-scale="1.1" data-from="vazio" data-state="swap1,swap2,swap3,swap4,total"></span></p></div>
 <p><span data-on="2-"> Podemos fazer o SWAP do ponto um com todos os outros, gerando um total de <b><span class="c-brickred">4</span></b> vizinhos.</span> <span class="xsp" data-sf="3000"></span><span class="xsp" data-sf="3000"></span><span data-on="3-">Da mesma forma, com o ponto 2, gerando mais <b><span class="c-brickred">3</span></b> vizinhos.</span> <span class="xsp" data-sf="3000"></span><span class="xsp" data-sf="3000"></span><span data-on="4-">E com o 3 e 4, gerando mais <b><span class="c-brickred">3</span></b> vizinhos. </span></p>
-<div data-on="5-" class="tcb jus"><p>Temos então um total de 4 + 3 + 3 = <span class="c-brickred">10</span> vizinhos. Como todas as soluções factíveis do TSP vão gerar esse mesma quantidade de vizinhos, então o tamanho da vizinhança (para esta instancia) é 10. A fórmula para determinar o tamanho da vizinhança para um problema de 5 pontos é então: \(\frac{5(5-1)}{2} = 10\)</p></div>
+<div data-on="5-" class="tcb jus"><p>Temos então um total de 4 + 3 + 3 = <span class="c-brickred">10</span> vizinhos. Como todas as soluções factíveis do TSP vão gerar essa mesma quantidade de vizinhos, então o tamanho da vizinhança (para esta instância) é 10. A fórmula para determinar o tamanho da vizinhança para um problema de 5 pontos é então: \(\frac{5(5-1)}{2} = 10\)</p></div>
 </div>
 </section>
 
@@ -86,7 +94,7 @@
 <header class="ft"><h2>Tamanho de vizinhança</h2></header>
 <div class="fc jus">
 <p>Vamos definir agora o conjunto (possivelmente infinito) de todas as instâncias de um problema de tamanho \(n\) como \(\mathcal{F}(n)\). É possível então definir o <b>tamanho de uma vizinhança como uma função \(f(n)\) do tamanho da instância</b>:</p>
-<div data-on="2-" class="block"><div class="block-title"><b>Definição</b></div><div class="block-body jus"><p><b>Função tamanho de vizinhança</b>: \(f(n) = max\{|N(s)|:I \in \mathcal{F}(n) ,s\in S(I)\}\)</p></div></div>
+<div data-on="2-" class="block"><div class="block-title"><b>Definição</b></div><div class="block-body jus"><p><b>Função tamanho de vizinhança</b>: \(f(n) = \max\{|N(s)|:I \in \mathcal{F}(n) ,s\in S(I)\}\)</p></div></div>
 <p data-on="3-">Podemos então definir o tamanho da vizinhança do SWAP em função do número de pontos, como:</p>
 <div data-on="3-" class="eq par">\[f(n) = \dfrac{n(n-1)}{2}\]<span class="eqno">\((1)\)</span></div>
 </div>
@@ -99,7 +107,7 @@
 <div class="eq par eq-row"><span data-on="2-">\[f(n) = \dfrac{n(n-1)}{2}\]</span><span data-on="3-">\[= \dfrac{n^2-n}{2}\]</span><span data-on="4-">\[= 	\dfrac{n^2}{2} - \dfrac{n}{2}\]</span></div>
 <p data-on="5-"><span class="xsp"></span>O termo de maior crescimento é \(\dfrac{n^2}{2}\), portanto dizemos que a ordem de crescimento de \(f(n)\) é:</p>
 <div data-on="5-" class="eq par">\[f(n) = O(n^2)\]</div>
-<p class="vazia"><span data-on="6-">Ainda, o tamanho da vizinhança SWAP cresce de forma quadrática em função do tamanho da instância \(n\).</span></p>
+<p class="vazia"><span data-on="6-">Ou seja, o tamanho da vizinhança SWAP cresce de forma quadrática em função do tamanho da instância \(n\).</span></p>
 </div>
 </section>
 
@@ -110,9 +118,46 @@
 </section>
 
 <section class="frame t only-title" data-section="Tamanho de vizinhanças">
+<header class="ft"><h2>Uma vizinhança exponencial</h2></header>
+<div class="fc jus">
+<p>O <b>SWAP composto</b><sup class="fnm">1</sup> aplica, num único movimento, <b>vários SWAPs independentes</b> (cujos trechos entre os pontos trocados não se sobrepõem).</p>
+<div class="center"><p class="imgs"><span class="anim" data-anim="dyna" data-from="vazio" data-state="ex,simples,compostos"></span></p></div>
+<p><span data-on="2-">Com 5 pontos: <span class="c-myblue"><b>10</b> SWAPs simples</span></span> <span data-on="3-">+ <span class="c-brickred"><b>5</b> pares de SWAPs independentes</span> = <b>15</b> vizinhos.</span></p>
+</div>
+<div class="footnotes"><p class="fn"><span class="fn-mark">1</span>Vizinhança da <i>Dynasearch</i> (<i><span class="c-myblue">2002 - Congram, Potts, van de Velde</span></i>), que encontra o melhor vizinho em tempo polinomial por programação dinâmica.</p></div>
+</section>
+
+<section class="frame t only-title" data-section="Tamanho de vizinhanças">
+<header class="ft"><h2>Uma vizinhança exponencial</h2></header>
+<div class="fc jus">
+<p>Contando da mesma forma para outros valores de \(n\) (<span class="c-myblue">simples</span> e <span class="c-brickred">compostos</span>):</p>
+<div class="center"><p class="imgs"><span class="anim" data-anim="dynacont" data-from="vazio" data-state="n2,n3,n4,n5"></span></p></div>
+<div data-on="5-" class="tcb jus"><p>Os totais são \(1, 3, 7, 15\) (e seriam \(31\) para \(n = 6\)): a cada ponto a mais, o número de vizinhos <b>dobra</b> (+1). Logo, \(f(n) = 2^{n-1} - 1 = O(2^n)\), <b>exponencial</b>!</p></div>
+</div>
+</section>
+
+<section class="frame plain notitle" data-section="Tamanho de vizinhanças" data-steps="2">
+<div class="fc">
+<span class="anim pagina" data-anim="cresc" data-from="vazio" data-state="lin,zoom"></span>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Tamanho de vizinhanças">
+<header class="ft"><h2>Motivação</h2></header>
+<div class="fc jus">
+<p>Considere uma instância com \(n = 100\) pontos:</p>
+<ul class="itemz jus">
+<li data-on="2-"><b>SWAP</b>: \(\dfrac{100 \cdot 99}{2} = 4.950\) vizinhos, avaliados num piscar de olhos.</li>
+<li data-on="3-"><b>SWAP composto</b>: \(2^{99} - 1 \approx 6{,}3 \times 10^{29}\) vizinhos. Avaliando <b>um bilhão de vizinhos por segundo</b>, levaríamos cerca de \(2 \times 10^{13}\) anos, mais de mil vezes a idade do universo!</li>
+</ul>
+<div data-on="4-" class="tcb jus"><p>Essa é a motivação para a criação de algoritmos como o LNS e o ALNS: algumas vizinhanças são <b>grandes demais para serem geradas explicitamente</b>. Em vez de enumerar todos os vizinhos, precisamos explorá-las de forma <b>implícita</b>.</p></div>
+</div>
+</section>
+
+<section class="frame t only-title" data-section="Tamanho de vizinhanças">
 <header class="ft"><h2>Tamanho de vizinhança</h2></header>
 <div class="fc">
-<div class="tcb jus"><p>Com essa terminologia em mente, Ahuja et. al define o conceito de <b>Very-Large Neighborhoods</b> como vizinhanças que <b>crescem de forma exponencial em função do tamanho das instâncias</b> \(n\), e propõe uma classificação de algoritmos que resolvem problemas com essas vizinhanças.</p></div>
+<div class="tcb jus"><p>Com essa terminologia em mente, Ahuja et al. definem o conceito de <b>Very-Large Neighborhoods</b> como vizinhanças que <b>crescem de forma exponencial em função do tamanho das instâncias</b> \(n\), e propõem uma classificação de algoritmos que resolvem problemas com essas vizinhanças.</p></div>
 <p><sup class="fnm">1</sup></p>
 <p data-on="2-">Nós estudaremos 2 deles:</p>
 <ol data-on="2-" class="enum rag">
@@ -123,11 +168,15 @@
 <div class="footnotes"><p class="fn"><span class="fn-mark">1</span>Para um estudo de vizinhanças exponenciais para o TSP veja <i><span class="c-myblue">2000 - A study of exponential neighborhoods for the Travelling Salesman Problem and for the Quadratic Assignment Problem</span></i></p></div>
 </section>
 
+<section class="frame sec notitle" data-section="LNS - Large Neighborhood Search">
+<div class="fc"><div class="sec-title">LNS - Large Neighborhood Search</div></div>
+</section>
+
 <section class="frame t only-title" data-section="LNS - Large Neighborhood Search">
-<header class="ft"><h2>LNS - A idéia</h2></header>
+<header class="ft"><h2>LNS - A ideia</h2></header>
 <div class="fc jus">
 <p>A meta-heurística <b>L</b>arge <b>N</b>eighborhood <b>S</b>earch foi proposta por Shaw (<i><span class="c-myblue">1998 - Using Constraint Programming and Local Search Methods to Solve Vehicle Routing Problems - Shaw</span></i>)</p>
-<div data-on="2-" class="tcb jus"><p>O LNS usa vizinhanças de forma implicita, por meio de operadores de <span class="c-brickred"><b>destruição</b> </span> e de <span class="c-myblue"><b>reconstrução</b></span></p></div>
+<div data-on="2-" class="tcb jus"><p>O LNS usa vizinhanças de forma implícita, por meio de operadores de <span class="c-brickred"><b>destruição</b> </span> e de <span class="c-myblue"><b>reconstrução</b></span></p></div>
 <ol data-on="3-" class="enum rag">
 <li><span class="c-brickred">DESTRUIÇÃO</span>: Destrói parte da solução, usualmente de forma estocástica.</li>
 <li><span class="c-myblue">RECONSTRUÇÃO</span>: Reconstrói a solução destruída, retornando-a para a factibilidade.</li>
@@ -153,11 +202,15 @@
 </section>
 
 <section class="frame t only-title" data-section="LNS - Large Neighborhood Search">
-<header class="ft"><h2>LNS - Exemplo</h2></header>
+<header class="ft"><h2>LNS - Exemplo VRP</h2></header>
 <div class="fc jus">
 <div class="center"><p class="imgs"><span class="anim" data-anim="vrp" data-scale="1.1" data-from="VRP2" data-state="VRP3"></span></p></div>
 <div class="tcb jus"><p>Em seguida um operador de <span class="c-myblue">reconstrução</span> poderia reinseri-los novamente, usando alguma heurística gulosa, por exemplo.</p></div>
 </div>
+</section>
+
+<section class="frame sec notitle" data-section="LNS - Pseudocódigo">
+<div class="fc"><div class="sec-title">LNS - Pseudocódigo</div></div>
 </section>
 
 <section class="frame t only-title" data-section="LNS - Pseudocódigo">
@@ -176,12 +229,15 @@
 <div class="l2"><b>if</b> \(c(x^t) &lt; c(x^b)\) <b>then</b></div>
 <div class="l3">\(x^b = x^t\)</div>
 <div class="l2"><b>end if</b></div>
-<div class="l2">\(x = x^b\)</div>
-<div class="l1"><b>until</b> <span class="sp"></span>Criterio de parada</div>
+<div class="l1"><b>until</b> <span class="sp"></span>Critério de parada</div>
 <div class="l1"><b>return</b> \(x^b\).</div>
 </div>
 </div>
 </div>
+</section>
+
+<section class="frame sec notitle" data-section="LNS - Considerações">
+<div class="fc"><div class="sec-title">LNS - Considerações</div></div>
 </section>
 
 <section class="frame t only-title" data-section="LNS - Considerações">
@@ -190,10 +246,14 @@
 <p>Algumas considerações:</p>
 <ol class="enum jus">
 <li data-on="2-">No método original, a função <span class="q q34">“</span>aceita<span class="q q34">”</span> só aceita soluções melhores, artigos posteriores usaram critérios como o SA.</li>
-<li data-on="3-">É importante implementar uma <b>taxa de destruição</b> para o operador de destruição: se somente uma pequena parte da solução é destruída, a busca pode ficar muito limitada, se muito for destruída, é como um reinicio aleatório.</li>
-<li data-on="4-">Shaw propõe um aumento gradativo da taxa de destruição, já Ropke and Pisinger selecionam de forma aleatória, para cada iteração, dentro de um range definido de acordo com o tamanho da instância.</li>
+<li data-on="3-">É importante implementar uma <b>taxa de destruição</b> para o operador de destruição: se somente uma pequena parte da solução é destruída, a busca pode ficar muito limitada, se muito for destruída, é como um reinício aleatório.</li>
+<li data-on="4-">Shaw propõe um aumento gradativo da taxa de destruição, já Ropke e Pisinger selecionam de forma aleatória, para cada iteração, dentro de um range definido de acordo com o tamanho da instância.</li>
 </ol>
 </div>
+</section>
+
+<section class="frame sec notitle" data-section="ALNS">
+<div class="fc"><div class="sec-title">ALNS</div></div>
 </section>
 
 <section class="frame t only-title" data-section="ALNS">
@@ -212,10 +272,14 @@
 <li>\(\Omega^-\): Conjunto de todos os operadores de destruição.</li>
 <li>\(\Omega^+\): Conjunto de todos os operadores de reconstrução.</li>
 <li>\(\rho^-\): Conjunto com os pesos para cada operador de destruição.</li>
-<li>\(\rho^+\): Conjunto com os pesos para cada operador de construção.</li>
+<li>\(\rho^+\): Conjunto com os pesos para cada operador de reconstrução.</li>
 </ol>
 <div data-on="2-" class="tcb jus"><p>Vejamos o algoritmo completo, junto ao LNS previamente visto. As partes em <span class="c-brickred">vermelho</span> são as contribuições do ALNS, todo o <b>resto</b> é exatamente o mesmo LNS já visto.</p></div>
 </div>
+</section>
+
+<section class="frame sec notitle" data-section="ALNS - Pseudocódigo">
+<div class="fc"><div class="sec-title">ALNS - Pseudocódigo</div></div>
 </section>
 
 <section class="frame t only-title" data-section="ALNS - Pseudocódigo">
@@ -233,12 +297,15 @@
 <div class="l2"><b>if</b> \(c(x^t) &lt; c(x^b)\) <b>then</b></div>
 <div class="l3">\(x^b = x^t\)</div>
 <div class="l2"><b>end if</b></div>
-<div class="l2">\(x = x^b\)</div>
 <div class="l2"><span class="c-brickred">atualiza \(\rho^-\) e \(\rho^+\)</span><div class="alg-cmt">\(\triangleright\) Atualiza os pesos</div></div>
-<div class="l1"><b>until</b> <span class="sp"></span>Criterio de parada</div>
+<div class="l1"><b>until</b> <span class="sp"></span>Critério de parada</div>
 <div class="l1"><b>return</b> \(x^b\).</div>
 </div></div>
 </div>
+</section>
+
+<section class="frame sec notitle" data-section="ALNS - Mecanismo adaptativo">
+<div class="fc"><div class="sec-title">ALNS - Mecanismo adaptativo</div></div>
 </section>
 
 <section class="frame t only-title" data-section="ALNS - Mecanismo adaptativo">
@@ -257,9 +324,9 @@
 <section class="frame t only-title" data-section="ALNS - Mecanismo adaptativo">
 <header class="ft"><h2>Mecanismo adaptativo</h2></header>
 <div class="fc jus">
-<p>Os pesos \(\rho\) são ajustados dinamicamente baseado no desempenho armazenado de cada operador de destruição e reconstrução. Ao fim de cada iteração, um score \(\psi\) é calculado pela fórmula:</p>
-<div class="center"><p>\( \psi = max \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} \omega_1: \textsf{se a nova solução é a melhor global} \\ \omega_2: \textsf{se a nova solução é melhor que a atual} \\ \omega_3: \textsf{se a nova solução é aceita} \\ \omega_4: \textsf{se a nova solução é rejeitada} \\ \end{array}\kern-0.5em}\right. \)</p></div>
-<p><span data-on="2"> Em que \(\omega_1,\omega_2,\omega_3,\omega_4\) são parâmetros, geralmente com \(\omega_1 \geq \omega_2 \geq \omega_3 \geq\omega_4\). Ou seja, <b>um alto valor de \(\mathbb{\psi}\) indica que a iteração (portanto operador de destruição e reconstrução) foi um sucesso</b>.</span></p>
+<p>Os pesos \(\rho\) são ajustados dinamicamente baseados no desempenho armazenado de cada operador de destruição e reconstrução. Ao fim de cada iteração, um score \(\psi\) é calculado pela fórmula:</p>
+<div class="center"><p>\( \psi = \max \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} \omega_1: \textsf{se a nova solução é a melhor global} \\ \omega_2: \textsf{se a nova solução é melhor que a atual} \\ \omega_3: \textsf{se a nova solução é aceita} \\ \omega_4: \textsf{se a nova solução é rejeitada} \\ \end{array}\kern-0.5em}\right. \)</p></div>
+<p><span data-on="2"> Em que \(\omega_1,\omega_2,\omega_3,\omega_4\) são parâmetros, geralmente com \(\omega_1 \geq \omega_2 \geq \omega_3 \geq\omega_4\). Ou seja, <b>um alto valor de \(\psi\) indica que a iteração (portanto operador de destruição e reconstrução) foi um sucesso</b>.</span></p>
 </div>
 </section>
 
@@ -269,7 +336,7 @@
 <p>Agora, com o valor de \(\psi\) os pesos \(\rho^+\) e \(\rho^-\) podem ser atualizados. Considerando \(a\) e \(b\) os índices dos operadores de destruição e reconstrução usados na última iteração, temos que:</p>
 <div class="tcb jus"><div class="eq par">\[\rho^-_a = {\color{#0061a5}\alpha} \rho^-_a + (1-{\color{#0061a5}\alpha})\psi\]</div>
 <div class="eq">\[\rho^+_b = {\color{#0061a5}\alpha} \rho^+_b + (1-{\color{#0061a5}\alpha})\psi\]</div></div>
-<p>Com <span class="c-myblue">\(\alpha \in [0,1]\)</span>. O parâmetro \(\alpha\) é chamado de decaimento (<i>decay</i>), e controla o quão sensível os pesos são às mudanças na performance dos operdores. Altos valores de \(\alpha\) são mais <b>conservadores</b>, mantendo a maior parte dos novos pesos como estavam antes da iteração. Já valores baixos favorecem mais alterações.</p>
+<p>Com <span class="c-myblue">\(\alpha \in [0,1]\)</span>. O parâmetro \(\alpha\) é chamado de decaimento (<i>decay</i>), e controla o quão sensível os pesos são às mudanças na performance dos operadores. Altos valores de \(\alpha\) são mais <b>conservadores</b>, mantendo a maior parte dos novos pesos como estavam antes da iteração. Já valores baixos favorecem mais alterações.</p>
 </div>
 </section>
 
@@ -279,13 +346,13 @@
 <p>Vejamos um exemplo. Suponha que estamos na primeira iteração, portanto :</p>
 <div data-only="1" class="eq par">\[\rho^+ = (1,1,1,1,1)\]</div>
 <div data-only="1" class="eq">\[\rho^- = (1,1,1,1,1)\]</div>
-<div data-only="2-" class="eq par">\[\rho^+ = ({\color{#b6321d}1},1,1,1,1)\]</div>
-<div data-only="2-" class="eq">\[\rho^- = (1,1,{\color{#b6321d}1},1,1)\]</div>
-<p><span data-on="2-"> Considerando ainda que neste iteração usamos a vizinhança de destruição 0 (\({\color{#b6321d}a = 0}\)) e de reconstrução 2 (\({\color{#b6321d}b = 2}\).) </span></p>
+<div data-only="2-" class="eq par">\[\rho^+ = (1,1,{\color{#b6321d}1},1,1)\]</div>
+<div data-only="2-" class="eq">\[\rho^- = ({\color{#b6321d}1},1,1,1,1)\]</div>
+<p><span data-on="2-"> Considerando ainda que nesta iteração usamos a vizinhança de destruição 0 (\({\color{#b6321d}a = 0}\)) e de reconstrução 2 (\({\color{#b6321d}b = 2}\)). </span></p>
 <p data-only="3">Com os seguintes valores de \(\omega\)</p>
-<div data-only="3" class="center"><p>\( \psi = max \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} \omega_1 = 8: \textsf{se a nova solução é a melhor global} \\ \omega_2 = 4: \textsf{se a nova solução é melhor que a atual} \\ \omega_3 = 2: \textsf{se a nova solução é aceita} \\ \omega_4 = 1: \textsf{se a nova solução é rejeitada} \\ \end{array}\kern-0.5em}\right. \)</p></div>
+<div data-only="3" class="center"><p>\( \psi = \max \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} \omega_1 = 8: \textsf{se a nova solução é a melhor global} \\ \omega_2 = 4: \textsf{se a nova solução é melhor que a atual} \\ \omega_3 = 2: \textsf{se a nova solução é aceita} \\ \omega_4 = 1: \textsf{se a nova solução é rejeitada} \\ \end{array}\kern-0.5em}\right. \)</p></div>
 <p data-only="4-">Com os seguintes valores de \(\omega\)</p>
-<div data-only="4-" class="center"><p>\( \psi = max \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} \omega_1 = 8: \textsf{se a nova solução é a melhor global} \\ {\color{#0061a5}\omega_2 = 4: \textsf{se a nova solução é melhor que a atual}} \\ \omega_3 = 2: \textsf{se a nova solução é aceita} \\ \omega_4 = 1: \textsf{se a nova solução é rejeitada} \\ \end{array}\kern-0.5em}\right. \)</p></div>
+<div data-only="4-" class="center"><p>\( \psi = \max \left\{{\def\arraystretch{1.242}\kern-0.4em\begin{array}{ll} \omega_1 = 8: \textsf{se a nova solução é a melhor global} \\ {\color{#0061a5}\omega_2 = 4: \textsf{se a nova solução é melhor que a atual}} \\ \omega_3 = 2: \textsf{se a nova solução é aceita} \\ \omega_4 = 1: \textsf{se a nova solução é rejeitada} \\ \end{array}\kern-0.5em}\right. \)</p></div>
 <p><span data-only="4-"> E finalmente, após essa iteração a nova solução ficou <span class="c-myblue">melhor que a atual.</span> </span></p>
 </div>
 </section>
@@ -299,8 +366,8 @@
 <p><span data-on="2-"> Com \(\psi = 4\), \(a = 0\) e \(b = 2\). Só faltando determinar o coeficiente de sensibilidade \(\alpha\). Vamos calcular com 2 valores de \(\alpha\) e ver o que ocorre (0.2 e 0.8):</span></p>
 <div class="columns"><div data-on="3-" class="column rag" style="position:relative;left:-1.22pt;width:201.85pt"><div class="tcb jus"><div class="eq par">\[\rho^-_0 = {\color{#0061a5}0.2} \cdot 1 + (1-{\color{#0061a5}0.2})4 = 3.4\]</div>
 <div class="eq">\[\rho^+_2 = {\color{#0061a5}0.2} \cdot 1 + (1-{\color{#0061a5}0.2})4 = 3.4\]</div></div></div>
-<div data-on="4-" class="column rag" style="position:relative;left:1.22pt;width:201.85pt"><div class="tcb jus"><div class="eq par">\[\rho^-_0 = {\color{#0061a5}0.8} \cdot 1 + (1-{\color{#0061a5}0.8})4 = 1.59\]</div>
-<div class="eq">\[\rho^+_2 = {\color{#0061a5}0.8} \cdot 1 + (1-{\color{#0061a5}0.8})4 = 1.59\]</div></div></div></div>
+<div data-on="4-" class="column rag" style="position:relative;left:1.22pt;width:201.85pt"><div class="tcb jus"><div class="eq par">\[\rho^-_0 = {\color{#0061a5}0.8} \cdot 1 + (1-{\color{#0061a5}0.8})4 = 1.6\]</div>
+<div class="eq">\[\rho^+_2 = {\color{#0061a5}0.8} \cdot 1 + (1-{\color{#0061a5}0.8})4 = 1.6\]</div></div></div></div>
 </div>
 </section>
 
@@ -308,14 +375,18 @@
 <header class="ft"><h2>Mecanismo adaptativo</h2></header>
 <div class="fc jus">
 <p>Dessa forma, os novos vetores de pesos (para os dois valores de \(\alpha\)) ficam:</p>
-<div class="columns"><div class="column rag" style="width:201.85pt"><div class="tcb jus"><div class="eq par">\[\rho^+ = ({\color{#b6321d}3.4},1,1,1,1)\]</div>
-<div class="eq">\[\rho^- = (1,1,{\color{#b6321d}3.4},1,1)\]</div></div></div>
-<div class="column rag" style="width:201.85pt"><div class="tcb jus"><div class="eq par">\[\rho^+ = ({\color{#b6321d}1.59},1,1,1,1)\]</div>
-<div class="eq">\[\rho^- = (1,1,{\color{#b6321d}1.59},1,1)\]</div></div></div></div>
+<div class="columns"><div class="column rag" style="width:201.85pt"><div class="tcb jus"><div class="eq par">\[\rho^+ = (1,1,{\color{#b6321d}3.4},1,1)\]</div>
+<div class="eq">\[\rho^- = ({\color{#b6321d}3.4},1,1,1,1)\]</div></div></div>
+<div class="column rag" style="width:201.85pt"><div class="tcb jus"><div class="eq par">\[\rho^+ = (1,1,{\color{#b6321d}1.6},1,1)\]</div>
+<div class="eq">\[\rho^- = ({\color{#b6321d}1.6},1,1,1,1)\]</div></div></div></div>
 <div class="vsp" style="height:8.50pt"></div>
 <p><span data-on="2-"> O que confirma que o \(\alpha\)<b> determina a sensibilidade dos pesos a mudanças</b> - um \(\alpha\) menor gera pesos mais sensíveis, e um \(\alpha\) maior gera menos sensibilidade. </span></p>
 </div>
 <div class="anim roleta" data-anim="roleta" data-state="off,off,on"></div>
+</section>
+
+<section class="frame sec notitle" data-section="Conclusões">
+<div class="fc"><div class="sec-title">Conclusões</div></div>
 </section>
 
 <section class="frame t only-title" data-section="Conclusões">
@@ -323,19 +394,23 @@
 <div class="fc jus">
 <ol class="enum jus">
 <li data-on="2-">As meta-heurísticas LNS e ALNS são usadas quando as vizinhanças para um problema são muito grandes, de forma que os algoritmos trabalham com <b>vizinhanças implícitas</b>, por meio dos operadores de destruição e reconstrução.</li>
-<li data-on="3-">Também podem ser usadas em problemas que a <b>definição de vizinhanças não é tão clara</b>, ou mesmo não é possível.</li>
+<li data-on="3-">Também podem ser usadas em problemas em que a <b>definição de vizinhanças não é tão clara</b>, ou mesmo não é possível.</li>
 <li data-on="4-">Se a solução inicial foi criada por um <b>algoritmo guloso</b>, podemos aproveitar a própria heurística de escolha dos elementos gulosos como um operador de reconstrução. Assim, somente determinando um operador de destruição já temos uma meta-heurística muito poderosa de forma simples a partir do <i>greedy</i>.</li>
-<li data-on="5-">Devido a alta flexibilidade da escolha de operadores no ALNS, esta meta-heurística se encaixa muito bem para ser usada em <i>mathheuristics</i> (por exemplo, destruindo uma parte da solução e <b>reconstruindo-a usando um modelo matemático</b> com métodos exatos)</li>
+<li data-on="5-">Devido à alta flexibilidade da escolha de operadores no ALNS, esta meta-heurística se encaixa muito bem para ser usada em <i>matheuristics</i> (por exemplo, destruindo uma parte da solução e <b>reconstruindo-a usando um modelo matemático</b> com métodos exatos)</li>
 </ol>
 </div>
 </section>
 
+<section class="frame sec notitle" data-section="Atividades">
+<div class="fc"><div class="sec-title">Atividades</div></div>
+</section>
+
 <section class="frame only-title" data-section="Atividades">
-<header class="ft"><h2>Atividade</h2></header>
+<header class="ft"><h2>Atividades</h2></header>
 <div class="fc jus">
 <ol class="enum jus">
 <li>Considerando o artigo <i><span class="c-myblue">2000 - A study of exponential neighborhoods for the Travelling Salesman Problem and for the Quadratic Assignment Problem</span></i>, entenda a vizinhança ASSIGN para o TSP e crie um exemplo numérico explicando como a mesma funciona, e a sua relação com o problema de designação.</li>
-<li>Pisisnger e Ropke usaram ALNS como um algoritmo que resolve diversas variantes do problema VRP de uma só vez, em <i><span class="c-myblue">2007 - A general heurisitc for vehicle routing problems - Ropke, Pisinger</span></i>. No artigo eles também fazem uma explicação da ALNS. Leia o artigo e as partes destacadas, relacionando com a aula. Identifique os operadores de destruição e reconstrução utilizados.</li>
+<li>Pisinger e Ropke usaram ALNS como um algoritmo que resolve diversas variantes do problema VRP de uma só vez, em <i><span class="c-myblue">2007 - A general heuristic for vehicle routing problems - Pisinger, Ropke</span></i>. No artigo eles também fazem uma explicação da ALNS. Leia o artigo e as partes destacadas, relacionando com a aula. Identifique os operadores de destruição e reconstrução utilizados.</li>
 </ol>
 </div>
 </section>

@@ -1,20 +1,26 @@
 /* Animações da aula 9 (LNS & ALNS). Dados das figuras em js/anim/dados/{swap,vrp,plot}.js
  * (ferramentas/figura_camadas.py). O estado final de cada passo é a figura do PDF.
  *
- *   swap  (frame 6; estados vazio, swap1..swap4, total)
+ *   swap  (frame 8; estados vazio, swap1..swap4, total)
  *         os 5 pontos brotam; a cada passo os arcos de SWAP do ponto da vez são traçados um a um e os dois
  *         rótulos trocam de lugar seguindo o arco (o vizinho) e voltam, com um contador de vizinhos;
  *         "total" (passo 5, junto com a caixa 4 + 3 + 3 = 10): os 10 arcos aparecem juntos, por grupo
- *   vrp   (frames 12–14; estados vazio, VRP1, VRP2, VRP3)
+ *   vrp   (frames 19–21; estados vazio, VRP1, VRP2, VRP3)
  *         VRP1: o depósito surge e cada rota é percorrida por um veículo; os clientes surgem quando ele passa.
  *         VRP2 (destruição): sorteio — clientes piscam ao acaso até parar nos removidos, que ficam vermelhos;
  *         as arestas deles ficam vermelhas tracejadas e somem, e as rotas se fecham sem eles.
  *         VRP3 (reconstrução): cada cliente removido é reinserido: a aresta onde ele entra "estica" até ele
  *         (elástico) e vira duas.
- *   plot  (frame 9, slide [plain] com o gráfico do pgfplots; estados vazio, plot)
+ *   plot  (frame 11, slide [plain] com o gráfico do pgfplots; estados vazio, plot)
  *         moldura, grade e eixos; título; f(n) é desenhada com um ponto na ponta, depois g(n) tracejada;
  *         a legenda entra. Interativo: com o mouse sobre o gráfico, uma linha vertical mostra n, f(n), g(n) e
  *         a razão f(n)/g(n) = (n−1)/n, que tende a 1 (por isso f(n) = O(n²)).
+ *   dyna  (frame 12; estados vazio, ex, simples, compostos) SWAP composto: exemplo SWAP(1,2) + SWAP(3,5) e os 15
+ *         vizinhos de 5 pontos em miniatura (10 simples + 5 pares independentes)
+ *   dynacont (frame 13; estados vazio, n2..n5) todos os vizinhos para n = 2..5, com simples + compostos = total
+ *   cresc (frame 14, [plain]; estados vazio, lin, zoom) SWAP × SWAP composto no mesmo gráfico; "zoom" afasta o
+ *         eixo y até 600.000. Interativo: valores e razão sob o mouse
+ *   roleta (frame 37, passo extra 3)
  */
 (function () {
   'use strict';
@@ -95,7 +101,7 @@
   const br = function (v, d) { return v.toFixed(d).replace('.', ','); };
 
   // =====================================================================================================
-  // VRP (frames 12–14)
+  // VRP (frames 19–21)
   // =====================================================================================================
   A.define('vrp', function (host) {
     const D = A.figData && A.figData.vrp;
@@ -390,7 +396,7 @@
   });
 
   // =====================================================================================================
-  // PLOT (frame 9: gráfico do pgfplots, página inteira)
+  // PLOT (frame 11: gráfico do pgfplots, página inteira)
   // =====================================================================================================
   A.define('plot', function (host) {
     const D = A.figData && A.figData.plot;
@@ -497,9 +503,9 @@
   });
 
   // =====================================================================================================
-  // ROLETA (frame 25, passo extra 3): os pesos novos nas duas roletas (α = 0,2 e α = 0,8)
+  // ROLETA (frame 37, passo extra 3): os pesos novos nas duas roletas (α = 0,2 e α = 0,8)
   // =====================================================================================================
-  // Abaixo do texto (que fica igual ao PDF), duas roletas com ρ+ = (3,4; 1; 1; 1; 1) e (1,59; 1; 1; 1; 1): as fatias
+  // Abaixo do texto (que fica igual ao PDF), duas roletas com ρ+ = (1; 1; 3,4; 1; 1) e (1; 1; 1,6; 1; 1): as fatias
   // crescem, as roletas giram e param num operador sorteado; depois 200 sorteios rápidos enchem as barras de
   // frequência. Clicar numa roleta gira de novo e refaz os 200 sorteios.
   A.define('roleta', function (host) {
@@ -508,8 +514,10 @@
     root.style.width = W + 'pt'; root.style.height = H + 'pt'; root.style.overflow = 'visible';
     host.appendChild(root);
     host.setAttribute('data-interactive', '');
-    const OP1 = '#b6321d', SHADES = ['#b6321d', '#5b8fbf', '#7aa6cf', '#99bddf', '#b8d3ec'];
-    const CASES = [{ cx: 66, w: [3.4, 1, 1, 1, 1], a: '0,2' }, { cx: 284, w: [1.59, 1, 1, 1, 1], a: '0,8' }];
+    const OP1 = '#b6321d', BLUES = ['#5b8fbf', '#7aa6cf', '#99bddf', '#b8d3ec'];
+    const HI = 2;   // operador de reconstrução usado (b = 2): o único cujo peso mudou
+    const SHADES = [0, 1, 2, 3, 4].map(function (k) { return k === HI ? OP1 : BLUES[k < HI ? k : k - 1]; });
+    const CASES = [{ cx: 66, w: [1, 1, 3.4, 1, 1], a: '0,2' }, { cx: 270, w: [1, 1, 1.6, 1, 1], a: '0,8' }];
     const R = 30, CY = 44, N = 200;
     let seed = 12345;
     const rnd = function () { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
@@ -524,21 +532,21 @@
       const probs = c.w.map(function (v) { return v / tot; });
       const rot = S('g', {}, g);
       const sectors = probs.map(function (p, k) { return S('path', { fill: SHADES[k], stroke: '#fff', 'stroke-width': 0.8 }, rot); });
-      const labs = probs.map(function (p, k) { return T(rot, 0, 0, String(k + 1), 7.5, k === 0 ? '#fff' : '#003a66', 'middle'); });
+      const labs = probs.map(function (p, k) { return T(rot, 0, 0, String(k), 7.5, k === HI ? '#fff' : '#003a66', 'middle'); });
       S('circle', { cx: c.cx, cy: CY, r: R, fill: 'none', stroke: BLUE, 'stroke-width': 1 }, g);
       S('path', { d: 'M' + c.cx + ' ' + (CY - R - 1) + 'l-4 -7h8z', fill: '#222' }, g);   // ponteiro
       const tx = c.cx + R + 12;
       T(g, tx, 12, 'α = ' + c.a + ':  ρ⁺ = (' + c.w.map(function (v) { return String(v).replace('.', ','); }).join('; ') + ')', 8.97, BLUE);
-      T(g, tx, 23, 'P(1) = ' + br(probs[0] * 100, 0) + '%', 7.97);
-      T(g, tx, 33, 'P(2) = ... = P(5) = ' + br(probs[1] * 100, 1) + '%', 7.97);
+      T(g, tx, 23, 'P(' + HI + ') = ' + br(probs[HI] * 100, 1) + '%', 7.97);
+      T(g, tx, 33, 'demais operadores: ' + br(probs[0] * 100, 1) + '%', 7.97);
       const res = T(g, tx, 44, '', 7.97, OP1);
       const bars = [], cnts = [];
       for (let k = 0; k < 5; k++) {
-        T(g, tx + 6 + k * 22, 84, String(k + 1), 7, '#333', 'middle');
-        bars.push(S('rect', { x: tx + k * 22, y: 77, width: 12, height: 0, fill: SHADES[k] }, g));
-        cnts.push(T(g, tx + 6 + k * 22, 75, '', 6.5, '#333', 'middle'));
+        T(g, tx + 6 + k * 20, 84, String(k), 7, '#333', 'middle');
+        bars.push(S('rect', { x: tx + k * 20, y: 77, width: 12, height: 0, fill: SHADES[k] }, g));
+        cnts.push(T(g, tx + 6 + k * 20, 75, '', 6.5, '#333', 'middle'));
       }
-      const cap = T(g, tx + 112, 84, '', 7, '#555');
+      const cap = T(g, tx + 100, 84, '', 7, '#555');
       labs.forEach(function (l) { l._r = true; });
       return { c: c, g: g, rot: rot, sectors: sectors, labs: labs, probs: probs, res: res, bars: bars, cnts: cnts, cap: cap,
         ang: 0, pick: null, cnt: null };
@@ -564,7 +572,7 @@
     function sample(w) { const u = rnd(); let acc = 0; for (let k = 0; k < 5; k++) { acc += w.probs[k]; if (u < acc) return k; } return 4; }
     // barras e textos a partir do estado guardado (fração e = 0..1 das contagens)
     function stats(w, e) {
-      w.res.textContent = w.pick == null ? '' : 'sorteado: operador ' + (w.pick + 1);
+      w.res.textContent = w.pick == null ? '' : 'sorteado: operador ' + w.pick;
       const cnt = w.cnt || [0, 0, 0, 0, 0], mx = N * 0.6;
       cnt.forEach(function (c, k) {
         const v = Math.round(c * e), hh = 28 * v / mx;
@@ -632,6 +640,419 @@
         spin(free, w).then(function () { return draws(free, w); }).then(function () { w._busy = false; });
       });
     });
+    return { snap: snap, play: play };
+  });
+
+  // ---------- texto "matemático" em SVG (partes com fontes do KaTeX / LM Sans) ----------
+  // parts: [texto, tipo, cor?]; tipo: 's' LM Sans, 'r' KaTeX_Main, 'i' KaTeX_Math itálico, 'sup' / 'supi' expoente,
+  // 'gap' espaço horizontal de `texto` pt
+  function rich(parent, x, y, parts, opt) {
+    opt = opt || {};
+    const fs = opt.fs || 10.91, t = S('text', { x: x, y: y, 'font-size': fs, fill: opt.fill || '#000', 'text-anchor': opt.anchor || 'start' }, parent);
+    if (opt.rot) t.setAttribute('transform', 'rotate(' + opt.rot + ' ' + x + ' ' + y + ')');
+    let raised = 0;
+    parts.forEach(function (p) {
+      const k = p[1], sup = k === 'sup' || k === 'supi';
+      if (k === 'gap') { S('tspan', { dx: p[0] }, t).textContent = ' '; return; }
+      const sp = S('tspan', {}, t);
+      sp.setAttribute('font-family', k === 's' ? 'LM Sans, sans-serif' : (k === 'i' || k === 'supi') ? 'KaTeX_Math, serif' : 'KaTeX_Main, serif');
+      if (k === 'i' || k === 'supi') sp.setAttribute('font-style', 'italic');
+      if (sup) sp.setAttribute('font-size', fs * 0.73);
+      const want = sup ? -fs * 0.36 : 0;
+      if (want !== raised) { sp.setAttribute('dy', want - raised); raised = want; }
+      if (p[2]) sp.setAttribute('fill', p[2]);
+      sp.textContent = p[0];
+    });
+    return t;
+  }
+  const milhar = function (v) { return Math.round(v).toLocaleString('pt-BR'); };
+
+  // =====================================================================================================
+  // DYNA (frame 12: SWAP composto — vários SWAPs independentes num só movimento; estados vazio, ex, simples,
+  // compostos)
+  // =====================================================================================================
+  // À esquerda, o exemplo SWAP(1,2) + SWAP(3,5): os pontos brotam, os arcos são traçados e os rótulos trocam de
+  // lugar ao mesmo tempo (e voltam). À direita, os 15 vizinhos de 5 pontos em miniatura: os 10 SWAPs simples
+  // (azul) e os 5 pares de SWAPs independentes (vermelho).
+  A.define('dyna', function (host) {
+    const W = 400, H = 66, sc = +(host.dataset.scale || 1);
+    const root = S('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Os 15 vizinhos do SWAP composto com 5 pontos' });
+    root.style.width = (W * sc) + 'pt'; root.style.height = (H * sc) + 'pt'; root.style.overflow = 'visible';
+    host.appendChild(root);
+    const RED2 = '#b6321d', FILL = '#0061a5';
+    const arcD = function (x1, x2, y, h, up) {
+      const k = 1.33 * h * (up ? -1 : 1), d = (x2 - x1) / 3;
+      return 'M' + x1 + ' ' + y + 'C' + (x1 + d) + ' ' + (y + k) + ' ' + (x2 - d) + ' ' + (y + k) + ' ' + x2 + ' ' + y;
+    };
+    const bez = function (x1, x2, y, h, up, t) {   // ponto do arco acima em t (controles na mesma altura)
+      const k = 1.33 * h * (up ? -1 : 1), d = (x2 - x1) / 3, u = 1 - t;
+      return [u * u * u * x1 + 3 * u * u * t * (x1 + d) + 3 * u * t * t * (x2 - d) + t * t * t * x2, y + 3 * u * t * k];
+    };
+    // ---- exemplo grande ----
+    const EX = [14, 38, 62, 86, 110], EY = 36, ER = 10, PAIRS = [[1, 2], [3, 5]];
+    const gEx = S('g', {}, root);
+    const exArcs = PAIRS.map(function (p) {
+      return S('path', { d: arcD(EX[p[0] - 1], EX[p[1] - 1], EY - ER, 4 + 3 * (p[1] - p[0]), true), fill: 'none', stroke: RED2, 'stroke-width': 0.8 }, gEx);
+    });
+    const exNodes = EX.map(function (x, k) {
+      const g = S('g', {}, gEx);
+      S('circle', { cx: x, cy: EY, r: ER, fill: FILL, 'fill-opacity': 0.3, stroke: '#000', 'stroke-width': 1 }, g);
+      return g;
+    });
+    const exLabs = EX.map(function (x, k) {
+      const t = S('text', { x: x, y: EY + 3.6, 'font-family': 'KaTeX_Main, serif', 'font-size': 10.5, 'text-anchor': 'middle' }, gEx);
+      t.textContent = String(k + 1); return t;
+    });
+    const exCap = rich(gEx, EX[2], 62, [['SWAP(1,2) + SWAP(3,5)', 's']], { fs: 7.97, fill: RED2, anchor: 'middle' });
+    function exReset() {
+      exLabs.forEach(function (t, k) { t.setAttribute('x', EX[k]); t.setAttribute('y', EY + 3.6); t.style.opacity = ''; });
+      exArcs.forEach(function (a) { a.style.strokeDasharray = ''; a.style.strokeDashoffset = ''; a.style.display = ''; });
+      exNodes.forEach(function (g) { resetEl(g); });
+      exCap.style.opacity = '';
+    }
+    // ---- miniaturas: os 15 vizinhos ----
+    const MOVES = [[[1, 2]], [[1, 3]], [[1, 4]], [[1, 5]], [[2, 3]], [[2, 4]], [[2, 5]], [[3, 4]], [[3, 5]], [[4, 5]],
+      [[1, 2], [3, 4]], [[1, 2], [3, 5]], [[1, 2], [4, 5]], [[1, 3], [4, 5]], [[2, 3], [4, 5]]];
+    const GX = 142, PX = 52, RY = [18, 39, 60], DS = 9, DR = 3.2;
+    const cells = MOVES.map(function (mv, m) {
+      const row = m < 5 ? 0 : m < 10 ? 1 : 2, x0 = GX + (m % 5) * PX + DR, y = RY[row];
+      const g = S('g', {}, root);
+      const dots = [0, 1, 2, 3, 4].map(function (k) {
+        return S('circle', { cx: x0 + k * DS, cy: y, r: DR, fill: FILL, 'fill-opacity': 0.3, stroke: '#000', 'stroke-width': 0.6 }, g);
+      });
+      const arcs = mv.map(function (p) {
+        return S('path', { d: arcD(x0 + (p[0] - 1) * DS, x0 + (p[1] - 1) * DS, y - DR, 2 + 1.6 * (p[1] - p[0]), true),
+          fill: 'none', stroke: m < 10 ? FILL : RED2, 'stroke-width': 0.9 }, g);
+      });
+      return { g: g, dots: dots, arcs: arcs };
+    });
+    const LV = { vazio: 0, ex: 1, simples: 2, compostos: 3 };
+    function snap(st) {
+      const lv = LV[st] || 0;
+      exReset(); gEx.style.display = lv >= 1 ? '' : 'none';
+      cells.forEach(function (c, m) {
+        c.g.style.display = (m < 10 ? lv >= 2 : lv >= 3) ? '' : 'none'; c.g.style.opacity = '';
+        c.arcs.forEach(function (a) { a.style.strokeDasharray = ''; a.style.strokeDashoffset = ''; });
+      });
+    }
+    async function swapLabs(h, back) {
+      await h.tween(900, function (e) {
+        PAIRS.forEach(function (p) {
+          const i = p[0] - 1, j = p[1] - 1, hh = 7 + 5 * (j - i);
+          const a = bez(EX[i], EX[j], EY, hh, true, back ? 1 - e : e), b = bez(EX[j], EX[i], EY, hh, false, back ? 1 - e : e);
+          exLabs[i].setAttribute('x', a[0]); exLabs[i].setAttribute('y', a[1] + 3.6);
+          exLabs[j].setAttribute('x', b[0]); exLabs[j].setAttribute('y', b[1] + 3.6);
+        });
+      });
+    }
+    async function cellIn(h, c, dur) {
+      c.g.style.display = ''; c.g.style.opacity = 0;
+      c.arcs.forEach(function (a) { const L = a.getTotalLength(); a.style.strokeDasharray = L + ' ' + (L + 1); a.style.strokeDashoffset = L; });
+      await h.tween(dur * 0.4, function (e) { c.g.style.opacity = e; });
+      await h.all(c.arcs.map(function (a) { return traceEl(h, a, dur * 0.6); }));
+    }
+    async function play(a, b, h) {
+      const la = LV[a] || 0, lb = LV[b] || 0;
+      if (la < 1 && lb >= 1) {
+        gEx.style.display = ''; exArcs.forEach(function (x) { x.style.display = 'none'; });
+        exLabs.forEach(function (t) { t.style.opacity = 0; }); exCap.style.opacity = 0;
+        exNodes.forEach(function (g) { g.style.opacity = 0; });
+        for (let k = 0; k < 5; k++) {
+          await pop(h, [exNodes[k]], [EX[k], EY], 200);
+          exLabs[k].style.opacity = '';
+        }
+        await h.wait(200);
+        for (const x of exArcs) { x.style.display = ''; await traceEl(h, x, 450); }
+        await fade(h, [exCap], 0, 1, 300);
+        await h.wait(250);
+        await swapLabs(h, false);
+        await h.wait(900);
+        await swapLabs(h, true);
+      }
+      if (la < 2 && lb >= 2) for (let m = 0; m < 10; m++) await cellIn(h, cells[m], 260);
+      if (la < 3 && lb >= 3) {
+        for (let m = 10; m < 15; m++) {
+          await cellIn(h, cells[m], 520);
+          await ring(h, root, [GX + (m % 5) * PX + DR + 2 * DS, RY[2]], RED2, 8, 26, 350);
+        }
+      }
+    }
+    return { snap: snap, play: play };
+  });
+
+  // =====================================================================================================
+  // DYNACONT (frame 13: contagem dos vizinhos do SWAP composto para n = 2..5; estados vazio, n2, n3, n4, n5)
+  // =====================================================================================================
+  // Uma linha por n: rótulo, todos os vizinhos em miniatura (simples em azul, compostos em vermelho, como no
+  // frame 10) e a conta simples + compostos = total. Cada passo acrescenta a linha do n seguinte.
+  A.define('dynacont', function (host) {
+    const NS = [2, 3, 4, 5], W = 400, sc = +(host.dataset.scale || 1);
+    const RED2 = '#b6321d', FILL = '#0061a5';
+    const DS = 6, DR = 2.3, PX = 36, GX = 46, PER = 8, LH = 21;
+    const arcD = function (x1, x2, y, h) { const k = -1.33 * h, d = (x2 - x1) / 3; return 'M' + x1 + ' ' + y + 'C' + (x1 + d) + ' ' + (y + k) + ' ' + (x2 - d) + ' ' + (y + k) + ' ' + x2 + ' ' + y; };
+    // todos os conjuntos não vazios de SWAPs independentes (trechos [i,j] disjuntos): simples primeiro
+    function allMoves(n) {
+      const out = [];
+      (function rec(start, cur) {
+        for (let i = start; i < n; i++) for (let j = i + 1; j <= n; j++) {
+          const nx = cur.concat([[i, j]]); out.push(nx); rec(j + 1, nx);
+        }
+      })(1, []);
+      return out.sort(function (a, b) {
+        if (a.length !== b.length) return a.length - b.length;
+        for (let k = 0; k < a.length; k++) { if (a[k][0] !== b[k][0]) return a[k][0] - b[k][0]; if (a[k][1] !== b[k][1]) return a[k][1] - b[k][1]; }
+        return 0;
+      });
+    }
+    let y = 14;
+    const rowsLayout = NS.map(function (n) {
+      const mv = allMoves(n), lines = Math.ceil(mv.length / PER), ys = [];
+      for (let l = 0; l < lines; l++) ys.push(y + l * LH);
+      y += lines * LH;
+      return { n: n, mv: mv, ys: ys };
+    });
+    const H = y - LH + 8;
+    const root = S('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Vizinhos do SWAP composto para n = 2, 3, 4 e 5' });
+    root.style.width = (W * sc) + 'pt'; root.style.height = (H * sc) + 'pt'; root.style.overflow = 'visible';
+    host.appendChild(root);
+    const rows = rowsLayout.map(function (r) {
+      const g = S('g', {}, root), mid = (r.ys[0] + r.ys[r.ys.length - 1]) / 2 + 3.6;
+      const simp = r.mv.filter(function (m) { return m.length === 1; }).length, comp = r.mv.length - simp;
+      const lab = rich(g, 0, mid, [['n', 'i'], [' = ' + r.n, 'r']], { fs: 10.91 });
+      const cnt = rich(g, W, mid, [[String(simp), 'r', FILL], [' + ', 'r'], [String(comp), 'r', RED2], [' = ', 'r'], [String(r.mv.length), 'r']],
+        { fs: 10.91, anchor: 'end' });
+      const cells = r.mv.map(function (m, k) {
+        const x0 = GX + (k % PER) * PX + DR, yy = r.ys[Math.floor(k / PER)], cg = S('g', {}, g);
+        for (let p = 0; p < r.n; p++) S('circle', { cx: x0 + p * DS, cy: yy, r: DR, fill: FILL, 'fill-opacity': 0.3, stroke: '#000', 'stroke-width': 0.5 }, cg);
+        const arcs = m.map(function (s) {
+          return S('path', { d: arcD(x0 + (s[0] - 1) * DS, x0 + (s[1] - 1) * DS, yy - DR, 1.8 + 1.4 * (s[1] - s[0])), fill: 'none',
+            stroke: m.length === 1 ? FILL : RED2, 'stroke-width': 0.8 }, cg);
+        });
+        return { g: cg, arcs: arcs };
+      });
+      return { g: g, lab: lab, cnt: cnt, cells: cells };
+    });
+    const LV = { vazio: -1, n2: 0, n3: 1, n4: 2, n5: 3 };
+    function snap(st) {
+      const lv = LV[st] == null ? -1 : LV[st];
+      rows.forEach(function (r, i) {
+        r.g.style.display = i <= lv ? '' : 'none';
+        [r.lab, r.cnt].forEach(function (e) { e.style.opacity = ''; });
+        r.cells.forEach(function (c) {
+          c.g.style.opacity = '';
+          c.arcs.forEach(function (a) { a.style.strokeDasharray = ''; a.style.strokeDashoffset = ''; });
+        });
+      });
+    }
+    async function rowIn(h, r) {
+      r.g.style.display = '';
+      r.cnt.style.opacity = 0; r.lab.style.opacity = 0;
+      r.cells.forEach(function (c) { c.g.style.opacity = 0; });
+      await fade(h, [r.lab], 0, 1, 250);
+      const dur = r.cells.length > 8 ? 170 : 300;
+      for (const c of r.cells) {
+        c.arcs.forEach(function (a) { const L = a.getTotalLength(); a.style.strokeDasharray = L + ' ' + (L + 1); a.style.strokeDashoffset = L; });
+        await h.tween(dur * 0.35, function (e) { c.g.style.opacity = e; });
+        await h.all(c.arcs.map(function (a) { return traceEl(h, a, dur * 0.65); }));
+      }
+      await fade(h, [r.cnt], 0, 1, 300);
+    }
+    async function play(a, b, h) {
+      const la = LV[a] == null ? -1 : LV[a], lb = LV[b] == null ? -1 : LV[b];
+      for (let i = la + 1; i <= lb; i++) await rowIn(h, rows[i]);
+    }
+    return { snap: snap, play: play };
+  });
+
+  // =====================================================================================================
+  // CRESC (frame 14, slide [plain]: SWAP × SWAP composto no mesmo gráfico; estados vazio, lin, zoom)
+  // =====================================================================================================
+  // Mesma moldura e escala do gráfico do frame 9 (n = 0..20, f = 0..200). "lin": a curva quadrática é traçada e a
+  // exponencial sai pelo topo do gráfico perto de n = 9. "zoom": o eixo y se afasta até 600.000 e a quadrática vira
+  // uma linha no chão; os valores em n = 20 aparecem. Interativo: com o mouse, os dois tamanhos e a razão entre eles.
+  A.define('cresc', function (host) {
+    const W = 453.543, H = 255.118;
+    const root = S('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Tamanho das vizinhanças SWAP e SWAP composto em função de n' });
+    root.style.width = W + 'pt'; root.style.height = H + 'pt'; root.style.overflow = 'visible';
+    host.appendChild(root);
+    const BX0 = 128.28, BX1 = 366.92, BY0 = 193.4, BY1 = 39.81;          // moldura (como no frame 9)
+    const X0 = 148.17, X1 = 346.99, Y0 = 180.52, Y1 = 52.6, NMAX = 20;   // n = 0..20; f = 0..ymax
+    const YLIN = 200, YBIG = 600000, C_SW = '#0000ff', C_DY = '#ff0000';
+    const fSw = function (n) { return n * (n - 1) / 2; }, fDy = function (n) { return Math.pow(2, n - 1) - 1; };
+    let ymax = YLIN;
+    const xOf = function (n) { return X0 + (X1 - X0) * n / NMAX; }, nOf = function (x) { return (x - X0) * NMAX / (X1 - X0); };
+    const yOf = function (v) { return Y0 + (Y1 - Y0) * v / ymax; };
+    const nice = function (r) { const m = Math.pow(10, Math.floor(Math.log10(r))), q = r / m; return (q < 1.5 ? 1 : q < 3 ? 2 : q < 7 ? 5 : 10) * m; };
+    const labW = function (s) { return s.replace(/\D/g, '').length * 5.45 + (s.length - s.replace(/\D/g, '').length) * 3.03; };
+
+    const uid = 'cr' + Math.round(Math.random() * 1e6), defs = S('defs', {}, root);
+    S('rect', { x: BX0, y: BY1, width: BX1 - BX0, height: BY0 - BY1 }, S('clipPath', { id: uid }, defs));
+    S('rect', { x: 0, y: 0, width: W, height: H, fill: '#ffffff' }, root);
+    const gGrid = S('g', {}, root), gYlab = S('g', {}, root), gX = S('g', {}, root);
+    const gCurves = S('g', { 'clip-path': 'url(#' + uid + ')' }, root);
+    const pSw = S('path', { fill: 'none', stroke: C_SW, 'stroke-width': 0.797, 'stroke-linejoin': 'round' }, gCurves);
+    const pDy = S('path', { fill: 'none', stroke: C_DY, 'stroke-width': 0.797, 'stroke-linejoin': 'round' }, gCurves);
+    const box = S('path', { d: 'M' + BX0 + ' ' + BY0 + 'H' + BX1 + 'V' + BY1 + 'H' + BX0 + 'Z', fill: 'none', stroke: '#000', 'stroke-width': 0.398 }, root);
+    const gAnn = S('g', {}, root), gFx = S('g', {}, root);
+
+    // eixo x, títulos e legenda (fixos)
+    [0, 5, 10, 15, 20].forEach(function (n) {
+      S('text', { x: xOf(n), y: 204.27, 'font-family': 'KaTeX_Main, serif', 'font-size': 10.91, 'text-anchor': 'middle' }, gX).textContent = String(n);
+    });
+    rich(gX, (BX0 + BX1) / 2, 216.44, [['n', 'i']], { anchor: 'middle' });
+    const yTitle = rich(gYlab, 0, 0, [['f', 'i'], ['(', 'r'], ['n', 'i'], [')', 'r']], { anchor: 'middle' });
+    const title = rich(root, (BX0 + BX1) / 2, 27.27, [['Ordem de crescimento: ', 's'], ['O', 'i'], ['(', 'r'], ['n', 'i'], ['2', 'sup'],
+      [')', 'r'], [' × ', 'r'], ['O', 'i'], ['(', 'r'], ['2', 'r'], ['n', 'supi'], [')', 'r']], { anchor: 'middle' });
+    // legenda: [amostra da linha] texto   [amostra] texto, centrada; larguras medidas com canvas (funciona com o
+    // frame escondido), refeitas quando as fontes terminam de carregar
+    const gLeg = S('g', {}, root), LEG_Y = 235.6, LINE = 20, PAD = 4, SEP = 16;
+    const legBox = S('rect', { x: 0, y: 222.2, width: 10, height: 20, fill: '#ffffff', stroke: '#000', 'stroke-width': 0.398 }, gLeg);
+    const ENTRIES = [
+      { c: C_SW, parts: [['SWAP:  ', 's'], ['n', 'i'], ['(', 'r'], ['n', 'i'], [' − 1)/2', 'r']] },
+      { c: C_DY, parts: [['SWAP composto:  ', 's'], ['2', 'r'], ['n', 'supi'], ['−1', 'sup'], [' − 1', 'r']] }];
+    ENTRIES.forEach(function (en) {
+      en.line = S('path', { stroke: en.c, 'stroke-width': 0.797, fill: 'none' }, gLeg);
+      en.txt = rich(gLeg, 0, LEG_Y, en.parts);
+      en.txt.style.whiteSpace = 'pre';
+    });
+    const ctx = document.createElement('canvas').getContext('2d');
+    function partsWidth(parts, fs) {
+      let w = 0;
+      parts.forEach(function (p) {
+        const k = p[1], it = k === 'i' || k === 'supi', sz = (k === 'sup' || k === 'supi') ? fs * 0.73 : fs;
+        ctx.font = (it ? 'italic ' : '') + sz + 'px ' + (k === 's' ? '"LM Sans"' : it ? 'KaTeX_Math' : 'KaTeX_Main');
+        w += ctx.measureText(p[0]).width;
+      });
+      return w;
+    }
+    function layoutLegend() {
+      const ws = ENTRIES.map(function (en) { return partsWidth(en.parts, 10.91); });
+      const total = ENTRIES.length * (LINE + PAD) + ws[0] + ws[1] + SEP;
+      let x = (BX0 + BX1) / 2 - total / 2;
+      legBox.setAttribute('x', x - 6); legBox.setAttribute('width', total + 12);
+      ENTRIES.forEach(function (en, k) {
+        en.line.setAttribute('d', 'M' + x + ' ' + (LEG_Y - 3.6) + 'h' + LINE);
+        en.txt.setAttribute('x', x + LINE + PAD);
+        x += LINE + PAD + ws[k] + SEP;
+      });
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutLegend);
+
+    // eixo y, grade e curvas para o ymax atual
+    function curve(f, n0) {
+      const pts = [];
+      for (let i = 0; i <= 400; i++) {
+        const n = n0 + (NMAX - n0) * i / 400, v = f(n);
+        pts.push(xOf(n).toFixed(2) + ' ' + yOf(v).toFixed(2));
+        if (v > ymax * 1.15) break;   // já saiu pelo topo: o resto fica fora do recorte
+      }
+      return 'M' + pts.join('L');
+    }
+    function render() {
+      gGrid.textContent = '';
+      Array.prototype.slice.call(gYlab.querySelectorAll('.yt')).forEach(function (t) { t.remove(); });
+      const G = { stroke: '#bfbfbf', 'stroke-width': 0.398 }, TK = { stroke: '#7f807f', 'stroke-width': 0.199 };
+      [0, 5, 10, 15, 20].forEach(function (n) {
+        const x = xOf(n);
+        S('path', Object.assign({ d: 'M' + x + ' ' + BY0 + 'V' + BY1 }, G), gGrid);
+        S('path', Object.assign({ d: 'M' + x + ' ' + BY0 + 'v-4.25M' + x + ' ' + BY1 + 'v4.25' }, TK), gGrid);
+      });
+      const step = nice(ymax / 4);
+      let wmax = 0;
+      for (let k = 0; ; k++) {
+        const v = k * step, y = yOf(v);
+        if (y < BY1 + 2) break;
+        S('path', Object.assign({ d: 'M' + BX0 + ' ' + y + 'H' + BX1 }, G), gGrid);
+        S('path', Object.assign({ d: 'M' + BX0 + ' ' + y + 'h4.25M' + BX1 + ' ' + y + 'h-4.25' }, TK), gGrid);
+        const s = milhar(v), t = S('text', { class: 'yt', x: 124.45, y: y + 3.52, 'font-family': 'KaTeX_Main, serif', 'font-size': 10.91, 'text-anchor': 'end' }, gYlab);
+        t.textContent = s; wmax = Math.max(wmax, labW(s));
+      }
+      const yx = 124.45 - wmax - 10.2, yy = (Y0 + Y1) / 2;
+      yTitle.setAttribute('x', yx); yTitle.setAttribute('y', yy); yTitle.setAttribute('transform', 'rotate(-90 ' + yx + ' ' + yy + ')');
+      pSw.setAttribute('d', curve(fSw, 0));
+      pDy.setAttribute('d', curve(fDy, 1));
+    }
+    // valores em n = 20 (depois do zoom)
+    function annotate() {
+      gAnn.textContent = '';
+      const xs = xOf(20);
+      [[fDy(20), C_DY, -4, 3.2], [fSw(20), C_SW, -4, -5]].forEach(function (a) {
+        const y = yOf(a[0]);
+        S('circle', { cx: xs, cy: y, r: 2, fill: a[1] }, gAnn);
+        S('text', { x: xs + a[2], y: y + a[3], fill: a[1], 'font-family': 'KaTeX_Main, serif', 'font-size': 8.97, 'text-anchor': 'end' }, gAnn).textContent = milhar(a[0]);
+      });
+    }
+    const PARTS = [gGrid, gYlab, gX, title, box, gLeg];
+    function snap(st) {
+      gFx.textContent = '';
+      ymax = st === 'zoom' ? YBIG : YLIN;
+      render(); layoutLegend();
+      const on = st === 'lin' || st === 'zoom';
+      PARTS.concat([gCurves]).forEach(function (e) { e.style.display = on ? '' : 'none'; e.style.opacity = ''; });
+      [pSw, pDy].forEach(function (p) { p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; });
+      if (st === 'zoom') { annotate(); gAnn.style.display = ''; gAnn.style.opacity = ''; } else gAnn.style.display = 'none';
+    }
+    function traceTip(h, p, dur, color) {
+      const L = p.getTotalLength(), dot = S('circle', { r: 2.2, fill: color }, gFx);
+      p.style.strokeDasharray = L + ' ' + (L + 1); p.style.strokeDashoffset = L;
+      return h.tween(dur, function (e) {
+        p.style.strokeDashoffset = L * (1 - e);
+        const q = p.getPointAtLength(L * e);
+        dot.setAttribute('cx', q.x); dot.setAttribute('cy', Math.max(BY1, q.y));
+      }, E.inOut).then(function () { p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; dot.remove(); });
+    }
+    async function play(a, b, h) {
+      if (a === 'vazio' && (b === 'lin' || b === 'zoom')) {
+        snap('lin');
+        PARTS.forEach(function (e) { e.style.opacity = 0; });
+        [pSw, pDy].forEach(function (p) { p.style.strokeDasharray = '1 100000'; p.style.strokeDashoffset = 1; });
+        box.style.opacity = ''; await traceEl(h, box, 600);
+        await fade(h, [gGrid], 0, 1, 400);
+        await fade(h, [gX, gYlab], 0, 1, 400);
+        await fade(h, [title], 0, 1, 350);
+        await traceTip(h, pSw, 1500, C_SW);
+        await traceTip(h, pDy, 1300, C_DY);
+        await fade(h, [gLeg], 0, 1, 350);
+        if (b === 'lin') return;
+        await h.wait(500);
+        a = 'lin';
+      }
+      if (a === 'lin' && b === 'zoom') {
+        gAnn.style.display = 'none';
+        await h.tween(3000, function (e) { ymax = YLIN * Math.pow(YBIG / YLIN, e); render(); }, E.inOut);
+        ymax = YBIG; render(); annotate();
+        gAnn.style.display = ''; await fade(h, [gAnn], 0, 1, 400);
+      }
+    }
+
+    // ---- leitura com o mouse ----
+    host.setAttribute('data-interactive', '');
+    const gHov = S('g', { 'pointer-events': 'none', opacity: 0 }, root);
+    const vline = S('line', { y1: BY1, y2: BY0, stroke: '#555', 'stroke-width': 0.5, 'stroke-dasharray': '2 1.5' }, gHov);
+    const dS = S('circle', { r: 2.2, fill: C_SW }, gHov), dD = S('circle', { r: 2.2, fill: C_DY }, gHov);
+    const hb = S('rect', { x: 133, y: 45, width: 88, height: 44, rx: 2, fill: '#ffffff', 'fill-opacity': 0.92, stroke: '#888', 'stroke-width': 0.4 }, gHov);
+    const tl = [0, 1, 2, 3].map(function (k) {
+      return S('text', { x: 138, y: 55 + k * 10, 'font-family': 'LM Sans, sans-serif', 'font-size': 7.9, fill: ['#000', C_SW, C_DY, BLUE][k] }, gHov);
+    });
+    function hover(x) {
+      const n = Math.max(1, Math.min(NMAX, Math.round(nOf(x)))), s = fSw(n), d = fDy(n), px = xOf(n);
+      vline.setAttribute('x1', px); vline.setAttribute('x2', px);
+      dS.setAttribute('cx', px); dS.setAttribute('cy', yOf(s));
+      dD.setAttribute('cx', px); dD.setAttribute('cy', yOf(d)); dD.style.display = yOf(d) < BY1 ? 'none' : '';
+      const txt = ['n = ' + n, 'SWAP: ' + milhar(s), 'composto: ' + milhar(d),
+        s > 0 ? 'composto / SWAP ≈ ' + (d / s).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) : 'composto / SWAP: —'];
+      tl.forEach(function (t, k) { t.textContent = txt[k]; });
+      let w = 0; tl.forEach(function (t) { try { w = Math.max(w, t.getComputedTextLength()); } catch (e) { } });
+      hb.setAttribute('width', Math.max(70, w + 10));
+    }
+    root.addEventListener('mousemove', function (ev) {
+      if (gCurves.style.display === 'none') return;
+      const pt = root.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+      const p = pt.matrixTransform(root.getScreenCTM().inverse());
+      if (p.x >= BX0 && p.x <= BX1 && p.y >= BY1 && p.y <= BY0) { hover(p.x); gHov.setAttribute('opacity', 1); }
+      else gHov.setAttribute('opacity', 0);
+    });
+    root.addEventListener('mouseleave', function () { gHov.setAttribute('opacity', 0); });
     return { snap: snap, play: play };
   });
 })();
